@@ -1,0 +1,19 @@
+{
+  "splitTaskSize": "1 file or 1 feature max per prompt",
+  "deleteUnusedFilesDaily": true,
+  "commitAfterEachTask": true,
+  "bundleSizeCheckInterval": 10,
+  "maxContextPerTask": 8000,
+  "useGitDiffForContext": true,
+  "rules": [
+    "One feature per execution — no multitasking",
+    "Use git diff to show only changed files",
+    "Delete unused imports immediately after adding new code",
+    "Check bundle size after each phase: npm run build",
+    "Commit format: phase(X.Y): description"
+  ],
+  "bundleSizeTarget": "350KB gzip",
+  "workingDir": "landingpage/",
+  "testCommand": "npm run test:e2e",
+  "buildCommand": "npm run build"
+}

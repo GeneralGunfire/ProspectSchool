@@ -1,0 +1,439 @@
+{
+  "civics_procedures": [
+    {
+      "id": "sa-id-application",
+      "title": "Applying for a South African ID (First-Time)",
+      "category": "Identity",
+      "subcategory": "Identification Documents",
+      "eligibility": [
+        "South African citizens aged 16 or older",
+        "Permanent residents",
+        "First-time applicants only"
+      ],
+      "time_to_complete": "4-8 weeks",
+      "cost": "Free for first-time applicants",
+      "difficulty": "Easy",
+      "overview": "Your South African ID is your most important document. First-time applicants must apply in person at a Department of Home Affairs office. You need supporting documents to prove your identity and citizenship. This is free for first-time applicants.",
+      "steps": [
+        {
+          "step_number": 1,
+          "title": "Gather Required Documents",
+          "description": "Collect your birth certificate, proof of residence, and passport photos. If born outside South Africa, bring naturalization certificate or permanent residency proof. Your parents' IDs are needed if under 18.",
+          "tips": ["Make copies of all documents before going", "Check your birth certificate is the unabridged version"],
+          "documents_needed": ["Unabridged birth certificate", "Parents' ID copies (if under 18)", "Proof of residence (utility bill or letter from traditional leader)"]
+        },
+        {
+          "step_number": 2,
+          "title": "Visit Your Nearest Home Affairs Office",
+          "description": "Go to any Department of Home Affairs office. Arrive early to avoid long queues. Use the eHomeAffairs booking system to schedule an appointment online.",
+          "tips": ["Arrive before 7am for shorter queues", "Use bank branches that offer Home Affairs services (Standard Bank, FNB, Nedbank)"],
+          "documents_needed": ["All documents from Step 1"]
+        },
+        {
+          "step_number": 3,
+          "title": "Complete Form DHA-9",
+          "description": "The DHA-9 form collects your personal information, including full names, date of birth, and parents' details. A Home Affairs officer will help you complete it.",
+          "tips": ["Double-check spellings match your birth certificate exactly", "Your surname must match your birth certificate"],
+          "documents_needed": ["Completed DHA-9 form (provided at office)"]
+        },
+        {
+          "step_number": 4,
+          "title": "Have Biometrics Captured",
+          "description": "Your fingerprints, photograph, and signature will be captured digitally at the Home Affairs office. This creates your unique ID record.",
+          "tips": ["Remove any henna or temporary tattoos from fingers", "Wear a dark top for the photo"],
+          "documents_needed": ["No additional documents"]
+        },
+        {
+          "step_number": 5,
+          "title": "Receive Acknowledgement and Wait",
+          "description": "You'll receive an acknowledgement slip with a reference number. Processing takes 4-8 weeks. Track your application online or via SMS using your ID number.",
+          "tips": ["Keep your acknowledgement slip safe", "You can collect your ID at the same office or request collection at a bank branch"],
+          "documents_needed": ["Acknowledgement slip"]
+        }
+      ],
+      "required_documents": ["Unabridged birth certificate", "Parents' ID copies (if under 18)", "Proof of residence (not older than 3 months)", "Two passport-sized photographs (though digital photo is taken)"],
+      "forms": [{"form_name": "DHA-9 (Application for Identity Document)", "where_to_get": "Available at all Home Affairs offices or downloadable from www.dha.gov.za", "notes": "Must be completed in black ink at the Home Affairs office"}],
+      "contacts": [{"organization": "Department of Home Affairs", "phone": "0800 60 11 90", "email": "csc@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Bank branches offering Home Affairs services (FNB, Standard Bank, Nedbank, Absa in select branches). Online booking via eHomeAffairs portal.",
+      "common_mistakes": ["Not bringing unabridged birth certificate", "Spelling differences between documents", "Not making copies of supporting documents", "Applying too close to needing the ID (plan ahead 2 months)"],
+      "timeline": "4-8 weeks from application to collection. Rush services available for medical emergencies.",
+      "faq": [
+        {"question": "Can I apply for my ID at any age?", "answer": "You must be 16 or older to apply for an ID. It becomes mandatory at 16."},
+        {"question": "What if I lost my birth certificate?", "answer": "You'll need to apply for a birth certificate first at Home Affairs. If registered, you can get a reprint for R75."},
+        {"question": "Can I track my ID application?", "answer": "Yes, SMS your ID number to 32551 (R1.50 per SMS) or check online at www.dha.gov.za"}
+      ]
+    },
+    {
+      "id": "sa-id-renewal",
+      "title": "Renewing Your South African ID",
+      "category": "Identity",
+      "subcategory": "Identification Documents",
+      "eligibility": ["South African citizens with expired or damaged IDs", "Lost or stolen ID replacement", "Name change after marriage"],
+      "time_to_complete": "4-6 weeks",
+      "cost": "R140 for replacement (lost/damaged), Free for expired renewal",
+      "difficulty": "Easy",
+      "overview": "IDs expire every 10 years or need replacement if damaged or lost. You must renew in person at Home Affairs. You need your old ID (if available) and proof of residence. Affidavit required for lost IDs.",
+      "steps": [
+        {"step_number": 1, "title": "Determine Your Situation", "description": "Check if your ID is expired (10-year validity), damaged, lost, or you need a name change. Different processes apply. Lost IDs require police affidavit. Marriage name changes need marriage certificate.", "tips": ["Check the expiration date on your current ID", "Report lost ID to police first if stolen"], "documents_needed": ["Old/expired ID (if available)", "Marriage certificate (if name change)", "Police affidavit (if lost/stolen)"]},
+        {"step_number": 2, "title": "Visit Home Affairs Office", "description": "Go to any Home Affairs office with your documents. Use eHomeAffairs for online booking to save time. Bank branches (FNB, Standard Bank, Nedbank) also offer renewal services.", "tips": ["Book appointment online via ehome.dha.gov.za", "Bank branches are faster and less crowded"], "documents_needed": ["Old ID", "Two passport photos (if not using digital capture)", "Proof of residence"]},
+        {"step_number": 3, "title": "Complete Renewal Application", "description": "Fill out the ID renewal form. Provide reason for renewal (expired/damaged/lost). Pay the applicable fee. Biometrics will be recaptured.", "tips": ["Bring exact cash as some offices don't have card facilities", "Lost IDs cost R140, expired renewals are free"], "documents_needed": ["Completed renewal form"]},
+        {"step_number": 4, "title": "Collect Your New ID", "description": "Processing takes 4-6 weeks. You'll receive SMS notification when ready. Collect in person with your acknowledgement slip. No one else can collect on your behalf.", "tips": ["Keep the SMS notification", "You must collect within 90 days or application is cancelled"], "documents_needed": ["Acknowledgement slip", "Old ID (will be cancelled)"]}
+      ],
+      "required_documents": ["Current/expired ID card (if available)", "Police affidavit (if lost/stolen)", "Marriage certificate (if name change)", "Proof of residence", "R140 for lost/damaged replacement"],
+      "forms": [{"form_name": "DHA-9 (Application for Identity Document)", "where_to_get": "Home Affairs office or www.dha.gov.za", "notes": "Same form used for first-time applications"}],
+      "contacts": [{"organization": "Department of Home Affairs", "phone": "0800 60 11 90", "email": "csc@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Online booking via eHomeAffairs portal. Renewal at partner banks (FNB, Standard Bank, Nedbank, Absa).",
+      "common_mistakes": ["Not reporting lost ID to police before applying", "Waiting until ID has already expired to renew", "Not bringing marriage certificate for name changes", "Forgetting to collect within 90 days"],
+      "timeline": "4-6 weeks standard processing. Emergency temporary ID certificate available same day for R140.",
+      "faq": [
+        {"question": "Can I renew my ID before it expires?", "answer": "Yes, you can renew up to 6 months before expiration."},
+        {"question": "What if I'm overseas when my ID expires?", "answer": "Visit the nearest South African embassy or consulate. They can process renewals abroad."},
+        {"question": "Can someone else collect my new ID?", "answer": "No, you must collect in person for biometric verification."}
+      ]
+    },
+    {
+      "id": "passport-first-time",
+      "title": "Getting a South African Passport (First Time)",
+      "category": "Identity",
+      "subcategory": "Travel Documents",
+      "eligibility": ["South African citizens with valid ID number", "All ages (separate application for minors under 16)", "Must have South African ID"],
+      "time_to_complete": "2-3 weeks (standard), 5-7 days (express)",
+      "cost": "R600 (standard adult passport), R400 (child passport)",
+      "difficulty": "Medium",
+      "overview": "A South African passport allows international travel. First-time applications must be made in person at Home Affairs or authorized bank branches. You cannot apply online. Minors need parental consent and additional documents.",
+      "steps": [
+        {"step_number": 1, "title": "Determine Passport Type", "description": "Choose between tourist passport (32 pages, R600) or maxi passport (48 pages, R1200) for frequent travelers. Children under 16 get child passport (R400). Official and diplomatic passports available for government officials.", "tips": ["Frequent travelers should get maxi passport", "Child passports are valid for 5 years vs 10 for adults"], "documents_needed": ["South African ID"]},
+        {"step_number": 2, "title": "Gather Required Documents", "description": "Collect your ID, passport photos (though digital is taken at office), proof of residence, and payment. If married and using spouse's surname, bring marriage certificate.", "tips": ["Photos are taken digitally at Home Affairs, no need for printed photos", "Bring ID copy as backup"], "documents_needed": ["Original ID", "Proof of residence", "Marriage certificate (if applicable)", "Payment method"]},
+        {"step_number": 3, "title": "Complete Application Form DHA-73", "description": "Form DHA-73 is the passport application. Complete at Home Affairs office or bank branch. Provide travel history and emergency contact. Signature must match ID.", "tips": ["Use black ink only", "Emergency contact should be someone not traveling with you"], "documents_needed": ["Completed DHA-73 form"]},
+        {"step_number": 4, "title": "Submit Biometrics and Pay", "description": "Have photo and fingerprints captured digitally. Pay the fee (card or cash). Receive acknowledgement slip with reference number for tracking.", "tips": ["No smiling in passport photo", "Remove glasses and head coverings (religious exceptions apply)"], "documents_needed": ["Payment R600 or R1200"]},
+        {"step_number": 5, "title": "Track and Collect Passport", "description": "Track application via SMS or online. SMS 'P' + your ID number to 32551. Collect within 90 days with acknowledgement slip and ID.", "tips": ["Standard processing: 2-3 weeks", "Express service available at select offices for R1200 extra"], "documents_needed": ["Acknowledgement slip", "ID"]}
+      ],
+      "required_documents": ["Original green ID book or smart ID card", "Proof of residence", "Marriage certificate (if surname differs from ID)", "R600 for standard adult passport", "Parental consent letter (if under 18)"],
+      "forms": [{"form_name": "DHA-73 (Application for South African Passport)", "where_to_get": "Home Affairs offices or www.dha.gov.za", "notes": "Must be completed in person, not downloadable"}],
+      "contacts": [{"organization": "Department of Home Affairs - Passport Services", "phone": "0800 60 11 90", "email": "passports@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Apply at partner banks (FNB, Standard Bank, Nedbank, Absa) for faster service. No online-only applications.",
+      "common_mistakes": ["Applying without a valid ID", "Not checking passport validity before booking international travel", "Signing differently from ID signature", "Applying too close to travel date"],
+      "timeline": "Standard: 2-3 weeks. Express: 5-7 working days. Emergency: 24 hours at select offices with proof of emergency.",
+      "faq": [
+        {"question": "Can I apply for a passport without an ID?", "answer": "No, you must have a valid South African ID. Apply for ID first if you don't have one."},
+        {"question": "How long is a passport valid?", "answer": "Adult passports: 10 years. Child passports (under 16): 5 years. Cannot be renewed, must reapply."},
+        {"question": "Can I use my passport as ID?", "answer": "Yes, a valid South African passport is accepted as identification in most situations."}
+      ]
+    },
+    {
+      "id": "passport-renewal",
+      "title": "Renewing Your South African Passport",
+      "category": "Identity",
+      "subcategory": "Travel Documents",
+      "eligibility": ["South African citizens with expired or expiring passport", "Passport must have been issued when 16 or older", "No name changes since last passport"],
+      "time_to_complete": "2-3 weeks",
+      "cost": "R600 (standard), R1200 (maxi)",
+      "difficulty": "Easy",
+      "overview": "Passports cannot be 'renewed' — you must reapply. Same process as first-time application but simpler since your details are in the system. Apply at Home Affairs or partner banks. Same fees as first passport.",
+      "steps": [
+        {"step_number": 1, "title": "Check Passport Expiry", "description": "Many countries require 6 months validity beyond travel dates. Check your passport expiry and apply well before international travel. Some countries also require 2 blank pages.", "tips": ["Apply at least 3 months before travel", "Check entry requirements for destination country"], "documents_needed": ["Current/expired passport"]},
+        {"step_number": 2, "title": "Visit Home Affairs or Partner Bank", "description": "Go to any Home Affairs office or partner bank branch. Bring current passport and ID. Book online via eHomeAffairs for priority service.", "tips": ["Partner banks often faster than Home Affairs offices", "You can use a different Home Affairs office than where you applied originally"], "documents_needed": ["Current/expired passport", "South African ID", "Proof of residence"]},
+        {"step_number": 3, "title": "Complete Application and Pay", "description": "Fill out DHA-73 form. Your existing details will be pre-populated. Pay R600 (32 pages) or R1200 (48 pages). Biometrics recaptured.", "tips": ["Check all pre-populated information for accuracy", "Old passport will be cancelled when new one issued"], "documents_needed": ["Payment R600 or R1200"]},
+        {"step_number": 4, "title": "Collect New Passport", "description": "Processing takes 2-3 weeks. Track via SMS. Collect in person with old passport and acknowledgement slip. Old passport will be punched/clipped.", "tips": ["Keep old passport if it has valid visas", "Valid visas in old passport remain valid with new passport"], "documents_needed": ["Old passport", "Acknowledgement slip", "ID"]}
+      ],
+      "required_documents": ["Current/expired South African passport", "South African ID", "Proof of residence", "R600 for standard passport"],
+      "forms": [{"form_name": "DHA-73 (Application for South African Passport)", "where_to_get": "Home Affairs offices or partner banks", "notes": "Same form as first-time application"}],
+      "contacts": [{"organization": "Department of Home Affairs", "phone": "0800 60 11 90", "email": "csc@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Partner banks: FNB, Standard Bank, Nedbank, Absa. Some Discovery Bank branches. Online booking via eHomeAffairs.",
+      "common_mistakes": ["Waiting until passport has already expired", "Not checking visa requirements for destination", "Not having enough blank pages for visas", "Not checking 6-month validity rule"],
+      "timeline": "2-3 weeks standard. Express service available for R1200 extra (5-7 days). Emergency: 24 hours with proof.",
+      "faq": [
+        {"question": "What happens to visas in my old passport?", "answer": "Valid visas in your old passport remain valid. Carry both old and new passports when traveling."},
+        {"question": "Can I renew if my passport is still valid?", "answer": "Yes, you can reapply at any time. Old passport will be cancelled."},
+        {"question": "Do I need a new passport for a name change?", "answer": "Yes, you must apply for a new passport after marriage or legal name change."}
+      ]
+    },
+    {
+      "id": "birth-certificate",
+      "title": "Getting a Birth Certificate",
+      "category": "Identity",
+      "subcategory": "Vital Documents",
+      "eligibility": ["Anyone born in South Africa", "South African citizens born abroad", "Parents applying for children under 18"],
+      "time_to_complete": "Same day to 6 weeks (unabridged)",
+      "cost": "Free (first issue), R75 (reprint)",
+      "difficulty": "Easy",
+      "overview": "Birth certificates are essential for IDs, passports, and school registration. There are two types: abridged (computer printout) and unabridged (full details including parents). Unabridged certificates take longer but are needed for most official purposes.",
+      "steps": [
+        {"step_number": 1, "title": "Determine Type of Birth Certificate Needed", "description": "Abridged certificate is a computer printout showing basic details. Unabridged certificate includes both parents' details and is required for passports, IDs, and international travel. Get unabridged if possible.", "tips": ["Always request unabridged for children's future needs", "Abridged certificates often rejected for official purposes"], "documents_needed": ["Parents' ID copies", "Hospital birth record (if available)"]},
+        {"step_number": 2, "title": "Visit Home Affairs Office", "description": "Go to any Home Affairs office. If child was registered at birth, the system should have the record. If not registered, you'll need additional proof of birth.", "tips": ["Check if your birth was registered first - SMS ID number to 32551", "Home Affairs can check their system if you're unsure"], "documents_needed": ["Parents' IDs", "Child's ID number (if known)", "Hospital card or clinic card"]},
+        {"step_number": 3, "title": "Complete Application Form DHA-24", "description": "Fill out application for birth certificate. Provide child's ID number, date of birth, and parents' details. If not registered, you'll need to do late registration of birth.", "tips": ["Late registration (after 30 days) requires additional documentation", "You may need witnesses for late registration"], "documents_needed": ["Completed DHA-24 form"]},
+        {"step_number": 4, "title": "Pay and Collect", "description": "First issue is free. Reprint costs R75. Abridged certificates often available same day. Unabridged certificates take 4-6 weeks as they require manual verification.", "tips": ["Unabridged certificates are sent to the office for collection", "Keep the certificate safe - it's needed throughout life"], "documents_needed": ["R75 for reprint (if applicable)"]}
+      ],
+      "required_documents": ["Parents' ID copies", "Child's ID number (if issued)", "Hospital/clinic birth record", "R75 for reprint (free for first issue)"],
+      "forms": [{"form_name": "DHA-24 (Application for Birth Certificate)", "where_to_get": "Home Affairs offices or www.dha.gov.za", "notes": "Different form for late registration (DHA-24/LR)"}],
+      "contacts": [{"organization": "Department of Home Affairs - Birth Registration", "phone": "0800 60 11 90", "email": "csc@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Hospitals and clinics can register births within 30 days of birth. Some private hospitals offer birth registration services.",
+      "common_mistakes": ["Not registering birth within 30 days (free period)", "Getting abridged when unabridged is needed", "Spelling errors on hospital record carried to birth certificate", "Not keeping birth certificate in a safe place"],
+      "timeline": "Abridged: Same day at Home Affairs office. Unabridged: 4-6 weeks. Late registration: 6-8 weeks.",
+      "faq": [
+        {"question": "What's the difference between abridged and unabridged?", "answer": "Abridged shows basic details (name, DOB, ID number). Unabridged includes both parents' full details and is required for passports, IDs, and international travel."},
+        {"question": "How do I register a birth that happened more than 30 days ago?", "answer": "You'll need to do late registration. Bring proof of birth (hospital records, clinic card, witnesses) and both parents' IDs."},
+        {"question": "Can I get a birth certificate for someone who has died?", "answer": "Yes, next of kin can request a birth certificate with proof of relationship and death certificate."}
+      ]
+    },
+    {
+      "id": "drivers-license-application",
+      "title": "Applying for a Driver's License (First Time)",
+      "category": "Identity",
+      "subcategory": "Driving Documents",
+      "eligibility": ["South African residents aged 18 or older", "Must hold valid learner's license", "Must pass practical driving test"],
+      "time_to_complete": "3-6 months (including learner's and driving test)",
+      "cost": "R300-R500 total (learner's: R68, driving test: R240, license card: R140)",
+      "difficulty": "Hard",
+      "overview": "Getting your driver's license is a two-step process: first obtain a learner's license (written test), then pass a practical driving test. You need an ID, photos, and medical certificate. The process takes 3-6 months depending on test availability.",
+      "steps": [
+        {"step_number": 1, "title": "Get Your Learner's License", "description": "Book at your nearest Driving License Testing Centre (DLTC). Study the K53 manual (available at bookstores). Pass the written test on road rules, signs, and vehicle controls. Test fee: R68.", "tips": ["Study the K53 manual thoroughly - the test is challenging", "Many people fail the first attempt, consider driving school", "Learner's license valid for 24 months"], "documents_needed": ["ID document", "Two passport photos", "Proof of residence", "R68 booking fee"]},
+        {"step_number": 2, "title": "Learn to Drive", "description": "With your learner's license, you can drive when accompanied by a licensed driver. Practice regularly. Consider professional driving lessons (R150-R300 per lesson). Master parallel parking, hill starts, and observation checks.", "tips": ["Professional lessons help learn test routes", "Practice in the area around your testing centre", "You must have learner's license for at least 3 months before driving test"], "documents_needed": ["Valid learner's license"]},
+        {"step_number": 3, "title": "Book Your Driving Test", "description": "Visit your DLTC to book a driving test slot. Slots fill quickly, book 2-3 months ahead. You'll need to specify manual or automatic transmission. Fee: R240.", "tips": ["Book at less busy testing centres in smaller towns", "Morning slots often have less pressure than afternoon"], "documents_needed": ["Valid learner's license", "ID", "R240 test fee"]},
+        {"step_number": 4, "title": "Pass the Practical Driving Test", "description": "Test includes yard test (parking, hill start, reversing) and road test. Examiner checks observation, control, and road rules compliance. Test lasts about 30 minutes.", "tips": ["Exaggerate head movements so examiner sees you checking mirrors", "Arrive early and ensure your test vehicle is roadworthy", "If you fail, you can rebook after 2 weeks"], "documents_needed": ["Learner's license", "ID", "Roadworthy vehicle"]},
+        {"step_number": 5, "title": "Get Your Driver's License Card", "description": "After passing, your details are processed. Pay R140 for the license card. Receive temporary license valid for 6 months. Collect permanent card when notified (4-6 weeks).", "tips": ["Temporary license is valid for 6 months", "Keep your test pass slip as proof", "License card must be collected in person"], "documents_needed": ["R140 card fee", "Pass slip"]}
+      ],
+      "required_documents": ["Valid South African ID", "Two passport-sized photographs", "Proof of residence", "Medical certificate (if over 65 or medical condition)", "Valid learner's license", "Total fees: approximately R450-R500"],
+      "forms": [
+        {"form_name": "DL1 (Application for Learner's License)", "where_to_get": "Driving License Testing Centre (DLTC)", "notes": "Complete in black ink at DLTC"},
+        {"form_name": "DL25 (Application for Driving License)", "where_to_get": "DLTC", "notes": "Complete after passing driving test"}
+      ],
+      "contacts": [{"organization": "Road Traffic Management Corporation (RTMC)", "phone": "0861 400 800", "email": "info@rtmc.co.za", "website": "https://www.rtmc.co.za", "hours": "Monday to Friday, 8am-4pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Some driving schools can book tests on your behalf. Online booking available in Gauteng (online.natis.gov.za).",
+      "common_mistakes": ["Not studying the K53 manual thoroughly for learner's test", "Forgetting observation checks during driving test", "Booking at a busy testing centre with long waiting lists", "Not ensuring test vehicle is roadworthy"],
+      "timeline": "Learner's test: 1-2 weeks after booking. Driving test: 2-3 months wait. License card: 4-6 weeks after passing. Total: 3-6 months.",
+      "faq": [
+        {"question": "Can I drive alone with a learner's license?", "answer": "No, you must be accompanied by a licensed driver at all times."},
+        {"question": "How many times can I fail the driving test?", "answer": "No limit, but you must wait 2 weeks between attempts and pay each time."},
+        {"question": "Can I convert a foreign driver's license to South African?", "answer": "Yes, if from certain countries with reciprocal agreements. Others must take the full test."}
+      ]
+    },
+    {
+      "id": "drivers-license-renewal",
+      "title": "Renewing Your Driver's License",
+      "category": "Identity",
+      "subcategory": "Driving Documents",
+      "eligibility": ["Holders of valid or recently expired South African driver's license", "Must renew before expiry (can renew 1 month before)", "Must be under 70 (over 70s have different requirements)"],
+      "time_to_complete": "4-8 weeks for card, temporary license same day",
+      "cost": "R140 for renewal card",
+      "difficulty": "Easy",
+      "overview": "Driver's licenses must be renewed every 5 years. You can renew up to 1 month before expiry. Visit a Driving License Testing Centre (DLTC) with your ID, photos, and current license. You'll get a temporary license same day.",
+      "steps": [
+        {"step_number": 1, "title": "Check Renewal Date", "description": "Check the expiry date on your license card. You can renew up to 1 month before expiry. If expired, renew immediately - you may face fines for driving with an expired license.", "tips": ["Set a calendar reminder 2 months before expiry", "Driving with expired license can result in fines up to R1,500"], "documents_needed": ["Current driver's license card"]},
+        {"step_number": 2, "title": "Visit Your Nearest DLTC", "description": "Go to any Driving License Testing Centre. Some post offices and banks now offer renewal services. Bring your ID, photos, and current license. Complete renewal form DL1.", "tips": ["Use the NATIS online system to book appointment in some provinces", "Avoid month-end and Monday mornings when queues are longest"], "documents_needed": ["ID document", "Current driver's license", "Two passport photos", "Proof of residence"]},
+        {"step_number": 3, "title": "Complete Eye Test", "description": "You must pass an eye test at the DLTC (included in fee). If you wear glasses, bring them. If you fail, you'll be referred to an optometrist for a full test.", "tips": ["Bring your glasses or contact lenses", "If you have eye problems, get an optometrist report beforehand"], "documents_needed": ["Glasses/contacts (if needed)"]},
+        {"step_number": 4, "title": "Pay and Receive Temporary License", "description": "Pay R140 for renewal. You'll receive a temporary license valid for 6 months. Your fingerprints will be captured. The permanent card takes 4-8 weeks.", "tips": ["Temporary license is valid immediately", "Keep temporary license with you at all times when driving"], "documents_needed": ["R140 payment"]},
+        {"step_number": 5, "title": "Collect Permanent License Card", "description": "You'll receive SMS when card is ready. Collect from same DLTC with your temporary license and ID. Must be collected in person.", "tips": ["Cards not collected within 90 days may be destroyed", "You can check status online at online.natis.gov.za"], "documents_needed": ["Temporary license", "ID"]}
+      ],
+      "required_documents": ["Current/expired driver's license card", "South African ID", "Two passport-sized photographs", "Proof of residence (utility bill or letter)", "R140 renewal fee"],
+      "forms": [{"form_name": "DL1 (Application for Driving License Renewal)", "where_to_get": "DLTC or downloadable from www.natis.gov.za", "notes": "Same form used for learner's license applications"}],
+      "contacts": [{"organization": "NATIS (National Traffic Information System)", "phone": "0861 400 800", "email": "support@natis.gov.za", "website": "https://online.natis.gov.za", "hours": "Monday to Friday, 8am-4pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Some post offices offer renewal services. Gauteng and Western Cape have online booking. No fully online renewal yet.",
+      "common_mistakes": ["Waiting until license has expired to renew", "Forgetting to bring glasses for eye test", "Not updating address if moved", "Losing temporary license before collecting permanent card"],
+      "timeline": "Same day for temporary license. 4-8 weeks for permanent card. May be longer in rural areas.",
+      "faq": [
+        {"question": "Can I renew at any DLTC or only where I originally applied?", "answer": "You can renew at any DLTC in South Africa, regardless of where you originally applied."},
+        {"question": "What if I'm overseas when my license expires?", "answer": "Unfortunately, you must renew in person in South Africa. There's no overseas renewal option."},
+        {"question": "Is there a grace period after license expires?", "answer": "No grace period. You're driving illegally as soon as license expires."}
+      ]
+    },
+    {
+      "id": "marriage-certificate",
+      "title": "Getting a Marriage Certificate",
+      "category": "Identity",
+      "subcategory": "Vital Documents",
+      "eligibility": ["Legally married persons in South Africa", "Marriage must be registered with Home Affairs", "Civil, customary, or civil union marriages"],
+      "time_to_complete": "Same day (abridged), 4-6 weeks (unabridged)",
+      "cost": "Free at time of marriage, R75 for reprint",
+      "difficulty": "Easy",
+      "overview": "Marriage certificates are issued when you get married and the marriage is registered with Home Affairs. You get an abridged certificate free. Unabridged certificates (with full details) are available upon request for international use.",
+      "steps": [
+        {"step_number": 1, "title": "Register Your Marriage", "description": "After the ceremony, your marriage officer must register the marriage with Home Affairs within 30 days. Ensure the marriage register is signed by both spouses, two witnesses, and the marriage officer.", "tips": ["Double-check all spellings on the marriage register before signing", "Make sure the marriage officer is registered with Home Affairs"], "documents_needed": ["Both spouses' IDs", "Marriage register signed by all parties"]},
+        {"step_number": 2, "title": "Receive Abridged Certificate", "description": "At the marriage ceremony, you should receive an abridged marriage certificate (handwritten or printed). This shows basic details: names, date, and place of marriage.", "tips": ["This certificate is free", "It's valid for most purposes within South Africa"], "documents_needed": ["No additional documents at ceremony"]},
+        {"step_number": 3, "title": "Request Unabridged Certificate (If Needed)", "description": "For international use or if both parents' details are needed, request an unabridged marriage certificate. Visit Home Affairs with your abridged certificate and IDs.", "tips": ["Needed for international travel and foreign visas", "Shows full details of both spouses including parents"], "documents_needed": ["Abridged marriage certificate", "Both spouses' IDs", "R75 fee"]},
+        {"step_number": 4, "title": "Collect or Replace Lost Certificates", "description": "If you lost your marriage certificate, you can request a reprint at any Home Affairs office. Provide both spouses' ID numbers. Fee: R75. Processing takes 2-4 weeks.", "tips": ["You'll need your ID number and spouse's ID number", "If divorced, bring divorce decree"], "documents_needed": ["Both ID numbers", "R75"]}
+      ],
+      "required_documents": ["Both spouses' IDs (at time of marriage)", "Marriage register (completed by marriage officer)", "R75 for reprint or unabridged certificate"],
+      "forms": [
+        {"form_name": "DHA-30 (Marriage Register)", "where_to_get": "Marriage officer (priest, magistrate, Home Affairs official)", "notes": "Completed at time of marriage ceremony"},
+        {"form_name": "DHA-130 (Application for Marriage Certificate Reprint)", "where_to_get": "Home Affairs offices", "notes": "For reprints and unabridged certificates"}
+      ],
+      "contacts": [{"organization": "Department of Home Affairs - Marriage Services", "phone": "0800 60 11 90", "email": "csc@dha.gov.za", "website": "https://www.dha.gov.za", "hours": "Monday to Friday, 8am-3:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Marriages can be registered at Home Affairs offices, churches, or by registered marriage officers at venues.",
+      "common_mistakes": ["Not checking that marriage officer is registered with Home Affairs", "Spelling errors on marriage register", "Not requesting unabridged certificate for international use", "Losing the original certificate without keeping copies"],
+      "timeline": "Abridged: Issued at ceremony. Unabridged: 4-6 weeks. Reprint: 2-4 weeks.",
+      "faq": [
+        {"question": "What types of marriages are recognized in South Africa?", "answer": "Civil marriages, customary marriages, and civil unions are all legally recognized."},
+        {"question": "How do I change my surname after marriage?", "answer": "You can use your marriage certificate to change your surname on ID, passport, and other documents at Home Affairs."},
+        {"question": "Is a lobola agreement the same as a marriage certificate?", "answer": "No. Lobola is a traditional practice but you must also register your customary marriage with Home Affairs for it to be legally recognized."}
+      ]
+    },
+    {
+      "id": "nsfas-application",
+      "title": "Applying for NSFAS Student Funding",
+      "category": "Finance",
+      "subcategory": "Education Funding",
+      "eligibility": ["South African citizens", "Household income under R350,000 per year", "Accepted at public university or TVET college", "SASSA grant recipients automatically qualify"],
+      "time_to_complete": "2-4 weeks for application, funding confirmed before academic year",
+      "cost": "Free to apply",
+      "difficulty": "Medium",
+      "overview": "NSFAS (National Student Financial Aid Scheme) provides funding for poor and working-class students at public universities and TVET colleges. It covers tuition, accommodation, food, and books. Apply online during the annual application window (usually September-November).",
+      "steps": [
+        {"step_number": 1, "title": "Check Your Eligibility", "description": "Your combined household income must be under R350,000 per year (R600,000 for students with disabilities). SASSA grant recipients automatically qualify financially. You must be accepted or registered at a public institution.", "tips": ["Check the NSFAS website for exact income thresholds each year", "Postgraduate students have different funding requirements"], "documents_needed": ["ID number", "Household income information"]},
+        {"step_number": 2, "title": "Create MyNSFAS Account", "description": "Go to www.nsfas.org.za and create a MyNSFAS account. You need an email address and phone number. Verify your account via the link sent to your email or SMS.", "tips": ["Use a personal email you check regularly", "Keep your login details safe - you'll need them throughout your studies"], "documents_needed": ["Email address", "Cell phone number"]},
+        {"step_number": 3, "title": "Complete the Online Application", "description": "Log into MyNSFAS and complete the application form. Provide personal details, household information, and institution choices. Upload all required supporting documents.", "tips": ["Apply early in the application window to avoid last-minute system issues", "Double-check all information before submitting", "Keep digital copies of all documents"], "documents_needed": ["Certified ID copy", "Parents/guardians' ID copies", "Proof of household income (payslips or affidavits)", "Matric certificate or latest results", "Proof of acceptance at institution"]},
+        {"step_number": 4, "title": "Submit and Track Your Application", "description": "Submit your completed application. You'll receive a reference number. Track your application status on MyNSFAS. NSFAS may contact you for additional information.", "tips": ["Save your reference number - you'll need it for all inquiries", "Check your MyNSFAS account regularly for updates", "Respond quickly to any requests for more information"], "documents_needed": ["Reference number"]},
+        {"step_number": 5, "title": "Accept Funding and Sign Agreement", "description": "If approved, you'll receive a funding offer. Accept online via MyNSFAS. Sign the NSFAS Bursary Agreement (NBA). Your institution will confirm registration and funds will be disbursed.", "tips": ["Read the agreement carefully - it outlines your obligations", "NSFAS funding is a bursary, not a loan (no repayment if you graduate)", "Funds are paid directly to your institution"], "documents_needed": ["Signed NSFAS Bursary Agreement"]}
+      ],
+      "required_documents": ["Certified copy of your ID (not older than 3 months)", "Parents/guardians' certified ID copies", "Proof of household income (latest payslips or affidavits if unemployed)", "Matric certificate or statement of results", "Proof of acceptance/registration at public institution", "SASSA grant letter (if applicable)", "Disability medical form (if applying with disability)"],
+      "forms": [
+        {"form_name": "NSFAS Online Application Form", "where_to_get": "www.nsfas.org.za", "notes": "Only available during application window (usually September-November)"},
+        {"form_name": "NSFAS Bursary Agreement", "where_to_get": "Sent via MyNSFAS after approval", "notes": "Must be signed within 30 days of receiving offer"}
+      ],
+      "contacts": [{"organization": "NSFAS Contact Centre", "phone": "0800 067 327", "email": "info@nsfas.org.za", "website": "https://www.nsfas.org.za", "hours": "Monday to Friday, 8am-5pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Applications only via MyNSFAS online portal. No paper applications accepted. Some institutions have NSFAS offices that can assist.",
+      "common_mistakes": ["Applying outside the application window", "Uploading uncertified or expired documents", "Not updating contact details on MyNSFAS", "Providing incorrect household income information", "Missing the deadline for accepting funding offers"],
+      "timeline": "Applications: September-November. Results: January-February. Funding disbursed: February-March.",
+      "faq": [
+        {"question": "Do I have to pay back NSFAS?", "answer": "NSFAS is a bursary. You don't repay if you graduate. If you drop out, you may need to repay some funding."},
+        {"question": "Can I apply if I'm already studying?", "answer": "Yes, current students can apply if they meet the financial eligibility criteria."},
+        {"question": "What does NSFAS cover?", "answer": "Tuition fees, accommodation, food allowance, transport, and learning materials (books)."}
+      ]
+    },
+    {
+      "id": "sassa-grant-application",
+      "title": "Applying for SASSA Social Grants",
+      "category": "Finance",
+      "subcategory": "Social Welfare",
+      "eligibility": ["South African citizens or permanent residents", "Means test applies (income and assets limits)", "Specific age/disability/care requirements per grant type"],
+      "time_to_complete": "1-3 months for approval",
+      "cost": "Free",
+      "difficulty": "Medium",
+      "overview": "SASSA provides social grants to vulnerable South Africans: Child Support Grant (R510/month), Old Age Grant (R2,080/month), Disability Grant (R2,080/month), Foster Child Grant (R1,120/month), and others. Apply at SASSA offices with required documents.",
+      "steps": [
+        {"step_number": 1, "title": "Determine Which Grant You Qualify For", "description": "Check eligibility requirements: Child Support (primary caregiver of child under 18, income under R52,800 single/R105,600 married); Old Age (60+, income under R86,280/R172,560); Disability (medical assessment required); Foster Care (court order required).", "tips": ["You can apply for multiple grants if you qualify", "Check income thresholds as they change annually"], "documents_needed": ["ID document"]},
+        {"step_number": 2, "title": "Gather Required Documents", "description": "Collect all required documents. For Child Support: child's birth certificate, your ID, proof of income. For Old Age: ID, proof of residence, bank statements. For Disability: medical report from government doctor.", "tips": ["Get SASSA medical assessment form before going to doctor", "Make copies of everything before submitting"], "documents_needed": ["Your ID document", "Child's birth certificate (for child grants)", "Proof of income (payslips, bank statements, affidavits)", "Proof of residence", "Medical report (for disability grant)", "Marriage certificate (if applicable)"]},
+        {"step_number": 3, "title": "Visit Your Nearest SASSA Office", "description": "Go to your nearest SASSA office. Complete the application form with the help of a SASSA officer. Submit all documents. You'll be interviewed about your circumstances.", "tips": ["Arrive early to avoid long queues", "Bring a pen and your documents organized", "Ask for a receipt/acknowledgement of your application"], "documents_needed": ["All documents from Step 2"]},
+        {"step_number": 4, "title": "Undergo Verification and Assessment", "description": "SASSA will verify your information with other government databases. A home visit may be conducted. For disability grants, a medical assessment will be scheduled at a government clinic.", "tips": ["Keep your phone on for SASSA calls", "Be honest during home visits", "The process takes 1-3 months"], "documents_needed": ["Application reference number"]},
+        {"step_number": 5, "title": "Receive Grant Payment", "description": "If approved, you'll receive an SMS. Grants are paid monthly via bank account, SASSA card, or cash at pay points. First payment includes back pay from date of application.", "tips": ["SASSA card can be used at ATMs and shops", "Protect your PIN - never share it", "Grants must be reviewed periodically"], "documents_needed": ["ID", "SASSA card or bank card"]}
+      ],
+      "required_documents": ["South African ID document", "Child's birth certificate (for child grants)", "Proof of income (last 3 months payslips or bank statements)", "Proof of residence (utility bill or letter from councillor)", "Medical report from government doctor (for disability grant)", "Court order (for foster child grant)", "Marriage certificate (if applicable)", "Spouse's ID (if married)"],
+      "forms": [
+        {"form_name": "SASSA Grant Application Form", "where_to_get": "SASSA offices or downloadable from www.sassa.gov.za", "notes": "Must be completed at SASSA office with officer assistance"},
+        {"form_name": "Medical Assessment Form (for Disability Grant)", "where_to_get": "SASSA office or government clinic", "notes": "Must be completed by a government doctor"}
+      ],
+      "contacts": [{"organization": "SASSA National Call Centre", "phone": "0800 60 10 11", "email": "grantenquiries@sassa.gov.za", "website": "https://www.sassa.gov.za", "hours": "Monday to Friday, 8am-4pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "No online applications currently. Must apply in person at SASSA office. Home visits arranged for bedridden applicants.",
+      "common_mistakes": ["Not declaring all income sources", "Applying at the wrong office (Home Affairs vs SASSA)", "Not bringing certified copies of documents", "Not following up on application status", "Losing SASSA card PIN"],
+      "timeline": "1-3 months from application to first payment. Disability grants may take longer due to medical assessments.",
+      "faq": [
+        {"question": "How much is the Child Support Grant in 2026?", "answer": "R510 per month per child (as of April 2026, subject to annual increases)."},
+        {"question": "Can I get both Old Age Grant and Disability Grant?", "answer": "No, you can only receive one social grant at a time (except Child Support and Foster Care can be combined)."},
+        {"question": "What happens if my application is rejected?", "answer": "You can appeal within 90 days. Visit any SASSA office to submit an appeal or call the SASSA helpline for assistance."}
+      ]
+    },
+    {
+      "id": "uif-claim",
+      "title": "Claiming UIF (Unemployment Insurance Fund)",
+      "category": "Finance",
+      "subcategory": "Employment Benefits",
+      "eligibility": ["Registered UIF contributors who have lost employment", "Must have contributed to UIF for at least 13 weeks", "Not dismissed for misconduct or resigned voluntarily", "Must register as work-seeker"],
+      "time_to_complete": "4-8 weeks for first payment",
+      "cost": "Free (contributions made while employed)",
+      "difficulty": "Medium",
+      "overview": "UIF provides temporary financial relief to workers who lose their jobs. You can claim up to 38-65% of your salary for up to 12 months. Apply within 6 months of losing your job. Claims can be made online or at Department of Employment and Labour offices.",
+      "steps": [
+        {"step_number": 1, "title": "Confirm Your Eligibility", "description": "You must have been contributing to UIF (1% of salary deducted by employer). You need at least 13 weeks of contributions in the last 4 years. Dismissal must be retrenchment or end of contract (not misconduct or resignation).", "tips": ["Check your UIF contributions on your payslip", "If employer didn't register you, report to Department of Labour"], "documents_needed": ["Payslips showing UIF deductions"]},
+        {"step_number": 2, "title": "Get Documents from Your Employer", "description": "Your employer must complete form UI-19 (shows your employment history and contributions) and give you a UI-2.8 form (application for benefits). Your employer must also provide a service certificate.", "tips": ["If employer refuses, report to nearest labour centre", "Keep copies of all forms before submitting"], "documents_needed": ["UI-19 form from employer", "UI-2.8 form from employer", "Service certificate", "Retrenchment letter"]},
+        {"step_number": 3, "title": "Register as Work-Seeker", "description": "Register on the Employment Services of South Africa (ESSA) system at essa.labour.gov.za. This is mandatory. You must continue to report every 4 weeks that you're still unemployed.", "tips": ["Keep your ESSA login details safe", "Report every 4 weeks or payments will stop"], "documents_needed": ["ID number", "Email address"]},
+        {"step_number": 4, "title": "Submit Your UIF Claim", "description": "Submit your claim online via ufiling.labour.gov.za or visit a Department of Employment and Labour office. Upload all required documents. You'll be given a reference number.", "tips": ["Online claims (uFiling) are faster than office visits", "Submit within 6 months of losing job"], "documents_needed": ["Completed UI-2.8 form", "UI-19 form", "ID document", "Last 6 payslips", "Bank statement showing account details", "Retrenchment letter"]},
+        {"step_number": 5, "title": "Sign and Receive Payments", "description": "If approved, you'll sign a payment schedule. Payments are made monthly to your bank account. First payment takes 4-8 weeks. You must sign every 4 weeks to confirm continued unemployment.", "tips": ["Payments are 38-65% of your average salary", "You can claim for up to 365 days (12 months)", "Report any income earned during this period"], "documents_needed": ["ID document", "Bank card"]}
+      ],
+      "required_documents": ["South African ID document", "UI-19 form (from employer)", "UI-2.8 form (completed by employer)", "Service certificate from employer", "Last 6 months payslips", "Retrenchment letter or contract end letter", "Bank statement (for payment details)", "ESSA registration confirmation"],
+      "forms": [
+        {"form_name": "UI-19 (Employment History)", "where_to_get": "Your employer or Department of Labour office", "notes": "Employer must complete this form accurately"},
+        {"form_name": "UI-2.8 (Application for Unemployment Benefits)", "where_to_get": "Your employer, Department of Labour, or ufiling.labour.gov.za", "notes": "Can be submitted online via uFiling"}
+      ],
+      "contacts": [{"organization": "Department of Employment and Labour - UIF", "phone": "0800 030 007", "email": "uifcallcentre@labour.gov.za", "website": "https://ufiling.labour.gov.za", "hours": "Monday to Friday, 8am-4pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Online via uFiling (ufiling.labour.gov.za). In-person at Department of Employment and Labour offices. Some trade unions assist members.",
+      "common_mistakes": ["Applying more than 6 months after losing job", "Not registering as work-seeker on ESSA", "Not reporting every 4 weeks", "Incomplete UI-19 form from employer", "Providing incorrect banking details"],
+      "timeline": "4-8 weeks for first payment. Payments continue monthly for up to 12 months. Must sign every 4 weeks.",
+      "faq": [
+        {"question": "How much will I get from UIF?", "answer": "Between 38-65% of your average salary in the last 6 months, depending on your salary level. Maximum payout is around R17,712 per month."},
+        {"question": "Can I claim if I resigned?", "answer": "No, UIF is for those who lost employment involuntarily (retrenchment, end of contract, employer death). Not for resignation or dismissal for misconduct."},
+        {"question": "How long can I claim UIF?", "answer": "Maximum 365 days (12 months), depending on your contribution credits. You earn 1 day of benefits for every 4 days worked."}
+      ]
+    },
+    {
+      "id": "sars-tax-return",
+      "title": "Filing Your SARS Tax Return",
+      "category": "Finance",
+      "subcategory": "Taxation",
+      "eligibility": ["South African tax residents earning above tax threshold", "Anyone who received an IRP5/IT3(a) from employer", "Earned income from multiple sources", "Self-employed individuals"],
+      "time_to_complete": "1-2 hours (online), 2-4 weeks for assessment",
+      "cost": "Free (if using SARS eFiling)",
+      "difficulty": "Medium",
+      "overview": "Tax returns are filed annually with SARS (South African Revenue Service). The tax year runs from 1 March to 28 February. Filing season is usually July to October. Most people can file online via eFiling. Auto-assessments are now available for simple returns.",
+      "steps": [
+        {"step_number": 1, "title": "Check if You Need to File", "description": "If you earned under R95,750 (under 65), R148,217 (65-75), or R165,689 (75+) from a single employer and have no other income, you may not need to file. Check the SARS website for current thresholds.", "tips": ["Even if not required, filing can result in a refund", "Check if SARS sent you an auto-assessment"], "documents_needed": ["IRP5/IT3(a) from employer"]},
+        {"step_number": 2, "title": "Register for SARS eFiling", "description": "Go to www.sarsefiling.co.za and register. You need your ID number and tax reference number. If you don't have a tax number, register on eFiling first. Verify your identity at a SARS branch if needed.", "tips": ["Keep your login details secure", "Link your mobile number for easy password resets"], "documents_needed": ["ID number", "Tax reference number", "Bank account details"]},
+        {"step_number": 3, "title": "Gather All Tax Documents", "description": "Collect your IRP5 (salary), IT3(b) (interest), IT3(c) (dividends), medical aid tax certificate, retirement annuity certificates, and any other income documents. Have your banking details ready for refunds.", "tips": ["Check IRP5 matches your actual earnings", "Keep all documents for 5 years for audit purposes"], "documents_needed": ["IRP5 from employer", "Medical aid certificate", "Retirement annuity certificate", "Interest/dividend certificates", "Travel logbook (if claiming travel allowance)", "Home office expenses (if applicable)"]},
+        {"step_number": 4, "title": "Complete and Submit Return", "description": "Log into eFiling and complete your ITR12 return. The system will pre-populate information from employers and banks. Verify all information, add deductions (medical, retirement, donations), and submit.", "tips": ["Use the auto-assessment if SARS offers it", "Claim all legitimate deductions to reduce tax", "Submit before deadline to avoid penalties"], "documents_needed": ["All tax documents from Step 3"]},
+        {"step_number": 5, "title": "Receive Assessment and Refund", "description": "SARS will assess your return within 2-4 weeks (or up to 21 business days for refunds). You'll receive an ITA34 (assessment notice). If you owe tax, pay within 30 days. Refunds are paid to your bank account.", "tips": ["Check your assessment carefully for errors", "Refunds usually paid within 72 hours of assessment", "Keep your assessment notice for your records"], "documents_needed": ["ITA34 assessment notice"]}
+      ],
+      "required_documents": ["South African ID", "Tax reference number", "IRP5/IT3(a) from all employers", "Medical aid tax certificate", "Retirement annuity fund certificate", "IT3(b) - Interest earned certificate", "Bank account details for refunds"],
+      "forms": [{"form_name": "ITR12 (Income Tax Return for Individuals)", "where_to_get": "www.sarsefiling.co.za", "notes": "Available during filing season (July-October). Auto-assessment may be offered."}],
+      "contacts": [{"organization": "SARS Contact Centre", "phone": "0800 00 7277", "email": "contact@sars.gov.za", "website": "https://www.sars.gov.za", "hours": "Monday to Friday, 8am-5pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Online via SARS eFiling or SARS MobiApp. In-person at SARS branches (by appointment only). Some tax practitioners can assist.",
+      "common_mistakes": ["Missing the filing deadline (October deadline for non-provisional taxpayers)", "Not declaring all income sources", "Claiming deductions without supporting documents", "Providing incorrect banking details for refunds", "Not keeping tax records for 5 years"],
+      "timeline": "Filing season: July-October. Assessment: 2-4 weeks. Refund: 72 hours after assessment. Payment due: 30 days from assessment.",
+      "faq": [
+        {"question": "Do I need to file if I only earn a salary?", "answer": "If your salary is under the tax threshold and from a single employer, you may not need to file. Check SARS website for current thresholds."},
+        {"question": "What happens if I miss the filing deadline?", "answer": "Late filing penalties apply - up to R250-R16,000 per month depending on income level."},
+        {"question": "Can I claim home office expenses?", "answer": "Yes, if you work from home more than 50% of the time and have a dedicated home office. You need a letter from your employer."}
+      ]
+    },
+    {
+      "id": "open-bank-account",
+      "title": "Opening a Bank Account in South Africa",
+      "category": "Finance",
+      "subcategory": "Banking",
+      "eligibility": ["South African citizens or residents aged 16+", "Valid South African ID or passport", "Proof of residence", "Foreign nationals need valid permit"],
+      "time_to_complete": "Same day to 1 week",
+      "cost": "R0-R60 monthly (varies by account type)",
+      "difficulty": "Easy",
+      "overview": "Opening a bank account in South Africa requires identification and proof of residence. Most banks offer entry-level accounts with low fees. You can open accounts online or at branches. Some banks don't require minimum balances.",
+      "steps": [
+        {"step_number": 1, "title": "Choose a Bank and Account Type", "description": "Compare banks (Capitec, Standard Bank, FNB, Absa, Nedbank, TymeBank, Bank Zero). Consider fees, digital banking features, ATM access, and minimum balances. Entry-level accounts like Capitec Global One or TymeBank are popular for low fees.", "tips": ["Compare fees on www.bankmonitor.co.za", "Digital banks (TymeBank, Bank Zero) have lower fees", "Student accounts often have reduced fees"], "documents_needed": ["No documents needed for research"]},
+        {"step_number": 2, "title": "Gather Required Documents", "description": "You need your green ID book or smart ID card. Proof of residence (utility bill or letter from traditional leader, not older than 3 months). Some banks accept alternative proof if you don't have formal address.", "tips": ["If you don't have proof of residence, ask the bank about alternatives", "Some banks accept letters from employers or schools"], "documents_needed": ["SA ID document", "Proof of residence (utility bill, letter from councillor)", "Proof of income (payslip) - optional for some accounts"]},
+        {"step_number": 3, "title": "Apply for Account", "description": "Apply online via bank's website or app, or visit a branch. Complete the application form. Some banks let you open accounts entirely online with biometric verification.", "tips": ["Online applications are faster", "TymeBank lets you open account at Pick n Pay or Boxer stores"], "documents_needed": ["ID document", "Proof of residence", "Initial deposit (if required)"]},
+        {"step_number": 4, "title": "Verify Identity and Receive Account", "description": "Complete FICA verification (Financial Intelligence Centre Act). Banks must verify your identity and address. This can be done via video call or in branch. Receive your account number and card.", "tips": ["FICA is required by law - all banks must do it", "Some banks deliver cards to your address"], "documents_needed": ["ID for verification"]},
+        {"step_number": 5, "title": "Activate and Set Up Banking", "description": "Activate your card via ATM or app. Set up online banking, mobile app, and security features. Create PIN. Start using your account.", "tips": ["Never share your PIN or OTP with anyone", "Set up transaction notifications for security"], "documents_needed": ["Bank card", "Cell phone"]}
+      ],
+      "required_documents": ["South African ID (green book or smart card)", "Proof of residence (not older than 3 months)", "Proof of income (optional, depends on account type)", "Initial deposit (R0-R50 depending on bank)", "Foreign nationals: Valid passport and permit"],
+      "forms": [{"form_name": "Bank Account Application Form", "where_to_get": "Bank branch or online banking platform", "notes": "Each bank has its own form. Online applications don't require paper forms."}],
+      "contacts": [{"organization": "Banking Ombudsman (for complaints)", "phone": "0860 800 900", "email": "info@obssa.co.za", "website": "https://www.obssa.co.za", "hours": "Monday to Friday, 8am-4:30pm"}],
+      "provinces_involved": ["National"],
+      "alternative_methods": "Online account opening via bank apps. Retail store banking (TymeBank at Pick n Pay/Boxer). Some banks have mobile units in rural areas.",
+      "common_mistakes": ["Not comparing fees before choosing a bank", "Providing expired proof of residence", "Forgetting to activate card after receiving it", "Not setting up two-factor authentication for security", "Choosing account with high monthly fees when low-cost options exist"],
+      "timeline": "Same day for most banks (in-branch or online). Card delivery: 3-7 working days. Account active immediately.",
+      "faq": [
+        {"question": "What is the minimum age to open a bank account?", "answer": "16 years old for most accounts. Some banks offer youth accounts from age 8 with parental oversight."},
+        {"question": "Do I need a minimum balance?", "answer": "Most entry-level accounts (Capitec, TymeBank) have no minimum balance. Check account terms before applying."},
+        {"question": "What if I don't have proof of residence?", "answer": "Ask your bank about alternatives. Some accept letters from employers, traditional leaders, or government departments."}
+      ]
+    }
+  ]
+}

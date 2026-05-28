@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 160" fill="none">
+  <!--
+    Pure P shape — no background
+    Import this into Spline / Blender / Cinema 4D for 3D extrusion.
+    Single compound path for clean boolean operations.
+  -->
+  <path
+    d="
+      M 0 0
+      H 36
+      A 50 50 0 0 1 36 96
+      H 22
+      V 160
+      H 0
+      Z
+      M 22 18
+      V 78
+      H 36
+      A 32 32 0 0 0 36 18
+      Z
+    "
+    fill="black"
+    fill-rule="evenodd"
+  />
+</svg>

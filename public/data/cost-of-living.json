@@ -1,0 +1,239 @@
+{
+  "last_updated": "2026-04-01",
+  "source": "Estimates based on 2026 published rates (AA, Eskom, Stats SA)",
+  "currency": "ZAR",
+  "provinces": {
+    "gauteng": {
+      "name": "Gauteng",
+      "petrol_95": 22.89,
+      "petrol_93": 22.63,
+      "diesel": 21.45,
+      "electricity_per_kwh": 2.84,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 284 },
+        "medium": { "kwh": 250, "cost": 710 },
+        "high": { "kwh": 500, "cost": 1420 }
+      },
+      "water_per_kl": 15.20,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 210 },
+        "medium": { "kl": 15, "cost": 380 },
+        "high": { "kl": 30, "cost": 720 }
+      }
+    },
+    "western_cape": {
+      "name": "Western Cape",
+      "petrol_95": 23.15,
+      "petrol_93": 22.89,
+      "diesel": 21.72,
+      "electricity_per_kwh": 3.10,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 310 },
+        "medium": { "kwh": 250, "cost": 775 },
+        "high": { "kwh": 500, "cost": 1550 }
+      },
+      "water_per_kl": 18.50,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 245 },
+        "medium": { "kl": 15, "cost": 430 },
+        "high": { "kl": 30, "cost": 800 }
+      }
+    },
+    "kwazulu_natal": {
+      "name": "KwaZulu-Natal",
+      "petrol_95": 23.02,
+      "petrol_93": 22.76,
+      "diesel": 21.59,
+      "electricity_per_kwh": 2.72,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 272 },
+        "medium": { "kwh": 250, "cost": 680 },
+        "high": { "kwh": 500, "cost": 1360 }
+      },
+      "water_per_kl": 13.80,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 195 },
+        "medium": { "kl": 15, "cost": 350 },
+        "high": { "kl": 30, "cost": 660 }
+      }
+    },
+    "eastern_cape": {
+      "name": "Eastern Cape",
+      "petrol_95": 23.28,
+      "petrol_93": 23.02,
+      "diesel": 21.85,
+      "electricity_per_kwh": 2.65,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 265 },
+        "medium": { "kwh": 250, "cost": 663 },
+        "high": { "kwh": 500, "cost": 1325 }
+      },
+      "water_per_kl": 12.40,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 180 },
+        "medium": { "kl": 15, "cost": 320 },
+        "high": { "kl": 30, "cost": 610 }
+      }
+    },
+    "limpopo": {
+      "name": "Limpopo",
+      "petrol_95": 23.55,
+      "petrol_93": 23.29,
+      "diesel": 22.12,
+      "electricity_per_kwh": 2.58,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 258 },
+        "medium": { "kwh": 250, "cost": 645 },
+        "high": { "kwh": 500, "cost": 1290 }
+      },
+      "water_per_kl": 11.20,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 165 },
+        "medium": { "kl": 15, "cost": 295 },
+        "high": { "kl": 30, "cost": 565 }
+      }
+    },
+    "mpumalanga": {
+      "name": "Mpumalanga",
+      "petrol_95": 23.40,
+      "petrol_93": 23.14,
+      "diesel": 21.97,
+      "electricity_per_kwh": 2.61,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 261 },
+        "medium": { "kwh": 250, "cost": 653 },
+        "high": { "kwh": 500, "cost": 1305 }
+      },
+      "water_per_kl": 11.80,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 170 },
+        "medium": { "kl": 15, "cost": 305 },
+        "high": { "kl": 30, "cost": 580 }
+      }
+    },
+    "north_west": {
+      "name": "North West",
+      "petrol_95": 23.45,
+      "petrol_93": 23.19,
+      "diesel": 22.02,
+      "electricity_per_kwh": 2.55,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 255 },
+        "medium": { "kwh": 250, "cost": 638 },
+        "high": { "kwh": 500, "cost": 1275 }
+      },
+      "water_per_kl": 11.50,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 168 },
+        "medium": { "kl": 15, "cost": 300 },
+        "high": { "kl": 30, "cost": 570 }
+      }
+    },
+    "free_state": {
+      "name": "Free State",
+      "petrol_95": 23.38,
+      "petrol_93": 23.12,
+      "diesel": 21.95,
+      "electricity_per_kwh": 2.60,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 260 },
+        "medium": { "kwh": 250, "cost": 650 },
+        "high": { "kwh": 500, "cost": 1300 }
+      },
+      "water_per_kl": 12.00,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 172 },
+        "medium": { "kl": 15, "cost": 308 },
+        "high": { "kl": 30, "cost": 588 }
+      }
+    },
+    "northern_cape": {
+      "name": "Northern Cape",
+      "petrol_95": 23.62,
+      "petrol_93": 23.36,
+      "diesel": 22.19,
+      "electricity_per_kwh": 2.52,
+      "electricity_monthly_estimate": {
+        "low": { "kwh": 100, "cost": 252 },
+        "medium": { "kwh": 250, "cost": 630 },
+        "high": { "kwh": 500, "cost": 1260 }
+      },
+      "water_per_kl": 13.20,
+      "water_monthly_estimate": {
+        "low": { "kl": 6, "cost": 185 },
+        "medium": { "kl": 15, "cost": 330 },
+        "high": { "kl": 30, "cost": 630 }
+      }
+    }
+  },
+  "food_basket": {
+    "note": "Average retail prices at major SA supermarkets, April 2026",
+    "items": [
+      { "name": "Brown bread (700g)", "price": 14.99 },
+      { "name": "Full cream milk (2L)", "price": 38.99 },
+      { "name": "Chicken braai pack (1kg)", "price": 89.99 },
+      { "name": "Rice (2kg)", "price": 42.99 },
+      { "name": "Eggs (6 pack)", "price": 28.99 },
+      { "name": "Sunflower oil (750ml)", "price": 44.99 },
+      { "name": "Tomatoes (1kg)", "price": 22.99 },
+      { "name": "Onions (1kg)", "price": 14.99 },
+      { "name": "Potatoes (2kg)", "price": 29.99 },
+      { "name": "Maize meal (5kg)", "price": 69.99 }
+    ],
+    "monthly_estimate": {
+      "single": 1800,
+      "couple": 2800,
+      "family_4": 4500
+    }
+  },
+  "lifestyle_monthly_total": {
+    "note": "Rough total monthly cost estimate per lifestyle tier, includes rent, food, transport, utilities",
+    "tiers": {
+      "minimal": {
+        "label": "Minimal (student/starter)",
+        "description": "Shared accommodation, public transport, basic food",
+        "provinces": {
+          "gauteng": 6500,
+          "western_cape": 7200,
+          "kwazulu_natal": 6200,
+          "eastern_cape": 5800,
+          "limpopo": 5200,
+          "mpumalanga": 5400,
+          "north_west": 5300,
+          "free_state": 5500,
+          "northern_cape": 5600
+        }
+      },
+      "moderate": {
+        "label": "Moderate (working professional)",
+        "description": "Own room, own car, standard grocery shop",
+        "provinces": {
+          "gauteng": 12500,
+          "western_cape": 14000,
+          "kwazulu_natal": 11500,
+          "eastern_cape": 10500,
+          "limpopo": 9500,
+          "mpumalanga": 9800,
+          "north_west": 9600,
+          "free_state": 10000,
+          "northern_cape": 10200
+        }
+      },
+      "comfortable": {
+        "label": "Comfortable (established)",
+        "description": "Own apartment, newer car, dining out occasionally",
+        "provinces": {
+          "gauteng": 22000,
+          "western_cape": 26000,
+          "kwazulu_natal": 20000,
+          "eastern_cape": 18000,
+          "limpopo": 16000,
+          "mpumalanga": 16500,
+          "north_west": 16200,
+          "free_state": 17000,
+          "northern_cape": 17500
+        }
+      }
+    }
+  }
+}

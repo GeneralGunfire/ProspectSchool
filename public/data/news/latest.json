@@ -1,0 +1,152 @@
+[
+  {
+    "id": "1",
+    "source": "BusinessTech",
+    "title": "South Africa's renewable energy sector creates 12,000 new jobs in 2025",
+    "summary": "The rapid expansion of solar and wind energy projects across the Northern Cape and Western Cape has generated over 12,000 permanent and contract positions, with electrical engineers and solar panel technicians most in demand.",
+    "category": "Job Market",
+    "priority_score": 80,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-24T08:00:00Z"
+  },
+  {
+    "id": "2",
+    "source": "News24",
+    "title": "NSFAS applications for 2027 open in September — key dates announced",
+    "summary": "The National Student Financial Aid Scheme has confirmed that applications for the 2027 academic year will open on 1 September 2026. Students from households earning under R350,000 per year are encouraged to apply early.",
+    "category": "Education",
+    "priority_score": 90,
+    "url": "https://www.news24.com",
+    "date": "2026-04-23T09:30:00Z"
+  },
+  {
+    "id": "3",
+    "source": "BusinessTech",
+    "title": "SA inflation eases to 4.1% — what it means for your salary and savings",
+    "summary": "Statistics South Africa's latest Consumer Price Index shows inflation has dropped to 4.1%, the lowest in three years. Economists say real wage growth may finally become possible for entry-level workers.",
+    "category": "Economy",
+    "priority_score": 75,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-22T10:00:00Z"
+  },
+  {
+    "id": "4",
+    "source": "News24",
+    "title": "Minimum wage increases to R28.79 per hour from 1 March 2026",
+    "summary": "The national minimum wage has been updated to R28.79 per hour following the annual review. Domestic workers and farm workers are also covered under revised sector-specific rates.",
+    "category": "Economy",
+    "priority_score": 85,
+    "url": "https://www.news24.com",
+    "date": "2026-04-21T07:00:00Z"
+  },
+  {
+    "id": "5",
+    "source": "BusinessTech",
+    "title": "Matric results 2025: Pass rate climbs to 82.9% — top performing provinces",
+    "summary": "The 2025 National Senior Certificate results show an overall pass rate of 82.9%, with the Western Cape leading at 87.3%. The Department of Basic Education highlighted strong improvement in Mathematics and Physical Sciences.",
+    "category": "Education",
+    "priority_score": 88,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-20T11:00:00Z"
+  },
+  {
+    "id": "6",
+    "source": "BusinessTech",
+    "title": "IT skills shortage: South Africa needs 47,000 more software developers by 2027",
+    "summary": "A new report from the Department of Higher Education identifies a critical shortage of software developers, data scientists, and cybersecurity specialists. TVET colleges are expanding ICT programmes to close the gap.",
+    "category": "Job Market",
+    "priority_score": 82,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-19T08:00:00Z"
+  },
+  {
+    "id": "7",
+    "source": "News24",
+    "title": "SARS budget 2026: Key tax changes affecting young workers",
+    "summary": "National Treasury has confirmed the primary rebate increase to R17,235 for the 2026/27 tax year. Workers earning under R95,750 annually will pay no income tax. UIF contributions remain at 1% of gross salary.",
+    "category": "Government",
+    "priority_score": 78,
+    "url": "https://www.news24.com",
+    "date": "2026-04-18T09:00:00Z"
+  },
+  {
+    "id": "8",
+    "source": "BusinessTech",
+    "title": "Eskom announces 8.97% tariff increase — how much more will you pay?",
+    "summary": "Eskom's approved tariff increase takes effect in April 2026. A typical household using 300 kWh per month will pay approximately R150 more monthly. The utility says the increase is necessary to fund infrastructure maintenance.",
+    "category": "Economy",
+    "priority_score": 76,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-17T10:00:00Z"
+  },
+  {
+    "id": "9",
+    "source": "News24",
+    "title": "University of Pretoria and Wits launch free online short courses for Grade 12 students",
+    "summary": "Two of South Africa's top universities are offering free 8-week online courses to matric students in Mathematics, Physical Sciences, and English. Registration closes 30 May 2026.",
+    "category": "Education",
+    "priority_score": 80,
+    "url": "https://www.news24.com",
+    "date": "2026-04-16T08:30:00Z"
+  },
+  {
+    "id": "10",
+    "source": "BusinessTech",
+    "title": "Petrol price drops by R0.67 per liter — relief for commuters",
+    "summary": "The Department of Mineral Resources has announced a petrol price decrease effective 3 April 2026. 95 Unleaded will cost R22.89 per liter in Gauteng. Diesel also drops by R0.54.",
+    "category": "Economy",
+    "priority_score": 72,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-15T07:00:00Z"
+  },
+  {
+    "id": "11",
+    "source": "News24",
+    "title": "Parliament passes National Qualifications Framework Amendment Act",
+    "summary": "The amended NQF Act strengthens recognition of TVET college qualifications, making it easier for trade-qualified South Africans to access university bridging programmes and professional bodies.",
+    "category": "Government",
+    "priority_score": 70,
+    "url": "https://www.news24.com",
+    "date": "2026-04-14T11:00:00Z"
+  },
+  {
+    "id": "12",
+    "source": "BusinessTech",
+    "title": "SA youth unemployment falls to 43.8% — still highest among BRICS nations",
+    "summary": "Stats SA's Quarterly Labour Force Survey shows youth unemployment (ages 15–34) at 43.8%, down from 45.5% a year ago. The construction and agri-processing sectors showed the strongest job creation.",
+    "category": "Job Market",
+    "priority_score": 85,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-13T09:00:00Z"
+  },
+  {
+    "id": "13",
+    "source": "News24",
+    "title": "DHET: 15 new TVET campuses to open in rural provinces by 2028",
+    "summary": "The Department of Higher Education and Training has committed R4.2 billion to expand TVET college infrastructure in Limpopo, the Eastern Cape, and KwaZulu-Natal to bring vocational training closer to rural students.",
+    "category": "Education",
+    "priority_score": 77,
+    "url": "https://www.news24.com",
+    "date": "2026-04-12T08:00:00Z"
+  },
+  {
+    "id": "14",
+    "source": "BusinessTech",
+    "title": "Interest rate held at 8.25% — what homebuyers and students should know",
+    "summary": "The South African Reserve Bank's Monetary Policy Committee has held the repo rate at 8.25%. Economists expect a 25 basis point cut in the second half of 2026 as inflation stabilises.",
+    "category": "Economy",
+    "priority_score": 68,
+    "url": "https://businesstech.co.za",
+    "date": "2026-04-11T10:30:00Z"
+  },
+  {
+    "id": "15",
+    "source": "News24",
+    "title": "Home Affairs to open 50 additional Smart ID card collection points nationwide",
+    "summary": "The Department of Home Affairs has announced 50 new Smart ID card collection sites at retail outlets and post offices, reducing waiting times for first-time ID applicants from 8 weeks to 3 weeks on average.",
+    "category": "Government",
+    "priority_score": 65,
+    "url": "https://www.news24.com",
+    "date": "2026-04-10T09:00:00Z"
+  }
+]

@@ -1,0 +1,171 @@
+{
+  "fetched_at": "2026-05-19T08:28:17.004451",
+  "dams": [
+    {
+      "id": "f0fe1b19-5be4-512c-a8c3-ff6af3021b96",
+      "province": "Gauteng",
+      "damName": "Vaal Dam",
+      "levelPercent": 63.0,
+      "trend": "stable",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "bb21af0f-17c9-58c5-a71c-3a98ffe95998",
+      "province": "Gauteng",
+      "damName": "Hartebeespoort Dam",
+      "levelPercent": 88.0,
+      "trend": "rising",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "1a304b6c-3c23-577e-9dc8-342a133049aa",
+      "province": "Gauteng",
+      "damName": "Sterkfontein Dam",
+      "levelPercent": 42.0,
+      "trend": "falling",
+      "urgency": "medium",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "ceee65d9-7c4d-5971-ba9d-14090f6fa1d5",
+      "province": "Western Cape",
+      "damName": "Theewaterskloof Dam",
+      "levelPercent": 79.0,
+      "trend": "rising",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "5869266b-a603-5004-849f-b0a73bbf2f06",
+      "province": "Western Cape",
+      "damName": "Voëlvlei Dam",
+      "levelPercent": 72.0,
+      "trend": "stable",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "4b3384df-e7dc-544a-a366-1eb970b6b617",
+      "province": "Western Cape",
+      "damName": "Berg River Dam",
+      "levelPercent": 57.0,
+      "trend": "falling",
+      "urgency": "medium",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "ac401f15-0952-5596-aabd-c80374644163",
+      "province": "KwaZulu-Natal",
+      "damName": "Pongolapoort Dam",
+      "levelPercent": 94.0,
+      "trend": "rising",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "31f553b7-7dca-554b-9a7b-567550640af9",
+      "province": "KwaZulu-Natal",
+      "damName": "Midmar Dam",
+      "levelPercent": 61.0,
+      "trend": "stable",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "0d5511e7-1e10-57a2-bbea-d27f89fe8a23",
+      "province": "Eastern Cape",
+      "damName": "Katse Dam",
+      "levelPercent": 36.0,
+      "trend": "falling",
+      "urgency": "high",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "08ef7c01-ff65-568f-9ddf-476074cdb45d",
+      "province": "Eastern Cape",
+      "damName": "Wriggleswade Dam",
+      "levelPercent": 17.0,
+      "trend": "falling",
+      "urgency": "critical",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "8de8be9b-c5de-5631-92c1-d8a3fbcee100",
+      "province": "Free State",
+      "damName": "Gariep Dam",
+      "levelPercent": 82.0,
+      "trend": "rising",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "0346211a-54c7-565b-874f-c8dbf33884b3",
+      "province": "Northern Cape",
+      "damName": "Vanderkloof Dam",
+      "levelPercent": 47.0,
+      "trend": "stable",
+      "urgency": "medium",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "746d3a46-486b-592e-a06a-2e8899b94581",
+      "province": "Limpopo",
+      "damName": "Tzaneen Dam",
+      "levelPercent": 75.0,
+      "trend": "stable",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "e2b444bb-fa94-5382-875f-43363a0d74e4",
+      "province": "Mpumalanga",
+      "damName": "Witbank Dam",
+      "levelPercent": 54.0,
+      "trend": "stable",
+      "urgency": "medium",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    },
+    {
+      "id": "8875522f-22b4-57a6-9fe9-fcb0d2c7446c",
+      "province": "North West",
+      "damName": "Klerksdorp Dam",
+      "levelPercent": 60.0,
+      "trend": "rising",
+      "urgency": "low",
+      "sourceUrl": "https://www.dws.gov.za",
+      "lastUpdated": "2026-05-19T08:28:05.257560",
+      "isFallback": true
+    }
+  ],
+  "alerts": []
+}

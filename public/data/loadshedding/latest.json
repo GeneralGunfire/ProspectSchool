@@ -1,0 +1,69 @@
+{
+  "currentStage": 0,
+  "suspended": true,
+  "suspendedSince": "2024-03-26",
+  "statusText": "No Load Shedding",
+  "statusNote": "Eskom status page is currently unreachable. Load shedding has been suspended since 26 March 2024. Check loadshedding.eskom.co.za for live status.",
+  "source": "loadshedding.eskom.co.za",
+  "forecast": [],
+  "updatedAt": "2026-05-19T14:32:49.987549+00:00",
+  "scrapedAt": "2026-05-19T14:32:49.987549+00:00",
+  "alerts": [
+    {
+      "id": "seed-e1",
+      "province": "Gauteng",
+      "municipality": "City of Johannesburg",
+      "area": "Soweto, Diepkloof, Dobsonville",
+      "title": "Transformer Fault — Soweto",
+      "description": "A transformer fault at the Dobsonville substation is causing unplanned outages across parts of Soweto. Eskom crews are on site.",
+      "type": "transformer_fault",
+      "urgency": "high",
+      "startDate": "2026-05-19T06:32:49.986496+00:00",
+      "estimatedRestoration": "2026-05-19T20:32:49.986496+00:00",
+      "status": "active",
+      "sourceUrl": "https://www.eskom.co.za"
+    },
+    {
+      "id": "seed-e2",
+      "province": "Western Cape",
+      "municipality": "City of Cape Town",
+      "area": "Mitchells Plain, Khayelitsha",
+      "title": "Substation Overload — Mitchells Plain",
+      "description": "High demand causing overload at the Mitchells Plain substation. Rotating supply interruptions in affected areas until load normalises.",
+      "type": "substation_overload",
+      "urgency": "medium",
+      "startDate": "2026-05-19T12:32:49.986496+00:00",
+      "estimatedRestoration": "2026-05-20T00:32:49.986496+00:00",
+      "status": "active",
+      "sourceUrl": "https://www.eskom.co.za"
+    },
+    {
+      "id": "seed-e3",
+      "province": "KwaZulu-Natal",
+      "municipality": "eThekwini",
+      "area": "Pinetown, New Germany",
+      "title": "Cable Fault — Pinetown",
+      "description": "Underground cable fault detected on the Pinetown feeder line. Affected customers are without supply while repairs are carried out.",
+      "type": "cable_fault",
+      "urgency": "high",
+      "startDate": "2026-05-19T09:32:49.986496+00:00",
+      "estimatedRestoration": "2026-05-19T22:32:49.986496+00:00",
+      "status": "active",
+      "sourceUrl": "https://www.eskom.co.za"
+    },
+    {
+      "id": "seed-e4",
+      "province": "Eastern Cape",
+      "municipality": "Nelson Mandela Bay",
+      "area": "Gqeberha Central, North End",
+      "title": "Planned Maintenance — Gqeberha",
+      "description": "Scheduled maintenance on the 132kV line supplying Gqeberha Central. Supply will be interrupted during the maintenance window.",
+      "type": "planned_maintenance",
+      "urgency": "low",
+      "startDate": "2026-05-20T14:32:49.986496+00:00",
+      "estimatedRestoration": "2026-05-20T22:32:49.986496+00:00",
+      "status": "upcoming",
+      "sourceUrl": "https://www.eskom.co.za"
+    }
+  ]
+}

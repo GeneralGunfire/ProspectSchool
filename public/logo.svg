@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+
+  <!-- Rounded square background -->
+  <rect width="120" height="120" rx="24" fill="#1D4ED8"/>
+
+  <!-- Stem: full height, rounded terminals -->
+  <rect x="28" y="22" width="14" height="76" rx="3" fill="white"/>
+
+  <!-- Bowl: right-side arc from top to mid-point of stem, creates a standard D-shape -->
+  <!-- Arc from (42,22) clockwise to (42,58) — rx=20 gives a properly wide bowl -->
+  <path d="M42,22 A20,18 0 0,1 42,58 Z" fill="white"/>
+
+</svg>
