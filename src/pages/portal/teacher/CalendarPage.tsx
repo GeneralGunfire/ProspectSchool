@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, Plus, X, Paperclip, Trash2, Pencil,
   Clock, Users, BookOpen, GraduationCap, User, Calendar,
+  CheckCircle2, XCircle, AlertCircle, ClipboardList, UserX,
 } from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
   fetchMonthEvents, createEvent, updateEvent, deleteEvent, getAttachmentDownloadUrl,
+  fetchHomeworkStudentRows, saveHomeworkVerification, saveHomeworkAbsent,
   EVENT_COLORS, EVENT_LABELS,
-  type SchoolEvent, type EventType, type TargetType,
+  type SchoolEvent, type EventType, type TargetType, type HomeworkStudentRow,
 } from '../../../lib/events';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import type { TeacherSession } from '../../../lib/auth';
@@ -66,6 +68,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Homework tracker panel (inside view modal)
+  const [viewTab, setViewTab] = useState<'details' | 'tracker'>('details');
+  const [trackerRows, setTrackerRows] = useState<HomeworkStudentRow[]>([]);
+  const [trackerLoading, setTrackerLoading] = useState(false);
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
+  // per-student note being edited: key = student_id
+  const [noteInputs, setNoteInputs] = useState<Record<number, string>>({});
 
   // Form state
   const emptyForm = {
@@ -156,7 +166,53 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
   function openView(ev: SchoolEvent) {
     setSelectedEvent(ev);
+    setViewTab('details');
+    setTrackerRows([]);
+    setNoteInputs({});
     setModal('view');
+  }
+
+  async function loadTracker(ev: SchoolEvent) {
+    setTrackerLoading(true);
+    const rows = await fetchHomeworkStudentRows(ev, session.school_id);
+    setTrackerRows(rows);
+    // Pre-fill note inputs from existing data
+    const notes: Record<number, string> = {};
+    rows.forEach(r => { if (r.teacher_note) notes[r.student_id] = r.teacher_note; });
+    setNoteInputs(notes);
+    setTrackerLoading(false);
+  }
+
+  async function handleVerify(ev: SchoolEvent, studentId: number, verified: boolean) {
+    setVerifyingId(studentId);
+    const note = noteInputs[studentId] ?? '';
+    await saveHomeworkVerification(ev.id, studentId, session.school_id, verified, note);
+    // Refresh rows
+    const rows = await fetchHomeworkStudentRows(ev, session.school_id);
+    setTrackerRows(rows);
+    setVerifyingId(null);
+  }
+
+  async function handleClearVerification(ev: SchoolEvent, studentId: number) {
+    setVerifyingId(studentId);
+    await supabaseAdmin
+      .from('homework_completions')
+      .update({ verified_by_teacher: null, absent: false, teacher_note: null })
+      .eq('event_id', ev.id)
+      .eq('student_id', studentId);
+    const rows = await fetchHomeworkStudentRows(ev, session.school_id);
+    setTrackerRows(rows);
+    setNoteInputs(prev => { const n = { ...prev }; delete n[studentId]; return n; });
+    setVerifyingId(null);
+  }
+
+  async function handleAbsent(ev: SchoolEvent, studentId: number) {
+    setVerifyingId(studentId);
+    const note = noteInputs[studentId] ?? '';
+    await saveHomeworkAbsent(ev.id, studentId, session.school_id, note);
+    const rows = await fetchHomeworkStudentRows(ev, session.school_id);
+    setTrackerRows(rows);
+    setVerifyingId(null);
   }
 
   function openEdit(ev: SchoolEvent) {
@@ -185,6 +241,9 @@ export default function CalendarPage({ session }: CalendarPageProps) {
     setSelectedEvent(null);
     setDeleteConfirm(false);
     setError('');
+    setViewTab('details');
+    setTrackerRows([]);
+    setNoteInputs({});
   }
 
   // ── Save ──────────────────────────────────────────────────
@@ -424,20 +483,34 @@ export default function CalendarPage({ session }: CalendarPageProps) {
       {modal === 'view' && selectedEvent && (() => {
         const ev = selectedEvent;
         const c = EVENT_COLORS[ev.event_type];
+        const isHomework = ev.event_type === 'homework';
+
+        // Tracker summary counts
+        const total    = trackerRows.length;
+        const selfDone = trackerRows.filter(r => r.self_reported).length;
+        const verified = trackerRows.filter(r => r.verified_by_teacher === true).length;
+        const notDone  = trackerRows.filter(r => r.verified_by_teacher === false).length;
+        const absent   = trackerRows.filter(r => r.absent).length;
+        const pending  = trackerRows.filter(r => r.verified_by_teacher === null && !r.absent).length;
+
         return (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={closeModal}>
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+            onClick={closeModal}
+          >
             <motion.div
               initial={{ scale: 0.95, y: 12, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 8, opacity: 0 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md" onClick={e => e.stopPropagation()}>
-              <div className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
+              className={`bg-white rounded-2xl shadow-2xl w-full ${isHomework ? 'max-w-lg' : 'max-w-md'} max-h-[90vh] flex flex-col`}
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-6 pb-4 shrink-0">
+                <div className="flex items-start justify-between mb-1">
                   <div className="flex-1 min-w-0 pr-3">
                     <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 ${c.badge}`}>
                       {EVENT_LABELS[ev.event_type]}
@@ -449,66 +522,254 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   </button>
                 </div>
 
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span className="font-bold">{formatDate(ev.event_date)}</span>
-                  </div>
-                  {(ev.start_time || ev.end_time) && (
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                      <span>{formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}</span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2 text-slate-600">
-                    <Users className="w-4 h-4 text-slate-400 shrink-0" />
-                    <span>{audienceSummary(ev)}</span>
-                  </div>
-                  {ev.description && (
-                    <p className="text-slate-500 leading-relaxed border-t border-slate-100 pt-3">{ev.description}</p>
-                  )}
-                  {ev.attachment_url && (
+                {/* Tabs — only for homework */}
+                {isHomework && (
+                  <div className="flex items-center gap-1 mt-4 bg-slate-100 rounded-xl p-1">
                     <button
-                      onClick={() => handleDownload(ev)}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold transition-colors"
+                      onClick={() => setViewTab('details')}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'details' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                      <Paperclip className="w-4 h-4" />
-                      {ev.attachment_name ?? 'Attachment'}
+                      Details
                     </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex gap-2 p-4 pt-0">
-                <button
-                  onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700 transition-colors"
-                >
-                  <Pencil className="w-3.5 h-3.5" /> Edit
-                </button>
-                <button
-                  onClick={() => setDeleteConfirm(true)}
-                  className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 text-sm font-black transition-colors"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {deleteConfirm && (
-                <div className="mx-4 mb-4 p-4 bg-red-50 rounded-xl border border-red-100">
-                  <p className="text-sm font-bold text-red-700 mb-3">Delete this event? This cannot be undone.</p>
-                  <div className="flex gap-2">
-                    <button onClick={handleDelete} disabled={saving}
-                      className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
-                      {saving ? 'Deleting…' : 'Yes, Delete'}
-                    </button>
-                    <button onClick={() => setDeleteConfirm(false)}
-                      className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-sm font-black text-slate-700 hover:bg-slate-50 transition-colors">
-                      Cancel
+                    <button
+                      onClick={() => {
+                        setViewTab('tracker');
+                        if (trackerRows.length === 0) loadTracker(ev);
+                      }}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'tracker' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                    >
+                      <ClipboardList className="w-3.5 h-3.5" /> Homework Tracker
                     </button>
                   </div>
+                )}
+              </div>
+
+              {/* Tab content */}
+              <div className="flex-1 overflow-y-auto px-6 pb-2 min-h-0">
+                {(!isHomework || viewTab === 'details') && (
+                  <div className="space-y-3 text-sm pb-2">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span className="font-bold">{formatDate(ev.event_date)}</span>
+                    </div>
+                    {(ev.start_time || ev.end_time) && (
+                      <div className="flex items-center gap-2 text-slate-600">
+                        <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+                        <span>{formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <Users className="w-4 h-4 text-slate-400 shrink-0" />
+                      <span>{audienceSummary(ev)}</span>
+                    </div>
+                    {ev.description && (
+                      <p className="text-slate-500 leading-relaxed border-t border-slate-100 pt-3">{ev.description}</p>
+                    )}
+                    {ev.attachment_url && (
+                      <button onClick={() => handleDownload(ev)}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-bold transition-colors">
+                        <Paperclip className="w-4 h-4" />
+                        {ev.attachment_name ?? 'Attachment'}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {isHomework && viewTab === 'tracker' && (
+                  <div className="pb-2">
+                    {trackerLoading ? (
+                      <div className="flex items-center justify-center py-12">
+                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                          className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+                      </div>
+                    ) : trackerRows.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <AlertCircle className="w-8 h-8 text-slate-200 mb-3" />
+                        <p className="text-sm font-bold text-slate-400">No students targeted by this event.</p>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Summary pills */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{total} students</span>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">{selfDone} self-reported</span>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{verified} verified ✓</span>
+                          {notDone > 0 && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-600">{notDone} not done</span>}
+                          {absent > 0  && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">{absent} absent</span>}
+                          {pending > 0 && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-200 text-slate-500">{pending} unreviewed</span>}
+                        </div>
+
+                        {/* Student rows */}
+                        <div className="space-y-2">
+                          {trackerRows.map(row => {
+                            const isVerifying = verifyingId === row.student_id;
+                            const vStatus = row.verified_by_teacher;
+                            const isAbsent = row.absent;
+                            const isReviewed = vStatus !== null || isAbsent;
+
+                            // Card colour — absent = amber, verified = green, not done = red, pending = grey
+                            const cardBg =
+                              isAbsent      ? 'bg-amber-50 border-amber-200' :
+                              vStatus === true  ? 'bg-emerald-50 border-emerald-200' :
+                              vStatus === false ? 'bg-red-50 border-red-200' :
+                                                 'bg-slate-50 border-slate-200';
+
+                            const avatarBg =
+                              isAbsent          ? 'bg-amber-200' :
+                              vStatus === true  ? 'bg-emerald-200' :
+                              vStatus === false ? 'bg-red-200' :
+                                                 'bg-slate-200';
+
+                            const statusText =
+                              isAbsent          ? 'Absent — excused' :
+                              vStatus === true  ? 'Verified done' :
+                              vStatus === false ? 'Marked not done' :
+                                                 'Not reviewed yet';
+
+                            const statusColor =
+                              isAbsent          ? 'text-amber-700' :
+                              vStatus === true  ? 'text-emerald-700' :
+                              vStatus === false ? 'text-red-600' :
+                                                 'text-slate-400';
+
+                            return (
+                              <div key={row.student_id} className={`rounded-2xl p-3 border transition-colors ${cardBg}`}>
+
+                                {/* Row 1: avatar + name + status */}
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${avatarBg}`}>
+                                    {isVerifying ? (
+                                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
+                                        className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full" />
+                                    ) : isAbsent ? (
+                                      <UserX className="w-4 h-4 text-amber-700" />
+                                    ) : vStatus === true ? (
+                                      <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                                    ) : vStatus === false ? (
+                                      <XCircle className="w-4 h-4 text-red-600" />
+                                    ) : (
+                                      <span className="text-[10px] font-black text-slate-600">{row.name[0]}{row.surname[0]}</span>
+                                    )}
+                                  </div>
+
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-bold text-slate-900 truncate">{row.surname}, {row.name}</p>
+                                    <p className={`text-[11px] font-black ${statusColor}`}>{statusText}</p>
+                                  </div>
+
+                                  {/* Self-report pill */}
+                                  {row.self_reported
+                                    ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 shrink-0">Self ✓</span>
+                                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-200 text-slate-400 shrink-0">No self-report</span>
+                                  }
+                                </div>
+
+                                {/* Saved note display */}
+                                {isReviewed && row.teacher_note && (
+                                  <p className="text-[11px] text-slate-500 italic mb-2 px-1">"{row.teacher_note}"</p>
+                                )}
+
+                                {/* Note input — only shown when not yet reviewed, or editing */}
+                                {!isReviewed && (
+                                  <input
+                                    value={noteInputs[row.student_id] ?? ''}
+                                    onChange={e => setNoteInputs(prev => ({ ...prev, [row.student_id]: e.target.value }))}
+                                    placeholder="Note / reason (optional)"
+                                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white mb-2"
+                                  />
+                                )}
+
+                                {/* Action buttons */}
+                                <div className="flex gap-1.5">
+                                  {!isAbsent && vStatus !== true && (
+                                    <button
+                                      onClick={() => handleVerify(ev, row.student_id, true)}
+                                      disabled={isVerifying}
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition-colors disabled:opacity-40"
+                                    >
+                                      <CheckCircle2 className="w-3.5 h-3.5" /> Verify Done
+                                    </button>
+                                  )}
+                                  {!isAbsent && vStatus !== false && (
+                                    <button
+                                      onClick={() => handleVerify(ev, row.student_id, false)}
+                                      disabled={isVerifying}
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white text-red-600 border border-red-200 text-xs font-black hover:bg-red-50 transition-colors disabled:opacity-40"
+                                    >
+                                      <XCircle className="w-3.5 h-3.5" /> Not Done
+                                    </button>
+                                  )}
+                                  {!isAbsent && (
+                                    <button
+                                      onClick={() => handleAbsent(ev, row.student_id)}
+                                      disabled={isVerifying}
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white text-amber-600 border border-amber-200 text-xs font-black hover:bg-amber-50 transition-colors disabled:opacity-40"
+                                    >
+                                      <UserX className="w-3.5 h-3.5" /> Absent
+                                    </button>
+                                  )}
+                                  {isReviewed && (
+                                    <button
+                                      onClick={() => handleClearVerification(ev, row.student_id)}
+                                      disabled={isVerifying}
+                                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-400 text-xs font-black hover:bg-slate-100 transition-colors disabled:opacity-40"
+                                      title="Clear — mark as unreviewed"
+                                    >
+                                      Undo
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer — edit/delete */}
+              <div className="shrink-0 px-6 pb-4 pt-2 border-t border-slate-100 mt-2">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700 transition-colors"
+                  >
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(true)}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 text-sm font-black transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              )}
+
+                <AnimatePresence>
+                  {deleteConfirm && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.18 }}
+                      className="overflow-hidden mt-2"
+                    >
+                      <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+                        <p className="text-sm font-bold text-red-700 mb-3">Delete this event? This cannot be undone.</p>
+                        <div className="flex gap-2">
+                          <button onClick={handleDelete} disabled={saving}
+                            className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                            {saving ? 'Deleting…' : 'Yes, Delete'}
+                          </button>
+                          <button onClick={() => setDeleteConfirm(false)}
+                            className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-sm font-black text-slate-700 hover:bg-slate-50 transition-colors">
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </motion.div>
           </motion.div>
         );

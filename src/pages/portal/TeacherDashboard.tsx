@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import ClassesPage from './teacher/ClassesPage';
 import CalendarPage from './teacher/CalendarPage';
 import MarksPage from './teacher/MarksPage';
 import StudentProgressPage from './teacher/StudentProgressPage';
+import ResourcesPage from './teacher/ResourcesPage';
+import AnnouncementsPage from './teacher/AnnouncementsPage';
+import TeacherHomePage from './teacher/TeacherHomePage';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'announcements';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -25,11 +28,13 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
   if (!session) return null;
 
   const navItems = [
-    { id: 'home'     as ActivePage, label: 'Home',     icon: Home },
-    { id: 'classes'  as ActivePage, label: 'Classes',  icon: Users },
-    { id: 'calendar' as ActivePage, label: 'Calendar', icon: CalendarDays },
-    { id: 'marks'    as ActivePage, label: 'Marks',    icon: ClipboardList },
-    { id: 'library'  as ActivePage, label: 'Library',  icon: BookOpen },
+    { id: 'home'          as ActivePage, label: 'Home',          icon: Home },
+    { id: 'announcements' as ActivePage, label: 'Announcements', icon: Megaphone },
+    { id: 'classes'       as ActivePage, label: 'Classes',       icon: Users },
+    { id: 'calendar'      as ActivePage, label: 'Calendar',      icon: CalendarDays },
+    { id: 'marks'         as ActivePage, label: 'Marks',         icon: ClipboardList },
+    { id: 'resources'     as ActivePage, label: 'Resources',     icon: FolderOpen },
+    { id: 'library'       as ActivePage, label: 'Library',       icon: BookOpen },
   ];
 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
@@ -94,17 +99,14 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
       {/* Main content */}
       <div className="flex-1 min-w-0 overflow-y-auto">
         {activePage === 'home' && (
-          <div className="p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Overview</p>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-              Welcome back, {session.name}.
-            </h1>
-          </div>
+          <TeacherHomePage session={session} onNavigate={page => setActivePage(page as ActivePage)} />
         )}
-        {activePage === 'classes' && <ClassesPage session={session} />}
-        {activePage === 'calendar' && <CalendarPage session={session} />}
-        {activePage === 'marks'    && <MarksPage session={session} />}
-        {activePage === 'library'  && <StudentProgressPage session={session} />}
+        {activePage === 'announcements' && <AnnouncementsPage session={session} />}
+        {activePage === 'classes'       && <ClassesPage session={session} />}
+        {activePage === 'calendar'      && <CalendarPage session={session} />}
+        {activePage === 'marks'         && <MarksPage session={session} />}
+        {activePage === 'resources'     && <ResourcesPage session={session} />}
+        {activePage === 'library'       && <StudentProgressPage session={session} />}
       </div>
 
     </div>

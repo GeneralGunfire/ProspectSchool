@@ -739,6 +739,7 @@ async function loadSimultaneousProgress(studentId: number): Promise<TopicStatus>
 // It owns all the view-switching logic and progress tracking for the whole lesson flow.
 // user and onNavigate come from withAuth — the wrapper that ensures the student is logged in.
 function LinearEquationsPage({ onNavigate }: { onNavigate: (page: any) => void }) {
+  const session = useStudySession()
   // view controls which screen is currently rendered (overview, lesson, practice, etc.).
   // The student starts on the overview so they can see all available topics.
   const [view, setView] = useState<ViewState>('overview')

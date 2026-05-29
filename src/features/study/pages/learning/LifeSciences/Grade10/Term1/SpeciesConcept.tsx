@@ -260,6 +260,7 @@ async function saveTopicProgress(studentId: number, schoolId: number, status: To
 
 
 function SpeciesConceptPage({ onNavigate }: { onNavigate: (page: any) => void }) {
+  const session = useStudySession()
   const [view, setView] = useState<ViewState>('overview'); const [previousView, setPreviousView] = useState<ViewState | null>(null)
   const [status, setStatus] = useState<TopicStatus>('not-started'); const [practiceResult, setPracticeResult] = useState<{ correct: number; total: number } | null>(null); const [attempts, setAttempts] = useState(0)
   useEffect(() => { if (!session) return; loadTopicProgress(session?.student_id ?? 0).then(s => setStatus(s)) }, [session])

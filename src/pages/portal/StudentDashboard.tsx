@@ -1,12 +1,15 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
+import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
 import StudentMarksPage from './student/StudentMarksPage';
+import StudentResourcesPage from './student/StudentResourcesPage';
+import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 
 const LibraryPage = lazy(() => import('./student/LibraryPage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'library';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'library';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -29,10 +32,12 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
 
   const navItems = [
-    { id: 'home'     as ActivePage, label: 'Home',      icon: Home },
-    { id: 'calendar' as ActivePage, label: 'Calendar',  icon: CalendarDays },
-    { id: 'marks'    as ActivePage, label: 'My Marks',  icon: ClipboardList },
-    { id: 'library'  as ActivePage, label: 'Library',   icon: BookOpen },
+    { id: 'home'          as ActivePage, label: 'Home',          icon: Home },
+    { id: 'announcements' as ActivePage, label: 'Announcements', icon: Megaphone },
+    { id: 'calendar'      as ActivePage, label: 'Calendar',      icon: CalendarDays },
+    { id: 'marks'         as ActivePage, label: 'My Marks',      icon: ClipboardList },
+    { id: 'resources'     as ActivePage, label: 'Resources',     icon: FolderOpen },
+    { id: 'library'       as ActivePage, label: 'Library',       icon: BookOpen },
   ];
 
   // When library navigates internally (to a learning page or back)
@@ -52,19 +57,17 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
   if (inLearningPage) {
     return (
-      <div className="min-h-screen bg-white">
-        <Suspense fallback={
-          <div className="min-h-screen bg-white flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
-          </div>
-        }>
-          <LibraryPage
-            session={session}
-            innerPage={innerPage}
-            onNavigate={handleLibraryNavigate}
-          />
-        </Suspense>
-      </div>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+          <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+        </div>
+      }>
+        <LibraryPage
+          session={session}
+          innerPage={innerPage}
+          onNavigate={handleLibraryNavigate}
+        />
+      </Suspense>
     );
   }
 
@@ -132,17 +135,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
       {/* Main content */}
       <div className="flex-1 min-w-0 overflow-y-auto">
-        {activePage === 'home' && (
-          <div className="p-8">
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Dashboard</p>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-1">
-              Welcome, {session.name}.
-            </h1>
-            <p className="text-sm text-slate-400">{session.school_name}</p>
-          </div>
-        )}
-        {activePage === 'calendar' && <StudentCalendarPage session={session} />}
-        {activePage === 'marks'    && <StudentMarksPage session={session} />}
+        {activePage === 'home'          && <StudentHomePage session={session} onNavigate={page => setActivePage(page as ActivePage)} />}
+        {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
+        {activePage === 'calendar'      && <StudentCalendarPage session={session} />}
+        {activePage === 'marks'         && <StudentMarksPage session={session} />}
+        {activePage === 'resources'     && <StudentResourcesPage session={session} />}
         {activePage === 'library'  && (
           <Suspense fallback={
             <div className="flex items-center justify-center py-24">

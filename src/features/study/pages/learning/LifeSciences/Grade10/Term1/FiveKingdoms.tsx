@@ -369,6 +369,7 @@ async function loadNextTopicProgress(studentId: number): Promise<TopicStatus> {
 
 
 function FiveKingdomsPage({ onNavigate }: { onNavigate: (page: any) => void }) {
+  const session = useStudySession()
   const [view, setView] = useState<ViewState>('overview'); const [previousView, setPreviousView] = useState<ViewState | null>(null)
   const [status, setStatus] = useState<TopicStatus>('not-started'); const [nextStatus, setNextStatus] = useState<TopicStatus>('not-started')
   const [practiceResult, setPracticeResult] = useState<{ correct: number; total: number } | null>(null); const [attempts, setAttempts] = useState(0)

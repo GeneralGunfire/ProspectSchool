@@ -13,7 +13,9 @@
     |-- deps
         |-- package.json
         |-- _metadata.json
+|-- BACKEND_NOTES.md
 |-- CLAUDE.md
+|-- FEATURES.md
 |-- index.html
 |-- package-lock.json
 |-- package.json
@@ -219,9 +221,11 @@
                 |-- TVETRequirementsPage.tsx
     |-- index.css
     |-- lib
+        |-- announcements.ts
         |-- auth.ts
         |-- events.ts
         |-- marks.ts
+        |-- resources.ts
         |-- students.ts
         |-- studyProgress.ts
         |-- supabase.ts
@@ -235,19 +239,26 @@
             |-- TeacherLogin.tsx
         |-- portal
             |-- admin
+                |-- AdminAnnouncementsPage.tsx
                 |-- TeachersPage.tsx
             |-- AdminDashboard.tsx
             |-- PortalEntry.tsx
             |-- student
                 |-- LibraryPage.tsx
+                |-- StudentAnnouncementsPage.tsx
                 |-- StudentCalendarPage.tsx
+                |-- StudentHomePage.tsx
                 |-- StudentMarksPage.tsx
+                |-- StudentResourcesPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
+                |-- AnnouncementsPage.tsx
                 |-- CalendarPage.tsx
                 |-- ClassesPage.tsx
                 |-- MarksPage.tsx
+                |-- ResourcesPage.tsx
                 |-- StudentProgressPage.tsx
+                |-- TeacherHomePage.tsx
             |-- TeacherDashboard.tsx
     |-- providers
         |-- AuthProvider.tsx
@@ -257,5 +268,6 @@
             |-- toast.tsx
         |-- hooks
             |-- usePillVisible.ts
+|-- test-routing.mjs
 |-- tsconfig.json
 |-- vite.config.ts

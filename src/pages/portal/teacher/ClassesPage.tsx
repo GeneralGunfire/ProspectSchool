@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2 } from 'lucide-react';
+import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchSubjects, createStudent, updateStudent,
@@ -34,6 +34,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
   const [confirmDelete, setConfirmDelete] = useState<Student | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Search + filter
+  const [search, setSearch] = useState('');
+  const [filterGrade, setFilterGrade] = useState<string>('');
+  const [filterCohort, setFilterCohort] = useState<string>('');
 
   useEffect(() => {
     async function load() {
@@ -141,6 +146,30 @@ export default function ClassesPage({ session }: ClassesPageProps) {
     setDeleting(false);
   };
 
+  // Derive unique cohort names for filter dropdown
+  const cohortOptions = useMemo(() => {
+    const names = [...new Set(students.map(s => s.cohort?.name).filter(Boolean) as string[])].sort();
+    return names;
+  }, [students]);
+
+  // Filtered list
+  const filtered = useMemo(() => {
+    return students.filter(s => {
+      if (filterGrade && String(s.grade) !== filterGrade) return false;
+      if (filterCohort && s.cohort?.name !== filterCohort) return false;
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          s.name.toLowerCase().includes(q) ||
+          s.surname.toLowerCase().includes(q) ||
+          s.student_code.toLowerCase().includes(q) ||
+          s.subjects?.some(sub => sub.label.toLowerCase().includes(q))
+        );
+      }
+      return true;
+    });
+  }, [students, search, filterGrade, filterCohort]);
+
   return (
     <div className="p-6 sm:p-8 max-w-5xl">
       {/* Header */}
@@ -154,6 +183,50 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           <Plus className="w-4 h-4" /> Add Student
         </motion.button>
       </div>
+
+      {/* Search + filter bar */}
+      {!loading && students.length > 0 && (
+        <div className="flex items-center gap-3 mb-4 flex-wrap">
+          <div className="flex-1 min-w-48 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name, code or subject…"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
+          </div>
+          <select
+            value={filterGrade}
+            onChange={e => setFilterGrade(e.target.value)}
+            className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+          >
+            <option value="">All grades</option>
+            {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
+          </select>
+          {cohortOptions.length > 0 && (
+            <select
+              value={filterCohort}
+              onChange={e => setFilterCohort(e.target.value)}
+              className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+            >
+              <option value="">All classes</option>
+              {cohortOptions.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          )}
+          {(search || filterGrade || filterCohort) && (
+            <button
+              onClick={() => { setSearch(''); setFilterGrade(''); setFilterCohort(''); }}
+              className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-500 hover:bg-slate-100 transition-colors"
+            >
+              Clear
+            </button>
+          )}
+          <p className="text-xs font-bold text-slate-400 ml-auto">
+            {filtered.length} of {students.length} student{students.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      )}
 
       {/* List */}
       {loading ? (
@@ -185,8 +258,14 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               </tr>
             </thead>
             <tbody>
-              {students.map((s, i) => (
-                <tr key={s.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${i === students.length - 1 ? 'border-0' : ''}`}>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-5 py-12 text-center text-sm font-bold text-slate-400">
+                    No students match your search.
+                  </td>
+                </tr>
+              ) : filtered.map((s, i) => (
+                <tr key={s.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${i === filtered.length - 1 ? 'border-0' : ''}`}>
                   <td className="px-5 py-3.5 font-bold text-slate-900">{s.surname}, {s.name}</td>
                   <td className="px-5 py-3.5 font-mono text-slate-500 text-xs tracking-widest">{s.student_code}</td>
                   <td className="px-5 py-3.5 text-slate-500">{s.cohort ? s.cohort.name : `Gr ${s.grade}`}</td>
@@ -219,6 +298,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       )}
 
       {/* Add / Edit Modal */}
+
       <AnimatePresence>
         {showForm && (
           <>

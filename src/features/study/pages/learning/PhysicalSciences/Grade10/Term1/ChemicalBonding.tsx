@@ -422,6 +422,7 @@ async function saveTopicProgress(studentId: number, schoolId: number, status: To
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 function ChemicalBondingPage({ onNavigate }: { onNavigate: (page: any) => void }) {
+  const session = useStudySession()
   const [view, setView] = useState<ViewState>('overview')
   const [previousView, setPreviousView] = useState<ViewState | null>(null)
   const [status, setStatus] = useState<TopicStatus>('not-started')

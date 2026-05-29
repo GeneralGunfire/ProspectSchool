@@ -86,32 +86,30 @@ export const EVENT_LABELS: Record<EventType, string> = {
 
 // ── Upload attachment ─────────────────────────────────────────
 
-async function uploadAttachment(file: File, school_id: number): Promise<{ url: string; name: string } | null> {
+async function uploadAttachment(
+  file: File,
+  school_id: number
+): Promise<{ url: string; name: string } | { uploadError: string }> {
   const ext = file.name.split('.').pop();
-  const path = `${school_id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const storagePath = `${school_id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
 
   const { error } = await supabaseAdmin.storage
     .from('homework-attachments')
-    .upload(path, file, { upsert: false });
+    .upload(storagePath, file, { upsert: false });
 
-  if (error) return null;
+  if (error) {
+    console.error('[events] upload error:', error.message, error);
+    return { uploadError: error.message };
+  }
 
-  const { data } = supabaseAdmin.storage
-    .from('homework-attachments')
-    .getPublicUrl(path);
-
-  return { url: data.publicUrl, name: file.name };
+  // Store the path — not a public URL (bucket is private; signed URLs used at download time)
+  return { url: storagePath, name: file.name };
 }
 
 // ── Delete attachment from storage ───────────────────────────
 
-async function deleteAttachment(url: string): Promise<void> {
-  // Extract path from URL: everything after /homework-attachments/
-  const marker = '/homework-attachments/';
-  const idx = url.indexOf(marker);
-  if (idx === -1) return;
-  const path = url.slice(idx + marker.length);
-  await supabaseAdmin.storage.from('homework-attachments').remove([path]);
+async function deleteAttachment(storagePath: string): Promise<void> {
+  await supabaseAdmin.storage.from('homework-attachments').remove([storagePath]);
 }
 
 // ── Fetch events for a school (teacher view — all events) ────
@@ -195,7 +193,7 @@ export async function createEvent(input: CreateEventInput): Promise<EventResult>
 
   if (input.attachment_file) {
     const uploaded = await uploadAttachment(input.attachment_file, input.school_id);
-    if (!uploaded) return { success: false, error: 'Failed to upload attachment.' };
+    if ('uploadError' in uploaded) return { success: false, error: `Upload failed: ${uploaded.uploadError}` };
     attachment_url = uploaded.url;
     attachment_name = uploaded.name;
   }
@@ -239,7 +237,7 @@ export async function updateEvent(input: UpdateEventInput, existingAttachmentUrl
   } else if (input.attachment_file) {
     if (existingAttachmentUrl) await deleteAttachment(existingAttachmentUrl);
     const uploaded = await uploadAttachment(input.attachment_file, input.school_id);
-    if (!uploaded) return { success: false, error: 'Failed to upload attachment.' };
+    if ('uploadError' in uploaded) return { success: false, error: `Upload failed: ${uploaded.uploadError}` };
     attachment_url = uploaded.url;
     attachment_name = uploaded.name;
   }
@@ -288,16 +286,191 @@ export async function deleteEvent(event_id: number, school_id: number, attachmen
 
 // ── Get signed download URL for attachment ────────────────────
 
-export async function getAttachmentDownloadUrl(attachmentUrl: string): Promise<string | null> {
-  const marker = '/homework-attachments/';
-  const idx = attachmentUrl.indexOf(marker);
-  if (idx === -1) return attachmentUrl; // fallback to public url
-  const path = attachmentUrl.slice(idx + marker.length);
-
+export async function getAttachmentDownloadUrl(storagePath: string): Promise<string | null> {
   const { data, error } = await supabaseAdmin.storage
     .from('homework-attachments')
-    .createSignedUrl(path, 60 * 60); // 1 hour
+    .createSignedUrl(storagePath, 60 * 60); // 1 hour
 
-  if (error || !data) return null;
+  if (error || !data) {
+    console.error('[events] signed URL error:', error?.message, error);
+    return null;
+  }
   return data.signedUrl;
+}
+
+// ── Homework completion + verification types ──────────────────
+
+export type VerificationStatus = 'verified' | 'not_done' | 'excused';
+
+export interface HomeworkStudentRow {
+  student_id: number;
+  name: string;
+  surname: string;
+  self_reported: boolean;              // student tapped "done"
+  completed_at: string | null;
+  verified_by_teacher: boolean | null; // null = not reviewed, true = done, false = not done
+  absent: boolean;                     // teacher marked absent (excused incomplete)
+  teacher_note: string | null;
+}
+
+// ── Homework completion tracking ──────────────────────────────
+
+export async function markHomeworkDone(
+  event_id: number,
+  student_id: number,
+  school_id: number
+): Promise<{ success: boolean }> {
+  const { error } = await supabaseAdmin
+    .from('homework_completions')
+    .upsert({ event_id, student_id, school_id, completed_at: new Date().toISOString() },
+      { onConflict: 'event_id,student_id' });
+  return { success: !error };
+}
+
+export async function unmarkHomeworkDone(
+  event_id: number,
+  student_id: number
+): Promise<{ success: boolean }> {
+  const { error } = await supabaseAdmin
+    .from('homework_completions')
+    .delete()
+    .eq('event_id', event_id)
+    .eq('student_id', student_id);
+  return { success: !error };
+}
+
+// Returns set of event_ids the student has completed
+export async function fetchStudentCompletions(
+  student_id: number,
+  school_id: number
+): Promise<Set<number>> {
+  const { data } = await supabaseAdmin
+    .from('homework_completions')
+    .select('event_id')
+    .eq('student_id', student_id)
+    .eq('school_id', school_id);
+  return new Set((data ?? []).map((r: any) => r.event_id as number));
+}
+
+// Teacher: how many students completed a homework event
+export async function fetchHomeworkCompletionCount(
+  event_id: number
+): Promise<number> {
+  const { count } = await supabaseAdmin
+    .from('homework_completions')
+    .select('id', { count: 'exact', head: true })
+    .eq('event_id', event_id);
+  return count ?? 0;
+}
+
+// ── Teacher: fetch all targeted students + completion status ──
+// Returns every student the event targets, with their self-report
+// and teacher verification status merged in.
+
+export async function fetchHomeworkStudentRows(
+  event: SchoolEvent,
+  school_id: number
+): Promise<HomeworkStudentRow[]> {
+  // 1. Fetch all students in this school
+  const { data: allStudents } = await supabaseAdmin
+    .from('students')
+    .select('id, name, surname, grade, cohort_id')
+    .eq('school_id', school_id)
+    .order('surname');
+
+  if (!allStudents) return [];
+
+  // 2. Filter to those targeted by this event (same logic as student-side)
+  let targeted = allStudents.filter((s: any) => {
+    if (event.target_type === 'all') return true;
+    if (event.target_type === 'grade') return event.target_grades?.includes(s.grade);
+    if (event.target_type === 'class') return event.target_cohort_ids?.includes(s.cohort_id);
+    if (event.target_type === 'specific') return event.target_student_ids?.includes(s.id);
+    if (event.target_type === 'subject') return event.target_grades?.includes(s.grade); // subject events: grade is the student filter
+    return false;
+  });
+
+  if (targeted.length === 0) return [];
+
+  // 3. Fetch completion rows for this event
+  const { data: completions } = await supabaseAdmin
+    .from('homework_completions')
+    .select('student_id, completed_at, verified_by_teacher, absent, teacher_note')
+    .eq('event_id', event.id);
+
+  const compMap = new Map<number, any>();
+  (completions ?? []).forEach((c: any) => compMap.set(c.student_id, c));
+
+  // 4. Merge
+  return targeted.map((s: any) => {
+    const comp = compMap.get(s.id);
+    return {
+      student_id: s.id,
+      name: s.name,
+      surname: s.surname,
+      self_reported: !!comp,
+      completed_at: comp?.completed_at ?? null,
+      verified_by_teacher: comp?.verified_by_teacher ?? null,
+      absent: comp?.absent ?? false,
+      teacher_note: comp?.teacher_note ?? null,
+    };
+  });
+}
+
+// ── Teacher: save verification for a student ─────────────────
+
+export async function saveHomeworkVerification(
+  event_id: number,
+  student_id: number,
+  school_id: number,
+  verified: boolean,
+  note: string
+): Promise<{ success: boolean }> {
+  const { error } = await supabaseAdmin
+    .from('homework_completions')
+    .upsert(
+      {
+        event_id,
+        student_id,
+        school_id,
+        verified_by_teacher: verified,
+        absent: false, // explicit verify/not-done clears absent
+        teacher_note: note.trim() || null,
+      },
+      { onConflict: 'event_id,student_id' }
+    );
+  if (error) {
+    console.error('[events] saveHomeworkVerification error:', error.message);
+    return { success: false };
+  }
+  return { success: true };
+}
+
+// ── Teacher: mark student absent for this homework ────────────
+// Absent = excused incomplete. Clears any verify/not-done status.
+
+export async function saveHomeworkAbsent(
+  event_id: number,
+  student_id: number,
+  school_id: number,
+  note: string
+): Promise<{ success: boolean }> {
+  const { error } = await supabaseAdmin
+    .from('homework_completions')
+    .upsert(
+      {
+        event_id,
+        student_id,
+        school_id,
+        absent: true,
+        verified_by_teacher: null, // absent overrides verify state
+        teacher_note: note.trim() || null,
+      },
+      { onConflict: 'event_id,student_id' }
+    );
+  if (error) {
+    console.error('[events] saveHomeworkAbsent error:', error.message);
+    return { success: false };
+  }
+  return { success: true };
 }

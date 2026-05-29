@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronLeft, ChevronRight, Calendar, Clock, Paperclip, X } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, Calendar, List, Clock, Paperclip, X, CheckCircle2, Circle,
+} from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
-import { fetchStudentEvents, getAttachmentDownloadUrl, EVENT_COLORS, EVENT_LABELS, type SchoolEvent } from '../../../lib/events';
+import {
+  fetchStudentEvents, getAttachmentDownloadUrl,
+  markHomeworkDone, unmarkHomeworkDone, fetchStudentCompletions,
+  EVENT_COLORS, EVENT_LABELS, type SchoolEvent,
+} from '../../../lib/events';
 import type { StudentSession } from '../../../lib/auth';
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -41,10 +47,14 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
   const [monthKey, setMonthKey] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [subjectIds, setSubjectIds] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  // Homework completions
+  const [completions, setCompletions] = useState<Set<number>>(new Set());
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   // Day panel (click a day)
   const [selectedDay, setSelectedDay]     = useState<string | null>(null);
-  // Single event detail (click an event inside day panel)
   const [selectedEvent, setSelectedEvent] = useState<SchoolEvent | null>(null);
   const [downloading, setDownloading]     = useState(false);
 
@@ -60,6 +70,9 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
         const ids = [...new Set((data ?? []).map((r: any) => r.subject_id as number))];
         setSubjectIds(ids);
       });
+    // Load completions once
+    fetchStudentCompletions(session.student_id, session.school_id)
+      .then(setCompletions);
   }, []);
 
   // Load events whenever month/year or subjectIds change
@@ -121,8 +134,26 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
     if (url) window.open(url, '_blank');
   }
 
+  async function handleToggleDone(ev: SchoolEvent, e: React.MouseEvent) {
+    e.stopPropagation();
+    if (ev.event_type !== 'homework') return;
+    setTogglingId(ev.id);
+    const done = completions.has(ev.id);
+    if (done) {
+      await unmarkHomeworkDone(ev.id, session.student_id);
+      setCompletions(prev => { const s = new Set(prev); s.delete(ev.id); return s; });
+    } else {
+      await markHomeworkDone(ev.id, session.student_id, session.school_id);
+      setCompletions(prev => new Set(prev).add(ev.id));
+    }
+    setTogglingId(null);
+  }
+
   const upcoming = events.filter(e => e.event_date >= todayStr).slice(0, 5);
   const dayEvents = selectedDay ? events.filter(e => e.event_date === selectedDay) : [];
+
+  // List view: all events sorted by date
+  const allSorted = [...events].sort((a, b) => a.event_date.localeCompare(b.event_date));
 
   return (
     <div className="p-6 max-w-5xl">
@@ -133,304 +164,459 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
           <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Calendar</p>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">My Schedule</h1>
         </div>
-        <div className="flex items-center gap-2">
-          <motion.button
-            onClick={prevMonth}
-            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4 text-slate-600" />
-          </motion.button>
 
-          <div className="relative overflow-hidden min-w-[10rem] text-center">
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span
-                key={monthKey}
-                initial={{ y: direction > 0 ? 20 : -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: direction > 0 ? -20 : 20, opacity: 0 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
-                className="block text-base font-black text-slate-900"
-              >
-                {MONTHS[month - 1]} {year}
-              </motion.span>
-            </AnimatePresence>
+        <div className="flex items-center gap-3">
+          {/* View toggle */}
+          <div className="flex items-center bg-slate-100 rounded-xl p-1 gap-0.5">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                viewMode === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" /> Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                viewMode === 'list' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" /> List
+            </button>
           </div>
 
-          <motion.button
-            onClick={nextMonth}
-            whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-xl hover:bg-slate-100 transition-colors"
-          >
-            <ChevronRight className="w-4 h-4 text-slate-600" />
-          </motion.button>
+          {/* Month nav */}
+          <div className="flex items-center gap-2">
+            <motion.button onClick={prevMonth} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
+              <ChevronLeft className="w-4 h-4 text-slate-600" />
+            </motion.button>
+            <div className="relative overflow-hidden min-w-40 text-center">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={monthKey}
+                  initial={{ y: direction > 0 ? 20 : -20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: direction > 0 ? -20 : 20, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="block text-base font-black text-slate-900"
+                >
+                  {MONTHS[month - 1]} {year}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+            <motion.button onClick={nextMonth} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
+              className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
+              <ChevronRight className="w-4 h-4 text-slate-600" />
+            </motion.button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6">
-
-        {/* Calendar grid */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          {/* Day headers */}
-          <div className="grid grid-cols-7 border-b border-slate-100">
-            {DAYS.map(d => (
-              <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-widest text-slate-400">
-                {d}
+      {/* ── LIST VIEW ─────────────────────────────────────────── */}
+      <AnimatePresence mode="wait" initial={false}>
+        {viewMode === 'list' ? (
+          <motion.div
+            key="list"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center py-24">
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                  className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
               </div>
-            ))}
-          </div>
-
-          {loading ? (
-            <div className="h-64 flex items-center justify-center">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full"
-              />
-            </div>
-          ) : (
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={monthKey}
-                initial={{ x: direction > 0 ? 40 : -40, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: direction > 0 ? -40 : 40, opacity: 0 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="grid grid-cols-7"
-              >
-                {cells.map((day, idx) => {
-                  if (!day) return (
-                    <div key={`empty-${idx}`} className="border-b border-r border-slate-50 min-h-[80px]" />
-                  );
-                  const dateStr    = toDateStr(year, month, day);
-                  const dayEvs     = eventsOnDay(day);
-                  const isToday    = dateStr === todayStr;
-                  const isSelected = dateStr === selectedDay;
-                  const hasEvents  = dayEvs.length > 0;
-
+            ) : allSorted.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24">
+                <p className="text-sm font-bold text-slate-400">No events this month.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {allSorted.map((ev, i) => {
+                  const c = EVENT_COLORS[ev.event_type];
+                  const isHomework = ev.event_type === 'homework';
+                  const done = completions.has(ev.id);
+                  const toggling = togglingId === ev.id;
+                  const isPast = ev.event_date < todayStr;
                   return (
                     <motion.div
-                      key={day}
-                      onClick={() => handleDayClick(day)}
-                      whileHover={{ backgroundColor: isSelected ? '#f1f5f9' : '#f8fafc' }}
-                      whileTap={{ scale: 0.97 }}
-                      className={`border-b border-r border-slate-100 min-h-[80px] p-1.5 cursor-pointer transition-colors relative ${
-                        isSelected ? 'bg-slate-50 ring-2 ring-inset ring-slate-900' : ''
-                      }`}
+                      key={ev.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.03, duration: 0.18 }}
+                      className={`bg-white rounded-2xl border border-slate-200 px-5 py-4 flex items-start gap-4 transition-opacity ${done ? 'opacity-60' : ''}`}
                     >
-                      <div className="mb-1 flex items-center justify-between">
-                        <motion.span
-                          animate={isToday ? { scale: [1, 1.1, 1] } : {}}
-                          transition={{ duration: 0.4 }}
-                          className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                            isToday
-                              ? 'bg-slate-900 text-white'
-                              : isSelected
-                              ? 'text-slate-900'
-                              : 'text-slate-400'
-                          }`}
+                      {/* Date block */}
+                      <div className="shrink-0 w-10 text-center">
+                        <p className="text-lg font-black text-slate-900 leading-none">
+                          {parseInt(ev.event_date.split('-')[2])}
+                        </p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">
+                          {MONTHS[parseInt(ev.event_date.split('-')[1]) - 1].slice(0, 3)}
+                        </p>
+                      </div>
+
+                      {/* Divider */}
+                      <div className={`w-0.5 self-stretch rounded-full ${c.dot}`} />
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>
+                            {EVENT_LABELS[ev.event_type]}
+                          </span>
+                          {isPast && !isHomework && (
+                            <span className="text-[10px] font-bold text-slate-300">Past</span>
+                          )}
+                        </div>
+                        <p className={`text-sm font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900'}`}>
+                          {ev.title}
+                        </p>
+                        {ev.start_time && (
+                          <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
+                          </p>
+                        )}
+                        {ev.description && (
+                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">{ev.description}</p>
+                        )}
+                        {ev.attachment_url && (
+                          <button onClick={() => handleDownload(ev)} disabled={downloading}
+                            className="flex items-center gap-1 text-xs font-bold text-blue-500 hover:text-blue-700 mt-1 transition-colors disabled:opacity-50">
+                            <Paperclip className="w-3 h-3" />
+                            {ev.attachment_name ?? 'Attachment'}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Homework done toggle */}
+                      {isHomework && (
+                        <button
+                          onClick={(e) => handleToggleDone(ev, e)}
+                          disabled={toggling}
+                          className="shrink-0 p-1 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-40"
+                          title={done ? 'Mark as not done' : 'Mark as done'}
                         >
-                          {day}
-                        </motion.span>
-                        {hasEvents && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
-                        )}
-                      </div>
-                      <div className="space-y-0.5">
-                        {dayEvs.slice(0, 2).map(ev => {
-                          const c = EVENT_COLORS[ev.event_type];
-                          return (
-                            <div
-                              key={ev.id}
-                              className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold truncate ${c.badge}`}
-                            >
-                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
-                              <span className="truncate">{ev.title}</span>
-                            </div>
-                          );
-                        })}
-                        {dayEvs.length > 2 && (
-                          <div className="text-[10px] font-bold text-slate-400 px-1.5">+{dayEvs.length - 2} more</div>
-                        )}
-                      </div>
+                          {done
+                            ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                            : <Circle className="w-5 h-5 text-slate-300" />
+                          }
+                        </button>
+                      )}
                     </motion.div>
                   );
                 })}
-              </motion.div>
-            </AnimatePresence>
-          )}
-        </div>
-
-        {/* Right sidebar */}
-        <div className="space-y-4">
-
-          <AnimatePresence mode="wait">
-            {selectedDay ? (
-              <motion.div
-                key={selectedDay}
-                initial={{ opacity: 0, y: -12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
-              >
-                {/* Day header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-                  <div>
-                    <p className="text-xs font-black text-slate-900">{formatDayFull(selectedDay)}</p>
-                    <p className="text-[10px] text-slate-400 font-bold mt-0.5">
-                      {dayEvents.length === 0 ? 'No events' : `${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}`}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-                  >
-                    <X className="w-3.5 h-3.5 text-slate-400" />
-                  </button>
-                </div>
-
-                {dayEvents.length === 0 ? (
-                  <div className="px-4 py-6 text-center">
-                    <p className="text-sm font-bold text-slate-300">Nothing on this day.</p>
-                  </div>
-                ) : (
-                  <div className="divide-y divide-slate-100">
-                    {dayEvents.map((ev, i) => {
-                      const c = EVENT_COLORS[ev.event_type];
-                      const isOpen = selectedEvent?.id === ev.id;
-                      return (
-                        <div key={ev.id}>
-                          <motion.button
-                            initial={{ opacity: 0, x: -8 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05, duration: 0.18 }}
-                            onClick={() => setSelectedEvent(isOpen ? null : ev)}
-                            className="w-full text-left px-4 py-3 hover:bg-slate-50 transition-colors"
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
-                              <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>
-                                {EVENT_LABELS[ev.event_type]}
-                              </span>
-                            </div>
-                            <p className="text-sm font-bold text-slate-900 truncate">{ev.title}</p>
-                            {ev.start_time && (
-                              <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
-                                <Clock className="w-3 h-3" />
-                                {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
-                              </p>
-                            )}
-                          </motion.button>
-
-                          {/* Inline expanded detail */}
-                          <AnimatePresence>
-                            {isOpen && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2, ease: 'easeOut' }}
-                                className="overflow-hidden"
-                              >
-                                <div className={`mx-3 mb-3 p-3 rounded-xl ${c.bg}`}>
-                                  {ev.description && (
-                                    <p className="text-xs text-slate-600 leading-relaxed mb-2">{ev.description}</p>
-                                  )}
-                                  {ev.attachment_url && (
-                                    <button
-                                      onClick={() => handleDownload(ev)}
-                                      disabled={downloading}
-                                      className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50"
-                                    >
-                                      <Paperclip className="w-3.5 h-3.5" />
-                                      {downloading ? 'Opening…' : ev.attachment_name ?? 'Download'}
-                                    </button>
-                                  )}
-                                  {!ev.description && !ev.attachment_url && (
-                                    <p className="text-xs text-slate-400 italic">No additional details.</p>
-                                  )}
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </motion.div>
-            ) : (
-              /* Coming Up — shown when no day selected */
-              <motion.div
-                key="upcoming"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
-                className="bg-white rounded-2xl border border-slate-200 p-4"
-              >
-                <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Coming Up</p>
-                {upcoming.length === 0 ? (
-                  <p className="text-sm text-slate-400 font-bold">Nothing scheduled.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {upcoming.map((ev, i) => {
-                      const c = EVENT_COLORS[ev.event_type];
-                      return (
-                        <motion.button
-                          key={ev.id}
-                          initial={{ opacity: 0, x: 8 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.06, duration: 0.18 }}
-                          onClick={() => {
-                            const [y, m, d] = ev.event_date.split('-');
-                            const evYear  = parseInt(y);
-                            const evMonth = parseInt(m);
-                            if (evYear === year && evMonth === month) {
-                              setSelectedDay(ev.event_date);
-                              setSelectedEvent(ev);
-                            }
-                          }}
-                          className="w-full text-left p-3 rounded-xl hover:bg-slate-50 transition-colors border border-slate-100"
-                        >
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
-                            <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>{EVENT_LABELS[ev.event_type]}</span>
-                          </div>
-                          <p className="text-sm font-bold text-slate-900 truncate">{ev.title}</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">{formatDate(ev.event_date)}</p>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                )}
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </motion.div>
 
-          {/* Legend */}
+        ) : (
+          /* ── GRID VIEW ──────────────────────────────────────── */
           <motion.div
+            key="grid"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.2 }}
-            className="bg-white rounded-2xl border border-slate-200 p-4"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-6"
           >
-            <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Legend</p>
-            <div className="space-y-2">
-              {(['homework','assessment','exam','other'] as const).map(type => {
-                const c = EVENT_COLORS[type];
-                return (
-                  <div key={type} className="flex items-center gap-2">
-                    <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
-                    <span className="text-xs font-bold text-slate-600">{EVENT_LABELS[type]}</span>
+            {/* Calendar grid */}
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+              {/* Day headers */}
+              <div className="grid grid-cols-7 border-b border-slate-100">
+                {DAYS.map(d => (
+                  <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-widest text-slate-400">
+                    {d}
                   </div>
-                );
-              })}
+                ))}
+              </div>
+
+              {loading ? (
+                <div className="h-64 flex items-center justify-center">
+                  <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                    className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+                </div>
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={monthKey}
+                    initial={{ x: direction > 0 ? 40 : -40, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    exit={{ x: direction > 0 ? -40 : 40, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="grid grid-cols-7"
+                  >
+                    {cells.map((day, idx) => {
+                      if (!day) return (
+                        <div key={`empty-${idx}`} className="border-b border-r border-slate-50 min-h-20" />
+                      );
+                      const dateStr    = toDateStr(year, month, day);
+                      const dayEvs     = eventsOnDay(day);
+                      const isToday    = dateStr === todayStr;
+                      const isSelected = dateStr === selectedDay;
+                      const hasEvents  = dayEvs.length > 0;
+
+                      return (
+                        <motion.div
+                          key={day}
+                          onClick={() => handleDayClick(day)}
+                          whileHover={{ backgroundColor: isSelected ? '#f1f5f9' : '#f8fafc' }}
+                          whileTap={{ scale: 0.97 }}
+                          className={`border-b border-r border-slate-100 min-h-20 p-1.5 cursor-pointer transition-colors relative ${
+                            isSelected ? 'bg-slate-50 ring-2 ring-inset ring-slate-900' : ''
+                          }`}
+                        >
+                          <div className="mb-1 flex items-center justify-between">
+                            <motion.span
+                              animate={isToday ? { scale: [1, 1.1, 1] } : {}}
+                              transition={{ duration: 0.4 }}
+                              className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                                isToday
+                                  ? 'bg-slate-900 text-white'
+                                  : isSelected
+                                  ? 'text-slate-900'
+                                  : 'text-slate-400'
+                              }`}
+                            >
+                              {day}
+                            </motion.span>
+                            {hasEvents && <span className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />}
+                          </div>
+                          <div className="space-y-0.5">
+                            {dayEvs.slice(0, 2).map(ev => {
+                              const c = EVENT_COLORS[ev.event_type];
+                              const done = completions.has(ev.id);
+                              return (
+                                <div key={ev.id}
+                                  className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold truncate ${c.badge} ${done ? 'opacity-50' : ''}`}>
+                                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
+                                  <span className={`truncate ${done ? 'line-through' : ''}`}>{ev.title}</span>
+                                </div>
+                              );
+                            })}
+                            {dayEvs.length > 2 && (
+                              <div className="text-[10px] font-bold text-slate-400 px-1.5">+{dayEvs.length - 2} more</div>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </div>
+
+            {/* Right sidebar */}
+            <div className="space-y-4">
+              <AnimatePresence mode="wait">
+                {selectedDay ? (
+                  <motion.div
+                    key={selectedDay}
+                    initial={{ opacity: 0, y: -12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                    className="bg-white rounded-2xl border border-slate-200 overflow-hidden"
+                  >
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
+                      <div>
+                        <p className="text-xs font-black text-slate-900">{formatDayFull(selectedDay)}</p>
+                        <p className="text-[10px] text-slate-400 font-bold mt-0.5">
+                          {dayEvents.length === 0 ? 'No events' : `${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}`}
+                        </p>
+                      </div>
+                      <button onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
+                        className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                        <X className="w-3.5 h-3.5 text-slate-400" />
+                      </button>
+                    </div>
+
+                    {dayEvents.length === 0 ? (
+                      <div className="px-4 py-6 text-center">
+                        <p className="text-sm font-bold text-slate-300">Nothing on this day.</p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-slate-100">
+                        {dayEvents.map((ev, i) => {
+                          const c = EVENT_COLORS[ev.event_type];
+                          const isOpen = selectedEvent?.id === ev.id;
+                          const isHomework = ev.event_type === 'homework';
+                          const done = completions.has(ev.id);
+                          const toggling = togglingId === ev.id;
+                          return (
+                            <div key={ev.id}>
+                              <div className="flex items-center">
+                                <motion.button
+                                  initial={{ opacity: 0, x: -8 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: i * 0.05, duration: 0.18 }}
+                                  onClick={() => setSelectedEvent(isOpen ? null : ev)}
+                                  className="flex-1 text-left px-4 py-3 hover:bg-slate-50 transition-colors"
+                                >
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>
+                                      {EVENT_LABELS[ev.event_type]}
+                                    </span>
+                                  </div>
+                                  <p className={`text-sm font-bold ${done ? 'line-through text-slate-400' : 'text-slate-900'} truncate`}>
+                                    {ev.title}
+                                  </p>
+                                  {ev.start_time && (
+                                    <p className="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                      <Clock className="w-3 h-3" />
+                                      {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
+                                    </p>
+                                  )}
+                                </motion.button>
+
+                                {/* Homework done toggle in sidebar */}
+                                {isHomework && (
+                                  <button
+                                    onClick={(e) => handleToggleDone(ev, e)}
+                                    disabled={toggling}
+                                    className="px-3 py-3 hover:bg-slate-50 transition-colors disabled:opacity-40"
+                                    title={done ? 'Mark as not done' : 'Mark as done'}
+                                  >
+                                    {done
+                                      ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                      : <Circle className="w-5 h-5 text-slate-300" />
+                                    }
+                                  </button>
+                                )}
+                              </div>
+
+                              <AnimatePresence>
+                                {isOpen && (
+                                  <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className={`mx-3 mb-3 p-3 rounded-xl ${c.bg}`}>
+                                      {ev.description && (
+                                        <p className="text-xs text-slate-600 leading-relaxed mb-2">{ev.description}</p>
+                                      )}
+                                      {ev.attachment_url && (
+                                        <button onClick={() => handleDownload(ev)} disabled={downloading}
+                                          className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50">
+                                          <Paperclip className="w-3.5 h-3.5" />
+                                          {downloading ? 'Opening…' : ev.attachment_name ?? 'Download'}
+                                        </button>
+                                      )}
+                                      {!ev.description && !ev.attachment_url && (
+                                        <p className="text-xs text-slate-400 italic">No additional details.</p>
+                                      )}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="upcoming"
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="bg-white rounded-2xl border border-slate-200 p-4"
+                  >
+                    <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Coming Up</p>
+                    {upcoming.length === 0 ? (
+                      <p className="text-sm text-slate-400 font-bold">Nothing scheduled.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {upcoming.map((ev, i) => {
+                          const c = EVENT_COLORS[ev.event_type];
+                          const isHomework = ev.event_type === 'homework';
+                          const done = completions.has(ev.id);
+                          return (
+                            <motion.div
+                              key={ev.id}
+                              initial={{ opacity: 0, x: 8 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.06, duration: 0.18 }}
+                              className="flex items-center gap-2"
+                            >
+                              <button
+                                onClick={() => {
+                                  const evYear  = parseInt(ev.event_date.split('-')[0]);
+                                  const evMonth = parseInt(ev.event_date.split('-')[1]);
+                                  if (evYear === year && evMonth === month) {
+                                    setSelectedDay(ev.event_date);
+                                    setSelectedEvent(ev);
+                                  }
+                                }}
+                                className={`flex-1 text-left p-3 rounded-xl hover:bg-slate-50 transition-colors border border-slate-100 ${done ? 'opacity-50' : ''}`}
+                              >
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
+                                  <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>{EVENT_LABELS[ev.event_type]}</span>
+                                </div>
+                                <p className={`text-sm font-bold text-slate-900 truncate ${done ? 'line-through text-slate-400' : ''}`}>{ev.title}</p>
+                                <p className="text-[11px] text-slate-400 mt-0.5">{formatDate(ev.event_date)}</p>
+                              </button>
+
+                              {isHomework && (
+                                <button
+                                  onClick={(e) => handleToggleDone(ev, e)}
+                                  disabled={togglingId === ev.id}
+                                  className="p-2 rounded-xl hover:bg-slate-100 transition-colors disabled:opacity-40 shrink-0"
+                                  title={done ? 'Mark as not done' : 'Mark as done'}
+                                >
+                                  {done
+                                    ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                    : <Circle className="w-5 h-5 text-slate-300" />
+                                  }
+                                </button>
+                              )}
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Legend */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.2 }}
+                className="bg-white rounded-2xl border border-slate-200 p-4"
+              >
+                <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-3">Legend</p>
+                <div className="space-y-2">
+                  {(['homework','assessment','exam','other'] as const).map(type => {
+                    const c = EVENT_COLORS[type];
+                    return (
+                      <div key={type} className="flex items-center gap-2">
+                        <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
+                        <span className="text-xs font-bold text-slate-600">{EVENT_LABELS[type]}</span>
+                        {type === 'homework' && (
+                          <span className="text-[10px] text-slate-300 font-bold ml-auto">tap ○ to mark done</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
-        </div>
-      </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

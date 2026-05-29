@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Home, GraduationCap } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
+import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
 
-type ActivePage = 'home' | 'teachers';
+type ActivePage = 'home' | 'teachers' | 'announcements';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -24,8 +25,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
 
   const navItems = [
-    { id: 'home' as ActivePage, label: 'Home', icon: Home },
-    { id: 'teachers' as ActivePage, label: 'Teachers', icon: GraduationCap },
+    { id: 'home'          as ActivePage, label: 'Home',          icon: Home },
+    { id: 'announcements' as ActivePage, label: 'Announcements', icon: Megaphone },
+    { id: 'teachers'      as ActivePage, label: 'Teachers',      icon: GraduationCap },
   ];
 
   return (
@@ -84,7 +86,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             <p className="text-sm text-slate-400">{session.school_name}</p>
           </div>
         )}
-        {activePage === 'teachers' && <TeachersPage session={session} />}
+        {activePage === 'announcements' && <AdminAnnouncementsPage session={session} />}
+        {activePage === 'teachers'      && <TeachersPage session={session} />}
       </div>
     </div>
   );

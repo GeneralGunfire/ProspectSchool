@@ -735,6 +735,7 @@ async function saveTopicProgress(studentId: number, schoolId: number, status: To
 // It owns all the view-switching logic and progress tracking for the whole lesson flow.
 // user and onNavigate come from withAuth — the wrapper that ensures the student is logged in.
 function SimultaneousEquationsPage({ onNavigate }: { onNavigate: (page: any) => void }) {
+  const session = useStudySession()
   // view controls which screen is currently rendered (lesson, practice, feedback, etc.).
   // Unlike LinearEquations, this page has no overview — it starts straight at the lesson.
   const [view, setView] = useState<ViewState>('interactive-lesson')
