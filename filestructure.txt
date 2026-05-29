@@ -270,4 +270,5 @@
             |-- usePillVisible.ts
 |-- test-routing.mjs
 |-- tsconfig.json
+|-- vercel.json
 |-- vite.config.ts
