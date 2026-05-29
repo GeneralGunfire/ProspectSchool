@@ -97,6 +97,8 @@ type Page =
   | 'learning-cat-g10-t1-computer-systems' | 'learning-cat-g10-t1-file-management'
   | 'learning-cat-g10-t1-word-processing' | 'learning-cat-g10-t1-spreadsheets'
   | 'learning-egd-g10-t1-drawing-instruments'
+  // Study
+  | 'library' | 'school-assist' | 'school-assist-chat'
   // Portal pages
   | 'portal' | 'teacher-login' | 'student-login' | 'admin-login'
   | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard';
@@ -908,90 +910,92 @@ export default function App() {
   const navigate = (p: Page) => setPage(p);
   const pp = pageProps(navigate);
 
+  // Single render function so AnimatePresence always receives exactly one child
+  const renderPage = () => {
+    switch (page) {
+      case 'careers':    return <PageTransition pageKey="careers"><CareersPageNew {...pp} /></PageTransition>;
+      case 'quiz':       return <PageTransition pageKey="quiz"><QuizPage {...pp} /></PageTransition>;
+      case 'bursaries':  return <PageTransition pageKey="bursaries"><BursariesPage {...pp} /></PageTransition>;
+      case 'bursary':    return <PageTransition pageKey="bursary"><BursaryDetailPage {...pp} /></PageTransition>;
+      case 'map':        return <PageTransition pageKey="map"><MapPage {...pp} /></PageTransition>;
+      case 'tvet':       return <PageTransition pageKey="tvet"><TVETPage {...pp} /></PageTransition>;
+      case 'tvet-careers':      return <PageTransition pageKey="tvet-careers"><TVETCareersPage {...pp} /></PageTransition>;
+      case 'tvet-colleges':     return <PageTransition pageKey="tvet-colleges"><TVETCollegesPage {...pp} /></PageTransition>;
+      case 'tvet-funding':      return <PageTransition pageKey="tvet-funding"><TVETFundingPage {...pp} /></PageTransition>;
+      case 'tvet-requirements': return <PageTransition pageKey="tvet-requirements"><TVETRequirementsPage {...pp} /></PageTransition>;
+      case 'library':           return <PageTransition pageKey="library"><StudyLibraryPage {...pp} /></PageTransition>;
+      case 'school-assist':     return <PageTransition pageKey="school-assist"><SchoolAssistPage onNavigate={navigate} onNavigateHome={() => navigate('home')} /></PageTransition>;
+
+      // Portal
+      case 'portal':            return <PageTransition pageKey="portal"><PortalEntry onNavigate={navigate} /></PageTransition>;
+      case 'teacher-login':     return <PageTransition pageKey="teacher-login"><TeacherLogin onNavigate={navigate} /></PageTransition>;
+      case 'student-login':     return <PageTransition pageKey="student-login"><StudentLogin onNavigate={navigate} /></PageTransition>;
+      case 'admin-login':       return <PageTransition pageKey="admin-login"><AdminLogin onNavigate={navigate} /></PageTransition>;
+      case 'teacher-dashboard': return <PageTransition pageKey="teacher-dashboard"><TeacherDashboard onNavigate={navigate} /></PageTransition>;
+      case 'student-dashboard': return <PageTransition pageKey="student-dashboard"><StudentDashboard onNavigate={navigate} /></PageTransition>;
+      case 'admin-dashboard':   return <PageTransition pageKey="admin-dashboard"><AdminDashboard onNavigate={navigate} /></PageTransition>;
+
+      // Learning pages
+      case 'learning-algebra-g10-t1-linear-equations':    return <PageTransition pageKey={page}><LinearEquationsPage {...pp} /></PageTransition>;
+      case 'learning-algebra-g10-t1-simultaneous':        return <PageTransition pageKey={page}><SimultaneousEquationsPage {...pp} /></PageTransition>;
+      case 'learning-physci-g10-t1-waves':                return <PageTransition pageKey={page}><WavesSoundLightPage {...pp} /></PageTransition>;
+      case 'learning-physci-g10-t1-atoms':                return <PageTransition pageKey={page}><AtomsSubatomicParticlesPage {...pp} /></PageTransition>;
+      case 'learning-physci-g10-t1-classification':       return <PageTransition pageKey={page}><ClassificationOfMatterPage {...pp} /></PageTransition>;
+      case 'learning-physci-g10-t1-periodic-table':       return <PageTransition pageKey={page}><PeriodicTableTrendsPage {...pp} /></PageTransition>;
+      case 'learning-physci-g10-t1-bonding':              return <PageTransition pageKey={page}><ChemicalBondingPage {...pp} /></PageTransition>;
+      case 'learning-lifesci-g10-t1-biodiversity':        return <PageTransition pageKey={page}><BiodiversityAndClassificationPage {...pp} /></PageTransition>;
+      case 'learning-lifesci-g10-t1-five-kingdoms':       return <PageTransition pageKey={page}><FiveKingdomsPage {...pp} /></PageTransition>;
+      case 'learning-lifesci-g10-t1-taxonomy':            return <PageTransition pageKey={page}><TaxonomyAndBinomialNomenclaturePage {...pp} /></PageTransition>;
+      case 'learning-lifesci-g10-t1-species':             return <PageTransition pageKey={page}><SpeciesConceptPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-intro':            return <PageTransition pageKey={page}><IntroductionToAccountingPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-equation':         return <PageTransition pageKey={page}><AccountingEquationPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-double-entry':     return <PageTransition pageKey={page}><DoubleEntrySystemPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-source-documents': return <PageTransition pageKey={page}><SourceDocumentsPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-journals':         return <PageTransition pageKey={page}><JournalsInAccountingPage {...pp} /></PageTransition>;
+      case 'learning-accounting-g10-t1-ledger':           return <PageTransition pageKey={page}><GeneralLedgerPage {...pp} /></PageTransition>;
+      case 'learning-bizstudies-g10-t1-environment':      return <PageTransition pageKey={page}><BusinessEnvironmentPage {...pp} /></PageTransition>;
+      case 'learning-bizstudies-g10-t1-sectors':          return <PageTransition pageKey={page}><BusinessSectorsPage {...pp} /></PageTransition>;
+      case 'learning-bizstudies-g10-t1-stakeholders':     return <PageTransition pageKey={page}><BusinessStakeholdersPage {...pp} /></PageTransition>;
+      case 'learning-bizstudies-g10-t1-operations':       return <PageTransition pageKey={page}><BusinessOperationsPage {...pp} /></PageTransition>;
+      case 'learning-economics-g10-t1-problem':           return <PageTransition pageKey={page}><EconomicProblemPage {...pp} /></PageTransition>;
+      case 'learning-economics-g10-t1-ppc':               return <PageTransition pageKey={page}><ProductionPossibilityCurvePage {...pp} /></PageTransition>;
+      case 'learning-economics-g10-t1-systems':           return <PageTransition pageKey={page}><EconomicSystemsPage {...pp} /></PageTransition>;
+      case 'learning-economics-g10-t1-circular-flow':     return <PageTransition pageKey={page}><CircularFlowModelPage {...pp} /></PageTransition>;
+      case 'learning-economics-g10-t1-factors':           return <PageTransition pageKey={page}><FactorsOfProductionPage {...pp} /></PageTransition>;
+      case 'learning-cat-g10-t1-computer-systems':        return <PageTransition pageKey={page}><ComputerSystemsPage {...pp} /></PageTransition>;
+      case 'learning-cat-g10-t1-file-management':         return <PageTransition pageKey={page}><FileManagementPage {...pp} /></PageTransition>;
+      case 'learning-cat-g10-t1-word-processing':         return <PageTransition pageKey={page}><WordProcessingPage {...pp} /></PageTransition>;
+      case 'learning-cat-g10-t1-spreadsheets':            return <PageTransition pageKey={page}><SpreadsheetsPage {...pp} /></PageTransition>;
+      case 'learning-egd-g10-t1-drawing-instruments':     return <PageTransition pageKey={page}><DrawingInstrumentsPage {...pp} /></PageTransition>;
+
+      default:
+      case 'home':
+        return (
+          <PageTransition pageKey="home">
+            <div className="relative bg-[#FAF9F6]">
+              <TutorialDialog />
+              <HeroNav onNavigate={setPage} />
+              <main id="main-content">
+                <HeroSection onNavigate={setPage} />
+                <ProblemSection />
+                <Perspectives onNavigate={setPage} />
+                <CareerSection onNavigate={setPage} />
+                <CTASection onNavigate={setPage} />
+              </main>
+              <LandingFooter onNavigate={setPage} />
+            </div>
+          </PageTransition>
+        );
+    }
+  };
+
   return (
     <>
-      {/* TEMP: Loading screen disabled for development */}
-      {/* <AnimatePresence>
-        {!isAssetsLoaded && <LoadingScreen onComplete={() => setIsAssetsLoaded(true)} />}
-      </AnimatePresence> */}
-
       {isAssetsLoaded && (
         <div className="relative min-h-screen bg-white">
           <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" /></div>}>
             <AnimatePresence mode="wait">
-
-              {page === 'careers' && <PageTransition pageKey="careers"><CareersPageNew {...pp} /></PageTransition>}
-              {page === 'quiz' && <PageTransition pageKey="quiz"><QuizPage {...pp} /></PageTransition>}
-              {page === 'bursaries' && <PageTransition pageKey="bursaries"><BursariesPage {...pp} /></PageTransition>}
-              {page === 'bursary' && <PageTransition pageKey="bursary"><BursaryDetailPage {...pp} /></PageTransition>}
-              {page === 'map' && <PageTransition pageKey="map"><MapPage {...pp} /></PageTransition>}
-              {page === 'tvet' && <PageTransition pageKey="tvet"><TVETPage {...pp} /></PageTransition>}
-              {page === 'tvet-careers' && <PageTransition pageKey="tvet-careers"><TVETCareersPage {...pp} /></PageTransition>}
-              {page === 'tvet-colleges' && <PageTransition pageKey="tvet-colleges"><TVETCollegesPage {...pp} /></PageTransition>}
-              {page === 'tvet-funding' && <PageTransition pageKey="tvet-funding"><TVETFundingPage {...pp} /></PageTransition>}
-              {page === 'tvet-requirements' && <PageTransition pageKey="tvet-requirements"><TVETRequirementsPage {...pp} /></PageTransition>}
-              {page === 'library' && <PageTransition pageKey="library"><StudyLibraryPage {...pp} /></PageTransition>}
-              {page === 'school-assist' && <PageTransition pageKey="school-assist"><SchoolAssistPage onNavigate={navigate} onNavigateHome={() => navigate('home')} /></PageTransition>}
-
-              {/* Portal Pages */}
-              {page === 'portal' && <PageTransition pageKey="portal"><PortalEntry onNavigate={navigate} /></PageTransition>}
-              {page === 'teacher-login' && <PageTransition pageKey="teacher-login"><TeacherLogin onNavigate={navigate} /></PageTransition>}
-              {page === 'student-login' && <PageTransition pageKey="student-login"><StudentLogin onNavigate={navigate} /></PageTransition>}
-              {page === 'admin-login' && <PageTransition pageKey="admin-login"><AdminLogin onNavigate={navigate} /></PageTransition>}
-              {page === 'teacher-dashboard' && <PageTransition pageKey="teacher-dashboard"><TeacherDashboard onNavigate={navigate} /></PageTransition>}
-              {page === 'student-dashboard' && <PageTransition pageKey="student-dashboard"><StudentDashboard onNavigate={navigate} /></PageTransition>}
-              {page === 'admin-dashboard' && <PageTransition pageKey="admin-dashboard"><AdminDashboard onNavigate={navigate} /></PageTransition>}
-
-              {page === 'learning-algebra-g10-t1-linear-equations' && <PageTransition pageKey="learning-algebra-g10-t1-linear-equations"><LinearEquationsPage {...pp} /></PageTransition>}
-              {page === 'learning-algebra-g10-t1-simultaneous' && <PageTransition pageKey="learning-algebra-g10-t1-simultaneous"><SimultaneousEquationsPage {...pp} /></PageTransition>}
-              {page === 'learning-physci-g10-t1-waves' && <PageTransition pageKey="learning-physci-g10-t1-waves"><WavesSoundLightPage {...pp} /></PageTransition>}
-              {page === 'learning-physci-g10-t1-atoms' && <PageTransition pageKey="learning-physci-g10-t1-atoms"><AtomsSubatomicParticlesPage {...pp} /></PageTransition>}
-              {page === 'learning-physci-g10-t1-classification' && <PageTransition pageKey="learning-physci-g10-t1-classification"><ClassificationOfMatterPage {...pp} /></PageTransition>}
-              {page === 'learning-physci-g10-t1-periodic-table' && <PageTransition pageKey="learning-physci-g10-t1-periodic-table"><PeriodicTableTrendsPage {...pp} /></PageTransition>}
-              {page === 'learning-physci-g10-t1-bonding' && <PageTransition pageKey="learning-physci-g10-t1-bonding"><ChemicalBondingPage {...pp} /></PageTransition>}
-              {page === 'learning-lifesci-g10-t1-biodiversity' && <PageTransition pageKey="learning-lifesci-g10-t1-biodiversity"><BiodiversityAndClassificationPage {...pp} /></PageTransition>}
-              {page === 'learning-lifesci-g10-t1-five-kingdoms' && <PageTransition pageKey="learning-lifesci-g10-t1-five-kingdoms"><FiveKingdomsPage {...pp} /></PageTransition>}
-              {page === 'learning-lifesci-g10-t1-taxonomy' && <PageTransition pageKey="learning-lifesci-g10-t1-taxonomy"><TaxonomyAndBinomialNomenclaturePage {...pp} /></PageTransition>}
-              {page === 'learning-lifesci-g10-t1-species' && <PageTransition pageKey="learning-lifesci-g10-t1-species"><SpeciesConceptPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-intro' && <PageTransition pageKey="learning-accounting-g10-t1-intro"><IntroductionToAccountingPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-equation' && <PageTransition pageKey="learning-accounting-g10-t1-equation"><AccountingEquationPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-double-entry' && <PageTransition pageKey="learning-accounting-g10-t1-double-entry"><DoubleEntrySystemPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-source-documents' && <PageTransition pageKey="learning-accounting-g10-t1-source-documents"><SourceDocumentsPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-journals' && <PageTransition pageKey="learning-accounting-g10-t1-journals"><JournalsInAccountingPage {...pp} /></PageTransition>}
-              {page === 'learning-accounting-g10-t1-ledger' && <PageTransition pageKey="learning-accounting-g10-t1-ledger"><GeneralLedgerPage {...pp} /></PageTransition>}
-              {page === 'learning-bizstudies-g10-t1-environment' && <PageTransition pageKey="learning-bizstudies-g10-t1-environment"><BusinessEnvironmentPage {...pp} /></PageTransition>}
-              {page === 'learning-bizstudies-g10-t1-sectors' && <PageTransition pageKey="learning-bizstudies-g10-t1-sectors"><BusinessSectorsPage {...pp} /></PageTransition>}
-              {page === 'learning-bizstudies-g10-t1-stakeholders' && <PageTransition pageKey="learning-bizstudies-g10-t1-stakeholders"><BusinessStakeholdersPage {...pp} /></PageTransition>}
-              {page === 'learning-bizstudies-g10-t1-operations' && <PageTransition pageKey="learning-bizstudies-g10-t1-operations"><BusinessOperationsPage {...pp} /></PageTransition>}
-              {page === 'learning-economics-g10-t1-problem' && <PageTransition pageKey="learning-economics-g10-t1-problem"><EconomicProblemPage {...pp} /></PageTransition>}
-              {page === 'learning-economics-g10-t1-ppc' && <PageTransition pageKey="learning-economics-g10-t1-ppc"><ProductionPossibilityCurvePage {...pp} /></PageTransition>}
-              {page === 'learning-economics-g10-t1-systems' && <PageTransition pageKey="learning-economics-g10-t1-systems"><EconomicSystemsPage {...pp} /></PageTransition>}
-              {page === 'learning-economics-g10-t1-circular-flow' && <PageTransition pageKey="learning-economics-g10-t1-circular-flow"><CircularFlowModelPage {...pp} /></PageTransition>}
-              {page === 'learning-economics-g10-t1-factors' && <PageTransition pageKey="learning-economics-g10-t1-factors"><FactorsOfProductionPage {...pp} /></PageTransition>}
-              {page === 'learning-cat-g10-t1-computer-systems' && <PageTransition pageKey="learning-cat-g10-t1-computer-systems"><ComputerSystemsPage {...pp} /></PageTransition>}
-              {page === 'learning-cat-g10-t1-file-management' && <PageTransition pageKey="learning-cat-g10-t1-file-management"><FileManagementPage {...pp} /></PageTransition>}
-              {page === 'learning-cat-g10-t1-word-processing' && <PageTransition pageKey="learning-cat-g10-t1-word-processing"><WordProcessingPage {...pp} /></PageTransition>}
-              {page === 'learning-cat-g10-t1-spreadsheets' && <PageTransition pageKey="learning-cat-g10-t1-spreadsheets"><SpreadsheetsPage {...pp} /></PageTransition>}
-              {page === 'learning-egd-g10-t1-drawing-instruments' && <PageTransition pageKey="learning-egd-g10-t1-drawing-instruments"><DrawingInstrumentsPage {...pp} /></PageTransition>}
-
-
-              {page === 'home' && (
-                <PageTransition pageKey="home">
-                  <div className="relative bg-[#FAF9F6]">
-                    <TutorialDialog />
-                    <HeroNav onNavigate={setPage} />
-                    <main id="main-content">
-                      <HeroSection onNavigate={setPage} />
-                      <ProblemSection />
-                      <Perspectives onNavigate={setPage} />
-                      <CareerSection onNavigate={setPage} />
-                      <CTASection onNavigate={setPage} />
-                    </main>
-                    <LandingFooter onNavigate={setPage} />
-                  </div>
-                </PageTransition>
-              )}
-
+              {renderPage()}
             </AnimatePresence>
           </Suspense>
         </div>
