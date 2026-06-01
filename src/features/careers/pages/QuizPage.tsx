@@ -418,13 +418,13 @@ function ResultsPhase({
   const importanceBadge: Record<string, string> = {
     Essential: 'bg-red-50 text-red-600 border border-red-100',
     Recommended: 'bg-amber-50 text-amber-700 border border-amber-100',
-    Useful: 'bg-slate-50 text-slate-500 border border-slate-100',
+    Useful: 'bg-stone-50 text-stone-500 border border-stone-200',
   };
 
   const compatibilityStyle = (score: number) => {
     if (score >= 80) return 'bg-emerald-50 text-emerald-700 border border-emerald-100';
     if (score >= 60) return 'bg-amber-50 text-amber-700 border border-amber-100';
-    return 'bg-slate-50 text-slate-500 border border-slate-100';
+    return 'bg-stone-50 text-stone-500 border border-stone-200';
   };
 
   const handleShare = async () => {
@@ -446,13 +446,20 @@ function ResultsPhase({
       <div className="pt-24 pb-20 px-4">
         <div className="max-w-5xl mx-auto">
 
-          {/* Back to dashboard for logged-in students */}
-          {getStudentSession() && (
+          {/* Back button */}
+          {getStudentSession() ? (
             <button
               onClick={() => onNavigate('student-dashboard')}
               className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-6"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Back to Dashboard
+            </button>
+          ) : (
+            <button
+              onClick={() => onNavigate('home')}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-6"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Back to Home
             </button>
           )}
 
@@ -462,33 +469,33 @@ function ResultsPhase({
             animate={{ opacity: 1, y: 0 }}
             className="mb-12"
           >
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-2">
               Assessment Complete
             </p>
             <h1
-              className="text-3xl md:text-4xl font-black text-slate-900 mb-4"
+              className="text-3xl md:text-4xl font-black text-brand-dark mb-4"
               style={{ letterSpacing: '-0.025em' }}
             >
               Your RIASEC Profile
             </h1>
-            <p className="text-[15px] leading-[1.65] text-slate-500 max-w-2xl mb-6">
+            <p className="text-[15px] leading-[1.65] text-stone-500 max-w-2xl mb-6">
               {results.profileDescription}
             </p>
 
             {/* Top-code banner */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-6">
               {results.topCodes.map((code, i) => (
                 <span
                   key={code}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-wider ${
                     i === 0
-                      ? 'bg-slate-900 text-white'
-                      : 'border border-slate-200 text-slate-600'
+                      ? 'bg-brand-dark text-white'
+                      : 'border border-stone-200 text-stone-600'
                   }`}
                 >
                   <span
                     className={`w-2 h-2 rounded-full ${
-                      i === 0 ? 'bg-amber-400' : 'bg-slate-300'
+                      i === 0 ? 'bg-amber-400' : 'bg-stone-300'
                     }`}
                   />
                   {riasecLabels[code] || code}
@@ -498,6 +505,15 @@ function ResultsPhase({
                 </span>
               ))}
             </div>
+
+            {/* Retake button — prominent, right below the profile */}
+            <button
+              onClick={onRetake}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-stone-200 text-stone-700 rounded-xl font-black text-xs uppercase tracking-widest hover:border-stone-400 hover:bg-stone-50 transition-colors"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Retake Quiz
+            </button>
           </motion.div>
 
           {/* RIASEC Bars */}
@@ -505,9 +521,9 @@ function ResultsPhase({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
-            className="border border-slate-100 rounded-xl p-6 sm:p-8 mb-14"
+            className="bg-white border border-stone-200 rounded-2xl p-6 sm:p-8 mb-14"
           >
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-8">
               Scores
             </p>
             <div className="space-y-6">
@@ -515,7 +531,7 @@ function ResultsPhase({
                 .sort(([, a], [, b]) => b - a)
                 .map(([code, score], index) => {
                   const isTop3 = results.topCodes.includes(code);
-                  const barColor = riasecColors[code] || 'bg-slate-500';
+                  const barColor = riasecColors[code] || 'bg-stone-500';
                   return (
                     <motion.div
                       key={code}
@@ -532,7 +548,7 @@ function ResultsPhase({
                           </span>
                           <span
                             className={`text-sm font-bold ${
-                              isTop3 ? 'text-slate-900' : 'text-slate-400'
+                              isTop3 ? 'text-brand-dark' : 'text-stone-400'
                             }`}
                           >
                             {riasecLabels[code] || code}
@@ -540,13 +556,13 @@ function ResultsPhase({
                         </div>
                         <span
                           className={`text-sm font-bold tabular-nums ${
-                            isTop3 ? 'text-slate-700' : 'text-slate-300'
+                            isTop3 ? 'text-stone-700' : 'text-stone-300'
                           }`}
                         >
                           {score}%
                         </span>
                       </div>
-                      <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 w-full bg-stone-100 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${score}%` }}
@@ -555,7 +571,7 @@ function ResultsPhase({
                             duration: 0.9,
                             ease: 'easeOut',
                           }}
-                          className={`h-full rounded-full ${isTop3 ? barColor : 'bg-slate-200'}`}
+                          className={`h-full rounded-full ${isTop3 ? barColor : 'bg-stone-200'}`}
                         />
                       </div>
                     </motion.div>
@@ -571,11 +587,11 @@ function ResultsPhase({
             transition={{ delay: 0.2 }}
             className="mb-14"
           >
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-2">
               Career Matches
             </p>
             <h2
-              className="text-2xl font-black text-slate-900 mb-8"
+              className="text-2xl font-black text-brand-dark mb-8"
               style={{ letterSpacing: '-0.02em' }}
             >
               Your Best Matches
@@ -590,10 +606,10 @@ function ResultsPhase({
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.25 + Math.min(index, 8) * 0.04, ease: 'easeOut' }}
-                    className={`relative border rounded-xl p-5 cursor-pointer transition-all hover:border-slate-300 ${
+                    className={`relative border rounded-2xl p-5 cursor-pointer transition-all ${
                       isTopMatch
-                        ? 'border-amber-200 bg-amber-50/40 hover:bg-amber-50/60'
-                        : 'border-slate-200 bg-white'
+                        ? 'border-amber-200 bg-amber-50/40 hover:bg-amber-50/70'
+                        : 'border-stone-200 bg-white hover:border-stone-300'
                     }`}
                     onClick={() => onNavigate('careers')}
                   >
@@ -603,23 +619,23 @@ function ResultsPhase({
                       </span>
                     )}
                     <div className="mb-3 pr-16">
-                      <p className="text-[9px] font-black uppercase tracking-[0.15em] text-slate-400 mb-1">
+                      <p className="text-[9px] font-black uppercase tracking-[0.15em] text-stone-400 mb-1">
                         {career.category}
                       </p>
                       <h3
-                        className="text-sm font-bold text-slate-900 leading-snug"
+                        className="text-sm font-bold text-brand-dark leading-snug"
                         style={{ letterSpacing: '-0.01em' }}
                       >
                         {career.title}
                       </h3>
                     </div>
 
-                    <p className="text-sm leading-relaxed text-slate-500 line-clamp-2 mb-3">
+                    <p className="text-sm leading-relaxed text-stone-500 line-clamp-2 mb-3">
                       {career.whyItFits}
                     </p>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <div className="flex items-center justify-between pt-3 border-t border-stone-100">
+                      <div className="flex items-center gap-2 text-xs text-stone-400">
                         <span>{career.salaryRange}</span>
                         <span>·</span>
                         <span>{career.jobDemand} demand</span>
@@ -638,7 +654,7 @@ function ResultsPhase({
             </div>
           </motion.div>
 
-          {/* Subject Recommendations — flat list with inline tags */}
+          {/* Subject Recommendations */}
           {allSubjects.length > 0 && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -646,19 +662,19 @@ function ResultsPhase({
               transition={{ delay: 0.3 }}
               className="mb-14"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-2">
                 Recommended Subjects
               </p>
               <h2
-                className="text-2xl font-black text-slate-900 mb-8"
+                className="text-2xl font-black text-brand-dark mb-8"
                 style={{ letterSpacing: '-0.02em' }}
               >
                 Subjects to Focus On
               </h2>
 
-              <div className="divide-y divide-slate-100">
+              <div className="bg-white border border-stone-200 rounded-2xl divide-y divide-stone-100 overflow-hidden">
                 {allSubjects.map((sub) => (
-                  <div key={sub.subject} className="flex items-start gap-4 py-4">
+                  <div key={sub.subject} className="flex items-start gap-4 px-5 py-4">
                     <span
                       className={`shrink-0 mt-0.5 text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-md ${
                         importanceBadge[sub.importance]
@@ -667,8 +683,8 @@ function ResultsPhase({
                       {sub.importance}
                     </span>
                     <div>
-                      <p className="text-sm font-bold text-slate-900 mb-0.5">{sub.subject}</p>
-                      <p className="text-sm text-slate-500 leading-relaxed">{sub.reason}</p>
+                      <p className="text-sm font-bold text-brand-dark mb-0.5">{sub.subject}</p>
+                      <p className="text-sm text-stone-500 leading-relaxed">{sub.reason}</p>
                     </div>
                   </div>
                 ))}
@@ -683,41 +699,34 @@ function ResultsPhase({
             transition={{ delay: 0.4 }}
             className="mb-10"
           >
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-6">
               Next Steps
             </p>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => onNavigate('careers')}
-                className="flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 bg-brand-dark text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-stone-800 transition-colors"
               >
                 Explore Careers
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => onNavigate('bursaries')}
-                className="px-5 py-2.5 border border-slate-200 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest hover:border-slate-400 transition-colors"
+                className="px-5 py-2.5 border border-stone-200 text-stone-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:border-stone-400 transition-colors"
               >
                 Find Bursaries
               </button>
               <button
                 onClick={() => onNavigate('library')}
-                className="px-5 py-2.5 border border-slate-200 text-slate-700 rounded-lg font-bold text-xs uppercase tracking-widest hover:border-slate-400 transition-colors"
+                className="px-5 py-2.5 border border-stone-200 text-stone-700 rounded-xl font-bold text-xs uppercase tracking-widest hover:border-stone-400 transition-colors"
               >
                 Study Resources
               </button>
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 px-5 py-2.5 border border-slate-200 text-slate-500 rounded-lg font-bold text-xs uppercase tracking-widest hover:border-slate-400 transition-colors"
+                className="flex items-center gap-2 px-5 py-2.5 border border-stone-200 text-stone-500 rounded-xl font-bold text-xs uppercase tracking-widest hover:border-stone-400 transition-colors"
               >
                 Share Results
-              </button>
-              <button
-                onClick={onRetake}
-                className="flex items-center gap-2 px-5 py-2.5 text-slate-400 rounded-lg font-bold text-xs uppercase tracking-widest hover:text-slate-600 hover:bg-slate-50 transition-colors"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                Retake
               </button>
             </div>
           </motion.div>
