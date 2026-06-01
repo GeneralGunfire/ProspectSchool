@@ -5,6 +5,7 @@ import { quizQuestions } from '../data/quizQuestions';
 import { computeQuizResults, type QuizResults } from '../data/quizScoringLogic';
 import { SkippedQuestionsPanel } from '../components/SkippedQuestionsPanel';
 import { getStudentSession } from '../../../lib/auth';
+import { saveQuizResults } from '../../../lib/myFuture';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -83,11 +84,9 @@ const riasecLabels: Record<string, string> = {
 function QuizPhase({
   onComplete,
   onNavigate,
-  user,
 }: {
   onComplete: (answers: QuizAnswer[], skipped: number) => void;
   onNavigate: (page: string) => void;
-  user: User;
 }) {
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -397,12 +396,10 @@ function ResultsPhase({
   results,
   onRetake,
   onNavigate,
-  user,
 }: {
   results: QuizResults;
   onRetake: () => void;
   onNavigate: (page: string) => void;
-  user: User;
 }) {
   const topCareers = results.topCareerMatches.slice(0, 15);
 
@@ -738,6 +735,8 @@ function QuizPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   const handleComplete = (answers: QuizAnswer[]) => {
     const results = computeQuizResults(answers);
     setQuizResults(results);
+    // Save to Supabase if student is logged in (silent no-op for guests)
+    saveQuizResults(answers, results);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -756,7 +755,7 @@ function QuizPage({ onNavigate }: { onNavigate: (page: any) => void }) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <QuizPhase onComplete={handleComplete} onNavigate={onNavigate} user={user} />
+          <QuizPhase onComplete={handleComplete} onNavigate={onNavigate} />
         </motion.div>
       ) : (
         <motion.div
@@ -770,7 +769,6 @@ function QuizPage({ onNavigate }: { onNavigate: (page: any) => void }) {
             results={quizResults}
             onRetake={handleRetake}
             onNavigate={onNavigate}
-            user={user}
           />
         </motion.div>
       )}
