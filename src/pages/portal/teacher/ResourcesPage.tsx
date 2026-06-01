@@ -154,7 +154,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const TypeIcon = { file: Paperclip, link: Link2, note: FileText };
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-5 md:p-8 max-w-6xl w-full">
 
       {/* ── Toast ─────────────────────────────────────────────── */}
       <AnimatePresence>

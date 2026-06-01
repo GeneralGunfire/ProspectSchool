@@ -1,7 +1,7 @@
 # Graph Report - prospect  (2026-06-01)
 
 ## Corpus Check
-- 216 files · ~1,034,082 words
+- 216 files · ~1,034,164 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `2ccb8d49`
+- Built from commit: `71998258`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -588,7 +588,7 @@ Cohesion: 0.70
 Nodes (4): FAIL(), INFO(), PASS(), run()
 
 ## Knowledge Gaps
-- **689 isolated node(s):** `FadeInProps`, `EASE`, `LibraryPage`, `MyFuturePage`, `ActivePage` (+684 more)
+- **689 isolated node(s):** `LibraryPage`, `MyFuturePage`, `ActivePage`, `StudentDashboardProps`, `FadeInProps` (+684 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -601,7 +601,7 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.051) - this node is a cross-community bridge._
 - **Why does `cn()` connect `Community 16` to `Community 11`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
-- **What connects `FadeInProps`, `EASE`, `LibraryPage` to the rest of the system?**
+- **What connects `LibraryPage`, `MyFuturePage`, `ActivePage` to the rest of the system?**
   _689 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.031746031746031744 - nodes in this community are weakly interconnected._

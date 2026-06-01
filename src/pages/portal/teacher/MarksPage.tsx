@@ -213,7 +213,7 @@ export default function MarksPage({ session }: MarksPageProps) {
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div className="p-6 max-w-4xl">
+    <div className="p-5 md:p-8 max-w-6xl w-full">
 
       {/* ── Groups view ───────────────────────────────────────── */}
       {view === 'groups' && (

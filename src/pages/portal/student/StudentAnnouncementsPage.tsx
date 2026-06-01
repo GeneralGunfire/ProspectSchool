@@ -51,7 +51,7 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
   const unpinned = announcements.filter(a => !a.pinned);
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="p-5 md:p-8 max-w-5xl w-full">
       <div className="mb-6">
         <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Announcements</p>
         <h1 className="text-2xl font-black text-slate-900 tracking-tight">Announcements</h1>

@@ -156,7 +156,7 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
   const allSorted = [...events].sort((a, b) => a.event_date.localeCompare(b.event_date));
 
   return (
-    <div className="p-6 max-w-5xl">
+    <div className="p-5 md:p-8 max-w-7xl w-full">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">

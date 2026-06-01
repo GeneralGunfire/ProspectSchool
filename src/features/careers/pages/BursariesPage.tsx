@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, SlidersHorizontal, X, CheckCircle2, ExternalLink, Bookmark, ChevronDown, ArrowRight } from 'lucide-react';
+import { Search, SlidersHorizontal, X, CheckCircle2, ExternalLink, Bookmark, ChevronDown, ArrowRight, ChevronLeft } from 'lucide-react';
 import { bursaries, type Bursary } from '../data/bursaries';
 import { fetchSavedBursaryIds, toggleSavedBursary } from '../../../lib/myFuture';
 import { getStudentSession } from '../../../lib/auth';
@@ -228,6 +228,15 @@ function BursariesPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
         {/* Page header */}
         <div className="mb-10 pt-2">
+          {/* Back to dashboard — only shown when logged in as student */}
+          {getStudentSession() && (
+            <button
+              onClick={() => onNavigate('student-dashboard')}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-5"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Back to Dashboard
+            </button>
+          )}
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-3">Financial Aid</p>
           <h1 className="text-3xl md:text-4xl font-black text-stone-900 mb-3" style={{ letterSpacing: '-0.025em' }}>
             Bursaries
