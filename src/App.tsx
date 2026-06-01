@@ -19,6 +19,9 @@ import {
   HelpCircle,
 } from 'lucide-react';
 
+// ── New landing page (from Stitch/AI Studio export) ──────────────────────────
+const NewLandingPage = lazy(() => import('./features/landing/new/LandingPage'));
+
 // Lazy-load all page-level components
 const CareersPageNew     = lazy(() => import('./features/careers/pages/CareersPageNew'));
 const BursariesPage      = lazy(() => import('./features/careers/pages/BursariesPage'));
@@ -972,18 +975,7 @@ export default function App() {
       case 'home':
         return (
           <PageTransition pageKey="home">
-            <div className="relative bg-[#FAF9F6]">
-              <TutorialDialog />
-              <HeroNav onNavigate={setPage} />
-              <main id="main-content">
-                <HeroSection onNavigate={setPage} />
-                <ProblemSection />
-                <Perspectives onNavigate={setPage} />
-                <CareerSection onNavigate={setPage} />
-                <CTASection onNavigate={setPage} />
-              </main>
-              <LandingFooter onNavigate={setPage} />
-            </div>
+            <NewLandingPage onNavigate={setPage} />
           </PageTransition>
         );
     }

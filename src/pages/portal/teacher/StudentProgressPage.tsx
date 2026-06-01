@@ -1,38 +1,54 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ChevronRight, BookOpen, TrendingUp, AlertTriangle,
-  CheckCircle2, Clock, X, Users,
+  ChevronRight, BookOpen, AlertTriangle,
+  CheckCircle2, Users, ClipboardList, CalendarDays,
+  Megaphone, Pin,
 } from 'lucide-react';
 import {
   fetchTeacherStudentProgress,
   type StudentProgressSummary,
   type StudyProgress,
 } from '../../../lib/studyProgress';
+import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
+import {
+  fetchStudentEvents, fetchStudentCompletions,
+  type SchoolEvent,
+} from '../../../lib/events';
+import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
+import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 
-// ── Helpers ───────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────
 
-function masteryColor(level: string) {
-  if (level === 'mastered')       return { dot: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', label: 'Mastered' };
-  if (level === 'needs_practice') return { dot: 'bg-amber-500',   text: 'text-amber-700',   bg: 'bg-amber-50',   label: 'Needs Practice' };
-  return                                 { dot: 'bg-slate-300',   text: 'text-slate-400',   bg: 'bg-slate-50',   label: 'Not Started' };
-}
+type View = 'list' | 'profile';
+type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements';
+
+// ── Helpers ───────────────────────────────────────────────────
 
 function timeAgo(iso: string | null): string {
   if (!iso) return 'Never';
   const diff = Date.now() - new Date(iso).getTime();
-  const mins  = Math.floor(diff / 60000);
+  const mins = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
-  const days  = Math.floor(diff / 86400000);
-  if (mins < 2)   return 'Just now';
-  if (mins < 60)  return `${mins}m ago`;
+  const days = Math.floor(diff / 86400000);
+  if (mins < 2) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
   if (hours < 24) return `${hours}h ago`;
-  if (days < 7)   return `${days}d ago`;
+  if (days < 7) return `${days}d ago`;
   return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
 }
 
-// Group progress rows by subject
+function gradeLabel(mark: number, total: number) {
+  const p = (mark / total) * 100;
+  if (p >= 80) return { label: 'Outstanding', color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' };
+  if (p >= 70) return { label: 'Merit',        color: 'text-blue-700',    bg: 'bg-blue-50',    border: 'border-blue-200' };
+  if (p >= 60) return { label: 'Adequate',     color: 'text-sky-700',     bg: 'bg-sky-50',     border: 'border-sky-200' };
+  if (p >= 50) return { label: 'Moderate',     color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200' };
+  if (p >= 40) return { label: 'Elementary',   color: 'text-orange-700',  bg: 'bg-orange-50',  border: 'border-orange-200' };
+  return              { label: 'Not Achieved', color: 'text-red-700',     bg: 'bg-red-50',     border: 'border-red-200' };
+}
+
 function groupBySubject(progress: StudyProgress[]): Map<string, StudyProgress[]> {
   const map = new Map<string, StudyProgress[]>();
   for (const p of progress) {
@@ -42,15 +58,41 @@ function groupBySubject(progress: StudyProgress[]): Map<string, StudyProgress[]>
   return map;
 }
 
+function groupMarksBySubject(marks: StudentResult[]): Map<string, StudentResult[]> {
+  const map = new Map<string, StudentResult[]>();
+  for (const m of marks) {
+    if (!map.has(m.subject_label)) map.set(m.subject_label, []);
+    map.get(m.subject_label)!.push(m);
+  }
+  return map;
+}
+
+function initials(student: StudentProgressSummary) {
+  return `${student.student_surname[0] ?? ''}${student.student_name[0] ?? ''}`;
+}
+
+// ── Component ─────────────────────────────────────────────────
+
 interface StudentProgressPageProps {
   session: TeacherSession;
 }
 
 export default function StudentProgressPage({ session }: StudentProgressPageProps) {
+  // List state
+  const [view, setView] = useState<View>('list');
   const [students, setStudents] = useState<StudentProgressSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<StudentProgressSummary | null>(null);
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'name' | 'mastered' | 'struggling' | 'active'>('name');
+
+  // Profile state
+  const [activeTab, setActiveTab] = useState<ProfileTab>('progress');
+  const [marks, setMarks] = useState<StudentResult[] | null>(null);
+  const [events, setEvents] = useState<SchoolEvent[] | null>(null);
+  const [completions, setCompletions] = useState<Set<number> | null>(null);
+  const [announcements, setAnnouncements] = useState<Announcement[] | null>(null);
+  const [subjectIds, setSubjectIds] = useState<number[] | null>(null);
 
   useEffect(() => {
     fetchTeacherStudentProgress(session.teacher_id, session.school_id).then(data => {
@@ -59,247 +101,572 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
     });
   }, []);
 
-  const filtered = students.filter(s =>
-    `${s.student_surname} ${s.student_name} ${s.student_code}`.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtered + sorted list
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    const list = students.filter(s =>
+      `${s.student_surname} ${s.student_name} ${s.student_code}`.toLowerCase().includes(q)
+    );
+    if (sortBy === 'name') list.sort((a, b) => a.student_surname.localeCompare(b.student_surname));
+    if (sortBy === 'mastered') list.sort((a, b) => b.topics_mastered - a.topics_mastered);
+    if (sortBy === 'struggling') list.sort((a, b) => b.topics_struggling - a.topics_struggling);
+    if (sortBy === 'active') list.sort((a, b) => {
+      if (!a.last_accessed) return 1;
+      if (!b.last_accessed) return -1;
+      return new Date(b.last_accessed).getTime() - new Date(a.last_accessed).getTime();
+    });
+    return list;
+  }, [students, search, sortBy]);
 
-  const subjectGroups = selected ? groupBySubject(selected.progress) : new Map();
+  function selectStudent(student: StudentProgressSummary) {
+    setSelected(student);
+    setView('profile');
+    setActiveTab('progress');
+    setMarks(null);
+    setEvents(null);
+    setCompletions(null);
+    setAnnouncements(null);
+    setSubjectIds(null);
+  }
+
+  function backToList() {
+    setView('list');
+    setSelected(null);
+  }
+
+  async function getSubjectIds(studentId: number): Promise<number[]> {
+    if (subjectIds !== null) return subjectIds;
+    const { data: links } = await supabaseAdmin
+      .from('teacher_students')
+      .select('subject_id')
+      .eq('student_id', studentId);
+    const ids = [...new Set((links ?? []).map((r: any) => r.subject_id as number))];
+    setSubjectIds(ids);
+    return ids;
+  }
+
+  async function loadTab(tab: ProfileTab) {
+    setActiveTab(tab);
+    if (!selected) return;
+
+    if (tab === 'marks' && marks === null) {
+      const data = await fetchStudentResults(selected.student_id, session.school_id);
+      setMarks(data);
+    }
+
+    if (tab === 'homework') {
+      const ids = await getSubjectIds(selected.student_id);
+      if (events === null) {
+        const today = new Date();
+        const [evData, compData] = await Promise.all([
+          fetchStudentEvents(
+            session.school_id,
+            selected.student_id,
+            selected.grade,
+            null, // cohort_id not available in StudentProgressSummary
+            ids,
+            today.getFullYear(),
+            today.getMonth() + 1
+          ),
+          fetchStudentCompletions(selected.student_id, session.school_id),
+        ]);
+        setEvents(evData);
+        setCompletions(compData);
+      }
+    }
+
+    if (tab === 'announcements') {
+      const ids = await getSubjectIds(selected.student_id);
+      if (announcements === null) {
+        const data = await fetchStudentAnnouncements(
+          session.school_id,
+          selected.student_id,
+          selected.grade,
+          null,
+          ids
+        );
+        setAnnouncements(data);
+      }
+    }
+  }
+
+  // ── Render ─────────────────────────────────────────────────
+
+  if (view === 'profile' && selected) {
+    return <StudentProfile
+      student={selected}
+      session={session}
+      activeTab={activeTab}
+      marks={marks}
+      events={events}
+      completions={completions}
+      announcements={announcements}
+      onBack={backToList}
+      onTabChange={loadTab}
+    />;
+  }
 
   return (
     <div className="p-6 max-w-4xl">
+      {/* Header */}
       <div className="mb-6">
-        <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Library</p>
-        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Student Progress</h1>
-        <p className="text-sm text-slate-400 mt-1">See what your students are studying and where they're struggling.</p>
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">LIBRARY</p>
+        <h1 className="text-2xl font-black text-[#1C1917]">Students</h1>
+        <p className="text-sm text-stone-400 mt-1">Click any student to view their full profile.</p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+            className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full"
+          />
         </div>
       ) : students.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Users className="w-10 h-10 text-slate-200 mb-4" />
-          <p className="text-sm font-bold text-slate-400">No students found.</p>
-          <p className="text-xs text-slate-300 mt-1">Students linked to your classes will appear here.</p>
+          <Users className="w-10 h-10 text-stone-200 mb-4" />
+          <p className="text-sm font-bold text-stone-400">No students linked to your classes yet.</p>
         </div>
       ) : (
         <>
-          {/* Search */}
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search students…"
-            className="w-full mb-4 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
-          />
-
           {/* Summary stats */}
-          <div className="grid grid-cols-3 gap-3 mb-5">
-            {[
-              { label: 'Total Students', value: students.length, icon: Users, color: 'text-slate-900' },
-              { label: 'Topics Mastered', value: students.reduce((s, st) => s + st.topics_mastered, 0), icon: CheckCircle2, color: 'text-emerald-600' },
-              { label: 'Need Support', value: students.filter(st => st.topics_struggling > 0).length, icon: AlertTriangle, color: 'text-amber-600' },
-            ].map(stat => (
-              <div key={stat.label} className="bg-white rounded-2xl border border-slate-200 p-4 flex items-center gap-3">
-                <stat.icon className={`w-5 h-5 shrink-0 ${stat.color}`} />
-                <div>
-                  <p className="text-lg font-black text-slate-900 leading-none">{stat.value}</p>
-                  <p className="text-[10px] font-bold text-slate-400 mt-0.5">{stat.label}</p>
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <div className="bg-white rounded-2xl border border-stone-200 p-4">
+              <p className="text-2xl font-black text-[#1C1917] leading-none">{students.length}</p>
+              <p className="text-[11px] font-bold text-stone-400 mt-1">Total Students</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-stone-200 p-4">
+              <p className="text-2xl font-black text-emerald-600 leading-none">
+                {students.reduce((s, st) => s + st.topics_mastered, 0)}
+              </p>
+              <p className="text-[11px] font-bold text-stone-400 mt-1">Topics Mastered</p>
+            </div>
+            <div className="bg-white rounded-2xl border border-stone-200 p-4">
+              <p className="text-2xl font-black text-amber-600 leading-none">
+                {students.filter(st => st.topics_struggling > 0).length}
+              </p>
+              <p className="text-[11px] font-bold text-stone-400 mt-1">Need Support</p>
+            </div>
           </div>
 
-          {/* Student cards */}
-          <div className="space-y-2">
-            {filtered.map((student, i) => (
-              <motion.button
+          {/* Search + sort */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search students…"
+              className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] transition-colors"
+            />
+            <div className="flex gap-1.5 flex-wrap">
+              {([
+                { key: 'name', label: 'Name' },
+                { key: 'mastered', label: 'Mastered ↓' },
+                { key: 'struggling', label: 'Struggling ↓' },
+                { key: 'active', label: 'Last Active' },
+              ] as const).map(s => (
+                <button
+                  key={s.key}
+                  onClick={() => setSortBy(s.key)}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] transition-all ${
+                    sortBy === s.key
+                      ? 'bg-[#1C1917] text-white font-black'
+                      : 'bg-white border border-stone-200 text-stone-500 font-bold hover:border-stone-400'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Student rows */}
+          <div className="space-y-1.5">
+            {filtered.length === 0 ? (
+              <p className="text-sm text-stone-300 text-center py-10">No students match your search.</p>
+            ) : filtered.map((student, i) => (
+              <motion.div
                 key={student.student_id}
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                onClick={() => setSelected(student)}
-                className="w-full bg-white rounded-2xl border border-slate-200 px-5 py-4 text-left hover:border-slate-300 hover:shadow-sm transition-all"
+                transition={{ delay: i * 0.025, ease: [0.23, 1, 0.32, 1] }}
+                onClick={() => selectStudent(student)}
+                className="group bg-white rounded-xl border border-stone-200 px-4 py-3 flex items-center gap-4 hover:border-stone-300 hover:shadow-sm cursor-pointer transition-all"
               >
-                <div className="flex items-center gap-4">
-                  {/* Avatar */}
-                  <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-black text-slate-600">
-                      {student.student_surname[0]}{student.student_name[0]}
-                    </span>
-                  </div>
-
-                  {/* Name + meta */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-black text-slate-900">{student.student_surname}, {student.student_name}</p>
-                      <span className="text-[10px] font-bold text-slate-400">{student.student_code}</span>
-                    </div>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''}
-                    </p>
-                  </div>
-
-                  {/* Progress dots */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    {student.topics_mastered > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className="text-xs font-bold text-emerald-700">{student.topics_mastered}</span>
-                      </div>
-                    )}
-                    {student.topics_struggling > 0 && (
-                      <div className="flex items-center gap-1.5">
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                        <span className="text-xs font-bold text-amber-700">{student.topics_struggling}</span>
-                      </div>
-                    )}
-                    {student.last_accessed && (
-                      <div className="flex items-center gap-1 text-slate-400">
-                        <Clock className="w-3 h-3" />
-                        <span className="text-[10px] font-bold">{timeAgo(student.last_accessed)}</span>
-                      </div>
-                    )}
-                    {student.topics_started === 0 && (
-                      <span className="text-[10px] font-bold text-slate-300">No activity</span>
-                    )}
-                    <ChevronRight className="w-4 h-4 text-slate-300" />
-                  </div>
+                {/* Avatar */}
+                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-black text-stone-600">{initials(student)}</span>
                 </div>
 
-                {/* Struggling topics preview */}
-                {student.topics_struggling > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {student.progress
-                      .filter(p => p.mastery_level === 'needs_practice')
-                      .slice(0, 4)
-                      .map(p => (
-                        <span key={p.topic} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100">
-                          {p.topic.replace(/-/g, ' ')}
-                        </span>
-                      ))}
-                    {student.topics_struggling > 4 && (
-                      <span className="text-[10px] font-bold text-slate-400">+{student.topics_struggling - 4} more</span>
-                    )}
-                  </div>
-                )}
-              </motion.button>
+                {/* Name */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-black text-stone-900 truncate">
+                    {student.student_surname}, {student.student_name}
+                  </p>
+                  <p className="text-[10px] text-stone-400 mt-0.5">{student.student_code}</p>
+                </div>
+
+                {/* Grade */}
+                <div className="hidden sm:block text-sm text-stone-500 w-20 shrink-0">
+                  Gr {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''}
+                </div>
+
+                {/* Mastered */}
+                <div className="hidden sm:flex items-center gap-1 w-16 shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span className="text-sm font-black text-emerald-600">{student.topics_mastered}</span>
+                </div>
+
+                {/* Struggling */}
+                <div className="hidden sm:flex items-center gap-1 w-16 shrink-0">
+                  {student.topics_struggling > 0 ? (
+                    <>
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <span className="text-sm font-black text-amber-600">{student.topics_struggling}</span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-stone-300">—</span>
+                  )}
+                </div>
+
+                {/* Last active */}
+                <div className="hidden md:block text-[11px] text-stone-400 w-20 shrink-0 text-right">
+                  {student.last_accessed ? timeAgo(student.last_accessed) : <span className="text-stone-300">No activity</span>}
+                </div>
+
+                <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-stone-600 transition-colors shrink-0" />
+              </motion.div>
             ))}
           </div>
         </>
       )}
+    </div>
+  );
+}
 
-      {/* ── Student detail modal ──────────────────────────────── */}
-      <AnimatePresence>
-        {selected && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setSelected(null)}
+// ── Student Profile View ───────────────────────────────────────
+
+interface ProfileProps {
+  student: StudentProgressSummary;
+  session: TeacherSession;
+  activeTab: ProfileTab;
+  marks: StudentResult[] | null;
+  events: SchoolEvent[] | null;
+  completions: Set<number> | null;
+  announcements: Announcement[] | null;
+  onBack: () => void;
+  onTabChange: (tab: ProfileTab) => void;
+}
+
+function StudentProfile({
+  student, session, activeTab, marks, events, completions, announcements,
+  onBack, onTabChange,
+}: ProfileProps) {
+  const tabs: { key: ProfileTab; label: string; icon: React.ElementType }[] = [
+    { key: 'progress',      label: 'Progress',      icon: BookOpen },
+    { key: 'marks',         label: 'Marks',          icon: ClipboardList },
+    { key: 'homework',      label: 'Homework',       icon: CalendarDays },
+    { key: 'announcements', label: 'Announcements',  icon: Megaphone },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 24 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+      className="p-6 max-w-4xl"
+    >
+      {/* Back */}
+      <button
+        onClick={onBack}
+        className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-5 flex items-center gap-1"
+      >
+        ← Students
+      </button>
+
+      {/* Hero card */}
+      <div className="bg-[#1C1917] rounded-3xl px-7 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-5">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+            <span className="text-lg font-black text-white">{initials(student)}</span>
+          </div>
+          <div>
+            <p className="text-xl font-black text-white">{student.student_surname}, {student.student_name}</p>
+            <p className="text-sm text-stone-400 mt-0.5">
+              Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: 'Started',       value: student.topics_started,   color: 'text-white' },
+            { label: 'Mastered',      value: student.topics_mastered,  color: 'text-emerald-400' },
+            { label: 'Needs Practice',value: student.topics_struggling, color: 'text-amber-400' },
+            { label: 'Last Active',   value: timeAgo(student.last_accessed), color: 'text-stone-300' },
+          ].map(stat => (
+            <div key={stat.label} className="bg-white/10 rounded-2xl px-4 py-3 text-center min-w-20">
+              <p className={`text-sm font-black ${stat.color} leading-none`}>{stat.value}</p>
+              <p className="text-[10px] text-stone-500 mt-1">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex gap-1 mb-5 bg-stone-100 rounded-2xl p-1">
+        {tabs.map(t => (
+          <button
+            key={t.key}
+            onClick={() => onTabChange(t.key)}
+            className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-[13px] transition-all ${
+              activeTab === t.key
+                ? 'bg-[#1C1917] text-white font-black shadow-sm'
+                : 'text-stone-500 font-bold hover:text-stone-900'
+            }`}
           >
-            <motion.div
-              initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 40, opacity: 0 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              className="bg-white w-full sm:max-w-xl max-h-[90vh] overflow-hidden flex flex-col rounded-t-3xl sm:rounded-2xl shadow-2xl"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
-                    <span className="text-sm font-black text-slate-600">
-                      {selected.student_surname[0]}{selected.student_name[0]}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-base font-black text-slate-900">{selected.student_surname}, {selected.student_name}</p>
-                    <p className="text-xs text-slate-400">Grade {selected.grade}{selected.cohort_name ? ` · ${selected.cohort_name}` : ''} · {selected.student_code}</p>
-                  </div>
-                </div>
-                <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                  <X className="w-4 h-4 text-slate-500" />
-                </button>
-              </div>
+            <t.icon className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t.label}</span>
+          </button>
+        ))}
+      </div>
 
-              {/* Stats bar */}
-              <div className="flex gap-3 px-6 py-3 border-b border-slate-100 shrink-0">
-                {[
-                  { label: 'Started',   value: selected.topics_started,   color: 'text-slate-900' },
-                  { label: 'Mastered',  value: selected.topics_mastered,  color: 'text-emerald-600' },
-                  { label: 'Struggling', value: selected.topics_struggling, color: 'text-amber-600' },
-                ].map(s => (
-                  <div key={s.label} className="flex-1 text-center">
-                    <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-                    <p className="text-[10px] font-bold text-slate-400">{s.label}</p>
-                  </div>
-                ))}
-                <div className="flex-1 text-center">
-                  <p className="text-xs font-bold text-slate-400 mt-1">Last active</p>
-                  <p className="text-xs font-black text-slate-700">{timeAgo(selected.last_accessed)}</p>
-                </div>
-              </div>
-
-              {/* Progress by subject */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                {selected.progress.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <BookOpen className="w-8 h-8 text-slate-200 mb-3" />
-                    <p className="text-sm font-bold text-slate-300">No study activity yet.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-5">
-                    {Array.from(subjectGroups.entries()).map(([subject, rows]) => {
-                      const mastered   = rows.filter(r => r.mastery_level === 'mastered').length;
-                      const struggling = rows.filter(r => r.mastery_level === 'needs_practice').length;
-                      return (
-                        <div key={subject}>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-xs font-black uppercase tracking-widest text-slate-500">{subject}</p>
-                            <div className="flex gap-2 text-[10px] font-bold">
-                              {mastered > 0 && <span className="text-emerald-600">{mastered} mastered</span>}
-                              {struggling > 0 && <span className="text-amber-600">{struggling} struggling</span>}
-                            </div>
-                          </div>
-                          <div className="space-y-1.5">
-                            {rows
-                              .sort((a, b) => {
-                                const order = { needs_practice: 0, not_started: 1, mastered: 2 };
-                                return order[a.mastery_level] - order[b.mastery_level];
-                              })
-                              .map(row => {
-                                const m = masteryColor(row.mastery_level);
-                                return (
-                                  <div key={row.topic} className={`flex items-center gap-3 px-4 py-2.5 rounded-xl ${m.bg}`}>
-                                    <span className={`w-2 h-2 rounded-full shrink-0 ${m.dot}`} />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-bold text-slate-900 truncate capitalize">
-                                        {row.topic.replace(/-/g, ' ')}
-                                      </p>
-                                      {row.last_attempt_score && (
-                                        <p className="text-[10px] text-slate-400 mt-0.5">
-                                          Score: {row.last_attempt_score} · {row.total_attempts} attempt{row.total_attempts !== 1 ? 's' : ''}
-                                        </p>
-                                      )}
-                                    </div>
-                                    <span className={`text-[10px] font-black uppercase tracking-widest shrink-0 ${m.text}`}>
-                                      {m.label}
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
+      {/* Tab content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.18 }}
+        >
+          {activeTab === 'progress'      && <ProgressTab student={student} />}
+          {activeTab === 'marks'         && <MarksTab marks={marks} />}
+          {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
+          {activeTab === 'announcements' && <AnnouncementsTab announcements={announcements} />}
+        </motion.div>
       </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ── Tab: Progress ─────────────────────────────────────────────
+
+function ProgressTab({ student }: { student: StudentProgressSummary }) {
+  if (student.progress.length === 0) {
+    return (
+      <EmptyState icon={BookOpen} text="No study activity yet." />
+    );
+  }
+
+  const groups = groupBySubject(student.progress);
+
+  return (
+    <div className="space-y-6">
+      {Array.from(groups.entries()).map(([subject, rows]) => (
+        <div key={subject}>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">{subject}</p>
+          <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+            {rows.map(row => {
+              const mastery = row.mastery_level;
+              const dotColor = mastery === 'mastered' ? 'bg-emerald-500' : mastery === 'needs_practice' ? 'bg-amber-500' : 'bg-stone-300';
+              return (
+                <div key={row.topic} className="flex items-center gap-3 px-4 py-3">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-stone-900 capitalize">
+                      {row.topic.replace(/-/g, ' ')}
+                    </p>
+                    {row.last_attempt_score && (
+                      <p className="text-[10px] text-stone-400 mt-0.5">Score: {row.last_attempt_score}</p>
+                    )}
+                  </div>
+                  {mastery === 'mastered' && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shrink-0">
+                      Mastered
+                    </span>
+                  )}
+                  {mastery === 'needs_practice' && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shrink-0">
+                      Needs Practice
+                    </span>
+                  )}
+                  {mastery === 'not_started' && (
+                    <span className="text-[10px] text-stone-300 shrink-0">Not started</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Tab: Marks ────────────────────────────────────────────────
+
+function MarksTab({ marks }: { marks: StudentResult[] | null }) {
+  if (marks === null) {
+    return <LoadingSpinner />;
+  }
+  if (marks.length === 0) {
+    return <EmptyState icon={ClipboardList} text="No marks recorded yet." />;
+  }
+
+  const groups = groupMarksBySubject(marks);
+
+  return (
+    <div className="space-y-6">
+      {Array.from(groups.entries()).map(([subject, rows]) => (
+        <div key={subject}>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">{subject}</p>
+          <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+            {rows.map(row => {
+              const gl = row.mark !== null ? gradeLabel(row.mark, row.total) : null;
+              return (
+                <div key={row.sheet_id} className="flex items-center gap-3 px-4 py-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-stone-900">{row.sheet_title}</p>
+                    {row.sheet_scope && (
+                      <p className="text-[10px] text-stone-400 mt-0.5">{row.sheet_scope}</p>
+                    )}
+                  </div>
+                  {row.mark !== null ? (
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-sm font-black text-stone-900">{row.mark} / {row.total}</span>
+                      {gl && (
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${gl.bg} ${gl.border} ${gl.color}`}>
+                          {gl.label}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-stone-300">—</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Tab: Homework ─────────────────────────────────────────────
+
+function HomeworkTab({
+  events,
+  completions,
+}: {
+  events: SchoolEvent[] | null;
+  completions: Set<number> | null;
+}) {
+  if (events === null || completions === null) {
+    return <LoadingSpinner />;
+  }
+
+  const homework = events.filter(e => e.event_type === 'homework');
+
+  if (homework.length === 0) {
+    return <EmptyState icon={CheckCircle2} text="No homework assigned this month." />;
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  const pending = homework.filter(e => e.event_date >= today && !completions.has(e.id));
+  const completed = homework.filter(e => completions.has(e.id));
+
+  return (
+    <div className="space-y-5">
+      {pending.length > 0 && (
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Pending</p>
+          <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+            {pending.map(e => (
+              <div key={e.id} className="flex items-center gap-3 px-4 py-3">
+                <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-stone-900">{e.title}</p>
+                  <p className="text-[11px] text-stone-400 mt-0.5">Due {e.event_date}</p>
+                </div>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shrink-0">
+                  Pending
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {completed.length > 0 && (
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Completed</p>
+          <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+            {completed.map(e => (
+              <div key={e.id} className="flex items-center gap-3 px-4 py-3">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-stone-400">{e.title}</p>
+                  <p className="text-[11px] text-stone-300 mt-0.5">{e.event_date}</p>
+                </div>
+                <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shrink-0">
+                  Done
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Tab: Announcements ────────────────────────────────────────
+
+function AnnouncementsTab({ announcements }: { announcements: Announcement[] | null }) {
+  if (announcements === null) {
+    return <LoadingSpinner />;
+  }
+  if (announcements.length === 0) {
+    return <EmptyState icon={Megaphone} text="No announcements for this student." />;
+  }
+
+  return (
+    <div className="space-y-3">
+      {announcements.map(a => (
+        <div key={a.id} className="bg-white rounded-2xl border border-stone-200 px-5 py-4">
+          <div className="flex items-start gap-2">
+            {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />}
+            <p className="text-sm font-black text-stone-900">{a.title}</p>
+          </div>
+          {a.body && (
+            <p className="text-[13px] text-stone-500 leading-relaxed mt-1 line-clamp-3">{a.body}</p>
+          )}
+          <p className="text-[10px] text-stone-300 mt-2">{timeAgo(a.created_at)}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Shared UI ─────────────────────────────────────────────────
+
+function LoadingSpinner() {
+  return (
+    <div className="flex items-center justify-center py-16">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+        className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full"
+      />
+    </div>
+  );
+}
+
+function EmptyState({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <Icon className="w-8 h-8 text-stone-200 mb-3" />
+      <p className="text-sm font-bold text-stone-300">{text}</p>
     </div>
   );
 }

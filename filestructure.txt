@@ -31,6 +31,7 @@
 |-- index.html
 |-- package-lock.json
 |-- package.json
+|-- prospect.zip
 |-- public
     |-- 3DLogoLab (1).png
     |-- 3DLogoLab.png
@@ -151,6 +152,21 @@
             |-- HeroCanvas.tsx
             |-- HeroScene.tsx
             |-- LandingFooter.tsx
+            |-- new
+                |-- Animations.tsx
+                |-- AudienceSection.tsx
+                |-- FinalCTA.tsx
+                |-- Footer.tsx
+                |-- Hero.tsx
+                |-- icons.ts
+                |-- LandingPage.tsx
+                |-- Navbar.tsx
+                |-- Pricing.tsx
+                |-- QuoteSection.tsx
+                |-- StatsBar.tsx
+                |-- StudentDeepDive.tsx
+                |-- StudyLibrary.tsx
+                |-- TeacherTools.tsx
             |-- Perspectives.tsx
             |-- ProblemSection.tsx
             |-- UI-REVIEW.md

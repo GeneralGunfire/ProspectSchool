@@ -1,9 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-instrument: "Instrument Sans", sans-serif;
+  --font-mono-jetbrains: "JetBrains Mono", monospace;
+
+  /* ── Landing page brand tokens ── */
+  --color-brand-bg: #F5F0E8;
+  --color-brand-dark: #1C1917;
+  --color-brand-border: #D6CFC4;
+  --color-brand-eyebrow: #78716C;
 
   /* ── Design system ── */
   --color-primary: #1e293b;
@@ -130,6 +138,30 @@
   p, li {
     text-wrap: pretty;
   }
+}
+
+/* ── Landing page utilities ── */
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--color-brand-eyebrow);
+  display: block;
+  margin-bottom: 1.5rem;
+}
+
+.section-padding {
+  padding-top: 8rem;
+  padding-bottom: 8rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.max-content {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .calm-gradient {
