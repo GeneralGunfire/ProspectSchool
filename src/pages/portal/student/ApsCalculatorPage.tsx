@@ -296,7 +296,7 @@ export default function ApsCalculatorPage() {
   const qualifyingCount = filteredDegrees.filter(m => m.match.qualifies).length;
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full">
+    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto">
       <div>
 
         {/* Header */}

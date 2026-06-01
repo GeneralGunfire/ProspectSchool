@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\careers\\pages\\QuizPage.tsx": {
-    "mtime": 1780330363.6669865,
-    "ast_hash": "c1e312dcd68e47f95fcb70c6d70a9013",
+    "mtime": 1780343846.3577397,
+    "ast_hash": "e2dba39c4924b9266b43727630b772c3",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\landing\\CareerSection.tsx": {
@@ -490,8 +490,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\study\\pages\\StudyLibraryPage.tsx": {
-    "mtime": 1780323058.9272013,
-    "ast_hash": "0ac7a8ef48ec3d532bea1bf62618b179",
+    "mtime": 1780344076.038644,
+    "ast_hash": "6ee4cc1701df713454acce7d28a54715",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\study\\pages\\learning\\Accounting\\Grade10\\Term1\\AccountingEquation.tsx": {
@@ -700,8 +700,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\lib\\events.ts": {
-    "mtime": 1780323059.035135,
-    "ast_hash": "1ab03326d0d96e9411ed803bc46ce00f",
+    "mtime": 1780342675.603021,
+    "ast_hash": "74e78733f5787cdef1091f666ec4eaa7",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\lib\\marks.ts": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\StudentDashboard.tsx": {
-    "mtime": 1780326170.4111834,
-    "ast_hash": "44a0307d50f4c9b630361ec659f348cc",
+    "mtime": 1780342801.7214923,
+    "ast_hash": "75e90fa105f69909e3db681b7cc93f5f",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\TeacherDashboard.tsx": {
@@ -805,13 +805,13 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\ApsCalculatorPage.tsx": {
-    "mtime": 1780323522.0728538,
-    "ast_hash": "db8d2e39e779b53d33d9445e6ba16eb4",
+    "mtime": 1780344149.9173965,
+    "ast_hash": "a4909808868c4b858d5f2ab0a4746e24",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\LibraryPage.tsx": {
-    "mtime": 1780323059.197034,
-    "ast_hash": "d1e4922359ac1a861620e29571b36782",
+    "mtime": 1780344057.704053,
+    "ast_hash": "ac359ba7d55227a477659466302be485",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\StudentAnnouncementsPage.tsx": {
@@ -825,13 +825,13 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\StudentHomePage.tsx": {
-    "mtime": 1780340485.548297,
-    "ast_hash": "721044592947df49be5903970f9e0017",
+    "mtime": 1780342669.8149064,
+    "ast_hash": "b93474e44264406b0d7973fe4265cb24",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\StudentMarksPage.tsx": {
-    "mtime": 1780326397.0308177,
-    "ast_hash": "f69344fa538727d9b44fbd022b99e394",
+    "mtime": 1780342354.2856233,
+    "ast_hash": "6e931eee053a19715f204d2c57981a1b",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\student\\StudentPastPapersPage.tsx": {
@@ -925,7 +925,7 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\filestructure.txt": {
-    "mtime": 1780341031.8854065,
+    "mtime": 1780343892.3103185,
     "ast_hash": "695b7ed7aead3cd941a4c2ddba867197",
     "semantic_hash": ""
   },

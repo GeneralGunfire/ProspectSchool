@@ -306,7 +306,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-24 md:pb-8">
+    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-24 md:pb-8">
 
       {/* ── Page header ─────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} className="mb-6 md:mb-8">

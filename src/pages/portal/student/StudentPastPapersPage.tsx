@@ -87,7 +87,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full">
+    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
 
       {/* Header */}
       <div className="mb-6">

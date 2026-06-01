@@ -177,7 +177,7 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
   }, {});
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
+    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
 
       {/* ── Header ──────────────────────────────────────────── */}
       <motion.div

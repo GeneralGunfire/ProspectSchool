@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, Map, type LucideIcon } from 'lucide-react';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
 import { computeQuizResults, type QuizResults } from '../../../features/careers/data/quizScoringLogic';
@@ -130,7 +130,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
       </div>
     );
   }
@@ -138,11 +138,11 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="px-6 py-8 sm:px-8 lg:px-10 max-w-5xl mx-auto space-y-8">
+    <div className="px-6 py-8 sm:px-8 lg:px-10 max-w-5xl mx-auto space-y-8 pb-16">
 
       {/* ── Section 1: Profile Hero ─────────────────────────────────────────── */}
       <Section delay={0}>
-        <div className="rounded-3xl px-7 py-6 flex flex-col sm:flex-row sm:items-center gap-5" style={{ background: '#1C1917' }}>
+        <div className="rounded-3xl px-7 py-6 flex flex-col sm:flex-row sm:items-center gap-5 bg-brand-dark">
           <div className="flex-1 min-w-0">
             <p className="text-white/40 text-xs font-bold uppercase tracking-[0.18em] mb-1">
               {session.school_name}
@@ -154,7 +154,6 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
               Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
             </p>
           </div>
-
           <div className="flex flex-wrap gap-2 sm:shrink-0">
             {[
               { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
@@ -170,19 +169,116 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         </div>
       </Section>
 
-      {/* ── Section 2: Career Matches ────────────────────────────────────────── */}
-      <Section delay={0.06}>
+      {/* ── Section 2: Explore — free features with backend ─────────────────── */}
+      <Section delay={0.04}>
+        <Eyebrow>Explore</Eyebrow>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+          {/* Career Quiz */}
+          <button
+            onClick={() => onNavigate('quiz')}
+            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                <Sparkles className="w-4.5 h-4.5 text-stone-700" />
+              </div>
+              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+            </div>
+            <p className="font-black text-stone-900 text-sm mb-0.5">Career Quiz</p>
+            <p className="text-xs text-stone-400 leading-snug">
+              {quizResults
+                ? `${quizResults.topCodes[0]}+${quizResults.topCodes[1]} profile · ${quizResults.topCareerMatches[0]?.title ?? 'View matches'}`
+                : 'Discover careers that match your personality'}
+            </p>
+          </button>
+
+          {/* Career Browser */}
+          <button
+            onClick={() => onNavigate('careers')}
+            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                <Briefcase className="w-4.5 h-4.5 text-stone-700" />
+              </div>
+              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+            </div>
+            <p className="font-black text-stone-900 text-sm mb-0.5">Career Browser</p>
+            <p className="text-xs text-stone-400 leading-snug">
+              {quizResults
+                ? `${quizResults.topCareerMatches.length} career matches found`
+                : 'Browse 400+ SA careers with salary data'}
+            </p>
+          </button>
+
+          {/* Bursary Finder */}
+          <button
+            onClick={() => onNavigate('bursaries')}
+            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                <Award className="w-4.5 h-4.5 text-stone-700" />
+              </div>
+              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+            </div>
+            <p className="font-black text-stone-900 text-sm mb-0.5">Bursary Finder</p>
+            <p className="text-xs text-stone-400 leading-snug">
+              {savedBursaries.length > 0
+                ? `${savedBursaries.length} saved · Browse 245+ bursaries`
+                : 'Browse 245+ bursaries and save your favourites'}
+            </p>
+          </button>
+
+          {/* APS Calculator */}
+          <button
+            onClick={() => onNavigate('aps')}
+            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                <GraduationCap className="w-4.5 h-4.5 text-stone-700" />
+              </div>
+              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+            </div>
+            <p className="font-black text-stone-900 text-sm mb-0.5">APS Calculator</p>
+            <p className="text-xs text-stone-400 leading-snug">
+              {apsData
+                ? `Your APS: ${apsData.aps} · ${qualifyingDegrees.length} programmes unlocked`
+                : 'Calculate your APS and see qualifying programmes'}
+            </p>
+          </button>
+
+          {/* TVET */}
+          <button
+            onClick={() => onNavigate('tvet')}
+            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group sm:col-span-2"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                <Map className="w-4.5 h-4.5 text-stone-700" />
+              </div>
+              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+            </div>
+            <p className="font-black text-stone-900 text-sm mb-0.5">TVET Pathways</p>
+            <p className="text-xs text-stone-400 leading-snug">Trade careers, 26 colleges, funding options — no university required</p>
+          </button>
+        </div>
+      </Section>
+
+      {/* ── Section 3: Career Matches ────────────────────────────────────────── */}
+      <Section delay={0.1}>
         <Eyebrow>Your Career Matches</Eyebrow>
 
         {quizResults ? (
           <>
-            <h2 className="font-black text-slate-900 mb-1" style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)' }}>
+            <h2 className="font-black text-stone-900 mb-1" style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)' }}>
               Based on your {quizResults.topCodes[0]} + {quizResults.topCodes[1]} profile
             </h2>
-            <p className="text-slate-500 text-sm mb-5 max-w-2xl leading-relaxed">
+            <p className="text-stone-500 text-sm mb-5 max-w-2xl leading-relaxed">
               {quizResults.profileDescription}
             </p>
-
             <div className="space-y-3">
               {quizResults.topCareerMatches.slice(0, 5).map((career, i) => (
                 <motion.div
@@ -190,16 +286,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                  className="bg-white rounded-2xl border border-slate-200 px-5 py-4 flex items-center gap-4"
+                  className="bg-white rounded-2xl border border-stone-200 px-5 py-4 flex items-center gap-4"
                 >
                   <div className="shrink-0 bg-stone-900 text-white rounded-xl px-3 py-1.5 text-center min-w-16">
                     <p className="font-black text-sm leading-none">{career.compatibilityScore}%</p>
                     <p className="text-white/50 text-[9px] uppercase tracking-wider mt-0.5">match</p>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-black text-slate-900 text-sm leading-tight truncate">{career.title}</p>
-                    <p className="text-xs text-slate-400 mt-0.5 truncate">{career.category}</p>
-                    <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                    <p className="font-black text-stone-900 text-sm leading-tight truncate">{career.title}</p>
+                    <p className="text-xs text-stone-400 mt-0.5 truncate">{career.category}</p>
+                    <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
                       {career.educationPath}
                     </span>
                   </div>
@@ -212,47 +308,50 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                 </motion.div>
               ))}
             </div>
+            <button
+              onClick={() => onNavigate('careers')}
+              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+            >
+              Browse all careers <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </>
         ) : (
           <CtaCard
             icon={Sparkles}
             title="Take the Career Quiz"
-            subtitle="Discover which careers match your personality →"
+            subtitle="Discover which careers match your personality"
             onClick={() => onNavigate('quiz')}
           />
         )}
       </Section>
 
-      {/* ── Section 3: APS & University Readiness ───────────────────────────── */}
-      <Section delay={0.12}>
+      {/* ── Section 4: APS & University Readiness ───────────────────────────── */}
+      <Section delay={0.16}>
         <Eyebrow>APS &amp; University Readiness</Eyebrow>
 
         {apsData ? (
-          <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
+          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-5">
             <div className="flex items-end gap-3 mb-5">
-              <span className="font-black text-slate-900 leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
+              <span className="font-black text-stone-900 leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
                 {apsData.aps}
               </span>
-              <span className="text-slate-400 text-sm font-bold mb-1.5">APS Score</span>
+              <span className="text-stone-400 text-sm font-bold mb-1.5">APS Score</span>
             </div>
-
             {qualifyingDegrees.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs font-bold text-slate-500 mb-2">You qualify for:</p>
+                <p className="text-xs font-bold text-stone-500 mb-2">You qualify for:</p>
                 <div className="flex flex-wrap gap-2">
                   {qualifyingDegrees.map(d => (
                     <span key={d.id} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
-                      <span>✓</span>
-                      <span>{d.degree} — {d.shortName}</span>
+                      ✓ {d.degree} — {d.shortName}
                     </span>
                   ))}
                 </div>
               </div>
             )}
-
             {closeDegrees.length > 0 && (
               <div>
-                <p className="text-xs font-bold text-slate-500 mb-2">Almost there:</p>
+                <p className="text-xs font-bold text-stone-500 mb-2">Almost there:</p>
                 <div className="flex flex-wrap gap-2">
                   {closeDegrees.map(d => (
                     <span key={d.id} className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-bold">
@@ -262,10 +361,15 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                 </div>
               </div>
             )}
-
             {qualifyingDegrees.length === 0 && closeDegrees.length === 0 && (
-              <p className="text-slate-400 text-sm">Keep improving your marks to unlock university programmes.</p>
+              <p className="text-stone-400 text-sm">Keep improving your marks to unlock university programmes.</p>
             )}
+            <button
+              onClick={() => onNavigate('aps')}
+              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+            >
+              Open APS Calculator <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         ) : (
           <CtaCard
@@ -277,13 +381,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         )}
       </Section>
 
-      {/* ── Section 4: Study Progress ────────────────────────────────────────── */}
-      <Section delay={0.18}>
+      {/* ── Section 5: Study Progress ────────────────────────────────────────── */}
+      <Section delay={0.22}>
         <Eyebrow>Study Progress</Eyebrow>
 
         {progress.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200 px-6 py-6 text-center">
-            <p className="text-slate-500 text-sm mb-4">
+          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-6 text-center">
+            <p className="text-stone-500 text-sm mb-4">
               You haven't started any lessons yet. Open the Library to begin.
             </p>
             <button
@@ -298,35 +402,31 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           <>
             <div className="grid grid-cols-3 gap-3 mb-5">
               {[
-                { label: 'Started',        value: topicsStarted,      color: 'text-slate-900' },
+                { label: 'Started',        value: topicsStarted,      color: 'text-stone-900' },
                 { label: 'Mastered',       value: topicsMastered,     color: 'text-emerald-600' },
                 { label: 'Needs Practice', value: topicsNeedPractice, color: 'text-amber-600' },
               ].map(stat => (
-                <div key={stat.label} className="bg-white rounded-2xl border border-slate-200 px-4 py-4 text-center">
+                <div key={stat.label} className="bg-white rounded-2xl border border-stone-200 px-4 py-4 text-center">
                   <p className={`font-black text-2xl ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-slate-400 font-bold mt-0.5">{stat.label}</p>
+                  <p className="text-xs text-stone-400 font-bold mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
-
-            <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100">
+            <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
               {Object.entries(bySubject).map(([subject, topics]) => {
-                const total   = topics.length;
+                const total    = topics.length;
                 const mastered = topics.filter(t => t.mastery_level === 'mastered').length;
-                const pct     = total > 0 ? (mastered / total) * 100 : 0;
+                const pct      = total > 0 ? (mastered / total) * 100 : 0;
                 return (
                   <div key={subject} className="flex items-center gap-4 px-5 py-3">
                     <div className="w-32 shrink-0">
-                      <p className="text-xs font-bold text-slate-700 truncate">{subject}</p>
+                      <p className="text-xs font-bold text-stone-700 truncate">{subject}</p>
                     </div>
                     <div className="flex-1 bg-stone-200 rounded-full h-1.5 overflow-hidden">
-                      <div
-                        className="h-full bg-stone-900 rounded-full transition-all duration-700"
-                        style={{ width: `${pct}%` }}
-                      />
+                      <div className="h-full bg-stone-900 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
                     </div>
                     <div className="w-20 text-right shrink-0">
-                      <p className="text-xs text-slate-500 font-bold">{mastered} / {total} mastered</p>
+                      <p className="text-xs text-stone-500 font-bold">{mastered} / {total} mastered</p>
                     </div>
                   </div>
                 );
@@ -336,26 +436,26 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         )}
       </Section>
 
-      {/* ── Section 5: Saved Bursaries ───────────────────────────────────────── */}
-      <Section delay={0.24}>
+      {/* ── Section 6: Saved Bursaries ───────────────────────────────────────── */}
+      <Section delay={0.28}>
         <Eyebrow>Saved Bursaries</Eyebrow>
 
         {savedBursaries.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-slate-200">
-            <div className="divide-y divide-slate-100">
+          <div className="bg-white rounded-2xl border border-stone-200">
+            <div className="divide-y divide-stone-100">
               {savedBursaries.slice(0, 3).map(b => (
                 <div key={b.id} className="flex items-center gap-4 px-5 py-3.5">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-slate-900 truncate">{b.name}</p>
-                    <p className="text-xs text-slate-400 truncate">{b.provider}</p>
+                    <p className="text-sm font-black text-stone-900 truncate">{b.name}</p>
+                    <p className="text-xs text-stone-400 truncate">{b.provider}</p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-bold px-2 py-1 rounded-full bg-slate-100 text-slate-600 uppercase tracking-wide">
+                  <span className="shrink-0 text-[10px] font-bold px-2 py-1 rounded-full bg-stone-100 text-stone-600 uppercase tracking-wide">
                     {b.category}
                   </span>
                 </div>
               ))}
             </div>
-            <div className="px-5 py-3 border-t border-slate-100">
+            <div className="px-5 py-3 border-t border-stone-100">
               <button
                 onClick={() => onNavigate('bursaries')}
                 className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors"
@@ -366,8 +466,8 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-slate-200 px-6 py-5">
-            <p className="text-slate-400 text-sm">
+          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-5">
+            <p className="text-stone-400 text-sm">
               No bursaries saved yet.{' '}
               <button
                 onClick={() => onNavigate('bursaries')}

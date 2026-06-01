@@ -118,7 +118,7 @@ const AnimatedNav = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
   const scrollPositionOnCollapse = useRef(0);
 
   const navItems = [
-    { name: 'Career Guide', page: 'quiz' as Page },
+    { name: 'Free Tools', page: 'quiz' as Page },
     { name: 'School Assist', page: 'library' as Page },
     { name: 'Portal', page: 'portal' as Page },
   ];
@@ -326,6 +326,57 @@ const TutorialDialog = () => {
 
 // ── Header + Hero (zip file style) ───────────────────────────────────────────
 
+// ── Free Tools Nav — shown on all career/free pages ──────────────────────────
+const FREE_TOOLS = [
+  { label: 'Career Quiz',    page: 'quiz'      as Page },
+  { label: 'Career Browser', page: 'careers'   as Page },
+  { label: 'Bursaries',      page: 'bursaries' as Page },
+  { label: 'TVET',           page: 'tvet'      as Page },
+  { label: 'Job Map',        page: 'map'       as Page },
+];
+
+const FreeToolsNav = ({ onNavigate, activePage }: { onNavigate: (page: Page) => void; activePage: Page }) => (
+  <div className="fixed top-0 left-0 right-0 z-[120] bg-white/90 backdrop-blur-sm border-b border-stone-200">
+    <div className="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between gap-4">
+      {/* Logo */}
+      <button
+        onClick={() => onNavigate('home')}
+        className="flex items-center gap-2 shrink-0"
+      >
+        <div className="w-6 h-6 rounded-md bg-stone-900 flex items-center justify-center">
+          <span className="text-white font-black text-[10px]">P</span>
+        </div>
+        <span className="text-sm font-black text-stone-900 tracking-tight hidden sm:block">Prospect</span>
+      </button>
+
+      {/* Free tool links */}
+      <div className="flex items-center gap-0.5 overflow-x-auto">
+        {FREE_TOOLS.map(tool => (
+          <button
+            key={tool.page}
+            onClick={() => onNavigate(tool.page)}
+            className={`px-3 py-1.5 rounded-lg text-[12px] font-bold whitespace-nowrap transition-colors ${
+              activePage === tool.page
+                ? 'bg-stone-900 text-white'
+                : 'text-stone-500 hover:text-stone-900 hover:bg-stone-100'
+            }`}
+          >
+            {tool.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Portal CTA */}
+      <button
+        onClick={() => onNavigate('portal')}
+        className="shrink-0 text-[12px] font-black text-stone-500 hover:text-stone-900 transition-colors whitespace-nowrap"
+      >
+        Sign In →
+      </button>
+    </div>
+  </div>
+);
+
 const HeroNav = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -382,10 +433,18 @@ const HeroNav = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
 
         <div className="relative flex items-center gap-2">
           <motion.button
+            onClick={() => onNavigate('quiz')}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="hidden sm:block text-stone-600 text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors"
+          >
+            Free Tools
+          </motion.button>
+          <motion.button
             onClick={() => onNavigate('portal')}
             whileHover={{ scale: 1.05, boxShadow: '0 12px 24px rgba(15, 23, 42, 0.2)' }}
             whileTap={{ scale: 0.95 }}
-            className="bg-slate-900 text-white text-sm font-black px-6 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 shadow-lg shadow-slate-900/25"
+            className="bg-stone-900 text-white text-sm font-black px-6 py-3 rounded-xl hover:bg-stone-800 transition-all duration-200 shadow-lg shadow-stone-900/25"
           >
             Login
           </motion.button>
@@ -916,16 +975,16 @@ export default function App() {
   // Single render function so AnimatePresence always receives exactly one child
   const renderPage = () => {
     switch (page) {
-      case 'careers':    return <PageTransition pageKey="careers"><CareersPageNew {...pp} /></PageTransition>;
-      case 'quiz':       return <PageTransition pageKey="quiz"><QuizPage {...pp} /></PageTransition>;
-      case 'bursaries':  return <PageTransition pageKey="bursaries"><BursariesPage {...pp} /></PageTransition>;
-      case 'bursary':    return <PageTransition pageKey="bursary"><BursaryDetailPage {...pp} /></PageTransition>;
-      case 'map':        return <PageTransition pageKey="map"><MapPage {...pp} /></PageTransition>;
-      case 'tvet':       return <PageTransition pageKey="tvet"><TVETPage {...pp} /></PageTransition>;
-      case 'tvet-careers':      return <PageTransition pageKey="tvet-careers"><TVETCareersPage {...pp} /></PageTransition>;
-      case 'tvet-colleges':     return <PageTransition pageKey="tvet-colleges"><TVETCollegesPage {...pp} /></PageTransition>;
-      case 'tvet-funding':      return <PageTransition pageKey="tvet-funding"><TVETFundingPage {...pp} /></PageTransition>;
-      case 'tvet-requirements': return <PageTransition pageKey="tvet-requirements"><TVETRequirementsPage {...pp} /></PageTransition>;
+      case 'careers':    return <PageTransition pageKey="careers"><FreeToolsNav onNavigate={navigate} activePage={page} /><CareersPageNew {...pp} /></PageTransition>;
+      case 'quiz':       return <PageTransition pageKey="quiz"><FreeToolsNav onNavigate={navigate} activePage={page} /><QuizPage {...pp} /></PageTransition>;
+      case 'bursaries':  return <PageTransition pageKey="bursaries"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursariesPage {...pp} /></PageTransition>;
+      case 'bursary':    return <PageTransition pageKey="bursary"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursaryDetailPage {...pp} /></PageTransition>;
+      case 'map':        return <PageTransition pageKey="map"><FreeToolsNav onNavigate={navigate} activePage={page} /><MapPage {...pp} /></PageTransition>;
+      case 'tvet':       return <PageTransition pageKey="tvet"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETPage {...pp} /></PageTransition>;
+      case 'tvet-careers':      return <PageTransition pageKey="tvet-careers"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETCareersPage {...pp} /></PageTransition>;
+      case 'tvet-colleges':     return <PageTransition pageKey="tvet-colleges"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETCollegesPage {...pp} /></PageTransition>;
+      case 'tvet-funding':      return <PageTransition pageKey="tvet-funding"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETFundingPage {...pp} /></PageTransition>;
+      case 'tvet-requirements': return <PageTransition pageKey="tvet-requirements"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETRequirementsPage {...pp} /></PageTransition>;
       case 'library':           return <PageTransition pageKey="library"><StudyLibraryPage {...pp} /></PageTransition>;
       case 'school-assist':     return <PageTransition pageKey="school-assist"><SchoolAssistPage onNavigate={navigate} onNavigateHome={() => navigate('home')} /></PageTransition>;
 

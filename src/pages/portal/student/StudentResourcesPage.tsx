@@ -79,7 +79,7 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
   });
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full">
+    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
