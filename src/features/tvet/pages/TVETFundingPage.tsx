@@ -55,7 +55,7 @@ const costRows = [
 
 function TVETFundingPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-24 pb-20">
         {/* Header */}

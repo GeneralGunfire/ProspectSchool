@@ -2,7 +2,7 @@ type Page = string;
 
 export default function LandingFooter({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
-    <footer className="py-24 bg-[#FAF9F6] border-t border-slate-100">
+    <footer className="py-24 bg-[#F5F0E8] border-t border-slate-100">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-16 md:mb-20">
           <div className="col-span-2 md:col-span-2 lg:col-span-1">

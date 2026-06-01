@@ -31,7 +31,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
   ];
 
   return (
-    <div className="flex h-screen bg-[#FAF9F6] overflow-hidden">
+    <div className="flex h-screen bg-[#F5F0E8] overflow-hidden">
       {/* Sidebar */}
       <div className="w-56 shrink-0 h-full bg-white border-r border-slate-200 flex flex-col">
         <div className="flex items-center gap-2 px-4 h-14 border-b border-slate-100">

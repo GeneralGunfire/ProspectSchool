@@ -352,7 +352,7 @@ const HeroNav = ({ onNavigate }: { onNavigate: (page: Page) => void }) => {
         initial={{ y: 0, opacity: 1 }}
         animate={{ y: isVisible ? 0 : -100, opacity: isVisible ? 1 : 0 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="fixed top-0 left-0 right-0 z-[120] flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 bg-gradient-to-b from-[#FAF9F6] via-[#FAF9F6] to-[#FAF9F6]/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm pointer-events-auto"
+        className="fixed top-0 left-0 right-0 z-[120] flex items-center justify-between px-5 sm:px-8 py-4 sm:py-5 bg-gradient-to-b from-[#F5F0E8] via-[#F5F0E8] to-[#F5F0E8]/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm pointer-events-auto"
       >
         {/* Animated background gradient on scroll */}
         <motion.div
@@ -403,11 +403,11 @@ const HeroSection = ({ onNavigate }: { onNavigate: (page: Page) => void }) => (
       backgroundImage: 'url(/images/hero_topography_1779608850775.png)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
-      backgroundColor: '#FAF9F6',
+      backgroundColor: '#F5F0E8',
     }}
   >
     {/* Gradient fade */}
-    <div className="absolute inset-0 bg-gradient-to-b from-[#FAF9F6]/20 via-[#FAF9F6]/30 to-[#FAF9F6] pointer-events-none" />
+    <div className="absolute inset-0 bg-gradient-to-b from-[#F5F0E8]/20 via-[#F5F0E8]/30 to-[#F5F0E8] pointer-events-none" />
 
     <div className="relative z-10 w-full max-w-4xl mx-auto px-5 sm:px-8 text-center">
       {/* Headline */}

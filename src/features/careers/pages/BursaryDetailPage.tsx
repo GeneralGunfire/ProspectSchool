@@ -18,7 +18,7 @@ function BursaryDetailPage({ onNavigate }: { onNavigate: (page: any) => void }) 
 
   if (!bursary) {
     return (
-      <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+      <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
         <div className="pt-32 pb-16 px-4 max-w-lg mx-auto text-center">
           <h1 className="text-2xl font-black text-slate-900 mb-4" style={{ letterSpacing: '-0.02em' }}>Bursary not found</h1>
           <button onClick={() => onNavigate('bursaries')} className="px-6 py-3 rounded-xl text-white font-bold text-xs uppercase tracking-widest bg-slate-900 hover:bg-slate-700 transition-colors">
@@ -86,7 +86,7 @@ function BursaryDetailPage({ onNavigate }: { onNavigate: (page: any) => void }) 
   const similarBursaries = bursaries.filter((b) => b.id !== bursary.id && b.category === bursary.category).slice(0, 3);
 
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-24 pb-16 px-4 max-w-3xl mx-auto">
 

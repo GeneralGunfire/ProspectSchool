@@ -107,7 +107,7 @@ export default function LibraryPage({ session, innerPage, onNavigate }: LibraryP
 
       {/* ── Learning topic page ─────────────────────────────────────────── */}
       {LearningPage ? (
-        <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+        <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
           {/* Fixed nav bar with back-to-library button */}
           <PortalBar
             onBack={() => onNavigate('library')}
@@ -123,7 +123,7 @@ export default function LibraryPage({ session, innerPage, onNavigate }: LibraryP
         </div>
       ) : (
         /* ── Library hub ───────────────────────────────────────────────── */
-        <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+        <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
           <div className="portal-content" style={{ paddingTop: '0' }}>
             <Suspense fallback={<Spinner />}>
               <StudyLibraryPage onNavigate={onNavigate} />

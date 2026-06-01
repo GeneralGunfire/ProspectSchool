@@ -5,7 +5,7 @@ type Page = string;
 
 export default function CTASection({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
-    <section className="py-28 bg-[#FAF9F6]">
+    <section className="py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}

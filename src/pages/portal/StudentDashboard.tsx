@@ -58,7 +58,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   if (inLearningPage) {
     return (
       <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+        <div className="min-h-screen flex items-center justify-center" style={{ background: '#F5F0E8' }}>
           <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
         </div>
       }>
@@ -72,7 +72,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   }
 
   return (
-    <div className="flex h-screen bg-[#FAF9F6] overflow-hidden">
+    <div className="flex h-screen bg-[#F5F0E8] overflow-hidden">
 
       {/* Sidebar */}
       <div className="w-56 shrink-0 h-full bg-white border-r border-slate-200 flex flex-col">

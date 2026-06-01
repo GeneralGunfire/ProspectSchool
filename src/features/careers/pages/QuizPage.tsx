@@ -151,7 +151,7 @@ function QuizPhase({
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-24 pb-20 px-4 flex flex-col items-center">
         <div className="max-w-2xl w-full">
@@ -433,7 +433,7 @@ function ResultsPhase({
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-24 pb-20 px-4">
         <div className="max-w-5xl mx-auto">

@@ -16,7 +16,7 @@ const featureItems = [
 
 export default function ProblemSection() {
   return (
-    <section className="py-28 bg-[#FAF9F6]">
+    <section className="py-28 bg-[#F5F0E8]">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <motion.div

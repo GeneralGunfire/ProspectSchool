@@ -92,7 +92,7 @@ export default function Perspectives({ onNavigate }: { onNavigate: (page: Page) 
           </div>
         </div>
 
-        <div className="bg-[#FAF9F6] rounded-4xl p-8 md:p-16 border border-slate-100 overflow-hidden">
+        <div className="bg-[#F5F0E8] rounded-4xl p-8 md:p-16 border border-slate-100 overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

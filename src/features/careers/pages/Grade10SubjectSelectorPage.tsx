@@ -47,7 +47,7 @@ function Grade10SubjectSelectorPage({ onNavigate }: { onNavigate: (page: any) =>
   }, [selectedSubjects]);
 
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-20 pb-16 px-4 sm:px-6 max-w-7xl mx-auto">
         {/* Header */}

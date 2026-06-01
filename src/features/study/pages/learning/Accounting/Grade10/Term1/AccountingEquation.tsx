@@ -508,7 +508,7 @@ function AccountingEquationPage({ onNavigate }: { onNavigate: (page: any) => voi
 
   return (
 
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <main className="max-w-3xl mx-auto px-4 pt-24 pb-16 space-y-6">
         {/* Breadcrumb */}

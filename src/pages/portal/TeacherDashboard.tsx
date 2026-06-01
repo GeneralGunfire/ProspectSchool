@@ -40,7 +40,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
 
   return (
-    <div className="flex h-screen bg-[#FAF9F6] overflow-hidden">
+    <div className="flex h-screen bg-[#F5F0E8] overflow-hidden">
 
       {/* Sidebar — always visible, never collapsible */}
       <div className="w-56 shrink-0 h-full bg-white border-r border-slate-200 flex flex-col">

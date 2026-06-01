@@ -51,7 +51,7 @@ const comparison = [
 
 function TVETPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       {/* Hero */}
       <div className="pt-24 bg-[#0f172a]">
