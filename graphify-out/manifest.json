@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\App.tsx": {
-    "mtime": 1780256468.410449,
-    "ast_hash": "c1bdb9f1f3a47d4c58309ec6f83f78a2",
+    "mtime": 1780322037.8023665,
+    "ast_hash": "d1678cbee96bc4d14bd630607f504d41",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\main.tsx": {
@@ -875,8 +875,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\teacher\\StudentProgressPage.tsx": {
-    "mtime": 1780256468.7063146,
-    "ast_hash": "b481218f7b1e49c2e004cd2c712a42da",
+    "mtime": 1780312173.2465537,
+    "ast_hash": "118b0828cade65bb813afb60748e2892",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\teacher\\TeacherHomePage.tsx": {
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\filestructure.txt": {
-    "mtime": 1780311782.0018027,
-    "ast_hash": "7f6bd2f0024423bd63dab79a37e98d44",
+    "mtime": 1780322174.8150547,
+    "ast_hash": "6b7014cf2653db9d42b63fba3f1f58e9",
     "semantic_hash": ""
   },
   "C:\\prospect\\index.html": {
@@ -1177,6 +1177,76 @@
   "C:\\prospect\\src\\features\\careers\\services\\mapService.ts": {
     "mtime": 1780256468.4574194,
     "ast_hash": "e3284950430a3a64ddeae6587c29c4a5",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\Animations.tsx": {
+    "mtime": 1780321651.9824083,
+    "ast_hash": "6836d1fc7ecd845fd7a1e0c2b48b0f4c",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\AudienceSection.tsx": {
+    "mtime": 1780321970.9923832,
+    "ast_hash": "c13fc7293521baaa19ee2193f371a1c2",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\FinalCTA.tsx": {
+    "mtime": 1780322131.778209,
+    "ast_hash": "f6969c4c3e55e687091816964a342631",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\Footer.tsx": {
+    "mtime": 1780321956.2647665,
+    "ast_hash": "7b95647de326efa5570bd4de3a052a24",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\Hero.tsx": {
+    "mtime": 1780321892.1383579,
+    "ast_hash": "2e96888f18214ae2e9c01ebd82cceddf",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\icons.ts": {
+    "mtime": 1780321661.7649393,
+    "ast_hash": "2ca2ee11f8831fc6012ecbb988ef3281",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\LandingPage.tsx": {
+    "mtime": 1780321850.1098964,
+    "ast_hash": "d3fb94f1ee63f4e7d013f7f52a4e9f8d",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\Navbar.tsx": {
+    "mtime": 1780321869.9512537,
+    "ast_hash": "ef574b58de013b123f04cf0a83cb1f1a",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\Pricing.tsx": {
+    "mtime": 1780322006.1092677,
+    "ast_hash": "e78d99995b873230c9149423962d2b38",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\QuoteSection.tsx": {
+    "mtime": 1780321956.334723,
+    "ast_hash": "ced88ff258c6455a622bb91bb983f165",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\StatsBar.tsx": {
+    "mtime": 1780321813.19845,
+    "ast_hash": "625b7cd94fa34946d9a2c59bebb60b44",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\StudentDeepDive.tsx": {
+    "mtime": 1780321955.9260485,
+    "ast_hash": "bebc231aa7c0cee771b33bd3a254e246",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\StudyLibrary.tsx": {
+    "mtime": 1780321955.9955702,
+    "ast_hash": "2d459582e91c08f14a2180bef1c76de5",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\features\\landing\\new\\TeacherTools.tsx": {
+    "mtime": 1780321956.065371,
+    "ast_hash": "02ec3de9f89166b7fc24963fdce539bc",
     "semantic_hash": ""
   }
 }

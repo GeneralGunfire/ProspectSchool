@@ -1,31 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { studentLogin } from '../../lib/auth';
 
 const REMEMBER_KEY = 'prospect_student_remember';
 
-interface StudentLoginProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function StudentLogin({ onNavigate }: StudentLoginProps) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function StudentLogin({ onNavigate }: { onNavigate: (page: string) => void }) {
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState<string | null>(null);
+  const [showPin, setShowPin]     = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-  const [formData, setFormData] = useState({
-    schoolCode: '',
-    studentCode: '',
-    pin: '',
-  });
+  const [formData, setFormData]   = useState({ schoolCode: '', studentCode: '', pin: '' });
 
-  // Load saved codes on mount
   useEffect(() => {
     try {
       const saved = localStorage.getItem(REMEMBER_KEY);
       if (saved) {
         const { schoolCode, studentCode } = JSON.parse(saved);
-        setFormData((f) => ({ ...f, schoolCode: schoolCode ?? '', studentCode: studentCode ?? '' }));
+        setFormData(f => ({ ...f, schoolCode: schoolCode ?? '', studentCode: studentCode ?? '' }));
       }
     } catch {}
   }, []);
@@ -34,144 +26,176 @@ export default function StudentLogin({ onNavigate }: StudentLoginProps) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
-    const result = await studentLogin(
-      formData.schoolCode,
-      formData.studentCode,
-      formData.pin
-    );
-
-    if (!result.success) {
-      setError(result.error);
-      setLoading(false);
-      return;
-    }
-
+    const result = await studentLogin(formData.schoolCode, formData.studentCode, formData.pin);
+    if (!result.success) { setError(result.error); setLoading(false); return; }
     if (rememberMe) {
-      localStorage.setItem(REMEMBER_KEY, JSON.stringify({
-        schoolCode: formData.schoolCode,
-        studentCode: formData.studentCode,
-      }));
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify({ schoolCode: formData.schoolCode, studentCode: formData.studentCode }));
     } else {
       localStorage.removeItem(REMEMBER_KEY);
     }
-
     onNavigate('student-dashboard');
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
-      {/* Back */}
-      <div className="px-6 py-5">
-        <motion.button
-          onClick={() => onNavigate('portal')}
-          whileHover={{ x: -3 }}
-          whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </motion.button>
+    <div className="min-h-screen flex" style={{ background: '#F5F0E8' }}>
+
+      {/* Left — dark branding panel */}
+      <div
+        className="hidden lg:flex flex-col justify-between w-[440px] shrink-0 px-12 py-12"
+        style={{ background: '#1C1917' }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <span className="text-white font-black text-sm">P</span>
+          </div>
+          <span className="text-white font-black text-base tracking-tight">Prospect</span>
+        </div>
+
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">For Learners</p>
+          <h2
+            className="text-white font-black leading-[1.08] mb-6"
+            style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', letterSpacing: '-0.03em' }}
+          >
+            Your future starts here.
+          </h2>
+          <p className="text-stone-400 text-[15px] leading-relaxed max-w-[30ch]">
+            Access your dashboard, study library, career matches, and bursary finder — all in one place.
+          </p>
+        </div>
+
+        <p className="text-stone-600 text-xs font-bold uppercase tracking-widest">Free · Always</p>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-sm"
-        >
-          <div className="text-center mb-10">
-            <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center mx-auto mb-5">
-              <span className="text-white font-black text-lg">P</span>
-            </div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight mb-1">Learner Login</h1>
-            <p className="text-slate-500 text-sm">Sign in with your school and student code</p>
-          </div>
+      {/* Right — form */}
+      <div className="flex-1 flex flex-col">
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
+        {/* Top bar */}
+        <div className="flex items-center px-6 sm:px-10 h-16 border-b border-stone-200/60" style={{ background: '#F5F0E8' }}>
+          <button
+            onClick={() => onNavigate('portal')}
+            className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" /> Portal
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className="flex-1 flex items-center justify-center px-6 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+            className="w-full max-w-sm"
+          >
+            {/* Header */}
+            <div className="mb-8">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Learner Login</p>
+              <h1 className="font-black text-[#1C1917] text-2xl" style={{ letterSpacing: '-0.03em' }}>
+                Sign in to your account
+              </h1>
+              <p className="text-stone-500 text-sm mt-1.5">Enter the codes provided by your school.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
+                >
+                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-red-700 text-sm leading-snug">{error}</p>
+                </motion.div>
+              )}
+
+              {/* School Code */}
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">
+                  School Code
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.schoolCode}
+                  onChange={e => setFormData({ ...formData, schoolCode: e.target.value.toUpperCase() })}
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
+                  placeholder="e.g. GHS001"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                />
+              </div>
+
+              {/* Student Code */}
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">
+                  Student Code
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.studentCode}
+                  onChange={e => setFormData({ ...formData, studentCode: e.target.value.toUpperCase() })}
+                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
+                  placeholder="e.g. STU-0001"
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                />
+              </div>
+
+              {/* PIN */}
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">
+                  PIN
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPin ? 'text' : 'password'}
+                    required
+                    inputMode="numeric"
+                    maxLength={10}
+                    value={formData.pin}
+                    onChange={e => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
+                    className="w-full px-4 py-3 pr-11 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
+                    placeholder="10-digit PIN"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPin(s => !s)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 transition-colors"
+                  >
+                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-stone-400 mt-1.5">Assigned by your teacher</p>
+              </div>
+
+              {/* Remember me */}
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-stone-300 accent-stone-900 cursor-pointer"
+                />
+                <span className="text-[11px] font-bold text-stone-500">Remember school &amp; student code</span>
+              </label>
+
+              {/* Submit */}
+              <motion.button
+                type="submit"
+                disabled={loading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full bg-[#1C1917] text-white font-black py-3.5 rounded-xl hover:bg-stone-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
               >
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                <p className="text-red-700 text-sm">{error}</p>
-              </motion.div>
-            )}
-
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
-                School Code
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.schoolCode}
-                onChange={(e) => setFormData({ ...formData, schoolCode: e.target.value.toUpperCase() })}
-                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all tracking-widest"
-                placeholder="e.g. GHS001"
-                autoCapitalize="characters"
-                autoCorrect="off"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
-                Student Code
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.studentCode}
-                onChange={(e) => setFormData({ ...formData, studentCode: e.target.value.toUpperCase() })}
-                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all tracking-widest"
-                placeholder="e.g. STU-0001"
-                autoCapitalize="characters"
-                autoCorrect="off"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-slate-500 mb-2">
-                PIN
-              </label>
-              <input
-                type="password"
-                required
-                inputMode="numeric"
-                maxLength={10}
-                value={formData.pin}
-                onChange={(e) => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
-                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all tracking-widest"
-                placeholder="10-digit PIN"
-              />
-              <p className="text-xs text-slate-400 mt-1.5">Assigned by your teacher</p>
-            </div>
-
-            <label className="flex items-center gap-2.5 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 accent-slate-900 cursor-pointer"
-              />
-              <span className="text-xs font-bold text-slate-500">Remember school & student code</span>
-            </label>
-
-            <motion.button
-              type="submit"
-              disabled={loading}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-slate-900 text-white font-black py-3.5 rounded-xl hover:bg-slate-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-              {!loading && <ArrowRight className="w-4 h-4" />}
-            </motion.button>
-          </form>
-        </motion.div>
+                {loading ? 'Signing in…' : 'Sign In'}
+                {!loading && <ArrowRight className="w-4 h-4" />}
+              </motion.button>
+            </form>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
