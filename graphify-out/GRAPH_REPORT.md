@@ -1,7 +1,7 @@
 # Graph Report - prospect  (2026-06-01)
 
 ## Corpus Check
-- 216 files · ~1,031,456 words
+- 216 files · ~1,032,098 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6287a53c`
+- Built from commit: `bbbc355a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -581,11 +581,11 @@ Nodes (4): FAIL(), INFO(), PASS(), run()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `supabaseAdmin` connect `Community 14` to `Community 129`, `Community 5`, `Community 69`, `Community 8`, `Community 9`, `Community 59`, `Community 11`, `Community 12`, `Community 108`, `Community 15`, `Community 20`, `Community 21`, `Community 26`, `Community 27`?**
-  _High betweenness centrality (0.081) - this node is a cross-community bridge._
+  _High betweenness centrality (0.076) - this node is a cross-community bridge._
 - **Why does `bursaries` connect `Community 68` to `Community 129`, `Community 17`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Why does `cn()` connect `Community 16` to `Community 11`?**
-  _High betweenness centrality (0.049) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **What connects `NewLandingPage`, `CareersPageNew`, `BursariesPage` to the rest of the system?**
   _680 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**

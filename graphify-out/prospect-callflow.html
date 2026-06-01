@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>prospect — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1670 nodes, 2755 edges, 132 communities. Commit: 6287a53</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1670 nodes, 2755 edges, 132 communities. Commit: bbbc355</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -4611,23 +4611,18 @@ flowchart LR
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
     %% Section: Other (540 nodes, 709 edges)
-    subgraph other_e2e_my_future_mjs_8a21574e["e2e-my-future.mjs"]
-        prospect_e2e_my_future_pass_0d9e7e23("PASS()<br/><small>e2e-my-future.mjs</small>")
-        prospect_e2e_my_future_run_3e84fe20("run()<br/><small>e2e-my-future.mjs</small>")
-        prospect_e2e_my_future_fail_47148b22("FAIL()<br/><small>e2e-my-future.mjs</small>")
-        prospect_e2e_my_future_info_cfd7d999("INFO()<br/><small>e2e-my-future.mjs</small>")
-    end
-    subgraph other_portal_student_LibraryPage_tsx_5275a4fd["portal/student/LibraryPage.tsx"]
-        student_librarypage_topiclabel_fab27c13("topicLabel()<br/><small>portal/student/LibraryPage.tsx</small>")
-        student_librarypage_librarypage_025b0c8f("LibraryPage()<br/><small>portal/student/LibraryPage.tsx</small>")
+    subgraph other_portal_student_ApsCalculatorPage_tsx_23edf001["portal/student/ApsCalculatorPage.tsx"]
+        src_pages_portal_student_apscalculatorpage_tsx_c4226a93("ApsCalculatorPage.tsx")
+        student_apscalculatorpage_nqfcolor_5a568750("nqfColor()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
+        student_apscalculatorpage_subjectrow_38f1ea3b("SubjectRow()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
+        student_apscalculatorpage_apscolor_40005eaf("apsColor()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
+        student_apscalculatorpage_apscalculatorpage_bb533187("ApsCalculatorPage()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
+        student_apscalculatorpage_checkdegreematch_3589e983("checkDegreeMatch()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
+        student_apscalculatorpage_degreecard_06128b53("DegreeCard()<br/><small>portal/student/ApsCalculatorPage.tsx</small>")
     end
     subgraph other_src_App_tsx_1d96e3ea["src/App.tsx"]
         src_app_pageprops_7b2ba868("pageProps()<br/><small>src/App.tsx</small>")
         src_app_app_f316b20d("App()<br/><small>src/App.tsx</small>")
-    end
-    subgraph other_src_components_QuizBlock_tsx_3f117e5d["src/components/QuizBlock.tsx"]
-        components_quizblock_loadquizresult_eeb34d86("loadQuizResult()<br/><small>src/components/QuizBlock.tsx</small>")
-        components_quizblock_quizblock_22443c81("QuizBlock()<br/><small>src/components/QuizBlock.tsx</small>")
     end
     subgraph other_tvet_pages_TVETCareersPage_tsx_02f8d54d["tvet/pages/TVETCareersPage.tsx"]
         src_features_tvet_pages_tvetcareerspage_tsx_e4d03137("TVETCareersPage.tsx")
@@ -4635,36 +4630,38 @@ flowchart LR
     end
     src_features_careers_pages_bursariespage_tsx_23b2e584("BursariesPage.tsx")
     src_features_careers_pages_quizpage_tsx_21f93413("QuizPage.tsx")
-    src_pages_portal_studentdashboard_tsx_f93baa1d("StudentDashboard.tsx")
     src_pages_portal_teacherdashboard_tsx_74876111("TeacherDashboard.tsx")
+    student_librarypage_topiclabel_fab27c13("topicLabel()<br/><small>portal/student/LibraryPage.tsx</small>")
     hooks_usepillvisible_usepillvisible_2dff2b09("usePillVisible()<br/><small>shared/hooks/usePillVisible.ts</small>")
+    data_apsdata_percenttonqf_12ef18e9("percentToNQF()<br/><small>src/data/apsData.ts</small>")
     lib_auth_hashpin_ed19cf05("hashPin()<br/><small>src/lib/auth.ts</small>")
+    student_apscalculatorpage_nqfcolor_5a568750 -->|calls| student_apscalculatorpage_subjectrow_38f1ea3b
+    student_apscalculatorpage_apscolor_40005eaf -->|calls| student_apscalculatorpage_apscalculatorpage_bb533187
+    student_apscalculatorpage_checkdegreematch_3589e983 -->|calls| data_apsdata_percenttonqf_12ef18e9
+    student_apscalculatorpage_checkdegreematch_3589e983 -->|calls| student_apscalculatorpage_degreecard_06128b53
+    student_apscalculatorpage_subjectrow_38f1ea3b -->|calls| data_apsdata_percenttonqf_12ef18e9
     src_app_pageprops_7b2ba868 -->|calls| src_app_app_f316b20d
     pages_tvetcareerspage_tvetcareerspage_9dc45aae -->|calls| hooks_usepillvisible_usepillvisible_2dff2b09
-    student_librarypage_topiclabel_fab27c13 -->|calls| student_librarypage_librarypage_025b0c8f
-    prospect_e2e_my_future_pass_0d9e7e23 -->|calls| prospect_e2e_my_future_run_3e84fe20
-    prospect_e2e_my_future_fail_47148b22 -->|calls| prospect_e2e_my_future_run_3e84fe20
-    prospect_e2e_my_future_info_cfd7d999 -->|calls| prospect_e2e_my_future_run_3e84fe20
-    components_quizblock_loadquizresult_eeb34d86 -->|calls| components_quizblock_quizblock_22443c81
+    src_pages_portal_student_apscalculatorpage_tsx_c4226a93 -->|imports| data_apsdata_percenttonqf_12ef18e9
     src_features_tvet_pages_tvetcareerspage_tsx_e4d03137 -->|imports| hooks_usepillvisible_usepillvisible_2dff2b09
     %% Omitted for readability: 522 nodes, 0 edges
-    class prospect_e2e_my_future_pass_0d9e7e23 function;
-    class prospect_e2e_my_future_run_3e84fe20 function;
-    class prospect_e2e_my_future_fail_47148b22 function;
-    class prospect_e2e_my_future_info_cfd7d999 function;
-    class student_librarypage_topiclabel_fab27c13 ui;
-    class student_librarypage_librarypage_025b0c8f ui;
+    class src_pages_portal_student_apscalculatorpage_tsx_c4226a93 ui;
+    class student_apscalculatorpage_nqfcolor_5a568750 ui;
+    class student_apscalculatorpage_subjectrow_38f1ea3b ui;
+    class student_apscalculatorpage_apscolor_40005eaf ui;
+    class student_apscalculatorpage_apscalculatorpage_bb533187 ui;
+    class student_apscalculatorpage_checkdegreematch_3589e983 ui;
+    class student_apscalculatorpage_degreecard_06128b53 ui;
     class src_app_pageprops_7b2ba868 ui;
     class src_app_app_f316b20d ui;
-    class components_quizblock_loadquizresult_eeb34d86 ui;
-    class components_quizblock_quizblock_22443c81 ui;
     class src_features_tvet_pages_tvetcareerspage_tsx_e4d03137 ui;
     class pages_tvetcareerspage_tvetcareerspage_9dc45aae ui;
     class src_features_careers_pages_bursariespage_tsx_23b2e584 ui;
     class src_features_careers_pages_quizpage_tsx_21f93413 ui;
-    class src_pages_portal_studentdashboard_tsx_f93baa1d ui;
     class src_pages_portal_teacherdashboard_tsx_74876111 ui;
+    class student_librarypage_topiclabel_fab27c13 ui;
     class hooks_usepillvisible_usepillvisible_2dff2b09 ui;
+    class data_apsdata_percenttonqf_12ef18e9 function;
     class lib_auth_hashpin_ed19cf05 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -4976,7 +4973,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>prospect — Architecture Documentation</p>
-  <p>Generated: 2026-06-01 14:11 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-01 14:20 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
