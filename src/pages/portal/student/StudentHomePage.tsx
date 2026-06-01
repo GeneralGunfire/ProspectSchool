@@ -118,7 +118,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   }
 
   return (
-    <div className="p-6 max-w-4xl space-y-6">
+    <div className="p-4 md:p-6 max-w-3xl space-y-4 md:space-y-5">
 
       {/* Greeting */}
       <div>
@@ -131,7 +131,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
 
         {/* ── Pending Homework ─────────────────────────────── */}
         <Section
@@ -307,7 +307,7 @@ function Section({ icon, title, linkLabel, onLink, accent = 'slate', children }:
     <motion.div
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="bg-white rounded-2xl border border-slate-200 p-5"
+      className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm"
     >
       <div className="flex items-center justify-between mb-3">
         <div className={`flex items-center gap-2 font-black text-xs uppercase tracking-widest ${accentMap[accent]}`}>

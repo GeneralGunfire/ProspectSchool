@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
@@ -7,18 +7,24 @@ import StudentMarksPage from './student/StudentMarksPage';
 import StudentResourcesPage from './student/StudentResourcesPage';
 import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 
-const LibraryPage = lazy(() => import('./student/LibraryPage'));
+const LibraryPage  = lazy(() => import('./student/LibraryPage'));
+const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'library';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'library' | 'future';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
 }
 
+const Spinner = () => (
+  <div className="flex items-center justify-center py-24">
+    <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+  </div>
+);
+
 export default function StudentDashboard({ onNavigate }: StudentDashboardProps) {
   const [session, setSession] = useState<StudentSession | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>('home');
-  // innerPage tracks which learning page or 'library' hub is shown
   const [innerPage, setInnerPage] = useState<string>('library');
 
   useEffect(() => {
@@ -31,93 +37,89 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
 
-  const navItems = [
-    { id: 'home'          as ActivePage, label: 'Home',          icon: Home },
-    { id: 'announcements' as ActivePage, label: 'Announcements', icon: Megaphone },
-    { id: 'calendar'      as ActivePage, label: 'Calendar',      icon: CalendarDays },
-    { id: 'marks'         as ActivePage, label: 'My Marks',      icon: ClipboardList },
-    { id: 'resources'     as ActivePage, label: 'Resources',     icon: FolderOpen },
-    { id: 'library'       as ActivePage, label: 'Library',       icon: BookOpen },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const navItems: { id: ActivePage; label: string; icon: any; mobileLabel?: string }[] = [
+    { id: 'home',          label: 'Home',          icon: Home },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone,    mobileLabel: 'News' },
+    { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
+    { id: 'marks',         label: 'My Marks',      icon: ClipboardList, mobileLabel: 'Marks' },
+    { id: 'resources',     label: 'Resources',     icon: FolderOpen },
+    { id: 'library',       label: 'Library',       icon: BookOpen },
+    { id: 'future',        label: 'My Future',     icon: Sparkles,     mobileLabel: 'Future' },
   ];
 
-  // When library navigates internally (to a learning page or back)
   function handleLibraryNavigate(page: string) {
     if (page === 'student-dashboard' || page === 'library') {
       setInnerPage('library');
     } else if (page.startsWith('learning-')) {
       setInnerPage(page);
     } else {
-      // Any other navigation goes to App-level
       onNavigate(page);
     }
   }
 
-  // When in a learning page, sidebar is hidden for full-screen immersion
+  function setPage(id: ActivePage) {
+    setActivePage(id);
+    if (id === 'library') setInnerPage('library');
+  }
+
   const inLearningPage = activePage === 'library' && innerPage.startsWith('learning-');
 
   if (inLearningPage) {
     return (
       <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center" style={{ background: '#F5F0E8' }}>
+        <div className="min-h-screen flex items-center justify-center bg-brand-bg">
           <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
         </div>
       }>
-        <LibraryPage
-          session={session}
-          innerPage={innerPage}
-          onNavigate={handleLibraryNavigate}
-        />
+        <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
       </Suspense>
     );
   }
 
   return (
-    <div className="flex h-screen bg-[#F5F0E8] overflow-hidden">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
 
-      {/* Sidebar */}
-      <div className="w-56 shrink-0 h-full bg-white border-r border-slate-200 flex flex-col">
+      {/* ── Sidebar (desktop only) ─────────────────────────── */}
+      <aside className="hidden md:flex w-52 shrink-0 h-full bg-white border-r border-slate-100 flex-col">
 
         {/* Logo */}
-        <div className="flex items-center gap-2 px-4 h-14 border-b border-slate-100">
-          <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center">
-            <span className="text-white font-black text-xs">P</span>
+        <div className="flex items-center gap-2 px-4 h-14 border-b border-slate-100 shrink-0">
+          <div className="w-6 h-6 rounded-md bg-stone-900 flex items-center justify-center">
+            <span className="text-white font-black text-[10px]">P</span>
           </div>
-          <span className="text-sm font-black text-slate-900 tracking-tight">Prospect</span>
+          <span className="text-sm font-black text-stone-900 tracking-tight">Prospect</span>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = activePage === item.id;
+        <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto">
+          {navItems.map(({ id, label, icon: Icon }) => {
+            const active = activePage === id;
             return (
               <button
-                key={item.id}
-                onClick={() => {
-                  setActivePage(item.id);
-                  if (item.id === 'library') setInnerPage('library');
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-150 ${
+                key={id}
+                onClick={() => setPage(id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-150 ${
                   active
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                    ? 'bg-stone-900 text-white'
+                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
-                <span>{item.label}</span>
+                <span>{label}</span>
               </button>
             );
           })}
         </nav>
 
         {/* Profile + logout */}
-        <div className="border-t border-slate-100 p-2 space-y-1">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50">
+        <div className="border-t border-slate-100 p-2 space-y-1 shrink-0">
+          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-slate-50">
             <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
-              <span className="text-slate-700 font-black text-xs">{initials}</span>
+              <span className="text-slate-600 font-black text-[10px]">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">{session.name} {session.surname}</p>
+              <p className="text-[12px] font-black text-slate-900 truncate">{session.name} {session.surname}</p>
               <p className="text-[10px] text-slate-400 truncate">
                 Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
               </p>
@@ -125,34 +127,85 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </div>
           <button
             onClick={() => { studentLogout(); onNavigate('portal'); }}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 hover:text-red-700 transition-all"
+            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            <span>Sign Out</span>
+            Sign Out
           </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Main content */}
-      <div className="flex-1 min-w-0 overflow-y-auto">
-        {activePage === 'home'          && <StudentHomePage session={session} onNavigate={page => setActivePage(page as ActivePage)} />}
-        {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
-        {activePage === 'calendar'      && <StudentCalendarPage session={session} />}
-        {activePage === 'marks'         && <StudentMarksPage session={session} />}
-        {activePage === 'resources'     && <StudentResourcesPage session={session} />}
-        {activePage === 'library'  && (
-          <Suspense fallback={
-            <div className="flex items-center justify-center py-24">
-              <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+      {/* ── Main content area ──────────────────────────────── */}
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
+
+        {/* Mobile top bar */}
+        <div className="md:hidden flex items-center justify-between px-4 h-12 bg-white border-b border-slate-100 shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-md bg-stone-900 flex items-center justify-center">
+              <span className="text-white font-black text-[9px]">P</span>
             </div>
-          }>
-            <LibraryPage
-              session={session}
-              innerPage={innerPage}
-              onNavigate={handleLibraryNavigate}
-            />
-          </Suspense>
-        )}
+            <span className="text-sm font-black text-stone-900 tracking-tight">Prospect</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center">
+              <span className="text-slate-600 font-black text-[10px]">{initials}</span>
+            </div>
+            <button
+              onClick={() => { studentLogout(); onNavigate('portal'); }}
+              className="text-[11px] font-black text-slate-400 hover:text-red-500 transition-colors px-1"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Page content — scrollable, with bottom padding for mobile nav */}
+        <div className="flex-1 overflow-y-auto pb-20 md:pb-0">
+          {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+          {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
+          {activePage === 'calendar'      && <StudentCalendarPage session={session} />}
+          {activePage === 'marks'         && <StudentMarksPage session={session} />}
+          {activePage === 'resources'     && <StudentResourcesPage session={session} />}
+          {activePage === 'future'        && (
+            <Suspense fallback={<Spinner />}>
+              <MyFuturePage session={session} onNavigate={p => setPage(p as ActivePage)} />
+            </Suspense>
+          )}
+          {activePage === 'library'  && (
+            <Suspense fallback={<Spinner />}>
+              <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
+            </Suspense>
+          )}
+        </div>
+
+        {/* ── Mobile bottom nav ─────────────────────────────── */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex items-center safe-bottom z-40"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        >
+          {/* Show 5 most important tabs on mobile */}
+          {[
+            { id: 'home'     as ActivePage, label: 'Home',    icon: Home },
+            { id: 'library'  as ActivePage, label: 'Library', icon: BookOpen },
+            { id: 'calendar' as ActivePage, label: 'Calendar',icon: CalendarDays },
+            { id: 'marks'    as ActivePage, label: 'Marks',   icon: ClipboardList },
+            { id: 'future'   as ActivePage, label: 'Future',  icon: Sparkles },
+          ].map(({ id, label, icon: Icon }) => {
+            const active = activePage === id;
+            return (
+              <button
+                key={id}
+                onClick={() => setPage(id)}
+                className="relative flex-1 flex flex-col items-center justify-center py-2.5 gap-1 transition-colors"
+              >
+                {active && <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-stone-900 rounded-full" />}
+                <Icon className={`w-5 h-5 ${active ? 'text-stone-900' : 'text-slate-400'}`} />
+                <span className={`text-[9px] font-black uppercase tracking-wide ${active ? 'text-stone-900' : 'text-slate-400'}`}>
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );
