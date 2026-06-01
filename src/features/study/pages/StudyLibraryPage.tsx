@@ -202,9 +202,9 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+    <div className="min-h-screen">
 
-      <div className="pt-20 pb-24 max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="pt-4 pb-24 max-w-5xl mx-auto px-4 sm:px-6">
 
         <AnimatePresence mode="wait">
 

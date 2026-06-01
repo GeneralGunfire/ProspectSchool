@@ -123,7 +123,7 @@ export default function LibraryPage({ session, innerPage, onNavigate }: LibraryP
         </div>
       ) : (
         /* ── Library hub ───────────────────────────────────────────────── */
-        <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+        <div className="min-h-screen">
           <div className="portal-content" style={{ paddingTop: '0' }}>
             <Suspense fallback={<Spinner />}>
               <StudyLibraryPage onNavigate={onNavigate} />

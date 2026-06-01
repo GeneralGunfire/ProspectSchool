@@ -67,13 +67,13 @@ function SubjectRow({
   }, {});
 
   return (
-    <div className="flex items-center gap-2 py-2 border-b border-slate-100 last:border-0">
+    <div className="flex items-center gap-2 py-2 border-b border-stone-100 last:border-0">
       {/* Subject select */}
       <div className="relative flex-1 min-w-0">
         <select
           value={subject.code}
           onChange={e => onChange(index, { ...subject, code: e.target.value as SubjectCode })}
-          className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 pr-7 text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-400 transition"
+          className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 pr-7 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
         >
           {Object.entries(grouped).map(([group, items]) => (
             <optgroup key={group} label={group}>
@@ -83,7 +83,7 @@ function SubjectRow({
             </optgroup>
           ))}
         </select>
-        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
       </div>
 
       {/* Percentage input */}
@@ -98,9 +98,9 @@ function SubjectRow({
             onChange(index, { ...subject, percent: val });
           }}
           placeholder="0"
-          className="w-16 bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 text-sm font-semibold text-slate-800 text-center focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-400 transition"
+          className="w-16 bg-stone-50 border border-stone-200 rounded-lg px-2 py-2 text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
         />
-        <span className="text-slate-400 text-xs">%</span>
+        <span className="text-stone-400 text-xs">%</span>
       </div>
 
       {/* NQF level badge */}
@@ -111,7 +111,7 @@ function SubjectRow({
       {/* Remove */}
       <button
         onClick={() => onRemove(index)}
-        className="shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition"
+        className="shrink-0 p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition"
         aria-label="Remove subject"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -138,7 +138,7 @@ function DegreeCard({
       className={`rounded-xl border transition-all duration-200 ${
         qualifies
           ? 'border-emerald-200 bg-emerald-50/40'
-          : 'border-slate-200 bg-white'
+          : 'border-stone-200 bg-white'
       }`}
     >
       {/* Card header */}
@@ -150,7 +150,7 @@ function DegreeCard({
         <div className="mt-0.5 shrink-0">
           {qualifies
             ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-            : <XCircle className="w-5 h-5 text-slate-300" />
+            : <XCircle className="w-5 h-5 text-stone-300" />
           }
         </div>
 
@@ -158,37 +158,37 @@ function DegreeCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className={`text-[11px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md ${
-              qualifies ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'
+              qualifies ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-100 text-stone-500'
             }`}>
               {degree.shortName}
             </span>
-            <span className="text-[11px] text-slate-400">{degree.duration}</span>
+            <span className="text-[11px] text-stone-400">{degree.duration}</span>
           </div>
-          <p className="mt-1 text-sm font-bold text-slate-900 leading-tight">{degree.degree}</p>
-          <p className="text-xs text-slate-500 mt-0.5">{degree.faculty}</p>
+          <p className="mt-1 text-sm font-bold text-stone-900 leading-tight">{degree.degree}</p>
+          <p className="text-xs text-stone-500 mt-0.5">{degree.faculty}</p>
         </div>
 
         {/* APS requirement */}
         <div className="shrink-0 text-right ml-2">
-          <div className={`text-lg font-black ${apsOk ? 'text-emerald-600' : 'text-slate-400'}`}>
+          <div className={`text-lg font-black ${apsOk ? 'text-emerald-600' : 'text-stone-400'}`}>
             {degree.minAPS}
           </div>
-          <div className="text-[10px] text-slate-400 font-medium">min APS</div>
+          <div className="text-[10px] text-stone-400 font-medium">min APS</div>
         </div>
 
-        <ChevronDown className={`shrink-0 w-4 h-4 text-slate-400 transition-transform duration-200 mt-1 ${expanded ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`shrink-0 w-4 h-4 text-stone-400 transition-transform duration-200 mt-1 ${expanded ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-slate-100 pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-stone-100 pt-3 space-y-3">
           {/* APS check */}
           <div className="flex items-center gap-2">
             {apsOk
               ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
               : <XCircle className="w-4 h-4 text-red-400 shrink-0" />
             }
-            <span className="text-xs text-slate-700">
+            <span className="text-xs text-stone-700">
               APS required: <strong>{degree.minAPS}</strong>
               {!apsOk && <span className="text-red-500 ml-1">(you need {degree.minAPS - aps} more points)</span>}
               {apsOk && <span className="text-emerald-600 ml-1">✓ met</span>}
@@ -198,14 +198,14 @@ function DegreeCard({
           {/* Subject requirements */}
           {degree.subjectRequirements.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Subject Requirements</p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-stone-400">Subject Requirements</p>
               {degree.subjectRequirements.map((req, i) => (
                 <div key={i} className="flex items-center gap-2">
                   {metRequirements[i]
                     ? <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                     : <XCircle className="w-4 h-4 text-red-400 shrink-0" />
                   }
-                  <span className="text-xs text-slate-700">{req.label}</span>
+                  <span className="text-xs text-stone-700">{req.label}</span>
                 </div>
               ))}
             </div>
@@ -219,7 +219,7 @@ function DegreeCard({
             </div>
           )}
 
-          <p className="text-[11px] text-slate-400">{degree.university} · {degree.faculty}</p>
+          <p className="text-[11px] text-stone-400">{degree.university} · {degree.faculty}</p>
         </div>
       )}
     </div>
@@ -296,18 +296,18 @@ export default function ApsCalculatorPage() {
   const qualifyingCount = filteredDegrees.filter(m => m.match.qualifies).length;
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="p-5 md:p-8 max-w-6xl w-full">
+      <div>
 
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-stone-900 flex items-center justify-center shrink-0">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">APS Calculator</h1>
-              <p className="text-sm text-slate-500">Enter your Grade 12 marks to see which university programmes you qualify for</p>
+              <h1 className="text-2xl font-black text-stone-900 tracking-tight">APS Calculator</h1>
+              <p className="text-sm text-stone-500">Enter your Grade 12 marks to see which university programmes you qualify for</p>
             </div>
           </div>
         </div>
@@ -316,10 +316,10 @@ export default function ApsCalculatorPage() {
 
           {/* ── Left: Subject Input ── */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 className="text-sm font-bold text-slate-900">Your Subjects & Marks</h2>
-                <span className="text-xs text-slate-400">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</span>
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+                <h2 className="text-sm font-bold text-stone-900">Your Subjects & Marks</h2>
+                <span className="text-xs text-stone-400">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</span>
               </div>
 
               <div className="px-5 py-2">
@@ -337,7 +337,7 @@ export default function ApsCalculatorPage() {
               <div className="px-5 pb-4">
                 <button
                   onClick={addSubject}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-slate-200 text-sm font-semibold text-slate-400 hover:border-slate-400 hover:text-slate-700 hover:bg-slate-50 transition"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-stone-200 text-sm font-semibold text-stone-400 hover:border-stone-400 hover:text-stone-700 hover:bg-stone-50 transition"
                 >
                   <Plus className="w-4 h-4" />
                   Add Subject
@@ -350,11 +350,11 @@ export default function ApsCalculatorPage() {
               aps >= 40 ? 'border-emerald-300 bg-emerald-50' :
               aps >= 30 ? 'border-blue-300 bg-blue-50' :
               aps >= 24 ? 'border-amber-300 bg-amber-50' :
-              'border-slate-200 bg-white'
+              'border-stone-200 bg-white'
             }`}>
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-1">Your APS Score</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-1">Your APS Score</p>
               <div className={`text-6xl font-black tracking-tight ${apsColor(aps)}`}>{aps}</div>
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="text-xs text-stone-400 mt-2">
                 {aps === 0 && 'Enter your marks above'}
                 {aps > 0 && aps < 24 && 'Diploma & Certificate programmes'}
                 {aps >= 24 && aps < 30 && 'Most university degrees accessible'}
@@ -364,8 +364,8 @@ export default function ApsCalculatorPage() {
             </div>
 
             {/* NQF conversion guide */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 flex items-center gap-1.5">
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-stone-400 mb-3 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" />
                 NQF Conversion Guide
               </p>
@@ -383,12 +383,12 @@ export default function ApsCalculatorPage() {
                     <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-bold shrink-0 ${nqfColor(Number(level))}`}>
                       {level}
                     </span>
-                    <span className="font-semibold text-slate-700 w-16 shrink-0">{range}</span>
-                    <span className="text-slate-400">{label}</span>
+                    <span className="font-semibold text-stone-700 w-16 shrink-0">{range}</span>
+                    <span className="text-stone-400">{label}</span>
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] text-slate-400 border-t border-slate-100 pt-2">
+              <p className="mt-3 text-[10px] text-stone-400 border-t border-stone-100 pt-2">
                 Life Orientation is capped at level 1 (max 1 APS point) at most universities.
               </p>
             </div>
@@ -563,9 +563,9 @@ export default function ApsCalculatorPage() {
             </AnimatePresence>
 
             {/* Filters bar */}
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-3">
+            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm px-4 py-3">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
                   <Filter className="w-3.5 h-3.5" />
                   Filter
                 </div>
@@ -575,14 +575,14 @@ export default function ApsCalculatorPage() {
                   <select
                     value={fieldFilter}
                     onChange={e => setFieldFilter(e.target.value as FieldOfStudy | 'All')}
-                    className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-400 transition"
+                    className="appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Fields</option>
                     {FIELDS_OF_STUDY.map(f => (
                       <option key={f} value={f}>{f}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400 pointer-events-none" />
                 </div>
 
                 {/* University filter */}
@@ -590,14 +590,14 @@ export default function ApsCalculatorPage() {
                   <select
                     value={uniFilter}
                     onChange={e => setUniFilter(e.target.value)}
-                    className="appearance-none bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/20 focus:border-slate-400 transition"
+                    className="appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Universities</option>
                     {UNIVERSITIES.map(u => (
                       <option key={u} value={u}>{u}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400 pointer-events-none" />
                 </div>
 
                 {/* Qualifying only toggle */}
@@ -606,7 +606,7 @@ export default function ApsCalculatorPage() {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
                     showOnlyQualifying
                       ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
+                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-400'
                   }`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -614,20 +614,20 @@ export default function ApsCalculatorPage() {
                 </button>
 
                 {/* Count */}
-                <div className="ml-auto text-xs text-slate-400 shrink-0">
+                <div className="ml-auto text-xs text-stone-400 shrink-0">
                   <span className="font-bold text-emerald-600">{qualifyingCount}</span> qualifying
                   {' · '}
-                  <span className="font-bold text-slate-700">{filteredDegrees.length}</span> shown
+                  <span className="font-bold text-stone-700">{filteredDegrees.length}</span> shown
                 </div>
               </div>
             </div>
 
             {/* Degree cards */}
             {filteredDegrees.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <GraduationCap className="w-10 h-10 text-slate-200 mx-auto mb-3" />
-                <p className="text-sm font-semibold text-slate-500">No degrees match your filters</p>
-                <p className="text-xs text-slate-400 mt-1">Try adjusting the field or university filter</p>
+              <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
+                <GraduationCap className="w-10 h-10 text-stone-200 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-stone-500">No degrees match your filters</p>
+                <p className="text-xs text-stone-400 mt-1">Try adjusting the field or university filter</p>
               </div>
             ) : (
               <div className="space-y-2">
