@@ -1,16 +1,18 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
 import StudentMarksPage from './student/StudentMarksPage';
 import StudentResourcesPage from './student/StudentResourcesPage';
 import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
+import StudentPastPapersPage from './student/StudentPastPapersPage';
+import ApsCalculatorPage from './student/ApsCalculatorPage';
 
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'library' | 'future';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -40,12 +42,14 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const navItems: { id: ActivePage; label: string; icon: any; mobileLabel?: string }[] = [
     { id: 'home',          label: 'Home',          icon: Home },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone,    mobileLabel: 'News' },
+    { id: 'announcements', label: 'Announcements', icon: Megaphone,      mobileLabel: 'News' },
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
-    { id: 'marks',         label: 'My Marks',      icon: ClipboardList, mobileLabel: 'Marks' },
+    { id: 'marks',         label: 'My Marks',      icon: ClipboardList,  mobileLabel: 'Marks' },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
+    { id: 'pastpapers',    label: 'Past Papers',   icon: FileText,       mobileLabel: 'Papers' },
     { id: 'library',       label: 'Library',       icon: BookOpen },
-    { id: 'future',        label: 'My Future',     icon: Sparkles,     mobileLabel: 'Future' },
+    { id: 'aps',           label: 'APS & Unis',    icon: GraduationCap,  mobileLabel: 'APS' },
+    { id: 'future',        label: 'My Future',     icon: Sparkles,       mobileLabel: 'Future' },
   ];
 
   function handleLibraryNavigate(page: string) {
@@ -166,12 +170,20 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'calendar'      && <StudentCalendarPage session={session} />}
           {activePage === 'marks'         && <StudentMarksPage session={session} />}
           {activePage === 'resources'     && <StudentResourcesPage session={session} />}
+          {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} />}
+          {activePage === 'aps'           && <ApsCalculatorPage />}
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
-              <MyFuturePage session={session} onNavigate={p => setPage(p as ActivePage)} />
+              <MyFuturePage session={session} onNavigate={p => {
+                if (p === 'aps')        { setPage('aps');       return; }
+                if (p === 'library')    { setPage('library');   return; }
+                if (p === 'bursaries')  { onNavigate('bursaries'); return; }
+                if (p === 'quiz')       { onNavigate('quiz');   return; }
+                onNavigate(p);
+              }} />
             </Suspense>
           )}
-          {activePage === 'library'  && (
+          {activePage === 'library'       && (
             <Suspense fallback={<Spinner />}>
               <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
             </Suspense>
