@@ -1,5 +1,7 @@
 |-- .claude
     |-- caveman.config.json
+    |-- settings.json
+    |-- settings.local.json
 |-- .env.local
 |-- .github
     |-- workflows
@@ -15,7 +17,17 @@
         |-- _metadata.json
 |-- BACKEND_NOTES.md
 |-- CLAUDE.md
+|-- e2e-my-future.mjs
 |-- FEATURES.md
+|-- graphify-out
+    |-- .graphify_labels.json
+    |-- .graphify_root
+    |-- graph.html
+    |-- graph.json
+    |-- GRAPH_REPORT.md
+    |-- GRAPH_TREE.html
+    |-- manifest.json
+    |-- prospect-callflow.html
 |-- index.html
 |-- package-lock.json
 |-- package.json
@@ -60,6 +72,22 @@
         |-- video1.mp4
 |-- src
     |-- App.tsx
+    |-- components
+        |-- blocks
+            |-- hero-section-9.tsx
+        |-- LessonEnrichment.tsx
+        |-- QuizBlock.tsx
+        |-- ui
+            |-- border-beam.tsx
+            |-- button.tsx
+            |-- card.tsx
+            |-- input.tsx
+            |-- label.tsx
+            |-- smokey-background.tsx
+            |-- tabs.tsx
+            |-- web-gl-shader.tsx
+    |-- data
+        |-- apsData.ts
     |-- features
         |-- careers
             |-- components
@@ -99,6 +127,8 @@
                     |-- batch_trades3.ts
                 |-- bursaries.ts
                 |-- careers400Final.ts
+                |-- careersFullAudited.ts
+                |-- careersFullData.ts
                 |-- careersTypes.ts
                 |-- mapData.ts
                 |-- quizQuestions.ts
@@ -112,11 +142,14 @@
                 |-- Grade10SubjectSelectorPage.tsx
                 |-- MapPage.tsx
                 |-- QuizPage.tsx
+            |-- services
+                |-- mapService.ts
         |-- landing
             |-- CareerSection.tsx
             |-- CTACanvas.tsx
             |-- CTASection.tsx
             |-- HeroCanvas.tsx
+            |-- HeroScene.tsx
             |-- LandingFooter.tsx
             |-- Perspectives.tsx
             |-- ProblemSection.tsx
@@ -225,12 +258,16 @@
         |-- auth.ts
         |-- events.ts
         |-- marks.ts
+        |-- myFuture.ts
+        |-- pastPapers.ts
         |-- resources.ts
         |-- students.ts
+        |-- studentTasks.ts
         |-- studyProgress.ts
         |-- supabase.ts
         |-- teachers.ts
         |-- types.ts
+        |-- utils.ts
     |-- main.tsx
     |-- pages
         |-- auth
@@ -240,15 +277,19 @@
         |-- portal
             |-- admin
                 |-- AdminAnnouncementsPage.tsx
+                |-- AdminHomePage.tsx
                 |-- TeachersPage.tsx
             |-- AdminDashboard.tsx
             |-- PortalEntry.tsx
             |-- student
+                |-- ApsCalculatorPage.tsx
                 |-- LibraryPage.tsx
+                |-- MyFuturePage.tsx
                 |-- StudentAnnouncementsPage.tsx
                 |-- StudentCalendarPage.tsx
                 |-- StudentHomePage.tsx
                 |-- StudentMarksPage.tsx
+                |-- StudentPastPapersPage.tsx
                 |-- StudentResourcesPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
@@ -256,6 +297,7 @@
                 |-- CalendarPage.tsx
                 |-- ClassesPage.tsx
                 |-- MarksPage.tsx
+                |-- PastPapersPage.tsx
                 |-- ResourcesPage.tsx
                 |-- StudentProgressPage.tsx
                 |-- TeacherHomePage.tsx
@@ -268,6 +310,14 @@
             |-- toast.tsx
         |-- hooks
             |-- usePillVisible.ts
+|-- supabase
+    |-- migrations
+        |-- 20260529000001_student_tasks.sql
+|-- test-01-home.png
+|-- test-02-dashboard.png
+|-- test-03-my-future-empty.png
+|-- test-04-quiz-page.png
+|-- test-05-my-future-after-reload.png
 |-- test-routing.mjs
 |-- tsconfig.json
 |-- vercel.json

@@ -4,19 +4,13 @@ import { loadTopicProgress as _loadProgress, saveTopicProgress as _saveProgress 
 import { motion, AnimatePresence } from 'motion/react'
 import {
   ChevronLeft, ChevronRight, ArrowRight, Lightbulb, RotateCcw,
-  Award, AlertCircle, Info, PenLine, Eraser, Trash2, Undo2, X, NotebookPen
+  Award, AlertCircle, PenLine, Eraser, Trash2, Undo2, X, NotebookPen
 } from 'lucide-react'
-
-// ── Types ─────────────────────────────────────────────────────────────────────
+import { LearningOutcomes, KnowledgeCheck, ExamTip, SummaryCard } from '../../../../../../../components/LessonEnrichment'
 
 type TopicStatus = 'not-started' | 'mastered' | 'needs-practice'
-type ViewState = 'overview' | 'interactive-lesson' | 'guided-practice' | 'practice' | 'remediation' | 'feedback' | 'practice-more'
-
-interface Question {
-  id: string; question: string; math?: string; options: string[]; correctIndex: number; hint: string; explanation: string
-}
-
-// ── Data ──────────────────────────────────────────────────────────────────────
+type ViewState = 'interactive-lesson' | 'guided-practice' | 'practice' | 'remediation' | 'feedback' | 'practice-more'
+interface Question { id: string; question: string; math?: string; options: string[]; correctIndex: number; hint: string; explanation: string }
 
 const TOPIC = {
   id: 'periodic-table-trends',
@@ -137,119 +131,271 @@ const TOPIC = {
       correctIndex: 1, hint: 'Period = number of shells. Group 2 = 2 valence electrons.',
       explanation: 'Period number equals the number of electron shells. 3 shells → period 3. Group 2 always has 2 valence electrons. So: period 3, 2 valence electrons. This element is Magnesium (Mg).'
     },
-  ]
+  ],
+  enrichment: {
+    outcomes: [
+      'Describe how elements are arranged in the periodic table by atomic number',
+      'Define period and group and state what each indicates about electron configuration',
+      'Explain the trends in atomic radius, ionisation energy, and electronegativity across a period',
+      'Explain the same trends down a group',
+      'Identify metals, non-metals, and metalloids on the periodic table',
+    ],
+    knowledgeChecks: [
+      {
+        afterStep: 0,
+        question: 'Elements in the same GROUP of the periodic table share:',
+        options: [
+          'The same mass number',
+          'The same number of valence electrons and similar chemical properties',
+          'The same number of neutrons',
+          'The same period number',
+        ],
+        correctIndex: 1,
+        explanation: 'Elements in the same group (vertical column) have the same number of electrons in their outermost shell (valence electrons). This gives them similar chemical behaviour. For example, all Group 1 elements react vigorously with water.',
+      },
+      {
+        afterStep: 2,
+        question: 'Moving across a period from left to right, atomic radius:',
+        options: [
+          'Increases steadily',
+          'Stays the same throughout the period',
+          'Decreases',
+          'First increases then decreases at the midpoint',
+        ],
+        correctIndex: 2,
+        explanation: 'Atomic radius decreases across a period because the number of protons (nuclear charge) increases while electrons are added to the same shell. The stronger nuclear pull draws the electrons closer to the nucleus, making the atom smaller.',
+      },
+    ],
+    examTip: 'Remember the periodic trends with one rule: across a period — atomic radius DECREASES, ionisation energy INCREASES, electronegativity INCREASES. Down a group — atomic radius INCREASES, ionisation energy DECREASES. These trends are tested directly in Grade 10 exams.',
+    summaryPoints: [
+      'The periodic table arranges elements in order of increasing atomic number',
+      'Periods (horizontal rows): indicate the number of electron shells an atom has',
+      'Groups (vertical columns): elements share the same number of valence electrons',
+      'Across a period: atomic radius decreases; ionisation energy and electronegativity increase',
+      'Down a group: atomic radius increases; ionisation energy and electronegativity decrease',
+      'Metals occupy the left and centre; non-metals the top right; metalloids form a staircase boundary',
+    ],
+  },
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+const SUBJECT = 'Physical Sciences'
+const GRADE = 10
+const TOPIC_ID = 'periodic-table-trends'
+const STORAGE_KEY_PREFIX = 'scratchpad_periodic_'
 
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}
+
+// ── SpeechBubble ──────────────────────────────────────────────────────────────
 const SpeechBubble = ({ text, pos }: { text: string; pos: 'top' | 'bottom' }) => (
   <motion.div
     initial={{ scale: 0, opacity: 0, y: pos === 'top' ? 10 : -10 }}
     animate={{ scale: 1, opacity: 1, y: 0 }}
-    transition={{ duration: 0.2 }}
-    className={`absolute ${pos === 'top' ? '-top-14' : '-bottom-14'} left-1/2 -translate-x-1/2 whitespace-nowrap bg-slate-600 text-white text-xs font-black px-3 py-1.5 rounded-xl shadow-lg z-20`}
+    transition={{ type: 'spring', stiffness: 400, damping: 24 }}
+    className={`absolute ${pos === 'top' ? '-top-12' : '-bottom-12'} left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#1C1917] text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg z-20`}
   >
     {text}
-    <div className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-600 rotate-45 ${pos === 'top' ? '-bottom-1' : '-top-1'}`} />
+    <div className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1C1917] rotate-45 ${pos === 'top' ? '-bottom-1' : '-top-1'}`} />
   </motion.div>
 )
 
+// ── InteractiveLesson ─────────────────────────────────────────────────────────
 const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
   const [current, setCurrent] = useState(0)
+  const [activeBubble, setActiveBubble] = useState<string | null>(null)
   const step = TOPIC.interactiveSteps[current]
   const isLast = current === TOPIC.interactiveSteps.length - 1
+  const knowledgeCheck = TOPIC.enrichment.knowledgeChecks.find(kc => kc.afterStep === current)
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600">Slide {current + 1} of {TOPIC.interactiveSteps.length}</p>
-        <div className="flex gap-1">{TOPIC.interactiveSteps.map((_, i) => <div key={i} className={`h-1 w-8 rounded-full transition-all ${i <= current ? 'bg-slate-600' : 'bg-slate-200'}`} />)}</div>
+    <div className="max-w-2xl mx-auto space-y-4">
+      {/* Enrichment — outcomes and exam tip shown at top of lesson */}
+      <LearningOutcomes outcomes={TOPIC.enrichment.outcomes} />
+      <ExamTip tip={TOPIC.enrichment.examTip} />
+
+      {/* Progress row */}
+      <div className="flex items-center justify-between py-1">
+        <span className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400">
+          Step {current + 1} of {TOPIC.interactiveSteps.length}
+        </span>
+        <div className="flex gap-1.5 items-center">
+          {TOPIC.interactiveSteps.map((_, i) => (
+            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-[#1C1917] w-10' : i < current ? 'bg-[#1C1917] w-8' : 'bg-stone-200 w-6'}`} />
+          ))}
+        </div>
       </div>
+
+      {/* Step card */}
       <AnimatePresence mode="wait">
-        <motion.div key={current} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }}
-          className="bg-white border border-slate-200 rounded-[2.5rem] p-5 md:p-8 shadow-sm min-h-64 flex flex-col justify-center gap-6">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{step.title}</h2>
-            <p className="text-slate-500 text-base leading-relaxed max-w-lg mx-auto">{step.content}</p>
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-white rounded-2xl border border-stone-200 shadow-sm"
+        >
+          <div className="px-6 pt-6 pb-5">
+            <h3 className="text-lg font-black text-[#1C1917] leading-tight">{step.title}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
           </div>
-          <div className="overflow-x-auto py-12 -mx-2 px-2">
-            <div className="flex items-center justify-center gap-4 md:gap-6 relative min-w-max mx-auto">
-              {step.math.map((char, i) => {
-                const bubble = step.bubbles.find(b => b.target === char)
-                  return (
-                  <motion.div key={i} initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.1 }}
-                    className="relative text-5xl font-mono font-black text-slate-900">
-                    {char}
-                    {bubble && <SpeechBubble text={bubble.text} pos={bubble.pos} />}
-                  </motion.div>
+          <div className="mx-4 mb-4 bg-[#F5F0E8] rounded-xl px-4 pt-4 pb-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
+            <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
+              {step.math.map((token, i) => {
+                const bubble = step.bubbles.find((b: any) => b.target === token)
+                const isActive = activeBubble === `${current}-${token}-${i}`
+                return (
+                  <div key={i} className="relative">
+                    {bubble && isActive && <SpeechBubble text={bubble.text} pos={bubble.pos} />}
+                    {bubble ? (
+                      <button
+                        onClick={() => setActiveBubble(isActive ? null : `${current}-${token}-${i}`)}
+                        className={`px-4 py-2.5 rounded-xl font-mono text-lg font-black transition-all ${isActive ? 'bg-[#1C1917] text-white scale-105 shadow-md' : 'bg-white text-stone-800 border border-stone-200 hover:border-stone-400 hover:bg-stone-50'}`}
+                      >
+                        {token}
+                      </button>
+                    ) : (
+                      <span className="px-1.5 font-mono text-xl font-black text-stone-400 select-none">{token}</span>
+                    )}
+                  </div>
                 )
               })}
             </div>
           </div>
         </motion.div>
       </AnimatePresence>
-      <button onClick={() => isLast ? onComplete() : setCurrent(c => c + 1)}
-        className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98]">
-        {isLast ? 'Continue' : 'Next Tip'} <ArrowRight size={18} />
-      </button>
-    </div>
-  )
-}
 
-const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
-  const [stepIndex, setStepIndex] = useState(0)
-  const { steps, problem } = TOPIC.guidedItem
-  const isLast = stepIndex === steps.length - 1
-  return (
-    <div className="space-y-6">
-      <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 md:p-8 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Step-by-Step Guide</p>
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-600">Step {stepIndex + 1} of {steps.length}</p>
-        </div>
-        <h2 className="text-2xl md:text-3xl font-black text-slate-900 mb-8 text-center tracking-tight">{problem}</h2>
-        <div className="flex gap-1.5 mb-8">
-          {steps.map((_, i) => <div key={i} className={`flex-1 h-1 rounded-full transition-all ${i <= stepIndex ? 'bg-slate-600' : 'bg-slate-100'}`} />)}
-        </div>
-        <div className="space-y-4 mb-8">
-          {steps.slice(0, stepIndex + 1).map((s, i) => (
-            <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.25 }}
-              className={`flex gap-4 p-4 rounded-2xl border ${i === stepIndex ? 'bg-slate-50 border-slate-200' : 'bg-slate-50 border-slate-100'}`}>
-              <div className={`shrink-0 w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black ${i === stepIndex ? 'bg-slate-600 text-white' : 'bg-white border border-slate-200 text-slate-400'}`}>{i + 1}</div>
-              <div className="min-w-0">
-                <p className="text-base font-black text-slate-900">{s.instruction}</p>
-                <p className="text-slate-500 text-xs mt-0.5 mb-3 leading-relaxed">{s.explanation}</p>
-                <div className="overflow-x-auto -mx-1 px-1"><div className="inline-block whitespace-nowrap px-4 py-2 bg-white border border-slate-200 rounded-xl text-lg font-mono font-black text-slate-600 shadow-sm">{s.math}</div></div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-        <button onClick={() => isLast ? onComplete() : setStepIndex(s => s + 1)}
-          className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl transition-all active:scale-[0.98]">
-          {isLast ? 'Now You Try' : 'Show Next Step'} <ArrowRight size={18} />
+      {/* Inline knowledge check for this step */}
+      {knowledgeCheck && (
+        <KnowledgeCheck
+          key={`kc-${current}`}
+          question={knowledgeCheck.question}
+          options={knowledgeCheck.options}
+          correctIndex={knowledgeCheck.correctIndex}
+          explanation={knowledgeCheck.explanation}
+        />
+      )}
+
+      {/* Summary card on the last step */}
+      {isLast && (
+        <SummaryCard points={TOPIC.enrichment.summaryPoints} />
+      )}
+
+      {/* Navigation */}
+      <div className="flex justify-between items-center pt-1">
+        <button
+          onClick={() => { setCurrent(c => c - 1); setActiveBubble(null) }}
+          disabled={current === 0}
+          className="flex items-center gap-1.5 text-[13px] font-bold text-stone-400 disabled:opacity-20 hover:text-stone-900 transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
+        <button
+          onClick={() => { isLast ? onComplete() : setCurrent(c => c + 1); setActiveBubble(null) }}
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm"
+        >
+          {isLast ? 'Try a Worked Example' : 'Next'} <ChevronRight className="w-4 h-4" />
         </button>
       </div>
     </div>
   )
 }
 
-// ── Scratchpad ────────────────────────────────────────────────────────────────
+// ── GuidedPracticeModule ──────────────────────────────────────────────────────
+const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
+  const [stepIdx, setStepIdx] = useState(0)
+  const [revealed, setRevealed] = useState(false)
+  const { steps, problem } = TOPIC.guidedItem
+  const isLast = stepIdx === steps.length - 1
+  const step = steps[stepIdx]
 
-const STORAGE_KEY_PREFIX = 'scratchpad_periodic_'
+  return (
+    <div className="max-w-2xl mx-auto space-y-5">
+      <div className="bg-[#1C1917] rounded-2xl p-5">
+        <div className="flex items-start gap-3">
+          <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+          </div>
+        </div>
+      </div>
 
-const ScratchpadModal = ({ question, math, storageKey, onClose }: { question: string; math?: string; storageKey: string; onClose: () => void }) => {
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {steps.map((s: any, i: number) => (
+          <button
+            key={s.id}
+            onClick={() => { setStepIdx(i); setRevealed(false) }}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1C1917] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
+          >
+            Step {s.id}
+          </button>
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step.id}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
+        >
+          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <div className="bg-[#F5F0E8] rounded-xl px-5 py-4 border border-stone-200/60">
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+          </div>
+          {!revealed ? (
+            <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
+              Reveal explanation
+            </button>
+          ) : (
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#F5F0E8] border border-stone-200/60 rounded-xl p-4">
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="flex justify-between items-center">
+        <button onClick={() => { setStepIdx(i => i - 1); setRevealed(false) }} disabled={stepIdx === 0} className="flex items-center gap-1.5 text-[13px] font-bold text-stone-400 disabled:opacity-20 hover:text-stone-900 transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Previous
+        </button>
+        <button onClick={() => { isLast ? onComplete() : setStepIdx(i => i + 1); setRevealed(false) }} className="flex items-center gap-2 px-6 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm">
+          {isLast ? 'Start Practice' : 'Next Step'} <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── ScratchpadModal ───────────────────────────────────────────────────────────
+const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose: () => void }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen')
   const [history, setHistory] = useState<ImageData[]>([])
   const drawing = useRef(false)
   const lastPos = useRef<{ x: number; y: number } | null>(null)
+
   const getCtx = () => canvasRef.current?.getContext('2d') ?? null
+
   const saveSnapshot = useCallback(() => {
     const ctx = getCtx(); const c = canvasRef.current
     if (!ctx || !c) return
-    const snap = ctx.getImageData(0, 0, c.width, c.height)
-    setHistory(h => [...h.slice(-29), snap])
+    setHistory(h => [...h.slice(-29), ctx.getImageData(0, 0, c.width, c.height)])
     localStorage.setItem(storageKey, c.toDataURL())
   }, [storageKey])
+
   useEffect(() => {
     const c = canvasRef.current; if (!c) return
     const dpr = window.devicePixelRatio || 1
@@ -260,305 +406,357 @@ const ScratchpadModal = ({ question, math, storageKey, onClose }: { question: st
     const saved = localStorage.getItem(storageKey)
     if (saved) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height); img.src = saved }
   }, [storageKey])
-  const getPos = (e: React.PointerEvent) => { const c = canvasRef.current!; const rect = c.getBoundingClientRect(); return { x: e.clientX - rect.left, y: e.clientY - rect.top } }
-  const onPointerDown = (e: React.PointerEvent) => { e.currentTarget.setPointerCapture(e.pointerId); drawing.current = true; lastPos.current = getPos(e); const ctx = getCtx()!; ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y) }
+
+  const getPos = (e: React.PointerEvent) => {
+    const c = canvasRef.current!; const rect = c.getBoundingClientRect()
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+  }
+  const onPointerDown = (e: React.PointerEvent) => {
+    e.currentTarget.setPointerCapture(e.pointerId)
+    drawing.current = true; lastPos.current = getPos(e)
+    const ctx = getCtx()!; ctx.beginPath(); ctx.moveTo(lastPos.current.x, lastPos.current.y)
+  }
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!drawing.current) return; const pos = getPos(e); const ctx = getCtx()!
-    ctx.lineWidth = tool === 'pen' ? 3 : 24; ctx.strokeStyle = tool === 'pen' ? '#1e293b' : '#f8fafc'
+    if (!drawing.current) return
+    const pos = getPos(e); const ctx = getCtx()!
+    ctx.lineWidth = tool === 'pen' ? 2.5 : 22
+    ctx.strokeStyle = tool === 'pen' ? '#1C1917' : '#FAFAF9'
     ctx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over'
-    ctx.lineTo(pos.x, pos.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); lastPos.current = pos
+    ctx.lineTo(pos.x, pos.y); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(pos.x, pos.y)
+    lastPos.current = pos
   }
   const onPointerUp = () => { if (!drawing.current) return; drawing.current = false; lastPos.current = null; saveSnapshot() }
   const undo = () => {
-    const c = canvasRef.current; const ctx = getCtx(); if (!ctx || !c) return
-    setHistory(h => { const next = h.slice(0, -1); ctx.clearRect(0, 0, c.width, c.height); if (next.length > 0) ctx.putImageData(next[next.length - 1], 0, 0); localStorage.setItem(storageKey, c.toDataURL()); return next })
+    const c = canvasRef.current; const ctx = getCtx()
+    if (!ctx || !c) return
+    setHistory(h => {
+      const next = h.slice(0, -1)
+      ctx.clearRect(0, 0, c.width, c.height)
+      if (next.length > 0) ctx.putImageData(next[next.length - 1], 0, 0)
+      localStorage.setItem(storageKey, c.toDataURL())
+      return next
+    })
   }
-  const clearAll = () => { const c = canvasRef.current; const ctx = getCtx(); if (!ctx || !c) return; ctx.clearRect(0, 0, c.width, c.height); setHistory([]); localStorage.removeItem(storageKey) }
-  return (
-    <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4"
-        onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-        <motion.div initial={{ y: 60, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          className="w-full sm:max-w-lg bg-white rounded-t-2xl sm:rounded-2xl shadow-lg flex flex-col overflow-hidden" style={{ maxHeight: '90dvh' }}>
-          <div className="px-5 pt-5 pb-3 border-b border-slate-100 shrink-0">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-600 mb-1">Working Space</p>
-                <p className="text-sm font-black text-slate-900 leading-snug">{question}</p>
-                {math && <div className="overflow-x-auto mt-1 -mx-1 px-1"><span className="whitespace-nowrap font-mono text-sm font-black text-slate-700">{math}</span></div>}
-              </div>
-              <button onClick={onClose} aria-label="Close" className="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl text-slate-400 hover:bg-slate-100 transition-colors"><X size={16} /></button>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 px-5 py-2.5 border-b border-slate-100 shrink-0 bg-slate-50/60">
-            <button onClick={() => setTool('pen')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${tool === 'pen' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><PenLine size={13} /> Pen</button>
-            <button onClick={() => setTool('eraser')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${tool === 'eraser' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Eraser size={13} /> Eraser</button>
-            <div className="flex-1" />
-            <button onClick={undo} disabled={history.length === 0} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black text-slate-500 hover:bg-slate-100 disabled:opacity-30 transition-all"><Undo2 size={13} /> Undo</button>
-            <button onClick={clearAll} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black text-slate-500 hover:bg-slate-50 transition-all"><Trash2 size={13} /> Clear</button>
-          </div>
-          <div className="relative flex-1 min-h-0 bg-slate-50" style={{ touchAction: 'none' }}>
-            <canvas ref={canvasRef} className="w-full h-full block" style={{ cursor: tool === 'eraser' ? 'cell' : 'crosshair', touchAction: 'none' }}
-              onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
-            {history.length === 0 && <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><p className="text-xs text-slate-300 font-semibold select-none">Draw your working here…</p></div>}
-          </div>
-          <div className="px-5 py-3 border-t border-slate-100 shrink-0">
-            <button onClick={onClose} className="w-full py-3.5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98]">Done</button>
-          </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  )
-}
-
-// ── Practice ──────────────────────────────────────────────────────────────────
-
-const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onComplete: (res: { correct: number; total: number }) => void }) => {
-  const [current, setCurrent] = useState(0)
-  const [selected, setSelected] = useState<number | null>(null)
-  const [revealed, setRevealed] = useState(false)
-  const [hintVisible, setHintVisible] = useState(false)
-  const [correctCount, setCorrectCount] = useState(0)
-  const [scratchpadOpen, setScratchpadOpen] = useState(false)
-  const q = questions[current]
-  const isLast = current === questions.length - 1
-  const handleSelect = (i: number) => { if (revealed) return; setSelected(i); setRevealed(true); if (i === q.correctIndex) setCorrectCount(c => c + 1) }
-  const handleNext = () => { if (isLast) onComplete({ correct: correctCount, total: questions.length }); else { setCurrent(c => c + 1); setSelected(null); setRevealed(false); setHintVisible(false) } }
-  const getOptionStyle = (i: number) => {
-    if (!revealed) return selected === i ? 'border-slate-500 bg-slate-50' : 'border-slate-200 bg-white hover:border-slate-200 hover:bg-slate-50 cursor-pointer'
-    if (i === q.correctIndex) return 'border-slate-500 bg-slate-50 text-slate-900'
-    if (i === selected) return 'border-slate-500 bg-slate-50 text-slate-900'
+  const clearAll = () => {
+    const c = canvasRef.current; const ctx = getCtx()
+    if (!ctx || !c) return
+    ctx.clearRect(0, 0, c.width, c.height); setHistory([]); localStorage.removeItem(storageKey)
   }
+
   return (
-    <>
-      {scratchpadOpen && <ScratchpadModal question={q.question} math={q.math} storageKey={`${STORAGE_KEY_PREFIX}${current}`} onClose={() => setScratchpadOpen(false)} />}
-      <div className="space-y-6">
-        <div className="bg-white border border-slate-200 rounded-[2.5rem] p-5 md:p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Question {current + 1} of {questions.length}</p>
-            <div className="flex gap-1">{questions.map((_, i) => <div key={i} className={`w-8 h-1 rounded-full transition-all ${i <= current ? 'bg-slate-600' : 'bg-slate-100'}`} />)}</div>
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16 }}
+        transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden border border-stone-200"
+        style={{ height: '480px' }}
+      >
+        <div className="flex items-center justify-between px-4 py-3 bg-[#1C1917]">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-500 mr-2">Scratchpad</span>
+            <button onClick={() => setTool('pen')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'pen' ? 'bg-white text-[#1C1917] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
+              <PenLine className="w-3.5 h-3.5" /> Pen
+            </button>
+            <button onClick={() => setTool('eraser')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'eraser' ? 'bg-white text-[#1C1917] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
+              <Eraser className="w-3.5 h-3.5" /> Eraser
+            </button>
           </div>
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <p className="text-xl md:text-2xl font-black text-slate-900 leading-snug">{q.question}</p>
-            <button onClick={() => setScratchpadOpen(true)} className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200 text-xs font-black text-slate-500 hover:bg-slate-50 hover:border-slate-300 transition-all"><NotebookPen size={13} /> Scratch</button>
-          </div>
-          {q.math && <div className="overflow-x-auto mb-8 -mx-2 px-2"><div className="whitespace-nowrap inline-block bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 font-mono text-lg font-black text-slate-700 min-w-0">{q.math}</div></div>}
-          <div className="space-y-3">
-            {q.options.map((opt, i) => (
-              <motion.button key={i} whileTap={{ scale: revealed ? 1 : 0.98 }} onClick={() => handleSelect(i)}
-                className={`w-full text-left px-3 py-2 rounded-2xl border-2 text-xs font-semibold transition-all ${getOptionStyle(i)}`}>
-                <span className="mr-3 font-black opacity-40">{String.fromCharCode(65 + i)}</span>{opt}
-              </motion.button>
-            ))}
-          </div>
-          {revealed && <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={`mt-6 p-3 rounded-2xl flex gap-4 text-xs font-semibold ${selected === q.correctIndex ? 'bg-slate-50 text-slate-800' : 'bg-slate-50 text-slate-800'}`}><Info size={20} className="shrink-0 mt-0.5" /> {q.explanation}</motion.div>}
-          {hintVisible && !revealed && <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-5 p-3 bg-slate-50 border border-slate-200 rounded-2xl flex gap-3 text-slate-900"><Lightbulb size={20} className="shrink-0 text-slate-500 mt-0.5" /><p className="text-xs font-semibold">{q.hint}</p></motion.div>}
-          <div className="mt-8 flex justify-between items-center">
-            {!revealed ? <button onClick={() => setHintVisible(true)} className="text-xs font-black text-slate-600 uppercase tracking-widest px-4 py-3 hover:bg-slate-50 rounded-xl transition-all">{hintVisible ? 'Hint Visible' : 'Need a Hint?'}</button> : <div />}
-            {revealed && <button onClick={handleNext} className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-3 shadow-xl transition-all active:scale-[0.98]">{isLast ? 'See Results' : 'Next Question'} <ArrowRight size={18} /></button>}
+          <div className="flex items-center gap-1">
+            <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <div className="w-px h-4 bg-stone-700 mx-1" />
+            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
-      </div>
-    </>
+        <div className="relative flex-1 bg-[#FAFAF9]">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full touch-none"
+            style={{ cursor: tool === 'pen' ? 'crosshair' : 'cell' }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerLeave={onPointerUp}
+          />
+          <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
+            style={{ backgroundImage: 'radial-gradient(circle, #1C1917 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+          {history.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <p className="text-xs text-stone-300 font-medium select-none">Draw your working here…</p>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </div>
   )
 }
 
-const FeedbackModule = ({ correct, total, onRetry, onPracticeMore, onContinue, hidePracticeMore = false }: { correct: number; total: number; onRetry: () => void; onPracticeMore: () => void; onContinue: () => void; hidePracticeMore?: boolean }) => {
+// ── PracticeModule ────────────────────────────────────────────────────────────
+const LABELS = ['A', 'B', 'C', 'D']
+
+const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onComplete: (res: { correct: number; total: number }) => void }) => {
+  const [idx, setIdx] = useState(0)
+  const [selected, setSelected] = useState<number | null>(null)
+  const [confirmed, setConfirmed] = useState(false)
+  const [score, setScore] = useState(0)
+  const [scratchpadKey, setScratchpadKey] = useState<string | null>(null)
+  const q = questions[idx]
+  const isLast = idx === questions.length - 1
+
+  const confirm = () => {
+    if (selected === null) return
+    setConfirmed(true)
+    if (selected === q.correctIndex) setScore(s => s + 1)
+  }
+
+  const handleNext = () => {
+    if (isLast) {
+      const finalScore = score + (confirmed ? 0 : selected === q.correctIndex ? 1 : 0)
+      onComplete({ correct: finalScore, total: questions.length })
+    } else {
+      setIdx(i => i + 1); setSelected(null); setConfirmed(false)
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-4">
+      {scratchpadKey && <ScratchpadModal storageKey={scratchpadKey} onClose={() => setScratchpadKey(null)} />}
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">
+            Question {idx + 1} of {questions.length}
+          </span>
+          <div className="flex gap-1">
+            {questions.map((_, i) => (
+              <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i < idx ? 'w-5 bg-[#1C1917]' : i === idx ? 'w-8 bg-[#1C1917]' : 'w-5 bg-stone-200'}`} />
+            ))}
+          </div>
+        </div>
+        <button
+          onClick={() => setScratchpadKey(`scratchpad_periodic_q-${idx}`)}
+          className="flex items-center gap-1.5 text-[11px] font-bold text-stone-400 hover:text-stone-800 border border-stone-200 bg-white rounded-lg px-3 py-1.5 hover:border-stone-400 hover:shadow-sm transition-all"
+        >
+          <NotebookPen className="w-3 h-3" /> Scratch
+        </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={q.id}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden"
+        >
+          <div className="px-6 pt-6 pb-4">
+            <p className="font-black text-[#1C1917] text-[17px] leading-snug">{q.question}</p>
+            {q.math && (
+              <div className="mt-3 bg-[#F5F0E8] rounded-xl px-5 py-4 border border-stone-200/50">
+                <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{q.math}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="h-px bg-stone-100 mx-6" />
+
+          <div className="px-6 py-4 space-y-2.5">
+            {q.options.map((opt, i) => {
+              const isCorrect = i === q.correctIndex
+              const isSelected = i === selected
+              let ctr = 'w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border transition-all text-left '
+              let lbl = 'w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 transition-all '
+              let txt = 'text-[14px] font-medium leading-snug flex-1 '
+              if (!confirmed) {
+                if (isSelected) { ctr += 'border-[#1C1917] bg-[#1C1917]'; lbl += 'bg-white text-[#1C1917]'; txt += 'text-white font-bold' }
+                else { ctr += 'border-stone-200 bg-stone-50/30 hover:border-stone-300 hover:bg-white cursor-pointer'; lbl += 'bg-stone-200 text-stone-500'; txt += 'text-stone-700' }
+              } else if (isCorrect) { ctr += 'border-emerald-300 bg-emerald-50'; lbl += 'bg-emerald-500 text-white'; txt += 'text-emerald-900 font-semibold' }
+              else if (isSelected) { ctr += 'border-red-200 bg-red-50'; lbl += 'bg-red-400 text-white'; txt += 'text-red-800' }
+              else { ctr += 'border-stone-100 bg-white opacity-40'; lbl += 'bg-stone-100 text-stone-300'; txt += 'text-stone-400' }
+              return (
+                <button key={i} type="button" className={ctr} onClick={() => !confirmed && setSelected(i)}>
+                  <span className={lbl}>{confirmed && isCorrect ? '✓' : confirmed && isSelected && !isCorrect ? '✗' : LABELS[i]}</span>
+                  <span className={txt}>{opt}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          <AnimatePresence>
+            {!confirmed && selected !== null && (
+              <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="mx-6 mb-5">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3.5 flex items-start gap-3">
+                  <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-px" />
+                  <p className="text-[14px] text-amber-800 leading-relaxed">{q.hint}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {confirmed && (
+              <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+                className={`mx-6 mb-5 rounded-xl px-4 py-4 border ${selected === q.correctIndex ? 'bg-emerald-50 border-emerald-200' : 'bg-[#F5F0E8] border-stone-200'}`}>
+                <p className={`text-[10px] font-black uppercase tracking-[0.18em] mb-2 ${selected === q.correctIndex ? 'text-emerald-600' : 'text-stone-400'}`}>
+                  {selected === q.correctIndex ? 'Correct!' : 'Explanation'}
+                </p>
+                <p className={`text-[14px] leading-relaxed ${selected === q.correctIndex ? 'text-emerald-800' : 'text-stone-700'}`}>{q.explanation}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="px-6 py-4 border-t border-stone-100 flex justify-between items-center">
+            <span className={`flex items-center gap-1.5 text-[11px] font-bold ${confirmed ? (selected === q.correctIndex ? 'text-emerald-600' : 'text-red-400') : 'text-stone-300'}`}>
+              {confirmed && <span className={`w-1.5 h-1.5 rounded-full inline-block ${selected === q.correctIndex ? 'bg-emerald-500' : 'bg-red-400'}`} />}
+              {confirmed ? (selected === q.correctIndex ? 'Correct' : 'Incorrect') : 'Select an answer'}
+            </span>
+            {!confirmed
+              ? <button onClick={confirm} disabled={selected === null} className="px-5 py-2.5 bg-[#1C1917] text-white rounded-xl disabled:opacity-25 hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
+                  Check Answer
+                </button>
+              : <button onClick={handleNext} className="flex items-center gap-2 px-5 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
+                  {isLast ? 'See Results' : 'Next Question'} <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+            }
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// ── FeedbackModule ────────────────────────────────────────────────────────────
+const FeedbackModule = ({ correct, total, onRetry, onPracticeMore, onContinue, hidePracticeMore = false }: {
+  correct: number; total: number; onRetry: () => void; onPracticeMore: () => void; onContinue: () => void; hidePracticeMore?: boolean
+}) => {
   const pct = Math.round((correct / total) * 100)
   const mastered = correct / total >= 2 / 3
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-[2.5rem] border border-slate-200 p-10 md:p-14 text-center space-y-8 shadow-sm">
-      <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mx-auto text-white shadow-xl ${mastered ? 'bg-slate-500' : 'bg-slate-900'}`}>
-        {mastered ? <Award size={40} /> : <RotateCcw size={40} />}
-      </div>
-      <div>
-        <p className={`text-[10px] font-black uppercase tracking-widest mb-2 ${mastered ? 'text-slate-600' : 'text-slate-400'}`}>{mastered ? '✦ Mastered' : 'Keep Practising'}</p>
-        <h2 className="text-4xl font-black text-slate-900 tracking-tighter">Your Results</h2>
-        <p className="text-sm text-slate-400 font-semibold mt-1">{TOPIC.title}</p>
-      </div>
-      <div className="flex flex-col items-center gap-3">
-        <p className="text-6xl font-black text-slate-900">{correct} <span className="text-slate-300 text-4xl">/</span> {total}</p>
-        <div className="w-full max-w-xs h-2 bg-slate-100 rounded-full overflow-hidden">
-          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.3 }} className={`h-full rounded-full ${mastered ? 'bg-slate-500' : 'bg-slate-500'}`} />
+    <div className="max-w-sm mx-auto text-center space-y-8 pt-4">
+      <div className="bg-[#1C1917] rounded-3xl p-8 flex flex-col items-center">
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${mastered ? 'bg-emerald-500' : 'bg-amber-400'}`}>
+          {mastered ? <Award className="w-8 h-8 text-white" /> : <RotateCcw className="w-8 h-8 text-white" />}
+        </div>
+        <p className="text-5xl font-black text-white tracking-tight">{correct}/{total}</p>
+        <p className={`text-sm font-bold mt-2 ${mastered ? 'text-emerald-400' : 'text-amber-400'}`}>
+          {pct}% · {mastered ? 'Excellent — Topic Mastered' : "Keep going — you're getting there"}
+        </p>
+        <div className="w-full mt-4 bg-stone-800 h-1.5 rounded-full overflow-hidden">
+          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }} transition={{ duration: 0.8, delay: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            className={`h-full rounded-full ${mastered ? 'bg-emerald-500' : 'bg-amber-400'}`} />
         </div>
       </div>
-      <div className="flex flex-col gap-3 pt-2">
-        <div className={`grid grid-cols-1 ${hidePracticeMore ? '' : 'sm:grid-cols-2'} gap-3`}>
-          <button onClick={onRetry} className="w-full py-5 bg-slate-100 text-slate-700 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-200 transition-all">Try Again</button>
-          {!hidePracticeMore && <button onClick={onPracticeMore} className="w-full py-5 bg-slate-50 text-slate-700 border border-slate-200 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-3">Practice More <NotebookPen size={18} /></button>}
-        </div>
-        <button onClick={onContinue} className="w-full py-5 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center justify-center gap-3 shadow-xl">Continue <ArrowRight size={18} /></button>
+      <div className="flex flex-col gap-3">
+        <button onClick={onRetry} className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-white border border-stone-200 text-stone-700 rounded-xl hover:bg-stone-50 font-bold text-sm transition-all">
+          <RotateCcw className="w-4 h-4" /> Try Again
+        </button>
+        {!hidePracticeMore && (
+          <button onClick={onPracticeMore} className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-white border border-stone-200 text-stone-700 rounded-xl hover:bg-stone-50 font-bold text-sm transition-all">
+            <NotebookPen className="w-4 h-4" /> Challenge Questions
+          </button>
+        )}
+        <button onClick={onContinue} className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 font-black text-sm transition-all">
+          Continue <ArrowRight className="w-4 h-4" />
+        </button>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
-// ── Supabase progress helpers ─────────────────────────────────────────────────
-
-const SUBJECT = 'Physical Sciences'
-const GRADE = 10
-const TOPIC_ID = 'periodic-table-trends'
-const NEXT_TOPIC_ID = 'chemical-bonding'
-
-async function loadTopicProgress(studentId: number): Promise<TopicStatus> {
-  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
-  if (m === 'mastered') return 'mastered'
-  if (m === 'needs_practice') return 'needs-practice'
-  return 'not-started'
-}
-
-
-
-async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {
-  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
-  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
-}
-
-
-
-async function loadNextTopicProgress(studentId: number): Promise<TopicStatus> {
-  const m = await _loadProgress(studentId, SUBJECT, GRADE, NEXT_TOPIC_ID)
-  if (m === 'mastered') return 'mastered'
-  if (m === 'needs_practice') return 'needs-practice'
-  return 'not-started'
-}
-
-
-
 // ── Main Page ─────────────────────────────────────────────────────────────────
-
 function PeriodicTableTrendsPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   const session = useStudySession()
-  const [view, setView] = useState<ViewState>('overview')
+  const [view, setView] = useState<ViewState>('interactive-lesson')
   const [previousView, setPreviousView] = useState<ViewState | null>(null)
   const [status, setStatus] = useState<TopicStatus>('not-started')
-  const [nextStatus, setNextStatus] = useState<TopicStatus>('not-started')
   const [practiceResult, setPracticeResult] = useState<{ correct: number; total: number } | null>(null)
   const [attempts, setAttempts] = useState(0)
 
   useEffect(() => {
     if (!session) return
-    loadTopicProgress(session?.student_id ?? 0).then(s => setStatus(s))
-    loadNextTopicProgress(session?.student_id ?? 0).then(s => setNextStatus(s))
+    loadTopicProgress(session.student_id).then(s => setStatus(s))
   }, [session])
 
   const saveProgress = async (newStatus: TopicStatus, res: { correct: number; total: number }) => {
-    const nextAttempts = attempts + 1; setAttempts(nextAttempts)
-    if (session) await saveTopicProgress(session.student_id, session.school_id, newStatus, res.correct, res.total, nextAttempts)
+    const next = attempts + 1; setAttempts(next)
+    if (session) await saveTopicProgress(session.student_id, session.school_id, newStatus, res.correct, res.total, next)
   }
 
   const handlePracticeComplete = async (res: { correct: number; total: number }) => {
     setPracticeResult(res); setPreviousView('practice')
-    if (res.correct === 0) { setView('remediation') } else {
-      const newStatus: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
-      setStatus(newStatus); await saveProgress(newStatus, res); setView('feedback')
-    }
+    if (res.correct === 0) { setView('remediation'); return }
+    const s: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
+    setStatus(s); await saveProgress(s, res); setView('feedback')
   }
 
   const handleRemediationComplete = async (res: { correct: number; total: number }) => {
     setPracticeResult(res); setPreviousView('remediation')
-    const newStatus: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
-    setStatus(newStatus); await saveProgress(newStatus, res); setView('feedback')
+    const s: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
+    setStatus(s); await saveProgress(s, res); setView('feedback')
   }
 
   const handlePracticeMoreComplete = async (res: { correct: number; total: number }) => {
     setPracticeResult(res); setPreviousView('practice-more')
-    const newStatus: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
-    setStatus(newStatus); await saveProgress(newStatus, res); setView('feedback')
+    const s: TopicStatus = res.correct / res.total >= 2 / 3 ? 'mastered' : 'needs-practice'
+    setStatus(s); await saveProgress(s, res); setView('feedback')
   }
 
   return (
-    <div className="min-h-screen selection:bg-slate-100" style={{ background: 'oklch(98.5% 0.005 80)' }}>
-      <main className="pt-28 pb-24 px-4 md:px-6">
-        <div className="max-w-4xl mx-auto">
-          {view === 'overview' ? (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Physical Sciences · Grade 10 · Term 1</p>
-                <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">Topics</h1>
-              </div>
-              <div className="space-y-4">
-                {/* Topic 4: Periodic Table Trends — this page */}
-                <motion.div onClick={() => setView('interactive-lesson')}
-                  className="bg-white rounded-xl border border-slate-200 p-7 md:p-9 flex items-center justify-between gap-6 cursor-pointer hover:border-slate-300 hover:shadow-md transition-all group">
-                  <div className="flex items-center gap-6">
-                    <div className={`shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-[1.25rem] flex items-center justify-center text-2xl font-black ${status === 'mastered' ? 'bg-slate-500 text-white' : 'bg-slate-900 text-white shadow-md shadow-slate-900/10'}`}>
-                      {status === 'mastered' ? '✓' : '4'}
-                    </div>
-                    <div>
-                      <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">{TOPIC.title}</p>
-                      <p className="text-sm text-slate-400 mt-1">{TOPIC.description}</p>
-                      <p className={`text-[10px] font-black uppercase tracking-widest mt-2 ${status === 'mastered' ? 'text-slate-600' : status === 'needs-practice' ? 'text-slate-600' : 'text-slate-300'}`}>
-                        {status === 'mastered' ? '✦ Mastered' : status === 'needs-practice' ? '◉ Needs Practice' : '○ Not Started'}
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight size={28} className="text-slate-200 group-hover:text-slate-900 transition-colors shrink-0" />
-                </motion.div>
-                {/* Topic 5: Chemical Bonding */}
-                <motion.div onClick={() => onNavigate('learning-physci-g10-t1-bonding' as AppPage)}
-                  className="bg-white rounded-xl border border-slate-200 p-7 md:p-9 flex items-center justify-between gap-6 cursor-pointer hover:border-slate-300 hover:shadow-md transition-all group">
-                  <div className="flex items-center gap-6">
-                    <div className={`shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-[1.25rem] flex items-center justify-center text-2xl font-black ${nextStatus === 'mastered' ? 'bg-slate-500 text-white' : 'bg-slate-900 text-white shadow-md shadow-slate-900/10'}`}>
-                      {nextStatus === 'mastered' ? '✓' : '5'}
-                    </div>
-                    <div>
-                      <p className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Chemical Bonding</p>
-                      <p className="text-sm text-slate-400 mt-1">Ionic, covalent, and metallic bonds explained.</p>
-                      <p className={`text-[10px] font-black uppercase tracking-widest mt-2 ${nextStatus === 'mastered' ? 'text-slate-600' : nextStatus === 'needs-practice' ? 'text-slate-600' : 'text-slate-300'}`}>
-                        {nextStatus === 'mastered' ? '✦ Mastered' : nextStatus === 'needs-practice' ? '◉ Needs Practice' : '○ Not Started'}
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight size={28} className="text-slate-200 group-hover:text-slate-900 transition-colors shrink-0" />
-                </motion.div>
-              </div>
-            </motion.div>
-          ) : (
-            <div className="max-w-2xl mx-auto">
-              <div className="flex items-center justify-between mb-10">
-                <button onClick={() => setView('overview')} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 transition-all">
-                  <ChevronLeft size={18} /> Back
-                </button>
-                <div className="px-4 py-2 bg-white border border-slate-200 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                  Physical Sciences · Grade 10
-                </div>
-              </div>
-              <AnimatePresence mode="wait">
-                <motion.div key={view} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.25 }}>
-                  {view === 'interactive-lesson' && <InteractiveLesson onComplete={() => setView('guided-practice')} />}
-                  {view === 'guided-practice' && <GuidedPracticeModule onComplete={() => setView('practice')} />}
-                  {view === 'practice' && <PracticeModule questions={TOPIC.initialQuestions} onComplete={handlePracticeComplete} />}
-                  {view === 'practice-more' && <PracticeModule questions={TOPIC.hardQuestions} onComplete={handlePracticeMoreComplete} />}
-                  {view === 'remediation' && (
-                    <div className="space-y-6">
-                      <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex gap-4 items-start">
-                        <AlertCircle className="text-slate-500 shrink-0 mt-0.5" size={24} />
-                        <div>
-                          <p className="text-base font-black text-slate-900 uppercase tracking-tight mb-1">Let's Try Again</p>
-                          <p className="text-slate-700 text-xs leading-relaxed">It's okay — let's work through two extra questions to build your confidence.</p>
-                        </div>
-                      </div>
-                      <PracticeModule questions={TOPIC.remediationQuestions} onComplete={handleRemediationComplete} />
-                    </div>
-                  )}
-                  {view === 'feedback' && (
-                    <FeedbackModule
-                      correct={practiceResult?.correct ?? 0}
-                      total={practiceResult?.total ?? (previousView === 'practice-more' ? TOPIC.hardQuestions.length : TOPIC.initialQuestions.length)}
-                      onRetry={() => setView('interactive-lesson')}
-                      onPracticeMore={() => setView('practice-more')}
-                      onContinue={() => setView('overview')}
-                      hidePracticeMore={previousView === 'practice-more'}
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+      <main className="max-w-3xl mx-auto px-4 pt-24 pb-16">
+        <div className="max-w-2xl mx-auto">
+
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={() => onNavigate('library')}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-3"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Library
+            </button>
+            <div className="flex items-center gap-2.5">
+              <h1 className="font-black text-[#1C1917] text-xl" style={{ letterSpacing: '-0.02em' }}>{TOPIC.title}</h1>
+              {status === 'mastered' && <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">Mastered</span>}
+              {status === 'needs-practice' && <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">Needs Practice</span>}
             </div>
-          )}
+            <p className="text-[13px] text-stone-400 mt-0.5">Physical Sciences · Grade 10 · Term 1 · Topic 4</p>
+          </div>
+
+          <AnimatePresence mode="wait">
+            <motion.div key={view} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -16 }} transition={{ duration: 0.2 }}>
+              {view === 'interactive-lesson' && <InteractiveLesson onComplete={() => setView('guided-practice')} />}
+              {view === 'guided-practice' && <GuidedPracticeModule onComplete={() => setView('practice')} />}
+              {view === 'practice' && <PracticeModule questions={TOPIC.initialQuestions} onComplete={handlePracticeComplete} />}
+              {view === 'practice-more' && <PracticeModule questions={TOPIC.hardQuestions} onComplete={handlePracticeMoreComplete} />}
+              {view === 'remediation' && (
+                <div className="space-y-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-black text-stone-900 mb-0.5">Let's build confidence first</p>
+                      <p className="text-[13px] text-amber-800 leading-relaxed">Work through these simpler questions before trying again.</p>
+                    </div>
+                  </div>
+                  <PracticeModule questions={TOPIC.remediationQuestions} onComplete={handleRemediationComplete} />
+                </div>
+              )}
+              {view === 'feedback' && (
+                <FeedbackModule
+                  correct={practiceResult?.correct ?? 0}
+                  total={practiceResult?.total ?? (previousView === 'practice-more' ? TOPIC.hardQuestions.length : TOPIC.initialQuestions.length)}
+                  onRetry={() => setView('interactive-lesson')}
+                  onPracticeMore={() => setView('practice-more')}
+                  onContinue={() => onNavigate('library')}
+                  hidePracticeMore={previousView === 'practice-more'}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
+
         </div>
       </main>
     </div>

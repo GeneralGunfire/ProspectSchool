@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Search, ArrowRight, ChevronLeft, ChevronRight,
+  Search, ChevronLeft, ChevronRight,
   Calculator, Atom, FlaskConical, Briefcase, TrendingUp,
   Monitor, Pencil, Languages, BookOpen, type LucideIcon,
   Lock,
 } from 'lucide-react';
 import { subjects } from '../data/subjects';
+import QuizBlock, { type QuizQuestion } from '../../../components/QuizBlock';
 
-type Step = 'subject' | 'grade' | 'term' | 'content';
+type Step = 'subject' | 'grade' | 'content';
 
 interface SubjectMeta {
   Icon: LucideIcon;
@@ -79,6 +80,87 @@ function getTopicsAndPages(subjectId: string | null, grade: number | null, term:
   return { names: [], pages: [] };
 }
 
+// ── Section quiz data (mixed questions shown on the topic-list page) ──────────
+const SECTION_QUIZZES: Record<string, QuizQuestion[]> = {
+  'algebra-10-1': [
+    { q: 'Solve for x: 3x + 7 = 22', options: ['x = 3', 'x = 5', 'x = 7', 'x = 9'], answer: 1, explanation: '3x = 15 → x = 5. Check: 3(5)+7 = 22 ✓' },
+    { q: 'Simultaneous equations are used when:', options: ['One equation, one unknown', 'Two equations, two unknowns that must both be satisfied', 'Finding the square root', 'Working with percentages'], answer: 1, explanation: 'Simultaneous equations have two unknowns. The solution satisfies BOTH equations at the same time.' },
+    { q: 'Solve for x: x − 2 = 8', options: ['x = 6', 'x = 8', 'x = 10', 'x = 16'], answer: 2, explanation: 'Add 2 to both sides: x = 10. Check: 10 − 2 = 8 ✓' },
+    { q: 'Using substitution: y = 2x and x + y = 9. What is x?', options: ['x = 2', 'x = 3', 'x = 4', 'x = 6'], answer: 1, explanation: 'Substitute: x + 2x = 9 → 3x = 9 → x = 3. Then y = 6.' },
+    { q: 'A linear equation in one variable has:', options: ['No solution', 'Two solutions', 'Exactly one solution', 'Infinitely many'], answer: 2, explanation: 'A linear equation like 2x + 3 = 7 has exactly one solution.' },
+    { q: 'Solve: x + y = 7 and x − y = 1. What is x?', options: ['x = 3', 'x = 4', 'x = 5', 'x = 6'], answer: 1, explanation: 'Adding both equations: 2x = 8 → x = 4. Then y = 3.' },
+    { q: 'Why verify your answer by substitution?', options: ["It's optional", 'To confirm the value satisfies the original equation', 'To find a second solution', 'Required only for fractions'], answer: 1, explanation: 'Substituting back into the original equation confirms correctness. It also earns method marks in exams.' },
+  ],
+  'accounting-10-1': [
+    { q: 'The accounting equation is:', options: ['Assets = Liabilities − Equity', 'Assets = Equity + Liabilities', 'Equity = Assets + Liabilities', 'Liabilities = Equity − Assets'], answer: 1, explanation: 'Assets = Equity + Liabilities. Everything owned is funded by the owner or creditors.' },
+    { q: 'What is the primary purpose of a source document?', options: ['Calculate profit', 'Original written evidence of a transaction', 'Record ledger entries', 'Prepare financial statements'], answer: 1, explanation: 'A source document is the original proof a transaction occurred — the starting point of the accounting cycle.' },
+    { q: 'In double-entry, every transaction requires:', options: ['One debit only', 'One credit only', 'At least one debit and one credit of equal value', 'Two debits'], answer: 2, explanation: 'Every transaction affects at least two accounts — one debited, one credited by the same amount.' },
+    { q: 'Which journal records all credit sales to debtors?', options: ['Cash Receipts Journal', 'Debtors Journal', 'Creditors Journal', 'General Journal'], answer: 1, explanation: 'The Debtors Journal (DJ) records credit sales. The source document is the invoice.' },
+    { q: 'After posting, Cash shows debits R15 000 and credits R9 000. The balance is:', options: ['R6 000 credit', 'R24 000 debit', 'R6 000 debit', 'R9 000 credit'], answer: 2, explanation: 'R15 000 − R9 000 = R6 000 debit. Assets normally have debit balances.' },
+    { q: 'DEAD CLIC helps remember that debits increase:', options: ['Liabilities, Income, Capital', 'Expenses, Assets, Drawings', 'Revenue, Equity, Cash', 'Creditors, Loans, Overdraft'], answer: 1, explanation: 'DEAD = Debits increase Expenses, Assets, Drawings. CLIC = Credits increase Liabilities, Income, Capital.' },
+    { q: 'The business entity concept means:', options: ['Owner and business share one account', 'Business finances are kept separate from the owner\'s personal finances', 'Only companies keep records', 'Government owns part of every business'], answer: 1, explanation: 'The business entity concept requires strict separation of business and personal finances.' },
+  ],
+  'phys-sci-10-1': [
+    { q: 'In a transverse wave, particles vibrate:', options: ['Parallel to wave direction', 'Perpendicular to wave direction', 'In circles', 'They do not move'], answer: 1, explanation: 'Transverse wave particles move at right angles to wave propagation. Longitudinal (sound) particles move parallel.' },
+    { q: 'A wave has f = 200 Hz and λ = 1.5 m. Its speed is:', options: ['133 m/s', '200 m/s', '300 m/s', '1.5 m/s'], answer: 2, explanation: 'v = fλ = 200 × 1.5 = 300 m/s.' },
+    { q: 'Which subatomic particle determines the element?', options: ['Neutron', 'Electron', 'Proton', 'Nucleus'], answer: 2, explanation: 'The number of protons (atomic number) defines the element.' },
+    { q: 'Neutrons = ?', options: ['Atomic number', 'Mass number + atomic number', 'Mass number − atomic number', 'Number of electrons'], answer: 2, explanation: 'Neutrons = Mass number − Atomic number.' },
+    { q: 'Which is a pure substance?', options: ['Salt water', 'Air', 'Gold (Au)', 'Muddy water'], answer: 2, explanation: 'Gold contains only one type of particle. The others are mixtures.' },
+    { q: 'Across a period, atomic radius:', options: ['Increases', 'Stays the same', 'Decreases', 'First increases then decreases'], answer: 2, explanation: 'Atomic radius decreases across a period — increased nuclear charge pulls electrons closer.' },
+    { q: 'A covalent bond forms when:', options: ['A metal transfers electrons to a non-metal', 'Two non-metals share electrons', 'Two metals bond', 'Ions attract each other'], answer: 1, explanation: 'Covalent bonds form by electron sharing between non-metals. Examples: H₂O, CO₂.' },
+  ],
+  'life-sci-10-1': [
+    { q: 'Which taxonomic level is the MOST specific?', options: ['Kingdom', 'Order', 'Genus', 'Species'], answer: 3, explanation: 'Species is most specific. Members can interbreed and produce fertile offspring.' },
+    { q: 'Which kingdom is prokaryotic?', options: ['Fungi', 'Protista', 'Monera', 'Plantae'], answer: 2, explanation: 'Monera (bacteria) are the only prokaryotes — no membrane-bound nucleus.' },
+    { q: 'Binomial nomenclature is written as:', options: ['genus species (both caps)', 'GENUS SPECIES', 'Genus species (genus capitalised)', 'genus SPECIES'], answer: 2, explanation: 'Correct format: Genus (capital) + species (lowercase), both italicised or underlined.' },
+    { q: 'A mule (horse × donkey) is sterile. This means:', options: ['Horse and donkey are the same species', 'Horse and donkey are different species', 'Mules reproduce slowly', 'Mules are a new species'], answer: 1, explanation: 'Same species = interbreed + produce FERTILE offspring. Sterile offspring = different species.' },
+    { q: 'Ecosystem diversity refers to:', options: ['Variation in genes', 'Variety of species in one area', 'Variety of habitats and biomes', 'Number of individuals'], answer: 2, explanation: 'Ecosystem diversity = variety of different habitats, ecosystems and ecological processes.' },
+    { q: 'Carolus Linnaeus is known for:', options: ['Discovering evolution', 'Developing binomial nomenclature', 'Classifying DNA', 'Naming cells'], answer: 1, explanation: 'Linnaeus (1707–1778) created the two-part naming system used universally today.' },
+    { q: 'Fungi differ from Plantae because they:', options: ['Are prokaryotic', 'Photosynthesise', 'Absorb nutrients heterotrophically', 'Have cellulose cell walls'], answer: 2, explanation: 'Fungi are heterotrophs that absorb nutrients from dead or living matter. Their cell walls contain chitin, not cellulose.' },
+  ],
+  'business-studies-10-1': [
+    { q: 'Which environment has factors a business DIRECTLY controls?', options: ['Macro', 'Market', 'Micro', 'Natural'], answer: 2, explanation: 'The micro environment = internal factors the business controls (resources, staff, processes).' },
+    { q: 'The primary sector involves:', options: ['Manufacturing goods', 'Providing services', 'Extracting natural resources', 'Retail trade'], answer: 2, explanation: 'Primary sector extracts from nature: mining, farming, fishing, forestry.' },
+    { q: 'An INTERNAL stakeholder is:', options: ['A bank lending money', 'A customer', 'An employee', 'The local community'], answer: 2, explanation: 'Internal stakeholders are inside the business: employees, owners, managers.' },
+    { q: 'The "4 Ps" of marketing are:', options: ['People, Profit, Performance, Planning', 'Product, Price, Place, Promotion', 'Production, Personnel, Procurement, Planning', 'Profit, Product, Process, People'], answer: 1, explanation: 'The marketing mix: Product, Price, Place, Promotion.' },
+    { q: 'A new minimum wage law affects which environment?', options: ['Micro', 'Market', 'Macro', 'Competitor'], answer: 2, explanation: 'Government legislation is a macro (PESTEL) factor — uncontrollable by the business.' },
+    { q: 'Stakeholder conflict arises when:', options: ['The business grows', 'Different stakeholders have competing interests', 'The business is profitable', 'All stakeholders are employees'], answer: 1, explanation: 'E.g. shareholders want profit; employees want higher wages. These interests clash.' },
+    { q: 'A bakery converting flour into bread belongs to:', options: ['Primary sector', 'Secondary sector', 'Tertiary sector', 'Primary and tertiary'], answer: 1, explanation: 'Manufacturing/processing raw materials into finished goods = secondary sector.' },
+  ],
+  'economics-10-1': [
+    { q: 'Scarcity in economics means:', options: ['Resources gone forever', 'Limited resources vs unlimited wants', 'Only poor countries face this', 'Not enough money'], answer: 1, explanation: 'Scarcity = limited resources vs unlimited human wants. This forces all economic agents to make choices.' },
+    { q: 'You study instead of watching TV. The opportunity cost is:', options: ['Cost of textbooks', 'Time spent studying', 'Satisfaction given up from TV', 'The grade earned'], answer: 2, explanation: 'Opportunity cost = value of the next best alternative foregone (the TV enjoyment you gave up).' },
+    { q: 'A point INSIDE the PPC represents:', options: ['Full efficiency', 'Unattainable production', 'Underutilised resources', 'Economic growth'], answer: 2, explanation: 'Inside the PPC = inefficiency. Resources are unemployed or wasted.' },
+    { q: 'In a market economy, decisions are made by:', options: ['Government', 'Private individuals through price signals', 'International organisations', 'Central planners'], answer: 1, explanation: 'Market economies rely on price signals and private decisions, with minimal government intervention.' },
+    { q: 'The reward for LABOUR is:', options: ['Rent', 'Interest', 'Wages/Salary', 'Profit'], answer: 2, explanation: 'Land → Rent, Labour → Wages, Capital → Interest, Entrepreneurship → Profit.' },
+    { q: 'An INJECTION into the circular flow is:', options: ['Savings', 'Taxes', 'Imports', 'Government spending'], answer: 3, explanation: 'Injections (IGX): Investment, Government spending, Exports. Leakages (STI): Savings, Taxes, Imports.' },
+    { q: 'The PPC shifts OUTWARD due to:', options: ['War destroying factories', 'Natural disaster', 'New technology increasing productivity', 'Rising unemployment'], answer: 2, explanation: 'Outward shift = economic growth — more resources, better technology, improved skills.' },
+  ],
+  'cat-10-1': [
+    { q: 'What does the CPU do?', options: ['Stores data permanently', 'Displays output', 'Processes instructions and calculations', 'Connects to internet'], answer: 2, explanation: 'The CPU fetches, decodes and executes instructions. It is the "brain" of the computer.' },
+    { q: 'RAM is volatile. This means:', options: ['It is read-only', 'It loses data when power is off', 'It stores the OS permanently', 'It is slower than ROM'], answer: 1, explanation: 'RAM (Random Access Memory) is volatile — all data is lost when the computer is switched off.' },
+    { q: 'Cell B3 in a spreadsheet refers to:', options: ['Row B, Column 3', 'Column B, Row 3', 'Third cell in the document', 'Sheet B, Page 3'], answer: 1, explanation: 'Spreadsheet notation: letter = column, number = row. B3 = Column B, Row 3.' },
+    { q: 'The correct SUM formula for A1 to A10 is:', options: ['=ADD(A1:A10)', '=SUM(A1-A10)', '=SUM(A1:A10)', '=TOTAL(A1,A10)'], answer: 2, explanation: 'Colon (:) means a range. =SUM(A1:A10) adds all cells from A1 to A10.' },
+    { q: 'Ctrl + B in a word processor:', options: ['Saves the document', 'Makes text italic', 'Makes text bold', 'Underlines text'], answer: 2, explanation: 'Ctrl + B = Bold. Ctrl + I = Italic. Ctrl + U = Underline. Ctrl + S = Save.' },
+    { q: 'The top-level folder in a file system is the:', options: ['Desktop', 'Root directory', 'Home folder', 'System folder'], answer: 1, explanation: 'The root directory is the top-level container. All folders and files branch from it (C:\\ on Windows, / on Linux).' },
+    { q: 'Justified alignment means text is:', options: ['Left-aligned only', 'Right-aligned only', 'Centred', 'Aligned to both left and right margins'], answer: 3, explanation: 'Justified spreads text so both edges are straight — used in books and formal documents.' },
+  ],
+  'egd-10-1': [
+    { q: 'Which instrument draws circles in technical drawing?', options: ['Set square', 'Protractor', 'Compass', 'T-square'], answer: 2, explanation: 'A compass draws circles and arcs of precise radii. The needle sits at the centre point.' },
+    { q: 'A thick continuous line represents:', options: ['A hidden edge', 'A centre line', 'A visible outline or edge', 'A cutting plane'], answer: 2, explanation: 'Thick continuous lines show visible edges/outlines. Dashed = hidden. Chain = centre line.' },
+    { q: 'Construction lines should be drawn:', options: ['Dark and permanent', 'Lightly so they can be erased', 'In red pencil', 'With a ruler only'], answer: 1, explanation: 'Construction lines are light and erasable. Final lines are drawn dark and definitive over them.' },
+    { q: 'A T-square is used to draw:', options: ['Circles', 'Angles', 'Horizontal lines', 'Curves'], answer: 2, explanation: 'The T-square draws horizontal lines and acts as a base guide for set squares to draw verticals and angles.' },
+    { q: 'A centre line uses:', options: ['Thick continuous lines', 'Dashed lines', 'Alternating long-short dashes (chain)', 'Dotted lines'], answer: 2, explanation: 'Centre lines use the chain line type: long dash – short dash – long dash.' },
+  ],
+};
+
+function getSectionQuiz(subjectId: string | null, grade: number | null, term: number | null): QuizQuestion[] {
+  const key = `${subjectId}-${grade}-${term}`;
+  // Normalise key separators
+  const normKey = key.replace('phys-sci', 'phys-sci').replace('life-sci', 'life-sci').replace('business-studies', 'business-studies');
+  return SECTION_QUIZZES[normKey] ?? [];
+}
+
 function getTermTopics(subjectId: string | null, grade: number | null, term: number): string[] {
   if (subjectId === 'algebra'          && grade === 10) return ALGEBRA_G10_TOPICS[term] ?? [];
   if (subjectId === 'phys-sci'         && grade === 10) return PHYSCI_G10_TOPICS[term] ?? [];
@@ -115,13 +197,12 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
   const goBack = () => {
     if (step === 'grade') setStep('subject');
-    else if (step === 'term') setStep('grade');
-    else if (step === 'content') setStep('term');
+    else if (step === 'content') setStep('grade');
   };
 
 
   return (
-    <div className="min-h-screen" style={{ background: 'oklch(98.5% 0.005 80)' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
 
       <div className="pt-20 pb-24 max-w-5xl mx-auto px-4 sm:px-6">
 
@@ -134,35 +215,33 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
             >
-              {/* Hero header */}
+              {/* Hero */}
               <div className="pt-6 mb-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400">Study Library</span>
-                </div>
-                <h1 className="text-4xl sm:text-5xl font-black text-slate-900" style={{ letterSpacing: '-0.03em' }}>
-                  What are you<br className="sm:hidden" /> studying?
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-400 mb-4">Study Library</p>
+                <h1 className="font-black text-[#1C1917]" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.04em', lineHeight: 1.05 }}>
+                  What are you<br /> studying?
                 </h1>
               </div>
 
               {/* Search */}
               <div className="relative mb-8 max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search subjects..."
+                  placeholder="Search subjects…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full border border-slate-200 rounded-xl pl-11 pr-4 py-3 text-[15px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-slate-400 transition-colors bg-white shadow-sm"
+                  className="w-full bg-white border border-stone-200 rounded-xl pl-11 pr-4 py-3 text-[15px] text-stone-900 placeholder:text-stone-400 outline-none focus:border-[#1C1917] transition-colors shadow-sm"
                   style={{ fontSize: '16px' }}
                 />
               </div>
 
               {filteredSubjects.length === 0 ? (
                 <div className="py-20 text-center">
-                  <p className="text-[15px] font-black text-slate-900 mb-1">No subjects found</p>
-                  <p className="text-[13px] text-slate-400">Try a different search term.</p>
+                  <p className="text-[15px] font-black text-stone-900 mb-1">No subjects found</p>
+                  <p className="text-[13px] text-stone-400">Try a different search term.</p>
                 </div>
               ) : (() => {
                 const available = filteredSubjects.filter(s => subjectsWithContent.has(s.id));
@@ -174,40 +253,44 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                   const Icon = meta.Icon;
                   return (
                     <motion.button
-                      key={subject.id}
                       onClick={() => { if (!hasContent) return; setSelectedSubject(subject.id); setStep('grade'); }}
                       disabled={!hasContent}
-                      whileHover={hasContent ? { y: -2, scale: 1.01 } : {}}
+                      whileHover={hasContent ? { y: -2 } : {}}
                       whileTap={hasContent ? { scale: 0.98 } : {}}
-                      transition={{ duration: 0.15 }}
-                      className={`relative flex flex-col items-start gap-3 p-5 rounded-2xl border text-left transition-all ${
+                      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                      className={`relative flex flex-col items-start gap-4 p-5 rounded-2xl border text-left transition-all ${
                         hasContent
-                          ? 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-md cursor-pointer group'
-                          : 'bg-white/40 border-slate-100 cursor-default'
+                          ? 'bg-white border-stone-200 hover:border-[#1C1917] hover:shadow-md cursor-pointer group'
+                          : 'bg-white/50 border-stone-100 cursor-default'
                       }`}
                     >
+                      {/* Icon */}
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        hasContent ? `${meta.bg} ${meta.color}` : 'bg-slate-100 text-slate-300'
+                        hasContent ? 'bg-[#1C1917]' : 'bg-stone-100'
                       }`}>
-                        <Icon className="w-5 h-5" />
+                        <Icon className={`w-5 h-5 ${hasContent ? 'text-white' : 'text-stone-300'}`} />
                       </div>
+
+                      {/* Name */}
                       <div className="flex-1 min-w-0 w-full">
-                        <p className={`text-[14px] font-black leading-snug ${hasContent ? 'text-slate-900' : 'text-slate-300'}`} style={{ letterSpacing: '-0.01em' }}>
+                        <p className={`text-[15px] font-black leading-snug ${hasContent ? 'text-[#1C1917]' : 'text-stone-300'}`} style={{ letterSpacing: '-0.01em' }}>
                           {subject.name}
                         </p>
                       </div>
+
+                      {/* Footer */}
                       <div className="flex items-center justify-between w-full">
                         {hasContent ? (
-                          <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${meta.pill}`}>
-                            Lessons live
+                          <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">
+                            Live
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-300">
-                            <Lock className="w-2.5 h-2.5" /> Coming soon
+                          <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-300">
+                            <Lock className="w-2.5 h-2.5" /> Soon
                           </span>
                         )}
                         {hasContent && (
-                          <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-slate-600 transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1C1917] transition-colors" />
                         )}
                       </div>
                     </motion.button>
@@ -218,7 +301,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                   <div className="space-y-10">
                     {available.length > 0 && (
                       <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-4">Available Now</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Available Now</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {available.map(s => <SubjectCard key={s.id} subject={s} />)}
                         </div>
@@ -226,7 +309,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                     )}
                     {comingSoon.length > 0 && (
                       <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-300 mb-4">Coming Soon</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-300 mb-4">Coming Soon</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {comingSoon.map(s => <SubjectCard key={s.id} subject={s} />)}
                         </div>
@@ -245,121 +328,56 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
               className="max-w-xl"
             >
+              {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-colors mb-8"
+                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-8"
               >
                 <ChevronLeft className="w-3.5 h-3.5" /> All Subjects
               </button>
 
-              {/* Subject banner */}
-              <div className={`flex items-center gap-4 p-5 rounded-2xl border mb-8 ${currentMeta.bg} ${currentMeta.border}`}>
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white/70 ${currentMeta.color}`}>
-                  <currentMeta.Icon className="w-6 h-6" />
+              {/* Subject hero */}
+              <div className="bg-[#1C1917] rounded-2xl p-6 mb-8 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <currentMeta.Icon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Selected subject</p>
-                  <p className={`text-[18px] font-black ${currentMeta.color}`} style={{ letterSpacing: '-0.02em' }}>{currentSubjectName}</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Selected subject</p>
+                  <p className="text-xl font-black text-white" style={{ letterSpacing: '-0.02em' }}>{currentSubjectName}</p>
                 </div>
               </div>
 
-              <h2 className="text-2xl font-black text-slate-900 mb-6" style={{ letterSpacing: '-0.025em' }}>
-                Select your grade
-              </h2>
+              <div className="mb-6">
+                <h2 className="text-2xl font-black text-[#1C1917]" style={{ letterSpacing: '-0.03em' }}>Select your grade</h2>
+                <p className="text-[13px] text-stone-400 mt-1">Grade 10 fully available · Grades 11 & 12 coming soon</p>
+              </div>
 
               <div className="grid grid-cols-3 gap-3">
-                {[10, 11, 12].map((grade) => (
-                  <motion.button
-                    key={grade}
-                    onClick={() => { setSelectedGrade(grade); setStep('term'); }}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.97 }}
-                    transition={{ duration: 0.15 }}
-                    className="flex flex-col items-center justify-center gap-1 p-6 bg-white border border-slate-200 rounded-2xl hover:border-slate-900 hover:shadow-md transition-all group cursor-pointer"
-                  >
-                    <p className="text-[28px] font-black text-slate-900 group-hover:text-slate-900" style={{ letterSpacing: '-0.03em' }}>
-                      {grade}
-                    </p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Grade</p>
-                  </motion.button>
-                ))}
-              </div>
-
-              <p className="text-[12px] text-slate-400 mt-4 text-center">
-                Grades 11 & 12 content coming soon — Grade 10 fully available
-              </p>
-            </motion.div>
-          )}
-
-          {/* ── Term selection ── */}
-          {step === 'term' && (
-            <motion.div
-              key="term"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="max-w-xl"
-            >
-              <button
-                onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-colors mb-8"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" /> Grade {selectedGrade}
-              </button>
-
-              <div className="mb-8">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-1">
-                  {currentSubjectName} · Grade {selectedGrade}
-                </p>
-                <h2 className="text-2xl font-black text-slate-900" style={{ letterSpacing: '-0.025em' }}>
-                  Select a term
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                {[1, 2, 3, 4].map((term) => {
-                  const topics = getTermTopics(selectedSubject, selectedGrade, term);
-                  const isLive = topics.length > 0;
-
+                {[10, 11, 12].map((grade) => {
+                  const isAvailable = grade === 10;
                   return (
                     <motion.button
-                      key={term}
-                      onClick={() => { setSelectedTerm(term); setStep('content'); }}
-                      whileHover={{ y: -2 }}
-                      whileTap={{ scale: 0.97 }}
-                      transition={{ duration: 0.15 }}
-                      className={`flex flex-col items-start gap-3 p-5 rounded-2xl border text-left transition-all ${
-                        isLive
-                          ? 'bg-white border-slate-200 hover:border-slate-900 hover:shadow-md cursor-pointer group'
-                          : 'bg-white/60 border-slate-100 cursor-pointer'
+                      key={grade}
+                      onClick={() => { if (!isAvailable) return; setSelectedGrade(grade); setSelectedTerm(1); setStep('content'); }}
+                      disabled={!isAvailable}
+                      whileHover={isAvailable ? { y: -2 } : {}}
+                      whileTap={isAvailable ? { scale: 0.97 } : {}}
+                      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                      className={`flex flex-col items-center justify-center gap-1.5 py-8 rounded-2xl border transition-all ${
+                        isAvailable
+                          ? 'bg-white border-stone-200 hover:border-[#1C1917] hover:shadow-md cursor-pointer group'
+                          : 'bg-white/40 border-stone-100 cursor-default'
                       }`}
                     >
-                      <div className="flex items-center justify-between w-full">
-                        <p className="text-[22px] font-black text-slate-900" style={{ letterSpacing: '-0.025em' }}>
-                          Term {term}
-                        </p>
-                        {isLive ? (
-                          <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
-                            Live
-                          </span>
-                        ) : (
-                          <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-slate-100 text-slate-400">
-                            Soon
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-400 leading-snug">
-                        {isLive ? `${topics.length} topic${topics.length !== 1 ? 's' : ''}` : 'Content in development'}
+                      <p className={`text-[32px] font-black leading-none ${isAvailable ? 'text-[#1C1917]' : 'text-stone-200'}`} style={{ letterSpacing: '-0.04em' }}>
+                        {grade}
                       </p>
-                      {isLive && topics.length > 0 && (
-                        <p className="text-[11px] text-slate-500 leading-snug line-clamp-2">
-                          {topics.slice(0, 2).join(' · ')}{topics.length > 2 ? ` +${topics.length - 2} more` : ''}
-                        </p>
-                      )}
+                      <p className={`text-[10px] font-black uppercase tracking-widest ${isAvailable ? 'text-stone-400' : 'text-stone-200'}`}>
+                        {isAvailable ? 'Grade' : 'Soon'}
+                      </p>
                     </motion.button>
                   );
                 })}
@@ -367,7 +385,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
             </motion.div>
           )}
 
-          {/* ── Content / topic list ── */}
+          {/* ── Topic list ── */}
           {step === 'content' && (
             <motion.div
               key="content"
@@ -377,81 +395,107 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className="max-w-xl"
             >
+              {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-700 transition-colors mb-8"
+                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors mb-8"
               >
-                <ChevronLeft className="w-3.5 h-3.5" /> Term {selectedTerm}
+                <ChevronLeft className="w-3.5 h-3.5" /> Grade {selectedGrade}
               </button>
 
               {(() => {
                 const { names: topicNames, pages: topicPages } = getTopicsAndPages(selectedSubject, selectedGrade, selectedTerm);
+                const quizQuestions = getSectionQuiz(selectedSubject, selectedGrade, selectedTerm);
+                const quizKey = `${selectedSubject}-${selectedGrade}-${selectedTerm}-section`;
 
                 if (topicNames.length > 0) {
                   return (
-                    <>
-                      <div className="mb-8">
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-1">
-                          {currentSubjectName} · Grade {selectedGrade} · Term {selectedTerm}
-                        </p>
-                        <h2 className="text-2xl font-black text-slate-900" style={{ letterSpacing: '-0.025em' }}>
-                          {topicNames.length} {topicNames.length === 1 ? 'topic' : 'topics'} available
-                        </h2>
+                    <div className="space-y-6">
+                      {/* Hero header — dark card */}
+                      <div className="bg-[#1C1917] rounded-2xl p-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
+                              Grade {selectedGrade} · Term {selectedTerm}
+                            </p>
+                            <h2 className="text-2xl font-black text-white leading-tight" style={{ letterSpacing: '-0.03em' }}>
+                              {currentSubjectName}
+                            </h2>
+                            <p className="text-[13px] text-stone-400 mt-1">
+                              {topicNames.length} topic{topicNames.length !== 1 ? 's' : ''} · Lesson, worked example & quiz per topic
+                            </p>
+                          </div>
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/10`}>
+                            <currentMeta.Icon className="w-6 h-6 text-white" />
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="space-y-2">
+                      {/* Topic cards */}
+                      <div className="space-y-2.5">
                         {topicNames.map((name, i) => (
                           <motion.button
                             key={i}
                             onClick={() => onNavigate(topicPages[i])}
-                            whileHover={{ x: 3 }}
+                            whileHover={{ x: 4 }}
                             whileTap={{ scale: 0.98 }}
-                            transition={{ duration: 0.15 }}
-                            className="w-full flex items-center gap-4 px-5 py-4 bg-white border border-slate-200 rounded-2xl hover:border-slate-900 hover:shadow-md transition-all text-left group"
+                            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                            className="w-full flex items-center gap-4 px-5 py-5 bg-white border border-stone-200 rounded-2xl hover:border-[#1C1917] hover:shadow-md transition-all text-left group"
                           >
-                            <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-[12px] font-black ${currentMeta.bg} ${currentMeta.color}`}>
-                              {i + 1}
+                            <div className="w-10 h-10 rounded-xl bg-[#1C1917] flex items-center justify-center shrink-0">
+                              <span className="text-[14px] font-black text-white">{i + 1}</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[15px] font-bold text-slate-900 leading-snug">{name}</p>
-                              <p className="text-[11px] text-slate-400 mt-0.5">Interactive lesson · Practice quiz</p>
+                              <p className="text-[15px] font-black text-[#1C1917] leading-snug" style={{ letterSpacing: '-0.01em' }}>{name}</p>
+                              <div className="flex items-center gap-1.5 mt-1">
+                                {['Lesson', 'Worked example', 'Practice'].map((tag, t) => (
+                                  <span key={t} className="text-[10px] font-black uppercase tracking-[0.12em] text-stone-400">
+                                    {t > 0 && <span className="mr-1.5 text-stone-200">·</span>}{tag}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
-                            <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-700 transition-colors shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1C1917] transition-colors shrink-0" />
                           </motion.button>
                         ))}
                       </div>
-                    </>
+
+                      {/* Section quiz */}
+                      {quizQuestions.length > 0 && (
+                        <QuizBlock
+                          storageKey={quizKey}
+                          questions={quizQuestions}
+                          shuffle
+                        />
+                      )}
+                    </div>
                   );
                 }
 
                 return (
-                  <>
-                    <div className="mb-8">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-1">
-                        {currentSubjectName} · Grade {selectedGrade} · Term {selectedTerm}
+                  <div className="space-y-4">
+                    <div className="bg-[#1C1917] rounded-2xl p-6">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
+                        {currentSubjectName} · Grade {selectedGrade}
                       </p>
-                      <h2 className="text-2xl font-black text-slate-900" style={{ letterSpacing: '-0.025em' }}>
+                      <h2 className="text-2xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
                         Coming soon
                       </h2>
-                    </div>
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-4">
-                      <p className="text-[14px] text-slate-600 leading-relaxed">
-                        Study materials for <strong>{currentSubjectName}</strong> Grade {selectedGrade} Term {selectedTerm} are being developed. Check back soon.
+                      <p className="text-[13px] text-stone-400 mt-2">
+                        Study materials for Grade {selectedGrade} are in development. Check back soon.
                       </p>
                     </div>
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setStep('subject')}
-                        className="w-full flex items-center justify-between px-5 py-4 bg-white border border-slate-200 rounded-2xl hover:border-slate-900 hover:shadow-md transition-all group text-left"
-                      >
-                        <div>
-                          <p className="text-[14px] font-bold text-slate-900">Browse other subjects</p>
-                          <p className="text-[11px] text-slate-400 mt-0.5">See what's already available</p>
-                        </div>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-700 transition-colors" />
-                      </button>
-                    </div>
-                  </>
+                    <button
+                      onClick={() => setStep('subject')}
+                      className="w-full flex items-center justify-between px-5 py-4 bg-white border border-stone-200 rounded-2xl hover:border-[#1C1917] hover:shadow-md transition-all group text-left"
+                    >
+                      <div>
+                        <p className="text-[14px] font-black text-stone-900">Browse other subjects</p>
+                        <p className="text-[11px] text-stone-400 mt-0.5 font-medium">See what's already available</p>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-700 transition-colors" />
+                    </button>
+                  </div>
                 );
               })()}
             </motion.div>
