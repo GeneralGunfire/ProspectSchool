@@ -14,6 +14,8 @@ export interface PastPaper {
   paper_number: number;
   file_url: string;
   file_name: string;
+  memo_url: string | null;
+  memo_file_name: string | null;
   created_at: string;
   // joined
   subject_label?: string;
@@ -31,6 +33,7 @@ export interface CreatePastPaperInput {
   term?: number;
   paper_number?: number;
   file: File;
+  memo?: File | null;
 }
 
 export type PastPaperResult =
@@ -41,7 +44,7 @@ export type SimpleResult =
   | { success: true; error?: string }
   | { success: false; error: string };
 
-// ── Upload file ───────────────────────────────────────────────
+// ── Upload paper file ─────────────────────────────────────────
 
 async function uploadPaperFile(
   file: File,
@@ -61,6 +64,25 @@ async function uploadPaperFile(
   return { path: storagePath, name: file.name };
 }
 
+// ── Upload memo file ──────────────────────────────────────────
+
+async function uploadMemoFile(
+  file: File,
+  school_id: number
+): Promise<{ path: string; name: string } | { uploadError: string }> {
+  const ext = file.name.split('.').pop();
+  const storagePath = `${school_id}/memo_${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+  const { error } = await supabaseAdmin.storage
+    .from('past-papers')
+    .upload(storagePath, file, { upsert: false });
+
+  if (error) return { uploadError: error.message };
+  return { path: storagePath, name: file.name };
+}
+
+// ── Delete file from storage ──────────────────────────────────
+
 async function deletePaperFile(storagePath: string): Promise<void> {
   await supabaseAdmin.storage.from('past-papers').remove([storagePath]);
 }
@@ -78,7 +100,7 @@ export async function getPastPaperDownloadUrl(storagePath: string): Promise<stri
   return data.signedUrl;
 }
 
-// ── Fetch all papers for a school (student view — all papers) ─
+// ── Fetch all papers for a school (student view) ──────────────
 
 export async function fetchAllPastPapers(school_id: number): Promise<PastPaper[]> {
   const { data, error } = await supabaseAdmin
@@ -93,11 +115,11 @@ export async function fetchAllPastPapers(school_id: number): Promise<PastPaper[]
 
   return data.map((p: any) => ({
     ...p,
-    subject_label:    p.subjects?.label ?? null,
-    teacher_name:     p.teachers?.name ?? null,
-    teacher_surname:  p.teachers?.surname ?? null,
-    subjects:  undefined,
-    teachers:  undefined,
+    subject_label:   p.subjects?.label ?? null,
+    teacher_name:    p.teachers?.name ?? null,
+    teacher_surname: p.teachers?.surname ?? null,
+    subjects:        undefined,
+    teachers:        undefined,
   }));
 }
 
@@ -121,7 +143,7 @@ export async function fetchTeacherPastPapers(
   return data.map((p: any) => ({
     ...p,
     subject_label: p.subjects?.label ?? null,
-    subjects: undefined,
+    subjects:      undefined,
   }));
 }
 
@@ -133,19 +155,32 @@ export async function createPastPaper(input: CreatePastPaperInput): Promise<Past
     return { success: false, error: `Upload failed: ${uploaded.uploadError}` };
   }
 
+  // Upload memo if provided
+  let memoPath: string | null = null;
+  let memoName: string | null = null;
+  if (input.memo) {
+    const memoUploaded = await uploadMemoFile(input.memo, input.school_id);
+    if (!('uploadError' in memoUploaded)) {
+      memoPath = memoUploaded.path;
+      memoName = memoUploaded.name;
+    }
+  }
+
   const { data, error } = await supabaseAdmin
     .from('past_papers')
     .insert({
-      school_id:    input.school_id,
-      teacher_id:   input.teacher_id,
-      subject_id:   input.subject_id,
-      grade:        input.grade,
-      title:        input.title.trim(),
-      year:         input.year,
-      term:         input.term ?? null,
-      paper_number: input.paper_number ?? 1,
-      file_url:     uploaded.path,
-      file_name:    uploaded.name,
+      school_id:      input.school_id,
+      teacher_id:     input.teacher_id,
+      subject_id:     input.subject_id,
+      grade:          input.grade,
+      title:          input.title.trim(),
+      year:           input.year,
+      term:           input.term ?? null,
+      paper_number:   input.paper_number ?? 1,
+      file_url:       uploaded.path,
+      file_name:      uploaded.name,
+      memo_url:       memoPath,
+      memo_file_name: memoName,
     })
     .select('*')
     .single();
@@ -162,9 +197,11 @@ export async function createPastPaper(input: CreatePastPaperInput): Promise<Past
 export async function deletePastPaper(
   id: number,
   school_id: number,
-  file_url: string
+  file_url: string,
+  memo_url?: string | null
 ): Promise<SimpleResult> {
   await deletePaperFile(file_url);
+  if (memo_url) await deletePaperFile(memo_url);
   const { error } = await supabaseAdmin
     .from('past_papers')
     .delete()

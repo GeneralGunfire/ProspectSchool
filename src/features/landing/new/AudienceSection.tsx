@@ -1,92 +1,104 @@
 import { FadeIn } from './Animations';
 import { GraduationCap, BookOpen, Building2 } from './icons';
 
+const cards = [
+  {
+    id: 'student',
+    icon: GraduationCap,
+    eyebrow: 'For Students',
+    heading: 'Your future, mapped out.',
+    body: 'Take the RIASEC career quiz, explore 400+ SA careers, find bursaries, study for matric, and track your progress.',
+    features: ['Career Quiz & Matching', 'Study Library — 35 topics', 'Bursary Finder', 'APS Calculator', 'My Future Dashboard'],
+    cta: 'Start Learning',
+    dark: true,
+  },
+  {
+    id: 'teacher',
+    icon: BookOpen,
+    eyebrow: 'For Teachers',
+    heading: 'Everything you need to teach.',
+    body: 'Manage classes, track student progress, record marks, upload resources, and post announcements — from one dashboard.',
+    features: ['Student Progress Tracking', 'Mark Sheets & Grades', 'Resource Uploads', 'Class Calendar', 'Past Papers'],
+    cta: 'Teacher Portal',
+    dark: false,
+  },
+  {
+    id: 'school',
+    icon: Building2,
+    eyebrow: 'For Schools',
+    heading: 'One platform. Zero cost.',
+    body: 'Give your entire school access — student dashboards, teacher tools, admin controls, and announcements. No subscription.',
+    features: ['Admin Dashboard', 'School Announcements', 'Teacher Management', 'Student Accounts', 'Completely Free'],
+    cta: 'Set Up Your School',
+    dark: false,
+  },
+];
+
 export const AudienceSection = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="bg-brand-bg py-32 px-6">
-      <div className="max-w-7xl mx-auto">
-        <FadeIn className="text-center mb-16">
+    <section id="for-students" className="bg-brand-bg py-24 px-5">
+      <div className="max-w-6xl mx-auto">
+
+        <FadeIn className="text-center mb-14">
           <span className="eyebrow">WHO IT'S FOR</span>
-          <h2 className="text-brand-dark text-[clamp(2.2rem,4vw,3rem)] tracking-tight mt-4 leading-[1.2]">
+          <h2 className="text-brand-dark text-[clamp(2rem,4vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Built for everyone in the classroom.
           </h2>
         </FadeIn>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {/* CARD 1 — Students */}
-          <FadeIn delay={0.1} className="group h-full">
-            <div className="bg-brand-dark rounded-[32px] p-10 md:p-12 h-full flex flex-col transition-all duration-300 hover:shadow-xl shadow-brand-dark/10">
-              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center">
-                <GraduationCap className="text-white w-9 h-9" />
-              </div>
-              <span className="text-stone-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-10">FOR STUDENTS</span>
-              <h3 className="text-white text-2xl font-bold mt-4 leading-tight">Your future, mapped out.</h3>
-              <p className="text-stone-400 text-[15px] leading-relaxed mt-4 font-medium">
-                Take the RIASEC career quiz, explore 400+ SA careers with real salary data, find bursaries, study for matric, and track your progress — all free.
-              </p>
-              <ul className="mt-8 space-y-4 mb-10">
-                {["Career Quiz & Matching", "Study Library — 35 topics", "Bursary Finder", "My Future Dashboard", "APS Calculator"].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-white/70 font-medium">
-                    <div className="w-1.5 h-1.5 rounded-full bg-white/20 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-auto bg-white text-brand-dark rounded-xl py-4 font-bold text-[15px] transition-all hover:scale-[1.02] cursor-pointer">
-                Start Learning
-              </button>
-            </div>
-          </FadeIn>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+          {cards.map((card, i) => {
+            const Icon = card.icon;
+            return (
+              <FadeIn key={card.id} delay={i * 0.1} className="h-full">
+                <div className={`rounded-3xl p-8 md:p-9 h-full flex flex-col transition-all duration-300 ${
+                  card.dark
+                    ? 'bg-brand-dark hover:shadow-xl shadow-stone-900/10'
+                    : 'bg-white border border-brand-border hover:shadow-md'
+                }`}>
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+                    card.dark ? 'bg-white/10' : 'bg-brand-dark'
+                  }`}>
+                    <Icon className={`w-5 h-5 ${card.dark ? 'text-white' : 'text-white'}`} />
+                  </div>
 
-          {/* CARD 2 — Teachers */}
-          <FadeIn delay={0.2} className="group h-full">
-            <div className="bg-white border border-brand-border rounded-[32px] p-10 md:p-12 h-full flex flex-col transition-all duration-300 hover:shadow-lg">
-              <div className="w-14 h-14 bg-brand-dark rounded-2xl flex items-center justify-center">
-                <BookOpen className="text-white w-9 h-9" />
-              </div>
-              <span className="text-brand-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] mt-10">FOR TEACHERS</span>
-              <h3 className="text-brand-dark text-2xl font-bold mt-4 leading-tight">Everything you need to teach.</h3>
-              <p className="text-brand-eyebrow text-[15px] leading-relaxed mt-4 font-medium">
-                Manage your classes, track every student's study progress, record marks, upload resources, post announcements, and manage homework — from one dashboard.
-              </p>
-              <ul className="mt-8 space-y-4 mb-10">
-                {["Student Progress Tracking", "Mark Sheets & Grades", "Resource Uploads", "Class Calendar", "Past Papers"].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-brand-eyebrow font-medium">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-dark/10 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-auto bg-brand-dark text-white rounded-xl py-4 font-bold text-[15px] transition-all hover:scale-[1.02] cursor-pointer">
-                Teacher Portal
-              </button>
-            </div>
-          </FadeIn>
+                  <span className={`text-[9px] font-black uppercase tracking-[0.2em] mt-7 ${
+                    card.dark ? 'text-stone-500' : 'text-brand-eyebrow'
+                  }`}>{card.eyebrow}</span>
 
-          {/* CARD 3 — Schools */}
-          <FadeIn delay={0.3} className="group h-full">
-            <div className="bg-white border border-brand-border rounded-[32px] p-10 md:p-12 h-full flex flex-col transition-all duration-300 hover:shadow-lg">
-              <div className="w-14 h-14 bg-brand-dark rounded-2xl flex items-center justify-center">
-                <Building2 className="text-white w-9 h-9" />
-              </div>
-              <span className="text-brand-eyebrow text-[10px] font-bold uppercase tracking-[0.2em] mt-10">FOR SCHOOLS</span>
-              <h3 className="text-brand-dark text-2xl font-bold mt-4 leading-tight">One platform. Zero cost.</h3>
-              <p className="text-brand-eyebrow text-[15px] leading-relaxed mt-4 font-medium">
-                Give your entire school access to Prospect — student dashboards, teacher tools, admin controls, and school-wide announcements. No subscription, no catch.
-              </p>
-              <ul className="mt-8 space-y-4 mb-10">
-                {["Admin Dashboard", "School Announcements", "Teacher Management", "Student Accounts", "Completely Free"].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-brand-eyebrow font-medium">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-dark/10 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button className="mt-auto bg-brand-dark text-white rounded-xl py-4 font-bold text-[15px] transition-all hover:scale-[1.02] cursor-pointer">
-                Set Up Your School
-              </button>
-            </div>
-          </FadeIn>
+                  <h3 className={`text-lg font-black mt-2 leading-snug tracking-tight ${
+                    card.dark ? 'text-white' : 'text-brand-dark'
+                  }`}>{card.heading}</h3>
+
+                  <p className={`text-[14px] leading-relaxed mt-3 font-medium ${
+                    card.dark ? 'text-stone-400' : 'text-brand-eyebrow'
+                  }`}>{card.body}</p>
+
+                  <ul className="mt-6 space-y-2.5 mb-8 flex-1">
+                    {card.features.map(item => (
+                      <li key={item} className="flex items-center gap-2.5 text-[13px] font-medium">
+                        <div className={`w-1 h-1 rounded-full shrink-0 ${
+                          card.dark ? 'bg-white/25' : 'bg-brand-dark/15'
+                        }`} />
+                        <span className={card.dark ? 'text-white/65' : 'text-brand-eyebrow'}>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => onNavigate(card.id === 'student' ? 'quiz' : 'portal')}
+                    className={`mt-auto w-full rounded-xl py-3.5 font-black text-[13px] tracking-wide transition-all hover:opacity-90 active:scale-[0.97] cursor-pointer ${
+                      card.dark
+                        ? 'bg-white text-brand-dark'
+                        : 'bg-brand-dark text-white'
+                    }`}
+                  >
+                    {card.cta}
+                  </button>
+                </div>
+              </FadeIn>
+            );
+          })}
         </div>
       </div>
     </section>

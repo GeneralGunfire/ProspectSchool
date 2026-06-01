@@ -41,7 +41,7 @@ export default function StudentLogin({ onNavigate }: { onNavigate: (page: string
 
       {/* Left — dark branding panel */}
       <div
-        className="hidden lg:flex flex-col justify-between w-[440px] shrink-0 px-12 py-12"
+        className="hidden lg:flex flex-col justify-between w-110 shrink-0 px-10 py-10"
         style={{ background: '#1C1917' }}
       >
         <div className="flex items-center gap-3">
