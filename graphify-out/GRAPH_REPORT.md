@@ -1,7 +1,7 @@
 # Graph Report - prospect  (2026-06-01)
 
 ## Corpus Check
-- 216 files · ~1,034,233 words
+- 216 files · ~1,034,336 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9031e7a2`
+- Built from commit: `d7395616`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -553,7 +553,7 @@ Cohesion: 0.70
 Nodes (4): FAIL(), INFO(), PASS(), run()
 
 ## Knowledge Gaps
-- **687 isolated node(s):** `TrackerStatus`, `TrackerEntry`, `TRACKER_STAGES`, `TRACKER_COLORS`, `emptyForm` (+682 more)
+- **687 isolated node(s):** `ActivePage`, `AdminDashboardProps`, `Stats`, `weeklyActivity`, `gradeDistribution` (+682 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -561,12 +561,12 @@ Nodes (4): FAIL(), INFO(), PASS(), run()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `supabaseAdmin` connect `Community 14` to `Community 129`, `Community 130`, `Community 68`, `Community 5`, `Community 8`, `Community 9`, `Community 59`, `Community 11`, `Community 12`, `Community 108`, `Community 49`, `Community 27`?**
-  _High betweenness centrality (0.074) - this node is a cross-community bridge._
+  _High betweenness centrality (0.062) - this node is a cross-community bridge._
 - **Why does `bursaries` connect `Community 129` to `Community 17`, `Community 68`?**
-  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Why does `cn()` connect `Community 16` to `Community 11`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
-- **What connects `TrackerStatus`, `TrackerEntry`, `TRACKER_STAGES` to the rest of the system?**
+  _High betweenness centrality (0.034) - this node is a cross-community bridge._
+- **What connects `ActivePage`, `AdminDashboardProps`, `Stats` to the rest of the system?**
   _687 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.031746031746031744 - nodes in this community are weakly interconnected._

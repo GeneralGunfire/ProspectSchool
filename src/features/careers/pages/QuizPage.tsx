@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, CheckCircle2, RefreshCw, ArrowRight, SkipFor
 import { quizQuestions } from '../data/quizQuestions';
 import { computeQuizResults, type QuizResults } from '../data/quizScoringLogic';
 import { SkippedQuestionsPanel } from '../components/SkippedQuestionsPanel';
+import { getStudentSession } from '../../../lib/auth';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -155,6 +156,16 @@ function QuizPhase({
 
       <div className="pt-24 pb-20 px-4 flex flex-col items-center">
         <div className="max-w-2xl w-full">
+
+          {/* Back to dashboard for logged-in students */}
+          {getStudentSession() && (
+            <button
+              onClick={() => onNavigate('student-dashboard')}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-6"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Back to Dashboard
+            </button>
+          )}
 
           {/* Header & Progress */}
           <div className="mb-10">
@@ -437,6 +448,16 @@ function ResultsPhase({
 
       <div className="pt-24 pb-20 px-4">
         <div className="max-w-5xl mx-auto">
+
+          {/* Back to dashboard for logged-in students */}
+          {getStudentSession() && (
+            <button
+              onClick={() => onNavigate('student-dashboard')}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-6"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Back to Dashboard
+            </button>
+          )}
 
           {/* Header */}
           <motion.div

@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>prospect — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1669 nodes, 2754 edges, 128 communities. Commit: 9031e7a</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1669 nodes, 2754 edges, 128 communities. Commit: d739561</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -121,15 +121,15 @@ flowchart LR
     OTHER_D0941E68 -->|imports x42| COMMUNITY_7_989501FC
     OTHER_D0941E68 -->|imports x35| ANALYSIS_CLUSTERING_C79796DA
     ANALYSIS_CLUSTERING_C79796DA -->|imports x33| OTHER_D0941E68
+    OTHER_D0941E68 -->|imports x23| COMMUNITY_49_2104F0AE
     COMMUNITY_1_3073A0DB -->|imports x23| OTHER_D0941E68
+    OTHER_D0941E68 -->|imports x22| COMMUNITY_14_21BC55C3
+    OTHER_D0941E68 -->|imports x21| COMMUNITY_130_A0E76FCE
     OTHER_D0941E68 -->|imports x21| COMMUNITY_1_3073A0DB
-    OTHER_D0941E68 -->|contains x19| COMMUNITY_130_A0E76FCE
-    OTHER_D0941E68 -->|imports x18| COMMUNITY_14_21BC55C3
-    OTHER_D0941E68 -->|contains x17| COMMUNITY_49_2104F0AE
-    COMMUNITY_130_A0E76FCE -->|imports x16| OTHER_D0941E68
-    OTHER_D0941E68 -->|imports x14| COMMUNITY_12_82F13F05
+    COMMUNITY_130_A0E76FCE -->|imports x14| OTHER_D0941E68
     COMMUNITY_129_7306E7F5 -->|imports x13| OTHER_D0941E68
-    COMMUNITY_49_2104F0AE -->|imports x13| OTHER_D0941E68
+    COMMUNITY_7_989501FC -->|imports x12| OTHER_D0941E68
+    OTHER_D0941E68 -->|imports x11| COMMUNITY_12_82F13F05
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2561,23 +2561,23 @@ flowchart LR
 flowchart LR
     %% Section: Community 12 (45 nodes, 65 edges)
     subgraph community_12_src_lib_pastPapers_ts_f74c95d6["src/lib/pastPapers.ts"]
+        lib_pastpapers_deletepaperfile_55fad109("deletePaperFile()<br/><small>src/lib/pastPapers.ts</small>")
+        lib_pastpapers_uploadmemofile_c9a0a095("uploadMemoFile()<br/><small>src/lib/pastPapers.ts</small>")
+        lib_pastpapers_uploadpaperfile_d37d0532("uploadPaperFile()<br/><small>src/lib/pastPapers.ts</small>")
+        lib_pastpapers_createpastpaper_b304b367("createPastPaper()<br/><small>src/lib/pastPapers.ts</small>")
+        lib_pastpapers_deletepastpaper_79e771ac("deletePastPaper()<br/><small>src/lib/pastPapers.ts</small>")
+        lib_pastpapers_fetchallpastpapers_1e3e259d("fetchAllPastPapers()<br/><small>src/lib/pastPapers.ts</small>")
         lib_pastpapers_getpastpaperdownloadurl_e828d1ac("getPastPaperDownloadUrl()<br/><small>src/lib/pastPapers.ts</small>")
         lib_pastpapers_pastpaper_c4d0d707("PastPaper<br/><small>src/lib/pastPapers.ts</small>")
         src_lib_pastpapers_ts_49c1b018("pastPapers.ts")
-        lib_pastpapers_deletepaperfile_55fad109("deletePaperFile()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_fetchallpastpapers_1e3e259d("fetchAllPastPapers()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_fetchteacherpastpapers_7a7c67ce("fetchTeacherPastPapers()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_uploadpaperfile_d37d0532("uploadPaperFile()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_createpastpaper_b304b367("createPastPaper()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_uploadmemofile_c9a0a095("uploadMemoFile()<br/><small>src/lib/pastPapers.ts</small>")
-        lib_pastpapers_deletepastpaper_79e771ac("deletePastPaper()<br/><small>src/lib/pastPapers.ts</small>")
     end
     subgraph community_12_src_lib_students_ts_41f87a8c["src/lib/students.ts"]
         lib_students_fetchsubjects_082fe767("fetchSubjects()<br/><small>src/lib/students.ts</small>")
         lib_students_subject_43c53173("Subject<br/><small>src/lib/students.ts</small>")
         src_lib_students_ts_80a3f9b0("students.ts")
-        lib_students_student_d0152329("Student<br/><small>src/lib/students.ts</small>")
+        lib_students_fetchteacherstudents_b95a39af("fetchTeacherStudents()<br/><small>src/lib/students.ts</small>")
         lib_students_removestudentfromteacher_8a1192c1("removeStudentFromTeacher()<br/><small>src/lib/students.ts</small>")
+        lib_students_student_d0152329("Student<br/><small>src/lib/students.ts</small>")
     end
     src_pages_portal_student_studentpastpaperspage_t_290c78b4("StudentPastPapersPage.tsx")
     src_pages_portal_teacher_classespage_tsx_4c7bab4a("ClassesPage.tsx")
@@ -2585,43 +2585,43 @@ flowchart LR
     lib_pastpapers_uploadpaperfile_d37d0532 -->|calls| lib_pastpapers_createpastpaper_b304b367
     lib_pastpapers_uploadmemofile_c9a0a095 -->|calls| lib_pastpapers_createpastpaper_b304b367
     lib_pastpapers_deletepaperfile_55fad109 -->|calls| lib_pastpapers_deletepastpaper_79e771ac
-    src_lib_pastpapers_ts_49c1b018 -->|imports| src_pages_portal_student_studentpastpaperspage_t_290c78b4
-    src_lib_pastpapers_ts_49c1b018 -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
-    lib_pastpapers_pastpaper_c4d0d707 -->|imports| src_pages_portal_student_studentpastpaperspage_t_290c78b4
-    lib_pastpapers_pastpaper_c4d0d707 -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
-    lib_pastpapers_getpastpaperdownloadurl_e828d1ac -->|imports| src_pages_portal_student_studentpastpaperspage_t_290c78b4
-    lib_pastpapers_getpastpaperdownloadurl_e828d1ac -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
-    lib_pastpapers_fetchallpastpapers_1e3e259d -->|imports| src_pages_portal_student_studentpastpaperspage_t_290c78b4
-    lib_pastpapers_fetchteacherpastpapers_7a7c67ce -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
-    lib_pastpapers_createpastpaper_b304b367 -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
-    lib_pastpapers_deletepastpaper_79e771ac -->|imports| src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c
+    src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| lib_pastpapers_fetchallpastpapers_1e3e259d
+    src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| lib_pastpapers_getpastpaperdownloadurl_e828d1ac
+    src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| lib_pastpapers_pastpaper_c4d0d707
     src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| lib_students_fetchsubjects_082fe767
     src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| lib_students_subject_43c53173
+    src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| src_lib_pastpapers_ts_49c1b018
     src_pages_portal_student_studentpastpaperspage_t_290c78b4 -->|imports| src_lib_students_ts_80a3f9b0
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| lib_students_fetchsubjects_082fe767
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| lib_students_fetchteacherstudents_b95a39af
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| lib_students_removestudentfromteacher_8a1192c1
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| lib_students_student_d0152329
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| lib_students_subject_43c53173
+    src_pages_portal_teacher_classespage_tsx_4c7bab4a -->|imports| src_lib_students_ts_80a3f9b0
+    src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_pastpapers_createpastpaper_b304b367
+    src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_pastpapers_deletepastpaper_79e771ac
+    src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_pastpapers_getpastpaperdownloadurl_e828d1ac
+    src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_pastpapers_pastpaper_c4d0d707
     src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_students_fetchsubjects_082fe767
     src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| lib_students_subject_43c53173
+    src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| src_lib_pastpapers_ts_49c1b018
     src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c -->|imports| src_lib_students_ts_80a3f9b0
-    src_lib_students_ts_80a3f9b0 -->|imports| src_pages_portal_teacher_classespage_tsx_4c7bab4a
-    lib_students_subject_43c53173 -->|imports| src_pages_portal_teacher_classespage_tsx_4c7bab4a
-    lib_students_student_d0152329 -->|imports| src_pages_portal_teacher_classespage_tsx_4c7bab4a
-    lib_students_fetchsubjects_082fe767 -->|imports| src_pages_portal_teacher_classespage_tsx_4c7bab4a
-    lib_students_removestudentfromteacher_8a1192c1 -->|imports| src_pages_portal_teacher_classespage_tsx_4c7bab4a
     %% Omitted for readability: 27 nodes, 0 edges
+    class lib_pastpapers_deletepaperfile_55fad109 function;
+    class lib_pastpapers_uploadmemofile_c9a0a095 function;
+    class lib_pastpapers_uploadpaperfile_d37d0532 function;
+    class lib_pastpapers_createpastpaper_b304b367 function;
+    class lib_pastpapers_deletepastpaper_79e771ac function;
+    class lib_pastpapers_fetchallpastpapers_1e3e259d function;
     class lib_pastpapers_getpastpaperdownloadurl_e828d1ac function;
     class lib_pastpapers_pastpaper_c4d0d707 klass;
     class src_lib_pastpapers_ts_49c1b018 module;
-    class lib_pastpapers_deletepaperfile_55fad109 function;
-    class lib_pastpapers_fetchallpastpapers_1e3e259d function;
-    class lib_pastpapers_fetchteacherpastpapers_7a7c67ce function;
-    class lib_pastpapers_uploadpaperfile_d37d0532 function;
-    class lib_pastpapers_createpastpaper_b304b367 function;
-    class lib_pastpapers_uploadmemofile_c9a0a095 function;
-    class lib_pastpapers_deletepastpaper_79e771ac function;
     class lib_students_fetchsubjects_082fe767 function;
     class lib_students_subject_43c53173 klass;
     class src_lib_students_ts_80a3f9b0 module;
-    class lib_students_student_d0152329 klass;
+    class lib_students_fetchteacherstudents_b95a39af function;
     class lib_students_removestudentfromteacher_8a1192c1 function;
+    class lib_students_student_d0152329 klass;
     class src_pages_portal_student_studentpastpaperspage_t_290c78b4 ui;
     class src_pages_portal_teacher_classespage_tsx_4c7bab4a async;
     class src_pages_portal_teacher_pastpaperspage_tsx_2dcac37c ui;
@@ -2648,118 +2648,14 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>pastPapers.ts</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td>Module file in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>PastPaper</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td>PastPaper node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>CreatePastPaperInput</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>CreatePastPaperInput node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>PastPaperResult</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>PastPaperResult node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>SimpleResult</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>SimpleResult node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>uploadPaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td>uploadPaperFile() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>uploadMemoFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td>uploadMemoFile() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>deletePaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>deletePastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td>deletePaperFile() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>getPastPaperDownloadUrl()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td>getPastPaperDownloadUrl() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>fetchAllPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td>fetchAllPastPapers() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>fetchTeacherPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
-  <td>fetchTeacherPastPapers() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>uploadMemoFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>uploadPaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
-  <td>createPastPaper() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>deletePastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>deletePaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
-  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
-  <td>deletePastPaper() node in src/lib/pastPapers.ts.</td>
-</tr>
-<tr>
-  <td>14</td>
   <td><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td><code>fetchAllPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>getPastPaperDownloadUrl()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>PastPaper</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br>+1 more</td>
-  <td><code>fetchSubjects()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>students.ts</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>Subject</code><br><small style="color:var(--muted)">src/lib/students.ts</small></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>fetchAllPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>fetchSubjects()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>getPastPaperDownloadUrl()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br>+4 more</td>
   <td>Module file in portal/student/StudentPastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>2</td>
   <td><code>GRADES</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2767,7 +2663,7 @@ flowchart LR
   <td>GRADES node in portal/student/StudentPastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>3</td>
   <td><code>TERMS</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2775,7 +2671,7 @@ flowchart LR
   <td>TERMS node in portal/student/StudentPastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>4</td>
   <td><code>StudentPastPapersPageProps</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2783,7 +2679,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>5</td>
   <td><code>StudentPastPapersPage()</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2791,15 +2687,63 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>6</td>
+  <td><code>ClassesPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>fetchSubjects()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>fetchTeacherStudents()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>removeStudentFromTeacher()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br>+3 more</td>
+  <td>Module file in portal/teacher/ClassesPage.tsx.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>StudentForm</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>StudentForm node in portal/teacher/ClassesPage.tsx.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>GRADES</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>GRADES node in portal/teacher/ClassesPage.tsx.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>EMPTY</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EMPTY node in portal/teacher/ClassesPage.tsx.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>ModalMode</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ModalMode node in portal/teacher/ClassesPage.tsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>ClassesPage()</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>12</td>
   <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>deletePastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>fetchTeacherPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br>+3 more</td>
-  <td><code>fetchSubjects()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>students.ts</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br><code>Subject</code><br><small style="color:var(--muted)">src/lib/students.ts</small></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>deletePastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small><br><code>fetchSubjects()</code><br><small style="color:var(--muted)">src/lib/students.ts</small><br>+6 more</td>
   <td>Module file in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>13</td>
   <td><code>GRADES</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2807,7 +2751,7 @@ flowchart LR
   <td>GRADES node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>14</td>
   <td><code>TERMS</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2815,7 +2759,7 @@ flowchart LR
   <td>TERMS node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>15</td>
   <td><code>CURRENT_YEAR</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2823,7 +2767,7 @@ flowchart LR
   <td>CURRENT_YEAR node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>16</td>
   <td><code>YEARS</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2831,7 +2775,7 @@ flowchart LR
   <td>YEARS node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>17</td>
   <td><code>formatDate()</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2839,7 +2783,7 @@ flowchart LR
   <td>formatDate() node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>18</td>
   <td><code>PastPapersPageProps</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2847,7 +2791,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>19</td>
   <td><code>emptyForm</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2855,7 +2799,7 @@ flowchart LR
   <td>emptyForm node in portal/teacher/PastPapersPage.tsx.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>20</td>
   <td><code>PastPapersPage()</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -2863,28 +2807,84 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>28</td>
-  <td><code>students.ts</code><br><small style="color:var(--muted)">src/lib/students.ts</small></td>
+  <td>21</td>
+  <td><code>pastPapers.ts</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td><code>ClassesPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
-  <td>Module file in src/lib/students.ts.</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>PastPaper</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>PastPaper node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>CreatePastPaperInput</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>CreatePastPaperInput node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>PastPaperResult</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PastPaperResult node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>SimpleResult</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SimpleResult node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>uploadPaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td>uploadPaperFile() node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>uploadMemoFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>createPastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td>uploadMemoFile() node in src/lib/pastPapers.ts.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>deletePaperFile()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>deletePastPaper()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td>deletePaperFile() node in src/lib/pastPapers.ts.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>Subject</code><br><small style="color:var(--muted)">src/lib/students.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
+  <td><code>getPastPaperDownloadUrl()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
   <td><code>PastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/PastPapersPage.tsx</small><br><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
-  <td><code>ClassesPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
-  <td>Subject node in src/lib/students.ts.</td>
+  <td>No direct outbound edge</td>
+  <td>getPastPaperDownloadUrl() node in src/lib/pastPapers.ts.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>Student</code><br><small style="color:var(--muted)">src/lib/students.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>ClassesPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
-  <td>Student node in src/lib/students.ts.</td>
+  <td><code>fetchAllPastPapers()</code><br><small style="color:var(--muted)">src/lib/pastPapers.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>StudentPastPapersPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentPastPapersPage.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>fetchAllPastPapers() node in src/lib/pastPapers.ts.</td>
 </tr>
 </table>
 
@@ -2916,15 +2916,15 @@ flowchart LR
 flowchart LR
     %% Section: Community 49 (44 nodes, 59 edges)
     subgraph community_49_src_lib_marks_ts_f2f6ea25["src/lib/marks.ts"]
+        lib_marks_fetchteachermarksheets_1f48fec3("fetchTeacherMarkSheets()<br/><small>src/lib/marks.ts</small>")
+        lib_marks_marksheetgroup_249daf5e("MarkSheetGroup<br/><small>src/lib/marks.ts</small>")
+        src_lib_marks_ts_ef73f983("marks.ts")
         lib_marks_createmarksheet_91c8ab8d("createMarkSheet()<br/><small>src/lib/marks.ts</small>")
         lib_marks_deletemarksheet_55f4a6ce("deleteMarkSheet()<br/><small>src/lib/marks.ts</small>")
         lib_marks_fetchsheetmarks_c18c0724("fetchSheetMarks()<br/><small>src/lib/marks.ts</small>")
-        lib_marks_fetchteachermarksheets_1f48fec3("fetchTeacherMarkSheets()<br/><small>src/lib/marks.ts</small>")
         lib_marks_marksheet_f013704d("MarkSheet<br/><small>src/lib/marks.ts</small>")
-        lib_marks_marksheetgroup_249daf5e("MarkSheetGroup<br/><small>src/lib/marks.ts</small>")
         lib_marks_savestudentmark_43dc0b4d("saveStudentMark()<br/><small>src/lib/marks.ts</small>")
         lib_marks_studentmark_e49a3c66("StudentMark<br/><small>src/lib/marks.ts</small>")
-        src_lib_marks_ts_ef73f983("marks.ts")
     end
     subgraph community_49_src_lib_events_ts_c8aad74b["src/lib/events.ts"]
         lib_events_fetchhomeworkcompletioncount_b89c7eb1("fetchHomeworkCompletionCount()<br/><small>src/lib/events.ts</small>")
@@ -2941,6 +2941,14 @@ flowchart LR
     end
     src_pages_portal_teacher_markspage_tsx_94b77252("MarksPage.tsx")
     src_pages_portal_teacher_teacherhomepage_tsx_79f152d8("TeacherHomePage.tsx")
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_auth_teachersession_8008c483
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_fetchhomeworkcompletioncount_b89c7eb1
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_fetchschoolevents_959498d4
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_schoolevent_22882058
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_marks_fetchteachermarksheets_1f48fec3
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_marks_marksheetgroup_249daf5e
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| src_lib_marks_ts_ef73f983
+    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| src_pages_portal_teacherdashboard_tsx_74876111
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| lib_auth_teachersession_8008c483
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| lib_marks_createmarksheet_91c8ab8d
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| lib_marks_deletemarksheet_55f4a6ce
@@ -2952,26 +2960,18 @@ flowchart LR
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| lib_marks_studentmark_e49a3c66
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| src_lib_marks_ts_ef73f983
     src_pages_portal_teacher_markspage_tsx_94b77252 -->|imports| src_pages_portal_teacherdashboard_tsx_74876111
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_auth_teachersession_8008c483
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_fetchhomeworkcompletioncount_b89c7eb1
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_fetchschoolevents_959498d4
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_events_schoolevent_22882058
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_marks_fetchteachermarksheets_1f48fec3
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| lib_marks_marksheetgroup_249daf5e
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| src_lib_marks_ts_ef73f983
-    src_pages_portal_teacher_teacherhomepage_tsx_79f152d8 -->|imports| src_pages_portal_teacherdashboard_tsx_74876111
     src_pages_portal_teacherdashboard_tsx_74876111 -->|imports| lib_auth_getteachersession_d3f8bdb0
     src_pages_portal_teacherdashboard_tsx_74876111 -->|imports| lib_auth_teachersession_8008c483
     %% Omitted for readability: 26 nodes, 0 edges
+    class lib_marks_fetchteachermarksheets_1f48fec3 function;
+    class lib_marks_marksheetgroup_249daf5e klass;
+    class src_lib_marks_ts_ef73f983 module;
     class lib_marks_createmarksheet_91c8ab8d function;
     class lib_marks_deletemarksheet_55f4a6ce function;
     class lib_marks_fetchsheetmarks_c18c0724 function;
-    class lib_marks_fetchteachermarksheets_1f48fec3 function;
     class lib_marks_marksheet_f013704d klass;
-    class lib_marks_marksheetgroup_249daf5e klass;
     class lib_marks_savestudentmark_43dc0b4d function;
     class lib_marks_studentmark_e49a3c66 klass;
-    class src_lib_marks_ts_ef73f983 module;
     class lib_events_fetchhomeworkcompletioncount_b89c7eb1 function;
     class lib_events_fetchschoolevents_959498d4 function;
     class lib_events_schoolevent_22882058 klass;
@@ -3004,15 +3004,15 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>AnnouncementsPageProps</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>ClassesPageProps</code><br><small style="color:var(--muted)">portal/teacher/ClassesPage.tsx</small></td>
+  <td><span class="tag tag-async">Async</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>CalendarPageProps</code><br><small style="color:var(--muted)">portal/teacher/CalendarPage.tsx</small></td>
+  <td><code>StudentProgressPageProps</code><br><small style="color:var(--muted)">portal/teacher/StudentProgressPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -3020,70 +3020,6 @@ flowchart LR
 </tr>
 <tr>
   <td>3</td>
-  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>createMarkSheet()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br><code>deleteMarkSheet()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br><code>fetchSheetMarks()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br>+8 more</td>
-  <td>Module file in portal/teacher/MarksPage.tsx.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>GRADES</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>GRADES node in portal/teacher/MarksPage.tsx.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>pct()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>pct() node in portal/teacher/MarksPage.tsx.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>grade()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>grade() node in portal/teacher/MarksPage.tsx.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>MarksPageProps</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>View</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>View node in portal/teacher/MarksPage.tsx.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>MarksPage()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>ResourcesPageProps</code><br><small style="color:var(--muted)">portal/teacher/ResourcesPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>11</td>
   <td><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3091,7 +3027,7 @@ flowchart LR
   <td>Module file in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>4</td>
   <td><code>formatDate()</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3099,7 +3035,7 @@ flowchart LR
   <td>formatDate() node in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>5</td>
   <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3107,7 +3043,7 @@ flowchart LR
   <td>timeAgo() node in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>6</td>
   <td><code>HomeworkStat</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3115,7 +3051,7 @@ flowchart LR
   <td>HomeworkStat node in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>7</td>
   <td><code>TeacherHomePageProps</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3123,7 +3059,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>8</td>
   <td><code>TeacherHomePage()</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3131,7 +3067,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>9</td>
   <td><code>StatCard()</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3139,7 +3075,7 @@ flowchart LR
   <td>StatCard() node in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>10</td>
   <td><code>Section()</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3147,16 +3083,80 @@ flowchart LR
   <td>Section() node in portal/teacher/TeacherHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>19</td>
-  <td><code>TeacherDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
+  <td>11</td>
+  <td><code>AnnouncementsPageProps</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small><br><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
-  <td><code>getTeacherSession()</code><br><small style="color:var(--muted)">src/lib/auth.ts</small><br><code>TeacherSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
-  <td>Module file in pages/portal/TeacherDashboard.tsx.</td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>CalendarPageProps</code><br><small style="color:var(--muted)">portal/teacher/CalendarPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>createMarkSheet()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br><code>deleteMarkSheet()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br><code>fetchSheetMarks()</code><br><small style="color:var(--muted)">src/lib/marks.ts</small><br>+8 more</td>
+  <td>Module file in portal/teacher/MarksPage.tsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>GRADES</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>GRADES node in portal/teacher/MarksPage.tsx.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>pct()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>pct() node in portal/teacher/MarksPage.tsx.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>grade()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>grade() node in portal/teacher/MarksPage.tsx.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>MarksPageProps</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>View</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>View node in portal/teacher/MarksPage.tsx.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>MarksPage()</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
   <td>20</td>
-  <td><code>ActivePage</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
+  <td><code>ResourcesPageProps</code><br><small style="color:var(--muted)">portal/teacher/ResourcesPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
@@ -3164,6 +3164,22 @@ flowchart LR
 </tr>
 <tr>
   <td>21</td>
+  <td><code>TeacherDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small><br><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
+  <td><code>getTeacherSession()</code><br><small style="color:var(--muted)">src/lib/auth.ts</small><br><code>TeacherSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
+  <td>Module file in pages/portal/TeacherDashboard.tsx.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>ActivePage</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>23</td>
   <td><code>TeacherDashboardProps</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3171,7 +3187,7 @@ flowchart LR
   <td>TeacherDashboardProps node in pages/portal/TeacherDashboard.tsx.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>24</td>
   <td><code>TeacherDashboard()</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -3179,7 +3195,7 @@ flowchart LR
   <td>TeacherDashboard() node in pages/portal/TeacherDashboard.tsx.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>TeacherSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small><br><code>TeacherDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small><br><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
@@ -3187,7 +3203,7 @@ flowchart LR
   <td>TeacherSession node in src/lib/auth.ts.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>26</td>
   <td><code>getTeacherSession()</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>TeacherDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/TeacherDashboard.tsx</small></td>
@@ -3195,7 +3211,7 @@ flowchart LR
   <td>getTeacherSession() node in src/lib/auth.ts.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>27</td>
   <td><code>SchoolEvent</code><br><small style="color:var(--muted)">src/lib/events.ts</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
@@ -3203,7 +3219,7 @@ flowchart LR
   <td>SchoolEvent node in src/lib/events.ts.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>28</td>
   <td><code>fetchSchoolEvents()</code><br><small style="color:var(--muted)">src/lib/events.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
@@ -3211,7 +3227,7 @@ flowchart LR
   <td>fetchSchoolEvents() node in src/lib/events.ts.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>29</td>
   <td><code>fetchHomeworkCompletionCount()</code><br><small style="color:var(--muted)">src/lib/events.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
@@ -3219,28 +3235,12 @@ flowchart LR
   <td>fetchHomeworkCompletionCount() node in src/lib/events.ts.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>30</td>
   <td><code>marks.ts</code><br><small style="color:var(--muted)">src/lib/marks.ts</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small><br><code>TeacherHomePage.tsx</code><br><small style="color:var(--muted)">portal/teacher/TeacherHomePage.tsx</small></td>
   <td>No direct outbound edge</td>
   <td>Module file in src/lib/marks.ts.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>MarkSheet</code><br><small style="color:var(--muted)">src/lib/marks.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td>No direct outbound edge</td>
-  <td>MarkSheet node in src/lib/marks.ts.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>StudentMark</code><br><small style="color:var(--muted)">src/lib/marks.ts</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>MarksPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/MarksPage.tsx</small></td>
-  <td>No direct outbound edge</td>
-  <td>StudentMark node in src/lib/marks.ts.</td>
 </tr>
 </table>
 
@@ -4365,18 +4365,18 @@ flowchart LR
     src_pages_portal_student_studenthomepage_tsx_4df53cf6("StudentHomePage.tsx")
     lib_auth_studentsession_b8ca6e80("StudentSession<br/><small>src/lib/auth.ts</small>")
     student_studentannouncementspage_timeago_04c4f8cd -->|calls| student_studentannouncementspage_studentannounce_f8dbf06f
-    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_announcements_announcement_69584002
-    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_announcements_fetchstudentannouncements_d587acef
-    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_auth_studentsession_b8ca6e80
-    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| src_pages_portal_studentdashboard_tsx_f93baa1d
-    src_pages_portal_studentdashboard_tsx_f93baa1d -->|imports| lib_auth_studentsession_b8ca6e80
-    src_pages_portal_studentdashboard_tsx_f93baa1d -->|imports| src_pages_portal_student_studenthomepage_tsx_4df53cf6
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_announcements_announcement_69584002
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_announcements_fetchstudentannouncements_d587acef
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_auth_studentsession_b8ca6e80
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_events_event_colors_ca37d009
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_events_markhomeworkdone_7efcca3c
     src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| lib_events_unmarkhomeworkdone_ba830c07
+    src_pages_portal_student_studenthomepage_tsx_4df53cf6 -->|imports| src_pages_portal_studentdashboard_tsx_f93baa1d
+    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_announcements_announcement_69584002
+    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_announcements_fetchstudentannouncements_d587acef
+    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| lib_auth_studentsession_b8ca6e80
+    src_pages_portal_student_studentannouncementspag_203db05b -->|imports| src_pages_portal_studentdashboard_tsx_f93baa1d
+    src_pages_portal_studentdashboard_tsx_f93baa1d -->|imports| lib_auth_studentsession_b8ca6e80
     %% Omitted for readability: 12 nodes, 0 edges
     class src_pages_portal_studentdashboard_tsx_f93baa1d ui;
     class portal_studentdashboard_activepage_0862c874 ui;
@@ -4419,134 +4419,14 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>StudentAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Announcement</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>fetchStudentAnnouncements()</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>StudentDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small><br>+1 more</td>
-  <td>Module file in portal/student/StudentAnnouncementsPage.tsx.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>StudentAnnouncementCard()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td>timeAgo() node in portal/student/StudentAnnouncementsPage.tsx.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>StudentAnnouncementsPageProps</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>StudentAnnouncementsPage()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>StudentAnnouncementCard()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td>No direct outbound edge</td>
-  <td>StudentAnnouncementCard() node in portal/student/StudentAnnouncementsPage.tsx.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>StudentCalendarPageProps</code><br><small style="color:var(--muted)">portal/student/StudentCalendarPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>StudentMarksPageProps</code><br><small style="color:var(--muted)">portal/student/StudentMarksPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>StudentResourcesPageProps</code><br><small style="color:var(--muted)">portal/student/StudentResourcesPage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>StudentDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td><code>StudentAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
-  <td><code>StudentHomePage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small><br><code>StudentSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
-  <td>Module file in pages/portal/StudentDashboard.tsx.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>LibraryPage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>MyFuturePage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>ActivePage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>StudentDashboardProps</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>StudentDashboardProps node in pages/portal/StudentDashboard.tsx.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>Spinner()</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Spinner() node in pages/portal/StudentDashboard.tsx.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>StudentDashboard()</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>StudentDashboard() node in pages/portal/StudentDashboard.tsx.</td>
-</tr>
-<tr>
-  <td>16</td>
   <td><code>StudentHomePage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td><code>StudentDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
-  <td><code>Announcement</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>EVENT_COLORS</code><br><small style="color:var(--muted)">src/lib/events.ts</small><br><code>fetchStudentAnnouncements()</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br>+3 more</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Announcement</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>EVENT_COLORS</code><br><small style="color:var(--muted)">src/lib/events.ts</small><br><code>fetchStudentAnnouncements()</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br>+4 more</td>
   <td>Module file in portal/student/StudentHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>2</td>
   <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4554,7 +4434,7 @@ flowchart LR
   <td>timeAgo() node in portal/student/StudentHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>3</td>
   <td><code>formatDate()</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4562,7 +4442,7 @@ flowchart LR
   <td>formatDate() node in portal/student/StudentHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>4</td>
   <td><code>gradeLabel()</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4570,7 +4450,7 @@ flowchart LR
   <td>gradeLabel() node in portal/student/StudentHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>5</td>
   <td><code>StudentHomePageProps</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4578,7 +4458,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>6</td>
   <td><code>StudentHomePage()</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4586,7 +4466,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>7</td>
   <td><code>accentMap</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -4594,12 +4474,132 @@ flowchart LR
   <td>accentMap node in portal/student/StudentHomePage.tsx.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>8</td>
   <td><code>Section()</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Section() node in portal/student/StudentHomePage.tsx.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>StudentAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Announcement</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>fetchStudentAnnouncements()</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>StudentDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small><br>+1 more</td>
+  <td>Module file in portal/student/StudentAnnouncementsPage.tsx.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>StudentAnnouncementCard()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td>timeAgo() node in portal/student/StudentAnnouncementsPage.tsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>StudentAnnouncementsPageProps</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>StudentAnnouncementsPage()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>StudentAnnouncementCard()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>timeAgo()</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>StudentAnnouncementCard() node in portal/student/StudentAnnouncementsPage.tsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>StudentCalendarPageProps</code><br><small style="color:var(--muted)">portal/student/StudentCalendarPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>StudentMarksPageProps</code><br><small style="color:var(--muted)">portal/student/StudentMarksPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>StudentResourcesPageProps</code><br><small style="color:var(--muted)">portal/student/StudentResourcesPage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>StudentDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>StudentAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentAnnouncementsPage.tsx</small><br><code>StudentHomePage.tsx</code><br><small style="color:var(--muted)">portal/student/StudentHomePage.tsx</small></td>
+  <td><code>StudentSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small></td>
+  <td>Module file in pages/portal/StudentDashboard.tsx.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>LibraryPage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>MyFuturePage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>ActivePage</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>StudentDashboardProps</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>StudentDashboardProps node in pages/portal/StudentDashboard.tsx.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Spinner()</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Spinner() node in pages/portal/StudentDashboard.tsx.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>StudentDashboard()</code><br><small style="color:var(--muted)">pages/portal/StudentDashboard.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>StudentDashboard() node in pages/portal/StudentDashboard.tsx.</td>
 </tr>
 <tr>
   <td>24</td>
@@ -4689,6 +4689,17 @@ flowchart LR
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
     %% Section: Other (510 nodes, 648 edges)
+    subgraph other_portal_teacher_StudentProgressPage_tsx_c147b7a1["portal/teacher/StudentProgressPage.tsx"]
+        src_pages_portal_teacher_studentprogresspage_tsx_1b559fa6("StudentProgressPage.tsx")
+        teacher_studentprogresspage_timeago_422e1c13("timeAgo()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_studentprofile_39928590("StudentProfile()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_studentprogresspage_978466f1("StudentProgressPage()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_groupbysubject_32ae333d("groupBySubject()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_progresstab_682001d7("ProgressTab()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_groupmarksbysubject_b99803c5("groupMarksBySubject()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_markstab_15f9d3ea("MarksTab()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+        teacher_studentprogresspage_initials_2b1b90f4("initials()<br/><small>portal/teacher/StudentProgressPage.tsx</small>")
+    end
     subgraph other_portal_admin_AdminAnnouncementsPage_tsx_73649527["portal/admin/AdminAnnouncementsPage.tsx"]
         src_pages_portal_admin_adminannouncementspage_ts_22293f5f("AdminAnnouncementsPage.tsx")
         admin_adminannouncementspage_timeago_c36d2317("timeAgo()<br/><small>portal/admin/AdminAnnouncementsPage.tsx</small>")
@@ -4698,50 +4709,36 @@ flowchart LR
     subgraph other_portal_student_StudentCalendarPage_tsx_58ce5889["portal/student/StudentCalendarPage.tsx"]
         src_pages_portal_student_studentcalendarpage_tsx_b525ae73("StudentCalendarPage.tsx")
         student_studentcalendarpage_todatestr_7a40b21f("toDateStr()<br/><small>portal/student/StudentCalendarPage.tsx</small>")
-        student_studentcalendarpage_studentcalendarpage_29d2bf7c("StudentCalendarPage()<br/><small>portal/student/StudentCalendarPage.tsx</small>")
-        student_studentcalendarpage_formatdayfull_b95c67a0("formatDayFull()<br/><small>portal/student/StudentCalendarPage.tsx</small>")
     end
-    subgraph other_portal_teacher_AnnouncementsPage_tsx_81036eb9["portal/teacher/AnnouncementsPage.tsx"]
-        src_pages_portal_teacher_announcementspage_tsx_8afddde7("AnnouncementsPage.tsx")
-        teacher_announcementspage_timeago_8c1e1bab("timeAgo()<br/><small>portal/teacher/AnnouncementsPage.tsx</small>")
-        teacher_announcementspage_announcementcard_76bb2c81("AnnouncementCard()<br/><small>portal/teacher/AnnouncementsPage.tsx</small>")
-        teacher_announcementspage_audiencesummary_08de1e5d("audienceSummary()<br/><small>portal/teacher/AnnouncementsPage.tsx</small>")
-    end
-    subgraph other_portal_teacher_CalendarPage_tsx_fd6798e2["portal/teacher/CalendarPage.tsx"]
-        src_pages_portal_teacher_calendarpage_tsx_3da1fe14("CalendarPage.tsx")
-        teacher_calendarpage_todatestr_0ffd06bf("toDateStr()<br/><small>portal/teacher/CalendarPage.tsx</small>")
-        teacher_calendarpage_calendarpage_17db7886("CalendarPage()<br/><small>portal/teacher/CalendarPage.tsx</small>")
-        teacher_calendarpage_formatdate_e62141be("formatDate()<br/><small>portal/teacher/CalendarPage.tsx</small>")
-    end
-    src_pages_portal_student_studentmarkspage_tsx_14a75a9e("StudentMarksPage.tsx")
+    src_pages_portal_admin_adminhomepage_tsx_f91a0876("AdminHomePage.tsx")
+    src_pages_portal_teacher_calendarpage_tsx_3da1fe14("CalendarPage.tsx")
     lib_auth_hashpin_ed19cf05("hashPin()<br/><small>src/lib/auth.ts</small>")
+    teacher_studentprogresspage_timeago_422e1c13 -->|calls| teacher_studentprogresspage_studentprofile_39928590
+    teacher_studentprogresspage_timeago_422e1c13 -->|calls| teacher_studentprogresspage_studentprogresspage_978466f1
+    teacher_studentprogresspage_groupbysubject_32ae333d -->|calls| teacher_studentprogresspage_progresstab_682001d7
+    teacher_studentprogresspage_groupbysubject_32ae333d -->|calls| teacher_studentprogresspage_studentprogresspage_978466f1
+    teacher_studentprogresspage_groupmarksbysubject_b99803c5 -->|calls| teacher_studentprogresspage_markstab_15f9d3ea
+    teacher_studentprogresspage_initials_2b1b90f4 -->|calls| teacher_studentprogresspage_studentprofile_39928590
     admin_adminannouncementspage_timeago_c36d2317 -->|calls| admin_adminannouncementspage_adminannouncementca_c09e22aa
     admin_adminannouncementspage_audiencesummary_37dd5622 -->|calls| admin_adminannouncementspage_adminannouncementca_c09e22aa
-    student_studentcalendarpage_todatestr_7a40b21f -->|calls| student_studentcalendarpage_studentcalendarpage_29d2bf7c
-    student_studentcalendarpage_formatdayfull_b95c67a0 -->|calls| student_studentcalendarpage_studentcalendarpage_29d2bf7c
-    teacher_announcementspage_timeago_8c1e1bab -->|calls| teacher_announcementspage_announcementcard_76bb2c81
-    teacher_announcementspage_audiencesummary_08de1e5d -->|calls| teacher_announcementspage_announcementcard_76bb2c81
-    teacher_calendarpage_todatestr_0ffd06bf -->|calls| teacher_calendarpage_calendarpage_17db7886
-    teacher_calendarpage_formatdate_e62141be -->|calls| teacher_calendarpage_calendarpage_17db7886
-    src_pages_portal_admin_adminannouncementspage_ts_22293f5f -->|imports| src_pages_portal_teacher_announcementspage_tsx_8afddde7
     %% Omitted for readability: 492 nodes, 0 edges
+    class src_pages_portal_teacher_studentprogresspage_tsx_1b559fa6 ui;
+    class teacher_studentprogresspage_timeago_422e1c13 ui;
+    class teacher_studentprogresspage_studentprofile_39928590 ui;
+    class teacher_studentprogresspage_studentprogresspage_978466f1 ui;
+    class teacher_studentprogresspage_groupbysubject_32ae333d ui;
+    class teacher_studentprogresspage_progresstab_682001d7 ui;
+    class teacher_studentprogresspage_groupmarksbysubject_b99803c5 ui;
+    class teacher_studentprogresspage_markstab_15f9d3ea ui;
+    class teacher_studentprogresspage_initials_2b1b90f4 ui;
     class src_pages_portal_admin_adminannouncementspage_ts_22293f5f ui;
     class admin_adminannouncementspage_timeago_c36d2317 ui;
     class admin_adminannouncementspage_adminannouncementca_c09e22aa ui;
     class admin_adminannouncementspage_audiencesummary_37dd5622 ui;
     class src_pages_portal_student_studentcalendarpage_tsx_b525ae73 ui;
     class student_studentcalendarpage_todatestr_7a40b21f ui;
-    class student_studentcalendarpage_studentcalendarpage_29d2bf7c ui;
-    class student_studentcalendarpage_formatdayfull_b95c67a0 ui;
-    class src_pages_portal_teacher_announcementspage_tsx_8afddde7 ui;
-    class teacher_announcementspage_timeago_8c1e1bab ui;
-    class teacher_announcementspage_announcementcard_76bb2c81 ui;
-    class teacher_announcementspage_audiencesummary_08de1e5d ui;
+    class src_pages_portal_admin_adminhomepage_tsx_f91a0876 ui;
     class src_pages_portal_teacher_calendarpage_tsx_3da1fe14 ui;
-    class teacher_calendarpage_todatestr_0ffd06bf ui;
-    class teacher_calendarpage_calendarpage_17db7886 ui;
-    class teacher_calendarpage_formatdate_e62141be ui;
-    class src_pages_portal_student_studentmarkspage_tsx_14a75a9e ui;
     class lib_auth_hashpin_ed19cf05 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -4768,8 +4765,8 @@ flowchart LR
   <td>1</td>
   <td><code>AdminAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminAnnouncementsPage.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>AdminDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/AdminDashboard.tsx</small><br><code>AdminSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small><br><code>announcements.ts</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br>+9 more</td>
+  <td><code>AdminDashboard.tsx</code><br><small style="color:var(--muted)">pages/portal/AdminDashboard.tsx</small></td>
+  <td><code>AdminSession</code><br><small style="color:var(--muted)">src/lib/auth.ts</small><br><code>announcements.ts</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small><br><code>AnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small><br>+8 more</td>
   <td>Module file in portal/admin/AdminAnnouncementsPage.tsx.</td>
 </tr>
 <tr>
@@ -4904,8 +4901,8 @@ flowchart LR
   <td>18</td>
   <td><code>announcements.ts</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small></td>
   <td><span class="tag tag-class">Module</span></td>
-  <td><code>AdminAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminAnnouncementsPage.tsx</small><br><code>AnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small></td>
-  <td><code>AdminHomePage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminHomePage.tsx</small><br><code>StudentProgressPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/StudentProgressPage.tsx</small></td>
+  <td><code>AdminAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminAnnouncementsPage.tsx</small><br><code>AdminHomePage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminHomePage.tsx</small><br><code>AnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
   <td>Module file in src/lib/announcements.ts.</td>
 </tr>
 <tr>
@@ -4952,8 +4949,8 @@ flowchart LR
   <td>24</td>
   <td><code>fetchAnnouncements()</code><br><small style="color:var(--muted)">src/lib/announcements.ts</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AdminAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminAnnouncementsPage.tsx</small><br><code>AnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small></td>
-  <td><code>AdminHomePage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminHomePage.tsx</small></td>
+  <td><code>AdminAnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminAnnouncementsPage.tsx</small><br><code>AdminHomePage.tsx</code><br><small style="color:var(--muted)">portal/admin/AdminHomePage.tsx</small><br><code>AnnouncementsPage.tsx</code><br><small style="color:var(--muted)">portal/teacher/AnnouncementsPage.tsx</small></td>
+  <td>No direct outbound edge</td>
   <td>fetchAnnouncements() node in src/lib/announcements.ts.</td>
 </tr>
 <tr>
@@ -5053,7 +5050,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>prospect — Architecture Documentation</p>
-  <p>Generated: 2026-06-01 15:06 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-06-01 16:07 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
