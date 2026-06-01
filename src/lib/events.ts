@@ -74,7 +74,7 @@ export const EVENT_COLORS: Record<EventType, { bg: string; text: string; dot: st
   homework:   { bg: 'bg-blue-50',   text: 'text-blue-700',   dot: 'bg-blue-500',   badge: 'bg-blue-100 text-blue-700' },
   assessment: { bg: 'bg-amber-50',  text: 'text-amber-700',  dot: 'bg-amber-500',  badge: 'bg-amber-100 text-amber-700' },
   exam:       { bg: 'bg-red-50',    text: 'text-red-700',    dot: 'bg-red-500',    badge: 'bg-red-100 text-red-700' },
-  other:      { bg: 'bg-slate-50',  text: 'text-slate-700',  dot: 'bg-slate-400',  badge: 'bg-slate-100 text-slate-600' },
+  other:      { bg: 'bg-stone-50',  text: 'text-stone-700',  dot: 'bg-stone-400',  badge: 'bg-stone-100 text-stone-600' },
 };
 
 export const EVENT_LABELS: Record<EventType, string> = {

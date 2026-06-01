@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   CalendarDays, ClipboardList, Megaphone, CheckCircle2, Circle,
-  ChevronRight, Pin, BookOpen, TrendingUp,
+  ChevronRight, BookOpen, TrendingUp, Lightbulb, Activity,
 } from 'lucide-react';
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
 import {
@@ -10,6 +10,7 @@ import {
   EVENT_COLORS, EVENT_LABELS, type SchoolEvent,
 } from '../../../lib/events';
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
+import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { StudentSession } from '../../../lib/auth';
 
@@ -40,7 +41,6 @@ function gradeLabel(mark: number, total: number) {
   return               { label: 'Not Achieved', color: 'text-red-600' };
 }
 
-// Subject icon map by keyword
 function subjectIcon(label: string) {
   const l = label.toLowerCase();
   if (l.includes('math'))    return '∑';
@@ -66,43 +66,43 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const [upcomingEvents, setUpcomingEvents] = useState<SchoolEvent[]>([]);
   const [pendingHomework, setPendingHomework] = useState<SchoolEvent[]>([]);
   const [recentMarks, setRecentMarks] = useState<StudentResult[]>([]);
+  const [allMarks, setAllMarks] = useState<StudentResult[]>([]);
   const [completions, setCompletions] = useState<Set<number>>(new Set());
+  const [studyProgress, setStudyProgress] = useState<StudyProgress[]>([]);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      // Get subject IDs
       const { data: links } = await supabaseAdmin
         .from('teacher_students')
         .select('subject_id')
         .eq('student_id', session.student_id);
       const subjectIds = [...new Set((links ?? []).map((r: any) => r.subject_id as number))];
 
-      const [announcs, events, comps, marks] = await Promise.all([
+      const [announcs, events, comps, marks, progress] = await Promise.all([
         fetchStudentAnnouncements(session.school_id, session.student_id, session.grade, session.cohort_id, subjectIds),
         fetchStudentEvents(session.school_id, session.student_id, session.grade, session.cohort_id, subjectIds, today.getFullYear(), today.getMonth() + 1),
         fetchStudentCompletions(session.student_id, session.school_id),
         fetchStudentResults(session.student_id, session.school_id),
+        fetchStudentProgress(session.student_id, session.school_id),
       ]);
 
       setAnnouncements(announcs.slice(0, 3));
       setCompletions(comps);
+      setStudyProgress(progress);
 
-      // Upcoming: next 3 events from today onwards
-      const upcoming = events
-        .filter(e => e.event_date >= todayStr)
-        .slice(0, 3);
+      const upcoming = events.filter(e => e.event_date >= todayStr).slice(0, 3);
       setUpcomingEvents(upcoming);
 
-      // Pending homework: homework events from today onwards not yet done
       const pending = events
         .filter(e => e.event_type === 'homework' && e.event_date >= todayStr && !comps.has(e.id))
-        .slice(0, 5);
+        .slice(0, 8);
       setPendingHomework(pending);
 
-      // Recent marks: last 3 marked results
-      setRecentMarks(marks.filter(m => m.mark !== null).slice(0, 3));
+      const scoredMarks = marks.filter(m => m.mark !== null);
+      setAllMarks(scoredMarks);
+      setRecentMarks(scoredMarks.slice(0, 3));
 
       setLoading(false);
     }
@@ -132,28 +132,103 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     );
   }
 
-  // Subject progress — group marks by subject
-  const subjectMap = new Map<string, { total: number; sum: number; count: number }>();
-  for (const m of recentMarks) {
-    if (m.mark === null) continue;
-    const key = m.subject_label ?? 'Other';
-    const existing = subjectMap.get(key) ?? { total: 0, sum: 0, count: 0 };
-    subjectMap.set(key, {
-      total: existing.total + m.total,
-      sum: existing.sum + m.mark,
-      count: existing.count + 1,
-    });
-  }
-  const subjectProgress = Array.from(subjectMap.entries()).map(([label, d]) => ({
-    label,
-    pct: Math.round((d.sum / d.total) * 100),
-  }));
+  // ── Derived data ──────────────────────────────────────────────────────────
 
-  const avgMark = recentMarks.length > 0
-    ? Math.round(recentMarks.reduce((acc, m) => acc + (m.mark! / m.total) * 100, 0) / recentMarks.length)
+  // Subject averages from ALL marks
+  const subjectMap = new Map<string, { sum: number; total: number; count: number }>();
+  for (const m of allMarks) {
+    if (m.mark === null) continue;
+    const key = m.subject_label || 'Other';
+    const e = subjectMap.get(key) ?? { sum: 0, total: 0, count: 0 };
+    subjectMap.set(key, { sum: e.sum + m.mark, total: e.total + m.total, count: e.count + 1 });
+  }
+  const subjectProgress = Array.from(subjectMap.entries())
+    .map(([label, d]) => ({ label, pct: Math.round((d.sum / d.total) * 100), count: d.count }))
+    .sort((a, b) => b.pct - a.pct);
+
+  const avgMark = allMarks.length > 0
+    ? Math.round(allMarks.reduce((acc, m) => acc + (m.mark! / m.total) * 100, 0) / allMarks.length)
     : null;
 
-  // Recent activity: combine marks + announcements sorted by recency (max 5)
+  const highestSubject = subjectProgress[0] ?? null;
+  const lowestSubject  = subjectProgress[subjectProgress.length - 1] ?? null;
+
+  const avgStatus = avgMark === null ? null
+    : avgMark >= 70 ? { label: 'Strong', colorClass: 'text-emerald-600' }
+    : avgMark >= 50 ? { label: 'Watch',  colorClass: 'text-amber-600' }
+    :                 { label: 'At Risk', colorClass: 'text-red-500' };
+
+  // Homework grouping
+  const tomorrowDate = new Date(today);
+  tomorrowDate.setDate(today.getDate() + 1);
+  const tomorrowStr = `${tomorrowDate.getFullYear()}-${String(tomorrowDate.getMonth() + 1).padStart(2, '0')}-${String(tomorrowDate.getDate()).padStart(2, '0')}`;
+
+  const hwToday    = pendingHomework.filter(e => e.event_date === todayStr);
+  const hwTomorrow = pendingHomework.filter(e => e.event_date === tomorrowStr);
+  const hwLater    = pendingHomework.filter(e => e.event_date > tomorrowStr);
+
+  const totalHomework = pendingHomework.length + completions.size;
+  const hwCompletionPct = totalHomework > 0 ? Math.round((completions.size / totalHomework) * 100) : 0;
+
+  // Library stats
+  const topicsStarted  = studyProgress.filter(p => p.mastery_level !== 'not_started').length;
+  const topicsMastered = studyProgress.filter(p => p.mastery_level === 'mastered').length;
+  const totalTopics    = 35; // Grade 10 Term 1 — fixed curriculum size
+  const libraryPct     = Math.round((topicsStarted / totalTopics) * 100);
+
+  // Focus item
+  const focusItem = (() => {
+    const todayHw = pendingHomework.find(e => e.event_date === todayStr);
+    if (todayHw) return { type: 'urgent' as const, event: todayHw, label: 'Due Today' };
+    const tomorrowHw = pendingHomework.find(e => e.event_date === tomorrowStr);
+    if (tomorrowHw) return { type: 'soon' as const, event: tomorrowHw, label: 'Due Tomorrow' };
+    const nextExam = upcomingEvents.find(e => e.event_type === 'assessment' || e.event_type === 'exam');
+    if (nextExam) return { type: 'exam' as const, event: nextExam, label: EVENT_LABELS[nextExam.event_type] };
+    const nextHw = pendingHomework[0];
+    if (nextHw) return { type: 'homework' as const, event: nextHw, label: 'Upcoming Homework' };
+    return null;
+  })();
+
+  function daysUntil(dateStr: string): string {
+    const diff = new Date(dateStr + 'T00:00:00').getTime() - new Date(todayStr + 'T00:00:00').getTime();
+    const d = Math.round(diff / 86400000);
+    if (d === 0) return 'Today';
+    if (d === 1) return 'Tomorrow';
+    return `${d} days`;
+  }
+
+  // Contextual quick actions — derived from real state
+  const upcomingAssessmentCount = upcomingEvents.filter(
+    e => e.event_type === 'exam' || e.event_type === 'assessment'
+  ).length;
+
+  const hasExamSoon = upcomingEvents.some(e =>
+    (e.event_type === 'exam' || e.event_type === 'assessment') &&
+    Math.round((new Date(e.event_date + 'T00:00:00').getTime() - new Date(todayStr + 'T00:00:00').getTime()) / 86400000) <= 7
+  );
+  const isStruggling = avgMark !== null && avgMark < 60;
+  const lowestSubjectName = lowestSubject && subjectProgress.length > 1 ? lowestSubject.label : null;
+
+  // Insights — derived purely from state, no extra queries
+  const insights: { text: string; navigateTo?: string }[] = [];
+  if (lowestSubjectName && subjectProgress.length > 1) {
+    insights.push({ text: `${lowestSubjectName} is your lowest subject at ${lowestSubject!.pct}%. Open the library to catch up.`, navigateTo: 'library' });
+  }
+  if (hasExamSoon) {
+    const exam = upcomingEvents.find(e => e.event_type === 'exam' || e.event_type === 'assessment')!;
+    insights.push({ text: `${exam.title} is ${daysUntil(exam.event_date).toLowerCase()}. Practice papers are available.`, navigateTo: 'pastpapers' });
+  }
+  if (hwCompletionPct === 100 && totalHomework > 0) {
+    insights.push({ text: `All homework complete this week. You're on track — keep it up.` });
+  }
+  if (topicsMastered > 0) {
+    insights.push({ text: `You've mastered ${topicsMastered} topic${topicsMastered !== 1 ? 's' : ''} in the library. ${totalTopics - topicsMastered > 0 ? `${totalTopics - topicsMastered} still to go.` : 'Well done!'}` });
+  }
+  if (allMarks.length > 0 && avgMark !== null && avgMark >= 70) {
+    insights.push({ text: `Your average of ${avgMark}% is solid. Stay consistent and review ${lowestSubjectName ?? 'your subjects'} regularly.` });
+  }
+
+  // Recent activity
   type ActivityItem =
     | { kind: 'mark'; data: StudentResult; ts: string }
     | { kind: 'announcement'; data: Announcement; ts: string };
@@ -166,7 +241,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     .sort((a, b) => b.ts.localeCompare(a.ts))
     .slice(0, 5);
 
-  // Week strip (Sun–Sat of current week)
+  // Week strip
   const weekDays: { label: string; num: number; dateStr: string; isToday: boolean }[] = [];
   const startOfWeek = new Date(today);
   startOfWeek.setDate(today.getDate() - today.getDay());
@@ -174,27 +249,69 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     const d = new Date(startOfWeek);
     d.setDate(startOfWeek.getDate() + i);
     const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    weekDays.push({
-      label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][i],
-      num: d.getDate(),
-      dateStr: ds,
-      isToday: ds === todayStr,
-    });
+    weekDays.push({ label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][i], num: d.getDate(), dateStr: ds, isToday: ds === todayStr });
   }
 
   const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-  return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
+  // ── Reusable bar component (inline for simplicity) ────────────────────────
+  function HealthBar({ pct, color }: { pct: number; color: string }) {
+    return (
+      <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden mt-1.5">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
+          className={`h-full rounded-full ${color}`}
+        />
+      </div>
+    );
+  }
 
-      {/* ── Page header ────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease }}
-        className="mb-6 md:mb-8"
-      >
+  // ── Homework group renderer ───────────────────────────────────────────────
+  function HomeworkGroup({ label, items, urgency }: { label: string; items: SchoolEvent[]; urgency: 'high' | 'mid' | 'low' }) {
+    if (items.length === 0) return null;
+    const labelColor = urgency === 'high' ? 'text-red-500' : urgency === 'mid' ? 'text-amber-600' : 'text-stone-400';
+    const dotColor   = urgency === 'high' ? 'bg-red-400'   : urgency === 'mid' ? 'bg-amber-400'  : 'bg-stone-300';
+    return (
+      <div className="mb-3 last:mb-0">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+          <span className={`text-[10px] font-black uppercase tracking-widest ${labelColor}`}>{label} · {items.length}</span>
+        </div>
+        <div className="space-y-0.5 pl-3.5">
+          {items.map(ev => {
+            const toggling = togglingId === ev.id;
+            const done = completions.has(ev.id);
+            return (
+              <div key={ev.id} className="flex items-center gap-3 py-1.5">
+                <button onClick={() => handleToggleDone(ev)} disabled={toggling}
+                  className="shrink-0 disabled:opacity-40 transition-colors">
+                  {done
+                    ? <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500" />
+                    : <Circle className="w-4.5 h-4.5 text-stone-300 hover:text-stone-500" />}
+                </button>
+                <p className={`flex-1 text-sm font-bold truncate ${done ? 'line-through text-stone-400' : 'text-stone-900'}`}>
+                  {ev.title}
+                </p>
+                {ev.description && (
+                  <span className="text-[11px] text-stone-400 truncate max-w-30 hidden sm:block">{ev.description}</span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-5 md:p-8 max-w-6xl w-full pb-24 md:pb-8">
+
+      {/* ── Page header ─────────────────────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }} className="mb-6 md:mb-8">
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Dashboard</p>
-        <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+        <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Welcome back, {session.name}.
         </h1>
         <p className="text-sm text-stone-400 mt-1">
@@ -202,10 +319,113 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         </p>
       </motion.div>
 
-      {/* ── 4 stat cards ───────────────────────────────────────── */}
+      {/* ── Daily Focus Card ─────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+        className="bg-[#1C1917] rounded-3xl p-6 md:p-8 mb-5 relative overflow-hidden"
+      >
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(245,240,232,0.07) 0%, transparent 65%)' }} />
+
+        <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Today's Focus</p>
+
+            {focusItem ? (
+              <>
+                {/* Urgency badge */}
+                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest mb-4 ${
+                  focusItem.type === 'urgent' ? 'bg-red-500/20 text-red-300'
+                  : focusItem.type === 'soon'   ? 'bg-amber-500/20 text-amber-300'
+                  : focusItem.type === 'exam'   ? 'bg-violet-500/20 text-violet-300'
+                  :                               'bg-stone-700 text-stone-400'
+                }`}>
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    focusItem.type === 'urgent' ? 'bg-red-400'
+                    : focusItem.type === 'soon'   ? 'bg-amber-400'
+                    : focusItem.type === 'exam'   ? 'bg-violet-400'
+                    :                               'bg-stone-500'
+                  }`} />
+                  {focusItem.label} · {daysUntil(focusItem.event.event_date)}
+                </div>
+
+                <h2 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-3"
+                  style={{ letterSpacing: '-0.02em' }}>
+                  {focusItem.event.title}
+                </h2>
+
+                {/* Meta row — date only, no inferred subject */}
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <span className="text-stone-500 text-sm font-medium">
+                    {formatDate(focusItem.event.event_date)}
+                  </span>
+                </div>
+
+                {/* Secondary tasks */}
+                {pendingHomework.length > 1 && (
+                  <div className="mt-4 pt-4 border-t border-stone-800 space-y-1.5">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-600 mb-2">Also pending</p>
+                    {pendingHomework.slice(1, 4).map(hw => (
+                      <div key={hw.id} className="flex items-center gap-2 text-stone-500 text-sm">
+                        <span className="w-1 h-1 rounded-full bg-stone-700 shrink-0" />
+                        <span className="truncate">{hw.title}</span>
+                        <span className="text-stone-700 shrink-0 text-xs ml-auto">{daysUntil(hw.event_date)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <h2 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-2"
+                  style={{ letterSpacing: '-0.02em' }}>
+                  You're all caught up.
+                </h2>
+                <p className="text-stone-400 text-sm">No urgent tasks. Use this time to study ahead.</p>
+              </>
+            )}
+          </div>
+
+          {/* CTA buttons */}
+          <div className="flex flex-col gap-2 shrink-0 md:min-w-40">
+            {focusItem ? (
+              <>
+                {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
+                  <button onClick={() => onNavigate('calendar')}
+                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    <CalendarDays className="w-4 h-4" />
+                    View Calendar
+                  </button>
+                )}
+                {focusItem.type === 'exam' && (
+                  <button onClick={() => onNavigate('pastpapers')}
+                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    <BookOpen className="w-4 h-4" />
+                    Practice Papers
+                  </button>
+                )}
+                <button onClick={() => onNavigate('library')}
+                  className="flex items-center justify-center gap-2 bg-white/10 text-white font-bold text-sm px-5 py-3 rounded-xl hover:bg-white/20 transition-colors border border-white/10">
+                  <BookOpen className="w-4 h-4" />
+                  Open Library
+                </button>
+              </>
+            ) : (
+              <button onClick={() => onNavigate('library')}
+                className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                <BookOpen className="w-4 h-4" />
+                Start Studying
+              </button>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* ── Stat cards row ───────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
 
-        {/* Card 1 — Upcoming Event (dark) */}
+        {/* Upcoming Event */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
@@ -226,7 +446,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   {EVENT_LABELS[ev.event_type]}
                 </span>
                 <div>
-                  <p className="font-black text-white text-lg leading-tight mt-2 mb-1">{ev.title}</p>
+                  <p className="font-black text-white text-base leading-tight mt-2 mb-1">{ev.title}</p>
                   <p className="text-stone-500 text-xs">{formatDate(ev.event_date)}</p>
                 </div>
                 <button onClick={() => onNavigate('calendar')}
@@ -240,7 +460,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           )}
         </motion.div>
 
-        {/* Card 2 — Pending Homework */}
+        {/* Pending Homework */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
@@ -249,13 +469,16 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Pending Homework</p>
           {pendingHomework.length === 0 ? (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">0</p>
+              <p className="font-black text-4xl text-brand-dark">0</p>
               <p className="text-emerald-600 font-bold text-xs mt-1">All caught up</p>
             </div>
           ) : (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">{pendingHomework.length}</p>
-              <p className="text-stone-400 text-sm mt-0.5">tasks due this week</p>
+              <p className="font-black text-4xl text-brand-dark">{pendingHomework.length}</p>
+              {hwToday.length > 0
+                ? <p className="text-red-500 font-bold text-xs mt-1">{hwToday.length} due today</p>
+                : <p className="text-stone-400 text-sm mt-0.5">tasks remaining</p>
+              }
             </div>
           )}
           <button onClick={() => onNavigate('calendar')}
@@ -264,7 +487,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </button>
         </motion.div>
 
-        {/* Card 3 — Average Mark */}
+        {/* Average Mark */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
@@ -273,8 +496,18 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Average Mark</p>
           {avgMark !== null ? (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">{avgMark}%</p>
-              <p className="text-stone-400 text-sm mt-0.5">{gradeLabel(avgMark, 100).label}</p>
+              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}>{avgMark}%</p>
+              {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
+                <p className="text-[11px] text-stone-400 mt-1 leading-snug">
+                  Best: <span className="text-stone-600 font-bold">{highestSubject.label.split(' ')[0]}</span>
+                  {' · '}
+                  Weakest: <span className="text-stone-600 font-bold">{lowestSubject.label.split(' ')[0]}</span>
+                </p>
+              ) : (
+                <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${avgStatus?.colorClass ?? 'text-stone-400'}`}>
+                  {avgStatus?.label} · {allMarks.length} assessment{allMarks.length !== 1 ? 's' : ''}
+                </p>
+              )}
             </div>
           ) : (
             <p className="text-stone-400 font-bold text-sm mt-auto">No marks yet</p>
@@ -285,7 +518,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </button>
         </motion.div>
 
-        {/* Card 4 — Announcements */}
+        {/* Announcements */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
@@ -296,8 +529,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             <p className="text-stone-400 font-bold text-sm mt-auto">No announcements</p>
           ) : (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">{announcements.length}</p>
-              <p className="text-stone-400 text-sm mt-0.5">new announcements</p>
+              <p className="font-black text-4xl text-brand-dark">{announcements.length}</p>
+              <p className="text-stone-400 text-sm mt-0.5 truncate">{announcements[0]?.title}</p>
             </div>
           )}
           <button onClick={() => onNavigate('announcements')}
@@ -307,20 +540,92 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         </motion.div>
       </div>
 
-      {/* ── Two-column grid ─────────────────────────────────────── */}
+      {/* ── Academic Health + Calendar — two-col ────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
-        {/* LEFT — Calendar Overview */}
+        {/* Academic Health */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.2 }}
+          className="bg-white rounded-2xl border border-stone-200 p-5"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <Activity className="w-3.5 h-3.5 text-stone-400" />
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Academic Health</p>
+          </div>
+
+          <div className="space-y-4">
+            {/* Homework completion */}
+            <div>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-sm font-bold text-stone-700">Homework Completion</span>
+                <span className={`text-sm font-black ${hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500'}`}>
+                  {hwCompletionPct}%
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-400 mb-1">{completions.size} of {totalHomework} tasks done</p>
+              <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
+            </div>
+
+            {/* Average mark */}
+            {avgMark !== null && (
+              <div>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-sm font-bold text-stone-700">Average Mark</span>
+                  <span className={`text-sm font-black ${avgStatus?.colorClass ?? 'text-stone-700'}`}>{avgMark}%</span>
+                </div>
+                <p className="text-[11px] text-stone-400 mb-1">{avgStatus?.label} · {allMarks.length} assessments</p>
+                <HealthBar pct={avgMark} color={avgMark >= 70 ? 'bg-emerald-500' : avgMark >= 50 ? 'bg-amber-400' : 'bg-red-400'} />
+              </div>
+            )}
+
+            {/* Library progress */}
+            {studyProgress.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-sm font-bold text-stone-700">Library Progress</span>
+                  <span className="text-sm font-black text-stone-700">{topicsStarted}/{studyProgress.length}</span>
+                </div>
+                <p className="text-[11px] text-stone-400 mb-1">{topicsMastered} mastered · {topicsStarted - topicsMastered} in progress</p>
+                <HealthBar pct={libraryPct} color="bg-[#1C1917]" />
+              </div>
+            )}
+
+            {/* Upcoming assessments / workload */}
+            <div>
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-sm font-bold text-stone-700">Upcoming Assessments</span>
+                <span className={`text-sm font-black ${upcomingAssessmentCount >= 3 ? 'text-red-500' : upcomingAssessmentCount >= 1 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  {upcomingAssessmentCount}
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-400">
+                {upcomingAssessmentCount === 0
+                  ? 'No assessments or exams scheduled'
+                  : upcomingAssessmentCount >= 3
+                    ? 'High workload — plan your revision'
+                    : 'Manageable — stay on top of prep'}
+              </p>
+            </div>
+          </div>
+
+          <button onClick={() => onNavigate('marks')}
+            className="mt-5 text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+            View detailed marks <ChevronRight className="w-3 h-3" />
+          </button>
+        </motion.div>
+
+        {/* Calendar Overview */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.24 }}
           className="bg-white rounded-2xl border border-stone-200 p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Calendar Overview</p>
             <button onClick={() => onNavigate('calendar')}
               className="text-xs text-stone-400 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
-              Go to Calendar <ChevronRight className="w-3 h-3" />
+              Full Calendar <ChevronRight className="w-3 h-3" />
             </button>
           </div>
 
@@ -331,14 +636,11 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 <span className="text-[10px] font-black uppercase tracking-wide text-stone-400">{day.label}</span>
                 <span className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full transition-colors ${
                   day.isToday ? 'bg-[#1C1917] text-white' : 'text-stone-500'
-                }`}>
-                  {day.num}
-                </span>
+                }`}>{day.num}</span>
               </div>
             ))}
           </div>
 
-          {/* Next 3 upcoming events */}
           <div className="space-y-2">
             {upcomingEvents.length === 0 ? (
               <div className="flex items-center gap-2 py-3">
@@ -361,151 +663,260 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                     className="flex items-center gap-3">
                     <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                     <p className="flex-1 text-sm font-bold text-stone-900 truncate">{ev.title}</p>
-                    <span className={`text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${typeStyle[ev.event_type]}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 ${typeStyle[ev.event_type]}`}>
                       {EVENT_LABELS[ev.event_type]}
                     </span>
-                    <span className="text-xs text-stone-400 shrink-0">{formatDate(ev.event_date)}</span>
+                    <span className="text-xs text-stone-400 shrink-0">{daysUntil(ev.event_date)}</span>
                   </motion.div>
                 );
               })
             )}
           </div>
-
-          <button onClick={() => onNavigate('calendar')}
-            className="w-full mt-4 text-center text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors">
-            View full calendar
-          </button>
         </motion.div>
+      </div>
 
-        {/* RIGHT — Recent Activity */}
+      {/* ── Homework + Subject Progress — two-col ────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+
+        {/* Homework grouped */}
+        {pendingHomework.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease, delay: 0.28 }}
+            className="bg-white rounded-2xl border border-stone-200 p-5"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Pending Homework</p>
+              <span className="text-[11px] font-bold text-stone-400">{completions.size} done</span>
+            </div>
+
+            {/* Progress bar */}
+            <div className="h-1 bg-stone-100 rounded-full overflow-hidden mb-4">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${hwCompletionPct}%` }}
+                transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                className="h-full bg-[#1C1917] rounded-full"
+              />
+            </div>
+
+            <HomeworkGroup label="Due Today" items={hwToday} urgency="high" />
+            <HomeworkGroup label="Due Tomorrow" items={hwTomorrow} urgency="mid" />
+            <HomeworkGroup label="This Week" items={hwLater} urgency="low" />
+          </motion.div>
+        )}
+
+        {/* Subject Progress */}
+        {subjectProgress.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease, delay: 0.32 }}
+            className="bg-white rounded-2xl border border-stone-200 p-5"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Subject Breakdown</p>
+              <button onClick={() => onNavigate('marks')}
+                className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+                All Marks <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="space-y-3">
+              {subjectProgress.map(s => (
+                <div key={s.label}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 bg-stone-100 rounded-md flex items-center justify-center text-[10px] font-black text-stone-600">
+                        {subjectIcon(s.label)}
+                      </span>
+                      <span className="text-sm font-bold text-stone-800">{s.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] text-stone-400">{s.count} assessed</span>
+                      <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                        {s.pct}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${s.pct}%` }}
+                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                      className={`h-full rounded-full ${s.pct >= 70 ? 'bg-emerald-500' : s.pct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </div>
+
+      {/* ── Insights ─────────────────────────────────────────────── */}
+      {insights.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          transition={{ duration: 0.4, ease, delay: 0.36 }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
         >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Recent Activity</p>
-            <button onClick={() => onNavigate('marks')}
-              className="text-xs text-stone-400 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
-              View all activity <ChevronRight className="w-3 h-3" />
-            </button>
+          <div className="flex items-center gap-2 mb-4">
+            <Lightbulb className="w-3.5 h-3.5 text-stone-400" />
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Insights</p>
           </div>
 
-          {activity.length === 0 ? (
-            <div className="flex items-center gap-2 py-3">
-              <TrendingUp className="w-8 h-8 text-stone-200" />
-              <p className="text-sm font-bold text-stone-300">No recent activity</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {activity.map((item, i) => (
+          {/* Primary insight — full emphasis */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease }}
+            className="bg-stone-50 rounded-xl p-4 mb-3"
+          >
+            <p className="text-sm font-bold text-stone-800 leading-relaxed">
+              {insights[0].text}
+            </p>
+            {insights[0].navigateTo && (
+              <button
+                onClick={() => onNavigate(insights[0].navigateTo!)}
+                className="mt-2 text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-widest flex items-center gap-1"
+              >
+                Take action <ChevronRight className="w-3 h-3" />
+              </button>
+            )}
+          </motion.div>
+
+          {/* Secondary insights — quieter list */}
+          {insights.length > 1 && (
+            <div className="space-y-2 pt-1">
+              {insights.slice(1, 4).map((ins, i) => (
                 <motion.div key={i}
-                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  className="flex items-start gap-3">
-                  {item.kind === 'mark' ? (
-                    <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                      <ClipboardList className="w-4 h-4 text-blue-600" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-                      <Megaphone className="w-4 h-4 text-amber-600" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    {item.kind === 'mark' ? (
-                      <>
-                        <p className="text-sm font-bold text-stone-900 truncate">
-                          {item.data.subject_label}: {item.data.mark}/{item.data.total}
-                        </p>
-                        <p className="text-xs text-stone-400">
-                          Marked · {Math.round((item.data.mark! / item.data.total) * 100)}%
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-sm font-bold text-stone-900 truncate">{item.data.title}</p>
-                        <p className="text-xs text-stone-400">{timeAgo(item.ts)}</p>
-                      </>
+                  initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, ease, delay: i * 0.04 }}
+                  className="flex items-start gap-2.5">
+                  <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0 mt-[7px]" />
+                  <p className="text-sm text-stone-500 leading-relaxed flex-1">
+                    {ins.text}
+                    {ins.navigateTo && (
+                      <button onClick={() => onNavigate(ins.navigateTo!)}
+                        className="ml-2 text-[11px] font-black text-stone-400 hover:text-stone-700 transition-colors underline underline-offset-2">
+                        Go
+                      </button>
                     )}
-                  </div>
+                  </p>
                 </motion.div>
               ))}
             </div>
           )}
         </motion.div>
-      </div>
+      )}
 
-      {/* ── Subject Progress ────────────────────────────────────── */}
-      {subjectProgress.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.28 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Subject Progress</p>
-            <button onClick={() => onNavigate('marks')}
-              className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
-              View My Marks <ChevronRight className="w-3 h-3" />
-            </button>
+      {/* ── Recent Activity + Quick Actions ──────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease, delay: 0.4 }}
+        className="bg-white rounded-2xl border border-stone-200 p-5"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Recent Activity</p>
+          <button onClick={() => onNavigate('marks')}
+            className="text-xs text-stone-400 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
+            View Marks <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        {activity.length === 0 ? (
+          <div className="flex items-center gap-2 py-3">
+            <TrendingUp className="w-8 h-8 text-stone-200" />
+            <p className="text-sm font-bold text-stone-300">No recent activity</p>
           </div>
-          <div className="overflow-x-auto">
-            <div className="flex gap-3 pb-1" style={{ minWidth: 'max-content' }}>
-              {subjectProgress.map(s => (
-                <div key={s.label} className="min-w-[140px] bg-stone-50 rounded-xl p-4">
-                  <div className="w-7 h-7 bg-[#1C1917] text-white rounded-lg flex items-center justify-center text-xs font-black">
-                    {subjectIcon(s.label)}
+        ) : (
+          <div className="space-y-3">
+            {activity.map((item, i) => (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease, delay: i * 0.04 }}
+                className="flex items-start gap-3">
+                {item.kind === 'mark' ? (
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                    <ClipboardList className="w-4 h-4 text-blue-600" />
                   </div>
-                  <p className="font-black text-sm text-stone-900 mt-3 mb-1">{s.label}</p>
-                  <p className="font-black text-xl text-[#1C1917] mb-2">{s.pct}%</p>
-                  <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-[#1C1917] rounded-full" style={{ width: `${s.pct}%` }} />
+                ) : (
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+                    <Megaphone className="w-4 h-4 text-amber-600" />
                   </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  {item.kind === 'mark' ? (
+                    <>
+                      <p className="text-sm font-bold text-stone-900 truncate">
+                        {item.data.subject_label}: {item.data.mark}/{item.data.total}
+                      </p>
+                      <p className="text-xs text-stone-400">
+                        {Math.round((item.data.mark! / item.data.total) * 100)}% · {gradeLabel(item.data.mark!, item.data.total).label}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-bold text-stone-900 truncate">{item.data.title}</p>
+                      <p className="text-xs text-stone-400">{timeAgo(item.ts)}</p>
+                    </>
+                  )}
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </div>
-        </motion.div>
-      )}
+        )}
 
-      {/* ── Pending Homework list ───────────────────────────────── */}
-      {pendingHomework.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.32 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
-        >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Pending Homework</p>
-          <div className="space-y-1">
-            {pendingHomework.map((ev, i) => {
-              const toggling = togglingId === ev.id;
-              const done = completions.has(ev.id);
-              return (
-                <motion.div key={ev.id}
-                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  className="flex items-center gap-3 py-2">
-                  <button
-                    onClick={() => handleToggleDone(ev)}
-                    disabled={toggling}
-                    className="shrink-0 disabled:opacity-40 transition-colors"
-                  >
-                    {done
-                      ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                      : <Circle className="w-5 h-5 text-stone-300 hover:text-stone-500" />
-                    }
-                  </button>
-                  <p className={`flex-1 text-sm font-bold truncate ${done ? 'line-through text-stone-400' : 'text-stone-900'}`}>
-                    {ev.title}
-                  </p>
-                  <span className="text-xs text-stone-400 shrink-0">{formatDate(ev.event_date)}</span>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
+        {/* Contextual quick actions */}
+        <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
+          {isStruggling ? (
+            <>
+              <button onClick={() => onNavigate('marks')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <ClipboardList className="w-3.5 h-3.5" /> Review Marks
+              </button>
+              <button onClick={() => onNavigate('library')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <BookOpen className="w-3.5 h-3.5" /> Open Library
+              </button>
+              {lowestSubjectName && (
+                <button onClick={() => onNavigate('library')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[12px] font-bold transition-colors">
+                  <TrendingUp className="w-3.5 h-3.5" /> {lowestSubjectName.split(' ')[0]} Resources
+                </button>
+              )}
+            </>
+          ) : hasExamSoon ? (
+            <>
+              <button onClick={() => onNavigate('pastpapers')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <BookOpen className="w-3.5 h-3.5" /> Practice Papers
+              </button>
+              <button onClick={() => onNavigate('calendar')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <CalendarDays className="w-3.5 h-3.5" /> Exam Calendar
+              </button>
+              <button onClick={() => onNavigate('library')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <BookOpen className="w-3.5 h-3.5" /> Revise Topics
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => onNavigate('marks')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <ClipboardList className="w-3.5 h-3.5" /> My Marks
+              </button>
+              <button onClick={() => onNavigate('library')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <BookOpen className="w-3.5 h-3.5" /> Library
+              </button>
+              <button onClick={() => onNavigate('future')}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
+                <TrendingUp className="w-3.5 h-3.5" /> My Future
+              </button>
+            </>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }

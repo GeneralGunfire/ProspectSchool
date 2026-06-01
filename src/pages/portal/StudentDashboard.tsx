@@ -20,7 +20,7 @@ interface StudentDashboardProps {
 
 const Spinner = () => (
   <div className="flex items-center justify-center py-24">
-    <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+    <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
   </div>
 );
 
@@ -73,7 +73,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     return (
       <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center bg-brand-bg">
-          <div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+          <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
         </div>
       }>
         <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
@@ -82,13 +82,13 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-stone-50 overflow-hidden">
 
       {/* ── Sidebar (desktop only) ─────────────────────────── */}
-      <aside className="hidden md:flex w-52 shrink-0 h-full bg-white border-r border-slate-100 flex-col">
+      <aside className="hidden md:flex w-52 shrink-0 h-full bg-white border-r border-stone-100 flex-col">
 
         {/* Logo */}
-        <div className="flex items-center gap-2 px-4 h-14 border-b border-slate-100 shrink-0">
+        <div className="flex items-center gap-2 px-4 h-14 border-b border-stone-100 shrink-0">
           <div className="w-6 h-6 rounded-md bg-stone-900 flex items-center justify-center">
             <span className="text-white font-black text-[10px]">P</span>
           </div>
@@ -106,7 +106,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-bold transition-all duration-150 ${
                   active
                     ? 'bg-stone-900 text-white'
-                    : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+                    : 'text-stone-500 hover:bg-stone-100 hover:text-stone-900'
                 }`}
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -117,14 +117,14 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         </nav>
 
         {/* Profile + logout */}
-        <div className="border-t border-slate-100 p-2 space-y-1 shrink-0">
-          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-slate-50">
-            <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
-              <span className="text-slate-600 font-black text-[10px]">{initials}</span>
+        <div className="border-t border-stone-100 p-2 space-y-1 shrink-0">
+          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-stone-50">
+            <div className="w-7 h-7 rounded-full bg-stone-200 flex items-center justify-center shrink-0">
+              <span className="text-stone-600 font-black text-[10px]">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-black text-slate-900 truncate">{session.name} {session.surname}</p>
-              <p className="text-[10px] text-slate-400 truncate">
+              <p className="text-[12px] font-black text-stone-900 truncate">{session.name} {session.surname}</p>
+              <p className="text-[10px] text-stone-400 truncate">
                 Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
 
         {/* Mobile top bar */}
-        <div className="md:hidden flex items-center justify-between px-4 h-12 bg-white border-b border-slate-100 shrink-0">
+        <div className="md:hidden flex items-center justify-between px-4 h-12 bg-white border-b border-stone-100 shrink-0">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded-md bg-stone-900 flex items-center justify-center">
               <span className="text-white font-black text-[9px]">P</span>
@@ -151,12 +151,12 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             <span className="text-sm font-black text-stone-900 tracking-tight">Prospect</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center">
-              <span className="text-slate-600 font-black text-[10px]">{initials}</span>
+            <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center">
+              <span className="text-stone-600 font-black text-[10px]">{initials}</span>
             </div>
             <button
               onClick={() => { studentLogout(); onNavigate('portal'); }}
-              className="text-[11px] font-black text-slate-400 hover:text-red-500 transition-colors px-1"
+              className="text-[11px] font-black text-stone-400 hover:text-red-500 transition-colors px-1"
             >
               <LogOut className="w-4 h-4" />
             </button>
@@ -175,11 +175,9 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
               <MyFuturePage session={session} onNavigate={p => {
-                if (p === 'aps')        { setPage('aps');       return; }
-                if (p === 'library')    { setPage('library');   return; }
-                if (p === 'bursaries')  { onNavigate('bursaries'); return; }
-                if (p === 'quiz')       { onNavigate('quiz');   return; }
-                onNavigate(p);
+                if (p === 'bursaries') { onNavigate('bursaries'); return; }
+                if (p === 'quiz')      { onNavigate('quiz');      return; }
+                setPage(p as ActivePage);
               }} />
             </Suspense>
           )}
@@ -191,7 +189,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         </div>
 
         {/* ── Mobile bottom nav ─────────────────────────────── */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 flex items-center safe-bottom z-40"
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-stone-100 flex items-center safe-bottom z-40"
           style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         >
           {/* Show 5 most important tabs on mobile */}
@@ -210,8 +208,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 className="relative flex-1 flex flex-col items-center justify-center py-2.5 gap-1 transition-colors"
               >
                 {active && <div className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 bg-stone-900 rounded-full" />}
-                <Icon className={`w-5 h-5 ${active ? 'text-stone-900' : 'text-slate-400'}`} />
-                <span className={`text-[9px] font-black uppercase tracking-wide ${active ? 'text-stone-900' : 'text-slate-400'}`}>
+                <Icon className={`w-5 h-5 ${active ? 'text-stone-900' : 'text-stone-400'}`} />
+                <span className={`text-[9px] font-black uppercase tracking-wide ${active ? 'text-stone-900' : 'text-stone-400'}`}>
                   {label}
                 </span>
               </button>
