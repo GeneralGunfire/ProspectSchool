@@ -184,7 +184,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
   ];
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl">
+    <div className="p-5 md:p-8 max-w-7xl w-full">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -209,7 +209,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
       >
         {statCards.map((s) => (
           <StatCard key={s.title} {...s} />
@@ -221,7 +221,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
       >
         {/* Weekly activity bar chart */}
         <motion.div variants={item} className="lg:col-span-2">
@@ -303,7 +303,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 lg:grid-cols-2 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         {/* Recent activity feed */}
         <motion.div variants={item}>

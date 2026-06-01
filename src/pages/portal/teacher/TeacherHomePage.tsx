@@ -127,7 +127,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatCard
           icon={<Users className="w-4 h-4" />}
           label="My Students"
@@ -148,7 +148,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
         {/* ── Upcoming Events ──────────────────────────────── */}
         <Section title="Upcoming Events" icon={<CalendarDays className="w-4 h-4" />}

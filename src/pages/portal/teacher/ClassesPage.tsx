@@ -171,7 +171,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   }, [students, search, filterGrade, filterCohort]);
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl">
+    <div className="p-5 md:p-8 max-w-7xl w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>

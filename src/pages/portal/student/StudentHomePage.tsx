@@ -118,7 +118,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl space-y-4 md:space-y-5">
+    <div className="p-4 md:p-8 max-w-5xl w-full space-y-4 md:space-y-5">
 
       {/* Greeting */}
       <div>

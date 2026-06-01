@@ -129,7 +129,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
   }
 
   return (
-    <div className="px-6 py-8 sm:px-8 max-w-4xl">
+    <div className="p-5 md:p-8 max-w-6xl w-full">
 
       {/* Toast */}
       <AnimatePresence>
