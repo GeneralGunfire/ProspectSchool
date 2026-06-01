@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\careers\\pages\\QuizPage.tsx": {
-    "mtime": 1780323058.071426,
-    "ast_hash": "ef2de0628301bc28d2b77c1bd5d464c8",
+    "mtime": 1780330363.6669865,
+    "ast_hash": "c1e312dcd68e47f95fcb70c6d70a9013",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\features\\landing\\CareerSection.tsx": {
@@ -925,7 +925,7 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\filestructure.txt": {
-    "mtime": 1780330037.9355512,
+    "mtime": 1780330403.0006342,
     "ast_hash": "695b7ed7aead3cd941a4c2ddba867197",
     "semantic_hash": ""
   },

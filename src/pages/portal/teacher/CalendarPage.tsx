@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, Plus, X, Paperclip, Trash2, Pencil,
   Clock, Users, BookOpen, GraduationCap, User, Calendar,
-  CheckCircle2, XCircle, AlertCircle, ClipboardList, UserX,
+  CheckCircle2, XCircle, AlertCircle, ClipboardList, UserX, List,
 } from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
@@ -27,6 +27,13 @@ const EVENT_TYPES: { value: EventType; label: string }[] = [
   { value: 'other',      label: 'Other' },
 ];
 
+const TYPE_PILL: Record<string, string> = {
+  homework:   'bg-blue-50 text-blue-700',
+  assessment: 'bg-emerald-50 text-emerald-700',
+  exam:       'bg-red-50 text-red-700',
+  other:      'bg-stone-100 text-stone-600',
+};
+
 function toDateStr(year: number, month: number, day: number) {
   return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
@@ -40,6 +47,8 @@ function formatDate(d: string) {
   const [y, m, day] = d.split('-');
   return `${parseInt(day)} ${MONTHS[parseInt(m)-1]} ${y}`;
 }
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface Cohort { id: number; name: string; grade: number; }
 
@@ -60,6 +69,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [cohorts, setCohorts]   = useState<Cohort[]>([]);
   const [allStudents, setAllStudents] = useState<{ id: number; name: string; surname: string }[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Modal state
   const [modal, setModal] = useState<'create' | 'edit' | 'view' | null>(null);
@@ -132,7 +142,6 @@ export default function CalendarPage({ session }: CalendarPageProps) {
     ...Array(firstDayOfMonth).fill(null),
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
-  // Pad to full weeks
   while (cells.length % 7 !== 0) cells.push(null);
 
   function eventsOnDay(day: number) {
@@ -350,132 +359,278 @@ export default function CalendarPage({ session }: CalendarPageProps) {
     return '';
   }
 
+  const allSorted = [...events].sort((a, b) => a.event_date.localeCompare(b.event_date));
+  const upcoming = events.filter(e => e.event_date >= todayStr).slice(0, 5);
+
   // ── Render ────────────────────────────────────────────────
 
   return (
-    <div className="p-5 md:p-8 max-w-7xl w-full">
+    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      {/* ── Header ──────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease }}
+        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
+      >
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Calendar</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">School Events</h1>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Calendar</p>
+          <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+            School Events
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
-          <motion.button onClick={prevMonth} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
-            <ChevronLeft className="w-4 h-4 text-slate-600" />
-          </motion.button>
-          <div className="relative overflow-hidden min-w-40 text-center">
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span
-                key={monthKey}
-                initial={{ y: direction > 0 ? 20 : -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: direction > 0 ? -20 : 20, opacity: 0 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
-                className="block text-base font-black text-slate-900"
-              >
-                {MONTHS[month - 1]} {year}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-          <motion.button onClick={nextMonth} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-            className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
-            <ChevronRight className="w-4 h-4 text-slate-600" />
-          </motion.button>
-        </div>
-      </div>
 
-      {/* Legend */}
-      <div className="flex items-center gap-4 mb-4 flex-wrap">
-        {EVENT_TYPES.map(t => {
-          const c = EVENT_COLORS[t.value];
-          return (
-            <div key={t.value} className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-              <span className="text-xs font-bold text-slate-500">{t.label}</span>
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Create event button */}
+          <button
+            onClick={() => openCreate(todayStr)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded-xl hover:bg-stone-800 transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" /> Create Event
+          </button>
+
+          {/* Month nav */}
+          <div className="flex items-center bg-white border border-stone-200 rounded-xl overflow-hidden">
+            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-stone-200">
+              <ChevronLeft className="w-4 h-4 text-stone-600" />
+            </button>
+            <div className="relative overflow-hidden min-w-36 text-center px-1">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={monthKey}
+                  initial={{ y: direction > 0 ? 16 : -16, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: 'easeOut' }}
+                  className="block text-sm font-black text-[#1C1917] py-1.5"
+                >
+                  {MONTHS[month - 1]} {year}
+                </motion.span>
+              </AnimatePresence>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Grid */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        {/* Day headers */}
-        <div className="grid grid-cols-7 border-b border-slate-100">
-          {DAYS.map(d => (
-            <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-widest text-slate-400">
-              {d}
-            </div>
-          ))}
-        </div>
-
-        {/* Cells */}
-        {loading ? (
-          <div className="h-64 flex items-center justify-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-              className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full"
-            />
+            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-stone-200">
+              <ChevronRight className="w-4 h-4 text-stone-600" />
+            </button>
           </div>
-        ) : (
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={monthKey}
-              initial={{ x: direction > 0 ? 40 : -40, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: direction > 0 ? -40 : 40, opacity: 0 }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
-              className="grid grid-cols-7"
+
+          {/* Grid/List toggle */}
+          <div className="flex items-center bg-white border border-stone-200 rounded-xl p-0.5 gap-0.5">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                viewMode === 'grid' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+              }`}
             >
-              {cells.map((day, idx) => {
-                if (!day) return <div key={`empty-${idx}`} className="border-b border-r border-slate-50 min-h-[90px]" />;
-                const dateStr = toDateStr(year, month, day);
-                const dayEvents = eventsOnDay(day);
-                const isToday = dateStr === todayStr;
-                return (
-                  <motion.div
-                    key={day}
-                    whileHover={{ backgroundColor: '#f8fafc' }}
-                    whileTap={{ scale: 0.98 }}
-                    className="border-b border-r border-slate-100 min-h-[90px] p-1.5 cursor-pointer transition-colors group"
-                    onClick={() => openCreate(dateStr)}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                        isToday ? 'bg-slate-900 text-white' : 'text-slate-400 group-hover:text-slate-700'
-                      }`}>
-                        {day}
+              <Calendar className="w-3.5 h-3.5" /> Grid
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                viewMode === 'list' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+              }`}
+            >
+              <List className="w-3.5 h-3.5" /> List
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      <div className="flex flex-col xl:flex-row gap-5">
+        <div className="flex-1 min-w-0">
+
+          <AnimatePresence mode="wait" initial={false}>
+            {viewMode === 'list' ? (
+              /* ── LIST VIEW ───────────────────────────── */
+              <motion.div key="list"
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center py-24">
+                    <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                  </div>
+                ) : allSorted.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-24">
+                    <Calendar className="w-8 h-8 text-stone-200 mb-3" />
+                    <p className="text-sm font-bold text-stone-300">No events this month.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {allSorted.map((ev, i) => {
+                      const c = EVENT_COLORS[ev.event_type];
+                      return (
+                        <motion.div key={ev.id}
+                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.03, duration: 0.2 }}
+                          onClick={() => openView(ev)}
+                          className="bg-white rounded-xl border border-stone-200 px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-stone-300 transition-colors"
+                        >
+                          <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
+                            <div className="flex items-center gap-2 mt-0.5">
+                              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${TYPE_PILL[ev.event_type]}`}>
+                                {EVENT_LABELS[ev.event_type]}
+                              </span>
+                              <span className="text-xs text-stone-400">{formatDate(ev.event_date)}</span>
+                              <span className="text-[11px] text-stone-400">{audienceSummary(ev)}</span>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-4 h-4 text-stone-300 shrink-0" />
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              /* ── GRID VIEW ──────────────────────────────────────── */
+              <motion.div key="grid"
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
+              >
+                <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                  {/* Day headers */}
+                  <div className="grid grid-cols-7 border-b border-stone-100">
+                    {DAYS.map(d => (
+                      <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-[0.15em] text-stone-400">
+                        {d}
+                      </div>
+                    ))}
+                  </div>
+
+                  {loading ? (
+                    <div className="h-64 flex items-center justify-center">
+                      <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                    </div>
+                  ) : (
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.div
+                        key={monthKey}
+                        initial={{ x: direction > 0 ? 40 : -40, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: direction > 0 ? -40 : 40, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        className="grid grid-cols-7"
+                      >
+                        {cells.map((day, idx) => {
+                          if (!day) return <div key={`empty-${idx}`} className="border-b border-r border-stone-50 min-h-[90px]" />;
+                          const dateStr = toDateStr(year, month, day);
+                          const dayEvs = eventsOnDay(day);
+                          const isToday = dateStr === todayStr;
+                          return (
+                            <div
+                              key={day}
+                              className="border-b border-r border-stone-100 min-h-[90px] p-1.5 cursor-pointer transition-colors hover:bg-stone-50 group"
+                              onClick={() => openCreate(dateStr)}
+                            >
+                              <div className="flex items-center justify-between mb-1">
+                                <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
+                                  isToday ? 'bg-[#1C1917] text-white' : 'text-stone-400 group-hover:text-stone-700'
+                                }`}>
+                                  {day}
+                                </span>
+                                <Plus className="w-3 h-3 text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                              <div className="space-y-0.5">
+                                {dayEvs.slice(0, 3).map(ev => {
+                                  const c = EVENT_COLORS[ev.event_type];
+                                  return (
+                                    <div
+                                      key={ev.id}
+                                      onClick={e => { e.stopPropagation(); openView(ev); }}
+                                      className={`flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold truncate cursor-pointer hover:opacity-75 ${TYPE_PILL[ev.event_type]}`}
+                                    >
+                                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
+                                      <span className="truncate">{ev.title}</span>
+                                    </div>
+                                  );
+                                })}
+                                {dayEvs.length > 3 && (
+                                  <div className="text-[10px] font-bold text-stone-400 px-1.5">+{dayEvs.length - 3} more</div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </motion.div>
+                    </AnimatePresence>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Right sidebar ─────────────────────────────────── */}
+        <div className="hidden xl:block w-72 shrink-0 space-y-4">
+
+          {/* Upcoming events */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease, delay: 0.1 }}
+            className="bg-white rounded-2xl border border-stone-200 p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming</p>
+              <button
+                onClick={() => openCreate(todayStr)}
+                className="flex items-center gap-1 text-[11px] font-black bg-[#1C1917] text-white px-2.5 py-1 rounded-lg hover:bg-stone-800 transition-colors"
+              >
+                <Plus className="w-3 h-3" /> Create
+              </button>
+            </div>
+            {upcoming.length === 0 ? (
+              <p className="text-sm font-bold text-stone-300">Nothing scheduled.</p>
+            ) : (
+              <div className="space-y-2">
+                {upcoming.map((ev, i) => {
+                  const c = EVENT_COLORS[ev.event_type];
+                  return (
+                    <motion.button key={ev.id}
+                      initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, ease, delay: i * 0.04 }}
+                      onClick={() => openView(ev)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-stone-100 hover:border-stone-200 transition-colors text-left"
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-100'}`}>
+                        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
+                        <p className="text-[11px] text-stone-400">{formatDate(ev.event_date)}</p>
+                        <p className="text-[10px] text-stone-300">{audienceSummary(ev)}</p>
+                      </div>
+                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full shrink-0 ${TYPE_PILL[ev.event_type]}`}>
+                        {EVENT_LABELS[ev.event_type]}
                       </span>
-                      <Plus className="w-3 h-3 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="space-y-0.5">
-                      {dayEvents.slice(0, 3).map(ev => {
-                        const c = EVENT_COLORS[ev.event_type];
-                        return (
-                          <motion.div
-                            key={ev.id}
-                            whileHover={{ opacity: 0.75 }}
-                            onClick={e => { e.stopPropagation(); openView(ev); }}
-                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold truncate cursor-pointer ${c.badge}`}
-                          >
-                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
-                            <span className="truncate">{ev.title}</span>
-                          </motion.div>
-                        );
-                      })}
-                      {dayEvents.length > 3 && (
-                        <div className="text-[10px] font-bold text-slate-400 px-1.5">+{dayEvents.length - 3} more</div>
-                      )}
-                    </div>
-                  </motion.div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Legend */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease, delay: 0.15 }}
+            className="bg-white rounded-2xl border border-stone-200 p-4"
+          >
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Legend</p>
+            <div className="space-y-2">
+              {EVENT_TYPES.map(t => {
+                const c = EVENT_COLORS[t.value];
+                return (
+                  <div key={t.value} className="flex items-center gap-2">
+                    <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
+                    <span className="text-xs font-bold text-stone-600">{t.label}</span>
+                  </div>
                 );
               })}
-            </motion.div>
-          </AnimatePresence>
-        )}
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       {/* ── View Modal ─────────────────────────────────────── */}
@@ -512,22 +667,22 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <div className="p-6 pb-4 shrink-0">
                 <div className="flex items-start justify-between mb-1">
                   <div className="flex-1 min-w-0 pr-3">
-                    <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 ${c.badge}`}>
+                    <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 ${TYPE_PILL[ev.event_type]}`}>
                       {EVENT_LABELS[ev.event_type]}
                     </span>
-                    <h2 className="text-lg font-black text-slate-900 tracking-tight">{ev.title}</h2>
+                    <h2 className="text-lg font-black text-stone-900 tracking-tight">{ev.title}</h2>
                   </div>
-                  <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors shrink-0">
-                    <X className="w-4 h-4 text-slate-500" />
+                  <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors shrink-0">
+                    <X className="w-4 h-4 text-stone-500" />
                   </button>
                 </div>
 
                 {/* Tabs — only for homework */}
                 {isHomework && (
-                  <div className="flex items-center gap-1 mt-4 bg-slate-100 rounded-xl p-1">
+                  <div className="flex items-center gap-1 mt-4 bg-stone-100 rounded-xl p-1">
                     <button
                       onClick={() => setViewTab('details')}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'details' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'details' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
                     >
                       Details
                     </button>
@@ -536,7 +691,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                         setViewTab('tracker');
                         if (trackerRows.length === 0) loadTracker(ev);
                       }}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'tracker' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'tracker' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
                     >
                       <ClipboardList className="w-3.5 h-3.5" /> Homework Tracker
                     </button>
@@ -548,22 +703,22 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <div className="flex-1 overflow-y-auto px-6 pb-2 min-h-0">
                 {(!isHomework || viewTab === 'details') && (
                   <div className="space-y-3 text-sm pb-2">
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div className="flex items-center gap-2 text-stone-600">
+                      <Calendar className="w-4 h-4 text-stone-400 shrink-0" />
                       <span className="font-bold">{formatDate(ev.event_date)}</span>
                     </div>
                     {(ev.start_time || ev.end_time) && (
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+                      <div className="flex items-center gap-2 text-stone-600">
+                        <Clock className="w-4 h-4 text-stone-400 shrink-0" />
                         <span>{formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-slate-600">
-                      <Users className="w-4 h-4 text-slate-400 shrink-0" />
+                    <div className="flex items-center gap-2 text-stone-600">
+                      <Users className="w-4 h-4 text-stone-400 shrink-0" />
                       <span>{audienceSummary(ev)}</span>
                     </div>
                     {ev.description && (
-                      <p className="text-slate-500 leading-relaxed border-t border-slate-100 pt-3">{ev.description}</p>
+                      <p className="text-stone-500 leading-relaxed border-t border-stone-100 pt-3">{ev.description}</p>
                     )}
                     {ev.attachment_url && (
                       <button onClick={() => handleDownload(ev)}
@@ -579,24 +734,23 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   <div className="pb-2">
                     {trackerLoading ? (
                       <div className="flex items-center justify-center py-12">
-                        <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                          className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+                        <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
                       </div>
                     ) : trackerRows.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <AlertCircle className="w-8 h-8 text-slate-200 mb-3" />
-                        <p className="text-sm font-bold text-slate-400">No students targeted by this event.</p>
+                        <AlertCircle className="w-8 h-8 text-stone-200 mb-3" />
+                        <p className="text-sm font-bold text-stone-400">No students targeted by this event.</p>
                       </div>
                     ) : (
                       <>
                         {/* Summary pills */}
                         <div className="flex flex-wrap gap-2 mb-4">
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">{total} students</span>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-stone-100 text-stone-600">{total} students</span>
                           <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">{selfDone} self-reported</span>
-                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{verified} verified ✓</span>
+                          <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600">{verified} verified</span>
                           {notDone > 0 && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-50 text-red-600">{notDone} not done</span>}
                           {absent > 0  && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">{absent} absent</span>}
-                          {pending > 0 && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-200 text-slate-500">{pending} unreviewed</span>}
+                          {pending > 0 && <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-stone-200 text-stone-500">{pending} unreviewed</span>}
                         </div>
 
                         {/* Student rows */}
@@ -607,18 +761,17 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             const isAbsent = row.absent;
                             const isReviewed = vStatus !== null || isAbsent;
 
-                            // Card colour — absent = amber, verified = green, not done = red, pending = grey
                             const cardBg =
                               isAbsent      ? 'bg-amber-50 border-amber-200' :
                               vStatus === true  ? 'bg-emerald-50 border-emerald-200' :
                               vStatus === false ? 'bg-red-50 border-red-200' :
-                                                 'bg-slate-50 border-slate-200';
+                                                 'bg-stone-50 border-stone-200';
 
                             const avatarBg =
                               isAbsent          ? 'bg-amber-200' :
                               vStatus === true  ? 'bg-emerald-200' :
                               vStatus === false ? 'bg-red-200' :
-                                                 'bg-slate-200';
+                                                 'bg-stone-200';
 
                             const statusText =
                               isAbsent          ? 'Absent — excused' :
@@ -630,17 +783,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                               isAbsent          ? 'text-amber-700' :
                               vStatus === true  ? 'text-emerald-700' :
                               vStatus === false ? 'text-red-600' :
-                                                 'text-slate-400';
+                                                 'text-stone-400';
 
                             return (
                               <div key={row.student_id} className={`rounded-2xl p-3 border transition-colors ${cardBg}`}>
-
-                                {/* Row 1: avatar + name + status */}
                                 <div className="flex items-center gap-2 mb-2">
                                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${avatarBg}`}>
                                     {isVerifying ? (
-                                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.7, repeat: Infinity, ease: 'linear' }}
-                                        className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-600 rounded-full" />
+                                      <div className="w-3.5 h-3.5 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />
                                     ) : isAbsent ? (
                                       <UserX className="w-4 h-4 text-amber-700" />
                                     ) : vStatus === true ? (
@@ -648,38 +798,34 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     ) : vStatus === false ? (
                                       <XCircle className="w-4 h-4 text-red-600" />
                                     ) : (
-                                      <span className="text-[10px] font-black text-slate-600">{row.name[0]}{row.surname[0]}</span>
+                                      <span className="text-[10px] font-black text-stone-600">{row.name[0]}{row.surname[0]}</span>
                                     )}
                                   </div>
 
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-slate-900 truncate">{row.surname}, {row.name}</p>
+                                    <p className="text-sm font-bold text-stone-900 truncate">{row.surname}, {row.name}</p>
                                     <p className={`text-[11px] font-black ${statusColor}`}>{statusText}</p>
                                   </div>
 
-                                  {/* Self-report pill */}
                                   {row.self_reported
-                                    ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 shrink-0">Self ✓</span>
-                                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-200 text-slate-400 shrink-0">No self-report</span>
+                                    ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 shrink-0">Self</span>
+                                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-stone-200 text-stone-400 shrink-0">No self-report</span>
                                   }
                                 </div>
 
-                                {/* Saved note display */}
                                 {isReviewed && row.teacher_note && (
-                                  <p className="text-[11px] text-slate-500 italic mb-2 px-1">"{row.teacher_note}"</p>
+                                  <p className="text-[11px] text-stone-500 italic mb-2 px-1">"{row.teacher_note}"</p>
                                 )}
 
-                                {/* Note input — only shown when not yet reviewed, or editing */}
                                 {!isReviewed && (
                                   <input
                                     value={noteInputs[row.student_id] ?? ''}
                                     onChange={e => setNoteInputs(prev => ({ ...prev, [row.student_id]: e.target.value }))}
                                     placeholder="Note / reason (optional)"
-                                    className="w-full px-3 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white mb-2"
+                                    className="w-full px-3 py-1.5 rounded-xl border border-stone-200 text-xs text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
                                   />
                                 )}
 
-                                {/* Action buttons */}
                                 <div className="flex gap-1.5">
                                   {!isAbsent && vStatus !== true && (
                                     <button
@@ -712,8 +858,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleClearVerification(ev, row.student_id)}
                                       disabled={isVerifying}
-                                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-400 text-xs font-black hover:bg-slate-100 transition-colors disabled:opacity-40"
-                                      title="Clear — mark as unreviewed"
+                                      className="px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-400 text-xs font-black hover:bg-stone-100 transition-colors disabled:opacity-40"
                                     >
                                       Undo
                                     </button>
@@ -730,11 +875,11 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               </div>
 
               {/* Footer — edit/delete */}
-              <div className="shrink-0 px-6 pb-4 pt-2 border-t border-slate-100 mt-2">
+              <div className="shrink-0 px-6 pb-4 pt-2 border-t border-stone-100 mt-2">
                 <div className="flex gap-2">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors"
                   >
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </button>
@@ -761,7 +906,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             {saving ? 'Deleting…' : 'Yes, Delete'}
                           </button>
                           <button onClick={() => setDeleteConfirm(false)}
-                            className="flex-1 py-2 rounded-xl bg-white border border-slate-200 text-sm font-black text-slate-700 hover:bg-slate-50 transition-colors">
+                            className="flex-1 py-2 rounded-xl bg-white border border-stone-200 text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
                             Cancel
                           </button>
                         </div>
@@ -782,36 +927,39 @@ export default function CalendarPage({ session }: CalendarPageProps) {
         <motion.div
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={closeModal}>
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={closeModal}
+        >
           <motion.div
             initial={{ scale: 0.95, y: 12, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 8, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-              <h2 className="text-base font-black text-slate-900">
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+              <h2 className="text-base font-black text-stone-900">
                 {modal === 'create' ? `New Event — ${formatDate(form.event_date)}` : 'Edit Event'}
               </h2>
-              <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                <X className="w-4 h-4 text-slate-500" />
+              <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                <X className="w-4 h-4 text-stone-500" />
               </button>
             </div>
 
             <div className="p-6 space-y-5">
               {/* Event Type */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Type</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Type</label>
                 <div className="grid grid-cols-4 gap-1.5">
                   {EVENT_TYPES.map(t => {
-                    const c = EVENT_COLORS[t.value];
                     const active = form.event_type === t.value;
                     return (
                       <button
                         key={t.value}
                         onClick={() => setForm(f => ({ ...f, event_type: t.value }))}
                         className={`py-2 rounded-xl text-xs font-black transition-all ${
-                          active ? `${c.badge} ring-2 ring-offset-1 ring-current` : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                          active ? `${TYPE_PILL[t.value]} ring-2 ring-offset-1 ring-current` : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         {t.label}
@@ -823,25 +971,25 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Title *</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Title *</label>
                 <input
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="e.g. Chapter 4 homework"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none transition-colors"
                 />
               </div>
 
               {/* Date */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">
                   {form.event_type === 'homework' ? 'Due Date *' : 'Date *'}
                 </label>
                 <input
                   type="date"
                   value={form.event_date}
                   onChange={e => setForm(f => ({ ...f, event_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -849,21 +997,21 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               {form.event_type !== 'homework' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Start Time</label>
+                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Start Time</label>
                     <input
                       type="time"
                       value={form.start_time}
                       onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">End Time</label>
+                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">End Time</label>
                     <input
                       type="time"
                       value={form.end_time}
                       onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900"
+                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -871,21 +1019,20 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Description</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Description</label>
                 <textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Additional details…"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none"
+                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none resize-none transition-colors"
                 />
               </div>
 
               {/* Attachment — homework only */}
               {form.event_type === 'homework' && (
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Attachment</label>
-                  {/* Existing attachment in edit mode */}
+                  <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Attachment</label>
                   {modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment && !attachmentFile && (
                     <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 mb-2">
                       <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
@@ -907,7 +1054,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   ) : (
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-slate-200 text-sm font-bold text-slate-400 hover:border-slate-400 hover:text-slate-600 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-stone-200 hover:border-stone-400 text-sm font-bold text-stone-400 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" />
                       {(modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment) ? 'Replace file' : 'Attach file (PDF, Word, Image)'}
@@ -927,13 +1074,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Audience */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Who sees this?</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Who sees this?</label>
                 <div className="grid grid-cols-2 gap-1.5 mb-3">
                   {([
-                    { value: 'all',      label: 'Everyone',        icon: Users },
-                    { value: 'grade',    label: 'By Grade',        icon: GraduationCap },
-                    { value: 'class',    label: 'By Class',        icon: BookOpen },
-                    { value: 'subject',  label: 'By Subject',      icon: BookOpen },
+                    { value: 'all',      label: 'Everyone',          icon: Users },
+                    { value: 'grade',    label: 'By Grade',          icon: GraduationCap },
+                    { value: 'class',    label: 'By Class',          icon: BookOpen },
+                    { value: 'subject',  label: 'By Subject',        icon: BookOpen },
                     { value: 'specific', label: 'Specific Students', icon: User },
                   ] as { value: TargetType; label: string; icon: any }[]).map(opt => {
                     const Icon = opt.icon;
@@ -950,7 +1097,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           target_student_ids: [],
                         }))}
                         className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${
-                          active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                          active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -968,7 +1115,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={g}
                           onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           Grade {g}
                         </button>
@@ -980,13 +1127,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 {/* Class picker */}
                 {form.target_type === 'class' && (
                   <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
-                    {cohorts.length === 0 && <p className="text-xs text-slate-400">No classes found.</p>}
+                    {cohorts.length === 0 && <p className="text-xs text-stone-400">No classes found.</p>}
                     {cohorts.map(c => {
                       const active = form.target_cohort_ids.includes(c.id);
                       return (
                         <button key={c.id}
                           onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
@@ -999,14 +1146,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 {form.target_type === 'subject' && (
                   <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Subject *</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1.5">Subject *</p>
                       <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
                         {subjects.map(s => {
                           const active = form.target_subject_ids.includes(s.id);
                           return (
                             <button key={s.id}
                               onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               {s.label}
                             </button>
@@ -1015,14 +1162,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Grade *</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1.5">Grade *</p>
                       <div className="flex flex-wrap gap-1.5">
                         {GRADES.map(g => {
                           const active = form.target_grades.includes(g);
                           return (
                             <button key={g}
                               onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               Grade {g}
                             </button>
@@ -1030,22 +1177,22 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                         })}
                       </div>
                     </div>
-                    <p className="text-[10px] text-slate-400">Only students in the selected grade(s) who take the selected subject(s) will see this.</p>
+                    <p className="text-[10px] text-stone-400">Only students in the selected grade(s) who take the selected subject(s) will see this.</p>
                   </div>
                 )}
 
                 {/* Specific student picker */}
                 {form.target_type === 'specific' && (
-                  <div className="space-y-1 max-h-40 overflow-y-auto border border-slate-100 rounded-xl p-2">
-                    {allStudents.length === 0 && <p className="text-xs text-slate-400 p-2">No students found.</p>}
+                  <div className="space-y-1 max-h-40 overflow-y-auto border border-stone-100 rounded-xl p-2">
+                    {allStudents.length === 0 && <p className="text-xs text-stone-400 p-2">No students found.</p>}
                     {allStudents.map(s => {
                       const active = form.target_student_ids.includes(s.id);
                       return (
                         <button key={s.id}
                           onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-slate-900 text-white' : 'hover:bg-slate-100 text-slate-700'}`}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-[#1C1917] text-white' : 'hover:bg-stone-100 text-stone-700'}`}
                         >
-                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-slate-900' : 'border-slate-300'}`}>
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-stone-900' : 'border-stone-300'}`}>
                             {active ? '✓' : ''}
                           </span>
                           {s.surname}, {s.name}
@@ -1059,13 +1206,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               {error && <p className="text-sm font-bold text-red-500">{error}</p>}
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-slate-100 px-6 py-4 rounded-b-2xl flex gap-2">
+            <div className="sticky bottom-0 bg-white border-t border-stone-100 px-6 py-4 rounded-b-2xl flex gap-2">
               <button onClick={closeModal}
-                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-600 hover:bg-slate-50 transition-colors">
+                className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700 transition-colors disabled:opacity-50">
+                className="flex-1 py-2.5 rounded-xl bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                 {saving ? 'Saving…' : modal === 'create' ? 'Create Event' : 'Save Changes'}
               </button>
             </div>
