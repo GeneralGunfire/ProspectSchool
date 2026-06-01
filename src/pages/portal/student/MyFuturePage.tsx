@@ -1,12 +1,23 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
-import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, Map, type LucideIcon } from 'lucide-react';
+import { useEffect, useState, lazy, Suspense } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, Map, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
 import { computeQuizResults, type QuizResults } from '../../../features/careers/data/quizScoringLogic';
 import { bursaries, type Bursary } from '../../../features/careers/data/bursaries';
 import { DEGREE_DATA } from '../../../data/apsData';
 import type { StudentSession } from '../../../lib/auth';
+
+const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
+const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
+const QuizPage        = lazy(() => import('../../../features/careers/pages/QuizPage'));
+const TVETPage        = lazy(() => import('../../../features/tvet/pages/TVETPage'));
+const TVETCareersPage = lazy(() => import('../../../features/tvet/pages/TVETCareersPage'));
+const TVETCollegesPage = lazy(() => import('../../../features/tvet/pages/TVETCollegesPage'));
+const TVETFundingPage = lazy(() => import('../../../features/tvet/pages/TVETFundingPage'));
+const TVETRequirementsPage = lazy(() => import('../../../features/tvet/pages/TVETRequirementsPage'));
+
+type SubView = null | 'quiz' | 'careers' | 'bursaries' | 'tvet' | 'tvet-careers' | 'tvet-colleges' | 'tvet-funding' | 'tvet-requirements';
 
 interface MyFuturePageProps {
   session: StudentSession;
@@ -71,6 +82,24 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   const [apsData,         setApsData]         = useState<{ aps: number; subjects: { code: string; percent: number }[] } | null>(null);
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
+  const [subView,         setSubView]         = useState<SubView>(null);
+
+  // Sub-view navigate handler — keeps everything inside MyFuturePage
+  function handleSubNavigate(page: string) {
+    const internalPages: SubView[] = ['quiz', 'careers', 'bursaries', 'tvet', 'tvet-careers', 'tvet-colleges', 'tvet-funding', 'tvet-requirements'];
+    if (internalPages.includes(page as SubView)) {
+      setSubView(page as SubView);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (page === 'aps') {
+      onNavigate('aps');
+    } else if (page === 'library') {
+      onNavigate('library');
+    } else if (page === 'student-dashboard') {
+      setSubView(null);
+    } else {
+      onNavigate(page);
+    }
+  }
 
   useEffect(() => {
     const { student_id, school_id } = session;
@@ -135,6 +164,47 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
     );
   }
 
+  // ── Sub-view rendering — inline, no app-level navigation ─────────────────
+  if (subView) {
+    const SubSpinner = () => (
+      <div className="flex items-center justify-center py-24">
+        <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+      </div>
+    );
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={subView}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+        >
+          {/* Back to My Future */}
+          <div className="px-5 pt-5 pb-2">
+            <button
+              onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> My Future
+            </button>
+          </div>
+
+          <Suspense fallback={<SubSpinner />}>
+            {subView === 'quiz'              && <QuizPage        onNavigate={handleSubNavigate} />}
+            {subView === 'careers'           && <CareersPage     onNavigate={handleSubNavigate} />}
+            {subView === 'bursaries'         && <BursariesPage   onNavigate={handleSubNavigate} />}
+            {subView === 'tvet'              && <TVETPage        onNavigate={handleSubNavigate} />}
+            {subView === 'tvet-careers'      && <TVETCareersPage onNavigate={handleSubNavigate} />}
+            {subView === 'tvet-colleges'     && <TVETCollegesPage onNavigate={handleSubNavigate} />}
+            {subView === 'tvet-funding'      && <TVETFundingPage onNavigate={handleSubNavigate} />}
+            {subView === 'tvet-requirements' && <TVETRequirementsPage onNavigate={handleSubNavigate} />}
+          </Suspense>
+        </motion.div>
+      </AnimatePresence>
+    );
+  }
+
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
@@ -176,7 +246,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
           {/* Career Quiz */}
           <button
-            onClick={() => onNavigate('quiz')}
+            onClick={() => handleSubNavigate('quiz')}
             className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
@@ -195,7 +265,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
           {/* Career Browser */}
           <button
-            onClick={() => onNavigate('careers')}
+            onClick={() => handleSubNavigate('careers')}
             className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
@@ -214,7 +284,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
           {/* Bursary Finder */}
           <button
-            onClick={() => onNavigate('bursaries')}
+            onClick={() => handleSubNavigate('bursaries')}
             className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
@@ -233,7 +303,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
           {/* APS Calculator */}
           <button
-            onClick={() => onNavigate('aps')}
+            onClick={() => handleSubNavigate('aps')}
             className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
@@ -252,7 +322,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
           {/* TVET */}
           <button
-            onClick={() => onNavigate('tvet')}
+            onClick={() => handleSubNavigate('tvet')}
             className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group sm:col-span-2"
           >
             <div className="flex items-start justify-between mb-3">
@@ -309,7 +379,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
               ))}
             </div>
             <button
-              onClick={() => onNavigate('careers')}
+              onClick={() => handleSubNavigate('careers')}
               className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
             >
               Browse all careers <ArrowRight className="w-3.5 h-3.5" />
@@ -320,7 +390,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             icon={Sparkles}
             title="Take the Career Quiz"
             subtitle="Discover which careers match your personality"
-            onClick={() => onNavigate('quiz')}
+            onClick={() => handleSubNavigate('quiz')}
           />
         )}
       </Section>
@@ -365,7 +435,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
               <p className="text-stone-400 text-sm">Keep improving your marks to unlock university programmes.</p>
             )}
             <button
-              onClick={() => onNavigate('aps')}
+              onClick={() => handleSubNavigate('aps')}
               className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
             >
               Open APS Calculator <ArrowRight className="w-3.5 h-3.5" />
@@ -376,7 +446,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             icon={GraduationCap}
             title="Calculate Your APS"
             subtitle="See which universities and programmes you qualify for"
-            onClick={() => onNavigate('aps')}
+            onClick={() => handleSubNavigate('aps')}
           />
         )}
       </Section>
@@ -457,7 +527,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             </div>
             <div className="px-5 py-3 border-t border-stone-100">
               <button
-                onClick={() => onNavigate('bursaries')}
+                onClick={() => handleSubNavigate('bursaries')}
                 className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors"
               >
                 <TrendingUp className="w-3.5 h-3.5" />
@@ -470,7 +540,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             <p className="text-stone-400 text-sm">
               No bursaries saved yet.{' '}
               <button
-                onClick={() => onNavigate('bursaries')}
+                onClick={() => handleSubNavigate('bursaries')}
                 className="text-stone-700 font-bold hover:text-stone-900 underline underline-offset-2 transition-colors"
               >
                 Browse bursaries
