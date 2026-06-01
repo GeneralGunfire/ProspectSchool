@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { GraduationCap, Plus, Trash2, ChevronDown, CheckCircle2, XCircle, Info, BookOpen, Filter, Target, TrendingUp } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import {
   NSC_SUBJECTS,
   DEGREE_DATA,
