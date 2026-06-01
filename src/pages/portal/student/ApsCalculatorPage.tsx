@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { GraduationCap, Plus, Trash2, ChevronDown, CheckCircle2, XCircle, Info, BookOpen, Filter } from 'lucide-react';
+import { GraduationCap, Plus, Trash2, ChevronDown, CheckCircle2, XCircle, Info, BookOpen, Filter, Target, TrendingUp } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   NSC_SUBJECTS,
   DEGREE_DATA,
@@ -237,6 +238,8 @@ export default function ApsCalculatorPage() {
   const [fieldFilter, setFieldFilter] = useState<FieldOfStudy | 'All'>('All');
   const [uniFilter, setUniFilter] = useState<string>('All');
   const [showOnlyQualifying, setShowOnlyQualifying] = useState(false);
+  const [showGoalPlanner, setShowGoalPlanner] = useState(false);
+  const [targetAps, setTargetAps] = useState(0);
 
   const aps = useMemo(() => calculateAPS(subjects.filter(s => s.percent > 0)), [subjects]);
 
@@ -393,6 +396,172 @@ export default function ApsCalculatorPage() {
 
           {/* ── Right: Degree Results ── */}
           <div className="space-y-4">
+
+            {/* ── Goal Planner toggle ── */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowGoalPlanner(s => !s)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-black transition-all ${
+                  showGoalPlanner
+                    ? 'bg-[#1C1917] text-white'
+                    : 'bg-white border border-stone-200 text-stone-600 hover:border-stone-400'
+                }`}
+              >
+                <Target className="w-4 h-4" />
+                {showGoalPlanner ? 'Hide Goal Planner' : 'Set a Target APS'}
+              </button>
+              {showGoalPlanner && targetAps > 0 && (
+                <span className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400">
+                  Target: {targetAps} APS
+                </span>
+              )}
+            </div>
+
+            {/* ── Goal Planner panel ── */}
+            <AnimatePresence>
+              {showGoalPlanner && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+                  className="bg-white rounded-2xl border border-stone-200 p-6"
+                >
+                  {/* Part 1 — Target APS input */}
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                    Target APS
+                  </p>
+                  <div className="flex items-center gap-3 flex-wrap mb-4">
+                    <input
+                      type="number"
+                      min={aps + 1}
+                      max={56}
+                      value={targetAps || ''}
+                      onChange={e => {
+                        const val = Math.min(56, Math.max(0, Number(e.target.value)));
+                        setTargetAps(val);
+                      }}
+                      placeholder="—"
+                      className="rounded-xl border border-stone-200 w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+                    />
+                    <div className="flex items-center gap-2">
+                      {[30, 35, 40].map(t => (
+                        <button
+                          key={t}
+                          onClick={() => setTargetAps(t)}
+                          className={`bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                            targetAps === t ? 'bg-stone-200 ring-1 ring-stone-400' : ''
+                          }`}
+                        >
+                          APS {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Part 2 — Gap analysis */}
+                  {targetAps > aps && (() => {
+                    const gap = targetAps - aps;
+                    const activeSubjects = subjects.filter(s => s.percent > 0);
+
+                    // Compute gain per subject
+                    const NQF_THRESHOLDS = [30, 40, 50, 60, 70, 80];
+                    type SubjectGain = { subject: StudentSubject; label: string; threshold: number; gain: number };
+                    const rows: SubjectGain[] = activeSubjects.map(s => {
+                      const currentLevel = percentToNQF(s.percent);
+                      const nextThresh = NQF_THRESHOLDS.find(t => t > s.percent);
+                      if (!nextThresh || currentLevel >= 7) {
+                        return { subject: s, label: NSC_SUBJECTS.find(n => n.value === s.code)?.label ?? s.code, threshold: 100, gain: 0 };
+                      }
+                      const nextLevel = percentToNQF(nextThresh);
+                      const rawGain = nextLevel - currentLevel;
+                      const gain = s.code === 'life-orientation'
+                        ? Math.min(nextLevel, 1) - Math.min(currentLevel, 1)
+                        : rawGain;
+                      return {
+                        subject: s,
+                        label: NSC_SUBJECTS.find(n => n.value === s.code)?.label ?? s.code,
+                        threshold: nextThresh,
+                        gain,
+                      };
+                    });
+
+                    const improvable = rows
+                      .filter(r => r.gain > 0)
+                      .sort((a, b) => b.gain - a.gain || a.label.localeCompare(b.label));
+                    const allMaxed = improvable.length === 0;
+
+                    return (
+                      <div className="mb-6">
+                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2 flex items-center gap-1.5">
+                          <TrendingUp className="w-3.5 h-3.5" />
+                          How to Get There
+                        </p>
+                        <p className="text-sm text-stone-600 mb-4">
+                          You need <strong>{gap}</strong> more APS point{gap !== 1 ? 's' : ''}.
+                        </p>
+                        {allMaxed ? (
+                          <p className="text-sm text-emerald-600 font-semibold">
+                            All subjects are at maximum NQF level. Well done!
+                          </p>
+                        ) : (
+                          <div className="rounded-xl border border-stone-100 divide-y divide-stone-100 overflow-hidden">
+                            {improvable.map(row => (
+                              <div key={row.subject.code} className="flex items-center gap-3 px-4 py-3">
+                                <span className="text-sm font-bold text-stone-900 flex-1 min-w-0 truncate">
+                                  {row.label}
+                                </span>
+                                <span className="text-xs text-stone-400 shrink-0">
+                                  {row.subject.percent}% → {row.threshold}%
+                                </span>
+                                <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">
+                                  +{row.gain} pt{row.gain !== 1 ? 's' : ''}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Part 3 — Degrees unlocked at target */}
+                  {targetAps > 0 && (() => {
+                    const unlocked = DEGREE_DATA.filter(d => d.minAPS <= targetAps && d.minAPS > aps);
+                    const shown = unlocked.slice(0, 8);
+                    const extra = unlocked.length - shown.length;
+
+                    return (
+                      <div>
+                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                          Degrees You'll Unlock at APS {targetAps}
+                        </p>
+                        {unlocked.length === 0 ? (
+                          <p className="text-sm text-stone-400">No additional degrees unlock at this target.</p>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            {shown.map(d => (
+                              <span
+                                key={d.id}
+                                className="bg-stone-100 text-stone-700 text-xs font-bold px-3 py-1.5 rounded-full"
+                              >
+                                {d.degree} — {d.shortName}
+                              </span>
+                            ))}
+                            {extra > 0 && (
+                              <span className="bg-stone-100 text-stone-500 text-xs font-bold px-3 py-1.5 rounded-full">
+                                +{extra} more
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Filters bar */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-3">
               <div className="flex flex-wrap items-center gap-3">
