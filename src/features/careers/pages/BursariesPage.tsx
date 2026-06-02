@@ -223,8 +223,8 @@ function BursariesPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
-      <div className="pt-24 pb-16 px-4 md:px-8 max-w-4xl mx-auto">
+    <div className="min-h-screen">
+      <div className="pt-4 pb-16 px-4 md:px-8 max-w-4xl mx-auto">
 
         {/* Page header */}
         <div className="mb-10 pt-2">

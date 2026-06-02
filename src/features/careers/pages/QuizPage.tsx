@@ -151,9 +151,9 @@ function QuizPhase({
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+    <div className="min-h-screen">
 
-      <div className="pt-24 pb-20 px-4 flex flex-col items-center">
+      <div className="pt-4 pb-20 px-4 flex flex-col items-center">
         <div className="max-w-2xl w-full">
 
           {/* Back to dashboard for logged-in students */}
@@ -441,9 +441,9 @@ function ResultsPhase({
   };
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+    <div className="min-h-screen">
 
-      <div className="pt-24 pb-20 px-4">
+      <div className="pt-4 pb-20 px-4">
         <div className="max-w-5xl mx-auto">
 
           {/* Back button */}
