@@ -11,6 +11,9 @@ import {
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
+import {
+  fetchAnnouncementEngagement, type AnnouncementEngagement,
+} from '../../../lib/teacherAnalytics';
 
 const GRADES = [8, 9, 10, 11, 12];
 
@@ -66,6 +69,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
   const [deleting, setDeleting]   = useState(false);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [form, setForm]           = useState(emptyForm);
+  const [engagement, setEngagement] = useState<Map<number, AnnouncementEngagement>>(new Map());
 
   useEffect(() => {
     reload();
@@ -80,8 +84,17 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
 
   async function reload() {
     setLoading(true);
-    setAnnouncements(await fetchAnnouncements(session.school_id));
+    const data = await fetchAnnouncements(session.school_id);
+    setAnnouncements(data);
     setLoading(false);
+    // Non-blocking engagement fetch
+    if (data.length > 0) {
+      fetchAnnouncementEngagement(
+        session.school_id,
+        data.map(a => a.id),
+        data,
+      ).then(setEngagement);
+    }
   }
 
   function showToast(msg: string) {
@@ -187,7 +200,8 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                 {pinned.map((a, i) => (
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
                     toggling={togglingId === a.id}
-                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
+                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)}
+                    eng={engagement.get(a.id)} />
                 ))}
               </div>
             </div>
@@ -199,7 +213,8 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                 {unpinned.map((a, i) => (
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
                     toggling={togglingId === a.id}
-                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
+                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)}
+                    eng={engagement.get(a.id)} />
                 ))}
               </div>
             </div>
@@ -415,9 +430,10 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
 interface CardProps {
   a: Announcement; i: number; subjects: Subject[];
   toggling: boolean; onPin: () => void; onDelete: () => void;
+  eng?: AnnouncementEngagement;
 }
 
-function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete }: CardProps) {
+function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng }: CardProps) {
   const [expanded, setExpanded] = useState(false);
   const audience = audienceSummary(a, subjects);
 
@@ -448,6 +464,16 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete }: CardPro
             </p>
             {a.target_type !== 'all' && (
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{audience}</span>
+            )}
+            {eng && eng.targetSize > 0 && (
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                eng.readRate >= 80 ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                eng.readRate >= 60 ? 'bg-amber-50 text-amber-600 border-amber-100' :
+                                     'bg-red-50 text-red-500 border-red-100'
+              }`}>
+                {eng.readRate}% read
+                {eng.unread > 0 && ` · ${eng.unread} unread`}
+              </span>
             )}
           </div>
         </div>

@@ -13,6 +13,9 @@ import {
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
+import {
+  fetchResourceEngagement, type ResourceEngagement,
+} from '../../../lib/teacherAnalytics';
 
 const GRADES = [8, 9, 10, 11, 12];
 
@@ -39,6 +42,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const [formError, setFormError] = useState('');
   const [downloading, setDownloading] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [engagement, setEngagement] = useState<Map<number, ResourceEngagement>>(new Map());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const emptyForm = {
@@ -78,6 +82,10 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
     const r = await fetchTeacherResources(session.teacher_id, session.school_id);
     setResources(r);
     setLoading(false);
+    // Non-blocking engagement fetch
+    if (r.length > 0) {
+      fetchResourceEngagement(r.map(res => res.id)).then(setEngagement);
+    }
   }
 
   function toggle<T>(arr: T[], val: T): T[] {
@@ -164,7 +172,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             {toast}
@@ -239,7 +247,23 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         {r.resource_type === 'file' && r.file_name && (
                           <p className="text-xs text-stone-400 mt-0.5">{r.file_name}</p>
                         )}
-                        <p className="text-[10px] text-stone-300 mt-1">{formatDate(r.created_at)}</p>
+                        <div className="flex items-center gap-3 mt-1">
+                          <p className="text-[10px] text-stone-300">{formatDate(r.created_at)}</p>
+                          {(() => {
+                            const eng = engagement.get(r.id);
+                            if (!eng || eng.viewers === 0) return null;
+                            const pctViewed = eng.viewers; // unique viewers (no total — show count)
+                            return (
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                                eng.viewers >= 20 ? 'bg-emerald-50 text-emerald-600' :
+                                eng.viewers >= 5  ? 'bg-blue-50 text-blue-600' :
+                                                    'bg-stone-100 text-stone-500'
+                              }`}>
+                                {eng.viewers} viewer{eng.viewers !== 1 ? 's' : ''}
+                              </span>
+                            );
+                          })()}
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {(r.resource_type === 'file' || r.resource_type === 'link') && (

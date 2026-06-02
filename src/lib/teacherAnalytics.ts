@@ -491,3 +491,109 @@ export async function fetchStudentInterventionChips(
 
   return result;
 }
+
+// ── 8. Resource engagement — viewers per resource ────────────────────────────
+
+export interface ResourceEngagement {
+  resourceId: number;
+  viewers:    number;
+}
+
+export async function fetchResourceEngagement(
+  resourceIds: number[],
+): Promise<Map<number, ResourceEngagement>> {
+  if (resourceIds.length === 0) return new Map();
+
+  const { data } = await supabaseAdmin
+    .from('resource_downloads')
+    .select('resource_id')
+    .in('resource_id', resourceIds);
+
+  const counts = new Map<number, number>();
+  for (const row of (data ?? [])) {
+    const id = (row as any).resource_id as number;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+
+  const result = new Map<number, ResourceEngagement>();
+  for (const id of resourceIds) {
+    result.set(id, { resourceId: id, viewers: counts.get(id) ?? 0 });
+  }
+  return result;
+}
+
+// ── 9. Announcement engagement — read rate per announcement ──────────────────
+
+export interface AnnouncementEngagement {
+  announcementId: number;
+  viewed:         number;
+  targetSize:     number;
+  readRate:       number;   // 0–100
+  unread:         number;
+}
+
+export async function fetchAnnouncementEngagement(
+  schoolId:       number,
+  announcementIds: number[],
+  // Targeting info for each announcement — needed to compute target audience size
+  announcements: {
+    id: number;
+    target_type: string;
+    target_grades: number[] | null;
+    target_cohort_ids: number[] | null;
+    target_subject_ids: number[] | null;
+    target_student_ids: number[] | null;
+  }[],
+): Promise<Map<number, AnnouncementEngagement>> {
+  if (announcementIds.length === 0) return new Map();
+
+  // Fetch view counts
+  const { data: viewRows } = await supabaseAdmin
+    .from('announcement_views')
+    .select('announcement_id')
+    .in('announcement_id', announcementIds);
+
+  const viewCounts = new Map<number, number>();
+  for (const row of (viewRows ?? [])) {
+    const id = (row as any).announcement_id as number;
+    viewCounts.set(id, (viewCounts.get(id) ?? 0) + 1);
+  }
+
+  // Fetch all students for this school to compute target sizes
+  const { data: allStudents } = await supabaseAdmin
+    .from('students')
+    .select('id, grade, cohort_id')
+    .eq('school_id', schoolId);
+
+  const students = allStudents ?? [];
+  const totalStudents = students.length;
+
+  const result = new Map<number, AnnouncementEngagement>();
+
+  for (const ann of announcements) {
+    let targetSize = totalStudents;
+
+    if (ann.target_type === 'grade' && ann.target_grades?.length) {
+      targetSize = students.filter((s: any) => ann.target_grades!.includes(s.grade)).length;
+    } else if (ann.target_type === 'class' && ann.target_cohort_ids?.length) {
+      targetSize = students.filter((s: any) => ann.target_cohort_ids!.includes(s.cohort_id)).length;
+    } else if (ann.target_type === 'specific' && ann.target_student_ids?.length) {
+      targetSize = ann.target_student_ids.length;
+    } else if (ann.target_type === 'subject' && ann.target_grades?.length) {
+      targetSize = students.filter((s: any) => ann.target_grades!.includes(s.grade)).length;
+    }
+
+    const viewed = viewCounts.get(ann.id) ?? 0;
+    const readRate = targetSize > 0 ? Math.round((viewed / targetSize) * 100) : 0;
+
+    result.set(ann.id, {
+      announcementId: ann.id,
+      viewed,
+      targetSize,
+      readRate,
+      unread: Math.max(0, targetSize - viewed),
+    });
+  }
+
+  return result;
+}
