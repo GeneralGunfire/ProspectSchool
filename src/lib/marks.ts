@@ -249,6 +249,7 @@ export interface StudentResult {
   sheet_id: number;
   sheet_title: string;
   sheet_scope: string | null;
+  subject_id: number;
   subject_label: string;
   grade: number;
   total: number;
@@ -285,6 +286,7 @@ export async function fetchStudentResults(
       sheet_id: r.mark_sheets.id,
       sheet_title: r.mark_sheets.title ?? '',
       sheet_scope: r.mark_sheets.scope ?? null,
+      subject_id: r.mark_sheets.subject_id ?? 0,
       subject_label: subjectMap.get(r.mark_sheets.subject_id) ?? '',
       grade: r.mark_sheets.grade ?? 0,
       total: r.mark_sheets.total ?? 0,

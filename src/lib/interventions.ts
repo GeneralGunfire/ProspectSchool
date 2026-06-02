@@ -15,6 +15,7 @@ export interface Intervention {
   id:            string;
   studentId:     number;
   teacherId?:    number;       // teacher who teaches this subject to the student
+  subjectId?:    number;       // FK to subjects — enables exact joins
   subject:       string;
   type:          InterventionType;
   reason:        InterventionReason;
@@ -67,6 +68,7 @@ function rowToIntervention(r: any): Intervention {
     id:           r.id,
     studentId:    r.student_id,
     teacherId:    r.teacher_id   ?? undefined,
+    subjectId:    r.subject_id   ?? undefined,
     subject:      r.subject,
     type:         r.type         as InterventionType,
     reason:       r.reason       as InterventionReason,
@@ -162,6 +164,7 @@ export async function createIntervention(
   studentId:   number,
   schoolId:    number,
   subject:     string,
+  subjectId:   number,             // exact FK — no fuzzy matching
   type:        InterventionType,
   reason:      InterventionReason,
   description: string,
@@ -169,44 +172,36 @@ export async function createIntervention(
   previousAvg: number,
 ): Promise<Intervention> {
   // Deduplicate: check for active intervention for same student+subject+type
-  const { data: existing } = await supabaseAdmin
-    .from('interventions')
-    .select('*')
-    .eq('student_id', studentId)
-    .eq('subject', subject)
-    .eq('type', type)
-    .in('status', ['recommended', 'started'])
-    .limit(1)
-    .single();
+  // Use subject_id for exact match when available, fall back to label
+  const dupQuery = subjectId
+    ? supabaseAdmin.from('interventions').select('*')
+        .eq('student_id', studentId).eq('subject_id', subjectId).eq('type', type)
+        .in('status', ['recommended', 'started']).limit(1).single()
+    : supabaseAdmin.from('interventions').select('*')
+        .eq('student_id', studentId).eq('subject', subject).eq('type', type)
+        .in('status', ['recommended', 'started']).limit(1).single();
 
+  const { data: existing } = await dupQuery;
   if (existing) return rowToIntervention(existing);
 
   const now     = new Date();
   const expires = new Date(now);
   expires.setDate(expires.getDate() + 30);
 
-  const id = `${studentId}_${subject}_${type}_${Date.now()}`;
+  const id = `${studentId}_${subjectId || subject}_${type}_${Date.now()}`;
 
-  // Look up which teacher teaches this subject to this student.
-  // teacher_students links teacher_id → student_id → subject_id.
-  // We match on subject label by joining through subjects table.
-  const { data: teacherLink } = await supabaseAdmin
-    .from('teacher_students')
-    .select('teacher_id, subjects(label)')
-    .eq('student_id', studentId)
-    .then(({ data, error }) => {
-      if (error || !data) return { data: null };
-      // Match on first word of subject label (case-insensitive)
-      const subjectWord = subject.split(' ')[0].toLowerCase();
-      const match = data.find((l: any) => {
-        const label: string = l.subjects?.label ?? '';
-        return label.toLowerCase().includes(subjectWord) ||
-               subjectWord.includes(label.split(' ')[0].toLowerCase());
-      });
-      return { data: match ?? null };
-    });
-
-  const teacherId: number | undefined = (teacherLink as any)?.teacher_id ?? undefined;
+  // Look up teacher via exact subject_id match on teacher_students
+  let teacherId: number | undefined;
+  if (subjectId) {
+    const { data: link } = await supabaseAdmin
+      .from('teacher_students')
+      .select('teacher_id')
+      .eq('student_id', studentId)
+      .eq('subject_id', subjectId)
+      .limit(1)
+      .single();
+    teacherId = (link as any)?.teacher_id ?? undefined;
+  }
 
   const { data, error } = await supabaseAdmin
     .from('interventions')
@@ -215,6 +210,7 @@ export async function createIntervention(
       student_id:   studentId,
       school_id:    schoolId,
       teacher_id:   teacherId ?? null,
+      subject_id:   subjectId || null,
       subject,
       type,
       reason,
@@ -228,9 +224,8 @@ export async function createIntervention(
     .single();
 
   if (error || !data) {
-    // Return a local object on insert failure so the UI doesn't break
     return {
-      id, studentId, teacherId, subject, type, reason, description, page,
+      id, studentId, teacherId, subjectId, subject, type, reason, description, page,
       createdAt:  now.toISOString(),
       expiresAt:  expires.toISOString(),
       status:     'recommended',
@@ -279,10 +274,19 @@ export async function recordOutcome(
     improvement > 0                      ? 'unchanged' :
                                            'declined';
 
+  // Fetch teacher_id from the parent intervention so outcomes are directly queryable by teacher
+  const { data: inv } = await supabaseAdmin
+    .from('interventions')
+    .select('teacher_id')
+    .eq('id', interventionId)
+    .single();
+  const teacherId = (inv as any)?.teacher_id ?? null;
+
   const row = {
     intervention_id: interventionId,
     student_id:      studentId,
     school_id:       schoolId,
+    teacher_id:      teacherId,
     subject,
     type,
     previous_avg:    Math.round(previousAvg),
@@ -333,8 +337,11 @@ export async function syncOutcomesFromMarks(
   for (const inv of completedWithoutOutcome) {
     const subjectMarks = allMarks.filter(m =>
       m.mark !== null &&
-      (m.subject_label?.toLowerCase().includes(inv.subject.split(' ')[0].toLowerCase()) ||
-       inv.subject.toLowerCase().includes((m.subject_label ?? '').split(' ')[0].toLowerCase()))
+      // Prefer exact subject_id match; fall back to label for legacy data
+      (inv.subjectId && m.subject_id
+        ? m.subject_id === inv.subjectId
+        : m.subject_label?.toLowerCase().includes(inv.subject.split(' ')[0].toLowerCase()) ||
+          inv.subject.toLowerCase().includes((m.subject_label ?? '').split(' ')[0].toLowerCase()))
     );
 
     if (subjectMarks.length === 0) continue;
@@ -421,7 +428,7 @@ export async function syncInterventionsFromRisk(
 
     if (risk.examDays !== null && risk.examDays <= 14) {
       const i = await createIntervention(
-        studentId, schoolId, risk.subject, 'past_paper',
+        studentId, schoolId, risk.subject, risk.subjectId, 'past_paper',
         risk.examDays <= 7 ? 'exam_soon' : 'high_risk',
         `Complete a ${risk.subject} past paper`, 'pastpapers', risk.avg,
       );
@@ -430,7 +437,7 @@ export async function syncInterventionsFromRisk(
 
     if (risk.avg < 60) {
       const i = await createIntervention(
-        studentId, schoolId, risk.subject, 'library_topic',
+        studentId, schoolId, risk.subject, risk.subjectId, 'library_topic',
         risk.avg < 50 ? 'below_pass' : 'high_risk',
         `Study ${risk.subject} in the library`, 'library', risk.avg,
       );
@@ -441,7 +448,7 @@ export async function syncInterventionsFromRisk(
   for (const rec of revisionRecs.slice(0, 2)) {
     if (rec.urgency === 'critical' || rec.urgency === 'high') {
       const i = await createIntervention(
-        studentId, schoolId, rec.subject, 'revision',
+        studentId, schoolId, rec.subject, rec.subjectId, 'revision',
         rec.examDays !== null ? 'exam_soon' : 'declining_trend',
         `Revise ${rec.subject} — ${rec.reason}`, 'library', rec.avg,
       );

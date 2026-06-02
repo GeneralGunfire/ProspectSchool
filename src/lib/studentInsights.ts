@@ -12,6 +12,7 @@ import { computeInterventionImpact, type InterventionImpact, type Intervention, 
 
 export interface SubjectProfile {
   subject:      string;
+  subjectId:    number;          // numeric FK — used for exact matching
   avg:          number;          // overall average %
   recentAvg:    number | null;   // last 3 assessments avg
   prevAvg:      number | null;   // prev 3 assessments avg
@@ -26,19 +27,21 @@ export interface SubjectProfile {
 export type RiskLevel = 'high' | 'medium' | 'low' | 'none';
 
 export interface SubjectRisk {
-  subject:   string;
-  avg:       number;
-  risk:      RiskLevel;
-  reasons:   string[];
-  examDays:  number | null;      // days until nearest exam, null if no exam
+  subject:    string;
+  subjectId:  number;
+  avg:        number;
+  risk:       RiskLevel;
+  reasons:    string[];
+  examDays:   number | null;
 }
 
 export interface RevisionRecommendation {
-  subject:   string;
-  avg:       number;
-  urgency:   'critical' | 'high' | 'medium' | 'low';
-  reason:    string;
-  examDays:  number | null;
+  subject:    string;
+  subjectId:  number;
+  avg:        number;
+  urgency:    'critical' | 'high' | 'medium' | 'low';
+  reason:     string;
+  examDays:   number | null;
 }
 
 export interface ApsImprovementStep {
@@ -148,12 +151,15 @@ export function computeStudentInsights(
 
   // ── 1. Build subject profiles ─────────────────────────────────────────────
 
+  // Key by subject_id (numeric) for exact matching; fall back to label for legacy data
   const subjectMap = new Map<string, StudentResult[]>();
+  const subjectIdMap = new Map<string, number>(); // label → subject_id
   for (const m of allMarks) {
     if (m.mark === null) continue;
     const key = m.subject_label || 'Other';
     if (!subjectMap.has(key)) subjectMap.set(key, []);
     subjectMap.get(key)!.push(m);
+    if (m.subject_id && !subjectIdMap.has(key)) subjectIdMap.set(key, m.subject_id);
   }
 
   const subjectProfiles: SubjectProfile[] = [];
@@ -180,6 +186,7 @@ export function computeStudentInsights(
 
     subjectProfiles.push({
       subject,
+      subjectId:    subjectIdMap.get(subject) ?? 0,
       avg:          Math.round(avg),
       recentAvg:    recentAvg !== null ? Math.round(recentAvg) : null,
       prevAvg:      prevAvg   !== null ? Math.round(prevAvg)   : null,
@@ -241,7 +248,7 @@ export function computeStudentInsights(
     else if (reasons.length === 1) risk = 'low';
 
     if (risk !== 'none') {
-      examRiskSubjects.push({ subject: sp.subject, avg: sp.avg, risk, reasons, examDays });
+      examRiskSubjects.push({ subject: sp.subject, subjectId: sp.subjectId, avg: sp.avg, risk, reasons, examDays });
     }
   }
 
@@ -283,7 +290,7 @@ export function computeStudentInsights(
     }
 
     if (urgency !== 'low' || (examDays !== null && examDays <= 21)) {
-      revisionRecs.push({ subject: sp.subject, avg: sp.avg, urgency, reason, examDays });
+      revisionRecs.push({ subject: sp.subject, subjectId: sp.subjectId, avg: sp.avg, urgency, reason, examDays });
     }
   }
 

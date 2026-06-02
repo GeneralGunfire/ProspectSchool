@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  Users, CalendarDays, ClipboardList, CheckCircle2,
-  ChevronRight, Megaphone, BookOpen, Plus,
+  Users, CalendarDays, ClipboardList, ChevronRight,
+  Megaphone, Plus, TrendingUp, TrendingDown, AlertTriangle,
+  CheckCircle2, Target, BookOpen,
 } from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { fetchSchoolEvents, fetchHomeworkCompletionCount, type SchoolEvent } from '../../../lib/events';
 import { fetchTeacherStudents } from '../../../lib/students';
 import { fetchTeacherMarkSheets, type MarkSheetGroup } from '../../../lib/marks';
+import {
+  fetchTeacherImpactSummary, fetchTeacherClassHealth, fetchAtRiskStudents,
+  type TeacherImpactSummary, type TeacherSubjectHealth, type AtRiskStudent,
+} from '../../../lib/teacherAnalytics';
 import type { TeacherSession } from '../../../lib/auth';
 
 function formatDate(d: string) {
@@ -16,17 +21,14 @@ function formatDate(d: string) {
   });
 }
 
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins  = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days  = Math.floor(diff / 86400000);
-  if (mins < 2)   return 'Just now';
-  if (mins < 60)  return `${mins}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7)   return `${days}d ago`;
-  return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
-}
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
+const EVENT_TYPE_COLORS: Record<string, { pill: string; dot: string }> = {
+  homework:   { pill: 'bg-blue-50 text-blue-700',    dot: 'bg-blue-500' },
+  assessment: { pill: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
+  exam:       { pill: 'bg-red-50 text-red-700',      dot: 'bg-red-500' },
+  other:      { pill: 'bg-stone-100 text-stone-600', dot: 'bg-stone-400' },
+};
 
 interface HomeworkStat {
   event: SchoolEvent;
@@ -39,30 +41,18 @@ interface TeacherHomePageProps {
   onNavigate: (page: string) => void;
 }
 
-const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
-
-const EVENT_TYPE_PILL: Record<string, string> = {
-  homework:   'bg-blue-50 text-blue-700',
-  assessment: 'bg-emerald-50 text-emerald-700',
-  exam:       'bg-red-50 text-red-700',
-  other:      'bg-stone-100 text-stone-600',
-};
-const EVENT_DOT: Record<string, string> = {
-  homework:   'bg-blue-500',
-  assessment: 'bg-emerald-500',
-  exam:       'bg-red-500',
-  other:      'bg-stone-400',
-};
-
 export default function TeacherHomePage({ session, onNavigate }: TeacherHomePageProps) {
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const today    = new Date();
+  const todayStr = today.toISOString().split('T')[0];
 
-  const [studentCount, setStudentCount]   = useState<number>(0);
+  const [studentCount,   setStudentCount]   = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<SchoolEvent[]>([]);
-  const [homeworkStats, setHomeworkStats]  = useState<HomeworkStat[]>([]);
-  const [recentSheets, setRecentSheets]   = useState<MarkSheetGroup[]>([]);
-  const [loading, setLoading]             = useState(true);
+  const [homeworkStats,  setHomeworkStats]  = useState<HomeworkStat[]>([]);
+  const [recentSheets,   setRecentSheets]   = useState<MarkSheetGroup[]>([]);
+  const [impact,         setImpact]         = useState<TeacherImpactSummary | null>(null);
+  const [classHealth,    setClassHealth]    = useState<TeacherSubjectHealth[]>([]);
+  const [atRisk,         setAtRisk]         = useState<AtRiskStudent[]>([]);
+  const [loading,        setLoading]        = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -72,50 +62,41 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         fetchTeacherMarkSheets(session.teacher_id, session.school_id),
       ]);
 
-      // Student count
       if (studentsResult.success) setStudentCount(studentsResult.students.length);
 
-      // Upcoming events — next 4 from today
-      const upcoming = events
-        .filter(e => e.event_date >= todayStr)
-        .slice(0, 4);
+      const upcoming = events.filter(e => e.event_date >= todayStr).slice(0, 4);
       setUpcomingEvents(upcoming);
 
-      // Recent homework events (past 14 days) — fetch completion counts
       const cutoff = new Date(today);
       cutoff.setDate(cutoff.getDate() - 14);
       const cutoffStr = cutoff.toISOString().split('T')[0];
-
       const recentHomework = events
         .filter(e => e.event_type === 'homework' && e.event_date >= cutoffStr && e.event_date <= todayStr)
         .slice(0, 4);
 
-      // Get total students per event based on target_type
       const allStudents = studentsResult.success ? studentsResult.students : [];
-
-      const stats = await Promise.all(
-        recentHomework.map(async ev => {
-          const completionCount = await fetchHomeworkCompletionCount(ev.id);
-
-          // Estimate total targeted students
-          let totalStudents = allStudents.length;
-          if (ev.target_type === 'grade') {
-            totalStudents = allStudents.filter(s => ev.target_grades?.includes(s.grade)).length;
-          } else if (ev.target_type === 'class') {
-            totalStudents = allStudents.filter(s => s.cohort_id !== null && ev.target_cohort_ids?.includes(s.cohort_id!)).length;
-          } else if (ev.target_type === 'specific') {
-            totalStudents = ev.target_student_ids?.length ?? 0;
-          }
-
-          return { event: ev, completionCount, totalStudents };
-        })
-      );
+      const stats = await Promise.all(recentHomework.map(async ev => {
+        const completionCount = await fetchHomeworkCompletionCount(ev.id);
+        let totalStudents = allStudents.length;
+        if (ev.target_type === 'grade')    totalStudents = allStudents.filter(s => ev.target_grades?.includes(s.grade)).length;
+        if (ev.target_type === 'class')    totalStudents = allStudents.filter(s => s.cohort_id && ev.target_cohort_ids?.includes(s.cohort_id!)).length;
+        if (ev.target_type === 'specific') totalStudents = ev.target_student_ids?.length ?? 0;
+        return { event: ev, completionCount, totalStudents };
+      }));
       setHomeworkStats(stats);
-
-      // Recent mark sheets — last 3
       setRecentSheets(sheetsResult.slice(0, 3));
-
       setLoading(false);
+
+      // Non-blocking analytics
+      Promise.all([
+        fetchTeacherImpactSummary(session.teacher_id),
+        fetchTeacherClassHealth(session.teacher_id, session.school_id),
+        fetchAtRiskStudents(session.teacher_id, session.school_id),
+      ]).then(([imp, health, risk]) => {
+        setImpact(imp);
+        setClassHealth(health);
+        setAtRisk(risk);
+      });
     }
     load();
   }, []);
@@ -123,266 +104,320 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
       </div>
     );
   }
 
   const nextEvent = upcomingEvents[0] ?? null;
+  const typeLabel: Record<string, string> = { past_paper: 'Past Papers', library_topic: 'Library Study', revision: 'Revision', resource_review: 'Resources' };
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
+    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8 space-y-4">
 
-      {/* ── Page header ────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease }}
-        className="mb-6 md:mb-8"
-      >
+      {/* ── Header ───────────────────────────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Overview</p>
-        <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+        <h1 className="font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Welcome back, {session.name}.
         </h1>
-        <p className="text-sm text-stone-400 mt-1">{session.school_name}</p>
+        <p className="text-sm text-stone-400 mt-0.5">{session.school_name}</p>
       </motion.div>
 
-      {/* ── 4 stat cards ───────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      {/* ── 4 stat cards ─────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 gap-3">
 
-        {/* Card 1 — Next Event (dark) */}
+        {/* Next Event — dark card */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="bg-[#1C1917] rounded-2xl p-5 flex flex-col justify-between min-h-[130px]"
+          className="bg-brand-dark rounded-2xl p-4 flex flex-col justify-between min-h-[120px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Next Event</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Next Event</p>
           {nextEvent ? (
             <>
-              <span className={`self-start text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_PILL[nextEvent.event_type] ?? 'bg-stone-700 text-stone-300'}`}>
+              <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-700 text-stone-300'}`}>
                 {nextEvent.event_type}
               </span>
-              <div className="mt-2">
-                <p className="font-black text-white text-base leading-tight mb-1">{nextEvent.title}</p>
-                <p className="text-stone-500 text-xs">{formatDate(nextEvent.event_date)}</p>
+              <div className="mt-1">
+                <p className="font-black text-white text-sm leading-tight">{nextEvent.title}</p>
+                <p className="text-stone-500 text-[11px] mt-0.5">{formatDate(nextEvent.event_date)}</p>
               </div>
-              <button onClick={() => onNavigate('calendar')}
-                className="self-start mt-2 text-[11px] font-black text-white/50 hover:text-white transition-colors border border-stone-700 rounded-lg px-2.5 py-1">
-                View in Calendar
-              </button>
             </>
           ) : (
             <p className="text-stone-600 text-sm font-bold mt-auto">No upcoming events</p>
           )}
         </motion.div>
 
-        {/* Card 2 — Total Students */}
+        {/* My Students */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-[120px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">My Students</p>
-          <div>
-            <p className="font-black text-4xl text-[#1C1917]">{studentCount}</p>
-            <p className="text-stone-400 text-sm mt-0.5">enrolled students</p>
-          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">My Students</p>
+          <p className="font-black text-4xl text-brand-dark">{studentCount}</p>
           <button onClick={() => onNavigate('classes')}
-            className="self-start text-[11px] font-black text-blue-600 hover:text-blue-800 transition-colors mt-2 flex items-center gap-0.5">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
             View Classes <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
 
-        {/* Card 3 — Pending Marks */}
+        {/* Mark Sheets */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-[120px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Mark Sheets</p>
-          <div>
-            <p className="font-black text-4xl text-[#1C1917]">
-              {recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)}
-            </p>
-            <p className="text-stone-400 text-sm mt-0.5">active sheets</p>
-          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Mark Sheets</p>
+          <p className="font-black text-4xl text-brand-dark">
+            {recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)}
+          </p>
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-emerald-600 hover:text-emerald-800 transition-colors mt-2 flex items-center gap-0.5">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
             Enter Marks <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
 
-        {/* Card 4 — Upcoming Events count */}
+        {/* Upcoming Events */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-[120px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming Events</p>
-          <div>
-            <p className="font-black text-4xl text-[#1C1917]">{upcomingEvents.length}</p>
-            <p className="text-stone-400 text-sm mt-0.5">this month</p>
-          </div>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming Events</p>
+          <p className="font-black text-4xl text-brand-dark">{upcomingEvents.length}</p>
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-amber-600 hover:text-amber-800 transition-colors mt-2 flex items-center gap-0.5">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
             View Calendar <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
       </div>
 
-      {/* ── Two-column grid ─────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-        {/* LEFT — Recent Homework Completion */}
+      {/* ── Academic Impact Card ──────────────────────────────────── */}
+      {impact && (impact.completedInterventions > 0 || impact.activeInterventions > 0) && (
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.2 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.18 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Homework Completion</p>
-            <button onClick={() => onNavigate('calendar')}
-              className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
-              View Calendar <ChevronRight className="w-3 h-3" />
-            </button>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Academic Impact</p>
+          <div className="grid grid-cols-3 gap-3 mb-3">
+            <div className="bg-stone-50 rounded-xl p-3 text-center">
+              <p className="text-xl font-black text-brand-dark">{impact.completedInterventions}</p>
+              <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">Completed</p>
+            </div>
+            <div className={`rounded-xl p-3 text-center ${impact.successRate >= 70 ? 'bg-emerald-50' : impact.successRate >= 50 ? 'bg-amber-50' : 'bg-stone-50'}`}>
+              <p className={`text-xl font-black ${impact.successRate >= 70 ? 'text-emerald-700' : impact.successRate >= 50 ? 'text-amber-700' : 'text-stone-500'}`}>
+                {impact.successRate}%
+              </p>
+              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.successRate >= 70 ? 'text-emerald-500' : impact.successRate >= 50 ? 'text-amber-500' : 'text-stone-400'}`}>
+                Success
+              </p>
+            </div>
+            <div className={`rounded-xl p-3 text-center ${impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
+              <p className={`text-xl font-black ${impact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-400'}`}>
+                {impact.avgImprovement > 0 ? `+${impact.avgImprovement}%` : '—'}
+              </p>
+              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-400'}`}>
+                Avg Gain
+              </p>
+            </div>
           </div>
-
-          {homeworkStats.length === 0 ? (
-            <div className="flex items-center gap-2 py-4">
-              <CheckCircle2 className="w-8 h-8 text-stone-200" />
-              <p className="text-sm font-bold text-stone-300">No recent homework events.</p>
+          {impact.bestType && impact.bestTypeSuccessRate > 0 && (
+            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 flex items-center gap-2">
+              <span className="text-sm">⭐</span>
+              <p className="text-[11px] text-amber-800">
+                <span className="font-black">Most effective:</span>{' '}
+                {typeLabel[impact.bestType] ?? impact.bestType} — {impact.bestTypeSuccessRate}% success rate
+              </p>
             </div>
-          ) : (
-            <div className="space-y-4">
-              {homeworkStats.map((stat, i) => {
-                const pct = stat.totalStudents > 0
-                  ? Math.round((stat.completionCount / stat.totalStudents) * 100)
-                  : 0;
-                const barColor = pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-400';
-                return (
-                  <motion.div key={stat.event.id}
-                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  >
-                    <div className="flex items-center justify-between mb-1.5">
-                      <p className="text-sm font-bold text-stone-900 truncate flex-1 pr-2">{stat.event.title}</p>
-                      <span className="text-xs font-black text-stone-500 shrink-0">
-                        {stat.completionCount}/{stat.totalStudents}
-                      </span>
-                    </div>
-                    <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }} animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
-                        className={`h-full rounded-full ${barColor}`}
-                      />
-                    </div>
-                    <p className="text-[10px] text-stone-400 mt-1">{formatDate(stat.event.event_date)} · {pct}% submitted</p>
-                  </motion.div>
-                );
-              })}
-            </div>
+          )}
+          {impact.activeInterventions > 0 && (
+            <p className="text-[11px] text-stone-400 mt-2 text-center">
+              {impact.activeInterventions} intervention{impact.activeInterventions !== 1 ? 's' : ''} currently active
+            </p>
           )}
         </motion.div>
+      )}
 
-        {/* RIGHT — Recent Mark Activity */}
+      {/* ── Students Requiring Attention ─────────────────────────── */}
+      {atRisk.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.2 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Recent Mark Sheets</p>
-            <button onClick={() => onNavigate('marks')}
-              className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
-              View Marks <ChevronRight className="w-3 h-3" />
-            </button>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Needs Attention</p>
+            <span className="text-[11px] font-bold text-red-500">{atRisk.length} student{atRisk.length !== 1 ? 's' : ''}</span>
           </div>
-
-          {recentSheets.length === 0 ? (
-            <div className="flex items-center gap-2 py-4">
-              <ClipboardList className="w-8 h-8 text-stone-200" />
-              <p className="text-sm font-bold text-stone-300">No mark sheets yet.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {recentSheets.map((group, i) => (
-                <motion.div key={group.key}
-                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  className="flex items-center gap-3 py-2 border-b border-stone-100 last:border-0"
+          <div className="space-y-2">
+            {atRisk.slice(0, 5).map((s, i) => (
+              <div key={i} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
+                s.reason === 'below_pass'     ? 'bg-red-50 border-red-100' :
+                s.reason === 'declining'      ? 'bg-amber-50 border-amber-100' :
+                                                'bg-orange-50 border-orange-100'
+              }`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-[10px] font-black ${
+                  s.reason === 'below_pass' ? 'bg-red-500' :
+                  s.reason === 'declining'  ? 'bg-amber-500' : 'bg-orange-500'
+                }`}>
+                  {s.name[0]}{s.surname[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black text-stone-900">{s.surname}, {s.name}</p>
+                  <p className="text-[10px] text-stone-500 truncate">{s.detail}</p>
+                </div>
+                <button
+                  onClick={() => onNavigate('library')}
+                  className="shrink-0 text-[10px] font-black text-stone-400 hover:text-stone-700 transition-colors"
                 >
-                  <div className="w-9 h-9 rounded-xl bg-[#1C1917] flex items-center justify-center shrink-0">
-                    <BookOpen className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-stone-900">{group.subject_label}</p>
-                    <p className="text-xs text-stone-400">
-                      Grade {group.grade} · {group.sheets.length} sheet{group.sheets.length !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                  <span className="text-xs text-stone-400 shrink-0 truncate max-w-[100px]">
-                    {group.sheets[0]?.title}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-          {/* Quick actions row */}
-          <div className="mt-4 pt-4 border-t border-stone-100 grid grid-cols-2 gap-2">
-            {[
-              { label: 'Add student',    page: 'classes',      icon: Users },
-              { label: 'Post announcement', page: 'announcements', icon: Megaphone },
-              { label: 'Create event',   page: 'calendar',     icon: CalendarDays },
-              { label: 'Enter marks',    page: 'marks',        icon: ClipboardList },
-            ].map(action => {
-              const Icon = action.icon;
-              return (
-                <button key={action.page} onClick={() => onNavigate(action.page)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-stone-50 hover:bg-stone-100 transition-colors text-left">
-                  <Icon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                  <span className="text-xs font-black text-stone-700">{action.label}</span>
+                  View
                 </button>
+              </div>
+            ))}
+          </div>
+          {atRisk.length > 5 && (
+            <p className="text-[11px] text-stone-400 text-center mt-3">
+              +{atRisk.length - 5} more — <button onClick={() => onNavigate('library')} className="font-black text-stone-600 hover:text-stone-900">View all</button>
+            </p>
+          )}
+        </motion.div>
+      )}
+
+      {/* ── Class Health Snapshot ─────────────────────────────────── */}
+      {classHealth.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.22 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Class Health</p>
+          <div className="space-y-3">
+            {classHealth.slice(0, 6).map((h, i) => {
+              const changeColor = h.recentChange === null ? 'text-stone-300'
+                : h.recentChange >= 2  ? 'text-emerald-500'
+                : h.recentChange <= -2 ? 'text-red-400'
+                : 'text-stone-400';
+              const avgColor = h.classAvg >= 70 ? 'text-emerald-600' : h.classAvg >= 50 ? 'text-amber-600' : 'text-red-500';
+              return (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-xs font-black text-stone-900">{h.subject}</p>
+                      <span className="text-[10px] font-bold text-stone-400">Gr {h.grade}</span>
+                      {h.atRiskCount > 0 && (
+                        <span className="text-[10px] font-black text-red-500">{h.atRiskCount} at risk</span>
+                      )}
+                    </div>
+                    <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-700 ${h.classAvg >= 70 ? 'bg-emerald-500' : h.classAvg >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
+                        style={{ width: `${Math.min(h.classAvg, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className={`text-sm font-black ${avgColor}`}>{h.classAvg}%</p>
+                    {h.recentChange !== null && (
+                      <p className={`text-[10px] font-bold ${changeColor}`}>
+                        {h.recentChange > 0 ? `+${h.recentChange}%` : `${h.recentChange}%`}
+                      </p>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>
         </motion.div>
+      )}
 
-        {/* Upcoming Events strip */}
-        {upcomingEvents.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.28 }}
-            className="lg:col-span-2 bg-white rounded-2xl border border-stone-200 p-5"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming Events</p>
-              <button onClick={() => onNavigate('calendar')}
-                className="flex items-center gap-1 text-xs font-black text-stone-400 hover:text-stone-600 transition-colors">
-                <Plus className="w-3 h-3" /> Create Event
-              </button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {upcomingEvents.map((ev, i) => (
-                <motion.div key={ev.id}
-                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-stone-50 border border-stone-100 hover:border-stone-200 transition-colors"
-                >
-                  <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${EVENT_DOT[ev.event_type]}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">{formatDate(ev.event_date)}</p>
-                    <span className={`inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-full ${EVENT_TYPE_PILL[ev.event_type]}`}>
-                      {ev.event_type}
-                    </span>
+      {/* ── Homework Completion ───────────────────────────────────── */}
+      {homeworkStats.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.24 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Homework Completion</p>
+          <div className="space-y-3">
+            {homeworkStats.map(({ event, completionCount, totalStudents }, i) => {
+              const pct = totalStudents > 0 ? Math.round((completionCount / totalStudents) * 100) : 0;
+              const barColor = pct >= 80 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-400';
+              const textColor = pct >= 80 ? 'text-emerald-600' : pct >= 50 ? 'text-amber-600' : 'text-red-500';
+              return (
+                <div key={i}>
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-xs font-bold text-stone-700 truncate flex-1 mr-2">{event.title}</p>
+                    <p className={`text-xs font-black shrink-0 ${textColor}`}>
+                      {completionCount}/{totalStudents} · {pct}%
+                    </p>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </div>
+                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div className={`h-full rounded-full transition-all duration-700 ${barColor}`} style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Quick Actions ─────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease, delay: 0.26 }}
+        className="bg-white border border-stone-200 rounded-2xl p-5"
+      >
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Quick Actions</p>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: 'Add Student',        icon: Users,        page: 'classes',       color: 'text-blue-600' },
+            { label: 'Post Announcement',  icon: Megaphone,    page: 'announcements', color: 'text-purple-600' },
+            { label: 'Create Event',       icon: CalendarDays, page: 'calendar',      color: 'text-emerald-600' },
+            { label: 'Enter Marks',        icon: ClipboardList,page: 'marks',         color: 'text-amber-600' },
+          ].map(({ label, icon: Icon, page, color }) => (
+            <button
+              key={page}
+              onClick={() => onNavigate(page)}
+              className="flex items-center gap-2.5 px-3 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-100 transition-colors text-left"
+            >
+              <Icon className={`w-4 h-4 shrink-0 ${color}`} />
+              <span className="text-[12px] font-black text-stone-700">{label}</span>
+            </button>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* ── Upcoming Events ───────────────────────────────────────── */}
+      {upcomingEvents.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.28 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Upcoming Events</p>
+          <div className="space-y-2">
+            {upcomingEvents.map((ev, i) => {
+              const colors = EVENT_TYPE_COLORS[ev.event_type] ?? EVENT_TYPE_COLORS.other;
+              return (
+                <div key={i} className="flex items-center gap-3 py-2 border-b border-stone-50 last:border-0">
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-stone-900 truncate">{ev.title}</p>
+                    <p className="text-[10px] text-stone-400">{formatDate(ev.event_date)}</p>
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${colors.pill}`}>
+                    {ev.event_type}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
     </div>
   );
 }
