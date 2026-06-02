@@ -14,7 +14,8 @@ import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
-  fetchResourceEngagement, type ResourceEngagement,
+  fetchResourceEngagement, fetchResourceEffectiveness,
+  type ResourceEngagement, type ResourceEffectiveness,
 } from '../../../lib/teacherAnalytics';
 
 const GRADES = [8, 9, 10, 11, 12];
@@ -42,7 +43,8 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const [formError, setFormError] = useState('');
   const [downloading, setDownloading] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  const [engagement, setEngagement] = useState<Map<number, ResourceEngagement>>(new Map());
+  const [engagement,    setEngagement]    = useState<Map<number, ResourceEngagement>>(new Map());
+  const [effectiveness, setEffectiveness] = useState<Map<number, ResourceEffectiveness>>(new Map());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const emptyForm = {
@@ -82,9 +84,11 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
     const r = await fetchTeacherResources(session.teacher_id, session.school_id);
     setResources(r);
     setLoading(false);
-    // Non-blocking engagement fetch
+    // Non-blocking engagement + effectiveness fetch
     if (r.length > 0) {
-      fetchResourceEngagement(r.map(res => res.id)).then(setEngagement);
+      const ids = r.map(res => res.id);
+      fetchResourceEngagement(ids).then(setEngagement);
+      fetchResourceEffectiveness(session.school_id, ids).then(setEffectiveness);
     }
   }
 
@@ -247,12 +251,11 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         {r.resource_type === 'file' && r.file_name && (
                           <p className="text-xs text-stone-400 mt-0.5">{r.file_name}</p>
                         )}
-                        <div className="flex items-center gap-3 mt-1">
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
                           <p className="text-[10px] text-stone-300">{formatDate(r.created_at)}</p>
                           {(() => {
                             const eng = engagement.get(r.id);
                             if (!eng || eng.viewers === 0) return null;
-                            const pctViewed = eng.viewers; // unique viewers (no total — show count)
                             return (
                               <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                                 eng.viewers >= 20 ? 'bg-emerald-50 text-emerald-600' :
@@ -260,6 +263,18 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                                                     'bg-stone-100 text-stone-500'
                               }`}>
                                 {eng.viewers} viewer{eng.viewers !== 1 ? 's' : ''}
+                              </span>
+                            );
+                          })()}
+                          {(() => {
+                            const eff = effectiveness.get(r.id);
+                            if (!eff || eff.avgImprovement === null) return null;
+                            const positive = eff.avgImprovement > 0;
+                            return (
+                              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                                positive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'
+                              }`}>
+                                {positive ? '+' : ''}{eff.avgImprovement}% avg gain
                               </span>
                             );
                           })()}

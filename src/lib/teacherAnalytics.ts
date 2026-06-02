@@ -597,3 +597,214 @@ export async function fetchAnnouncementEngagement(
 
   return result;
 }
+
+// ── 10. Intervention ROI by type ─────────────────────────────────────────────
+// Aggregates outcomes by intervention type for a teacher.
+// Sorted by avg gain descending.
+
+export interface InterventionROIRow {
+  type:        string;
+  label:       string;
+  total:       number;
+  successful:  number;
+  successRate: number;
+  avgGain:     number;
+}
+
+const INTERVENTION_TYPE_LABELS: Record<string, string> = {
+  past_paper:      'Past Paper Practice',
+  library_topic:   'Library Study',
+  revision:        'Revision Session',
+  resource_review: 'Resource Review',
+};
+
+export async function fetchTeacherInterventionROI(
+  teacherId: number,
+): Promise<InterventionROIRow[]> {
+  const { data } = await supabaseAdmin
+    .from('outcomes')
+    .select('type, result, improvement')
+    .eq('teacher_id', teacherId);
+
+  if (!data || data.length === 0) return [];
+
+  const groups = new Map<string, { results: string[]; gains: number[] }>();
+
+  for (const row of data) {
+    const type = (row as any).type as string;
+    if (!groups.has(type)) groups.set(type, { results: [], gains: [] });
+    const g = groups.get(type)!;
+    g.results.push((row as any).result as string);
+    g.gains.push(Number((row as any).improvement));
+  }
+
+  return Array.from(groups.entries())
+    .map(([type, { results, gains }]) => {
+      const successful = results.filter(r => r === 'improved').length;
+      const avgGain    = gains.length
+        ? Math.round(gains.reduce((s, v) => s + v, 0) / gains.length * 10) / 10
+        : 0;
+      return {
+        type,
+        label:       INTERVENTION_TYPE_LABELS[type] ?? type,
+        total:       results.length,
+        successful,
+        successRate: Math.round((successful / results.length) * 100),
+        avgGain,
+      };
+    })
+    .sort((a, b) => b.avgGain - a.avgGain);
+}
+
+// ── 11. Resource effectiveness ────────────────────────────────────────────────
+// For each resource: students who downloaded, avg mark change after download.
+// Requires >= 3 data points for a meaningful correlation (returns null otherwise).
+
+export interface ResourceEffectiveness {
+  resourceId:     number;
+  downloaders:    number;
+  avgImprovement: number | null;
+}
+
+export async function fetchResourceEffectiveness(
+  schoolId:    number,
+  resourceIds: number[],
+): Promise<Map<number, ResourceEffectiveness>> {
+  if (resourceIds.length === 0) return new Map();
+
+  const { data: downloads } = await supabaseAdmin
+    .from('resource_downloads')
+    .select('resource_id, student_id, downloaded_at')
+    .in('resource_id', resourceIds);
+
+  if (!downloads || downloads.length === 0) {
+    return new Map(resourceIds.map(id => [id, { resourceId: id, downloaders: 0, avgImprovement: null }]));
+  }
+
+  const studentIds = [...new Set(downloads.map((d: any) => d.student_id as number))];
+
+  const { data: marks } = await supabaseAdmin
+    .from('student_marks')
+    .select('student_id, mark, mark_sheets(total, created_at)')
+    .in('student_id', studentIds)
+    .eq('school_id', schoolId)
+    .not('mark', 'is', null);
+
+  const marksByStudent = new Map<number, { pct: number; date: string }[]>();
+  for (const m of (marks ?? [])) {
+    const ms = (m as any).mark_sheets;
+    if (!ms) continue;
+    const sid = (m as any).student_id as number;
+    if (!marksByStudent.has(sid)) marksByStudent.set(sid, []);
+    marksByStudent.get(sid)!.push({
+      pct:  (Number((m as any).mark) / Number(ms.total)) * 100,
+      date: ms.created_at as string,
+    });
+  }
+
+  const result = new Map<number, ResourceEffectiveness>();
+
+  for (const resourceId of resourceIds) {
+    const resourceDownloads = (downloads as any[]).filter(d => d.resource_id === resourceId);
+    const downloaders = resourceDownloads.length;
+
+    if (downloaders === 0) {
+      result.set(resourceId, { resourceId, downloaders: 0, avgImprovement: null });
+      continue;
+    }
+
+    const improvements: number[] = [];
+
+    for (const dl of resourceDownloads) {
+      const sid          = dl.student_id as number;
+      const dlDate       = dl.downloaded_at as string;
+      const studentMarks = marksByStudent.get(sid) ?? [];
+
+      const before = studentMarks.filter(m => m.date < dlDate);
+      const after  = studentMarks.filter(m => m.date >= dlDate);
+
+      if (before.length === 0 || after.length === 0) continue;
+
+      const beforeAvg = before.reduce((s, m) => s + m.pct, 0) / before.length;
+      const afterAvg  = after.reduce((s, m) => s + m.pct, 0) / after.length;
+      improvements.push(afterAvg - beforeAvg);
+    }
+
+    result.set(resourceId, {
+      resourceId,
+      downloaders,
+      avgImprovement: improvements.length >= 3
+        ? Math.round(improvements.reduce((s, v) => s + v, 0) / improvements.length * 10) / 10
+        : null,
+    });
+  }
+
+  return result;
+}
+
+// ── 12. Announcement impact on homework completion ────────────────────────────
+// Compares homework completion rate of students who viewed an announcement
+// vs those who did not — for the next homework event after the announcement.
+
+export interface AnnouncementImpact {
+  announcementId:          number;
+  viewedCount:             number;
+  notViewedCount:          number;
+  viewedAndCompleted:      number;
+  notViewedCompleted:      number;
+  completionRateViewed:    number;
+  completionRateNotViewed: number;
+  delta:                   number;   // viewed rate - not-viewed rate
+}
+
+export async function fetchAnnouncementImpact(
+  schoolId:          number,
+  announcementIds:   number[],
+  announcementDates: Record<number, string>,   // id → created_at ISO string
+): Promise<Map<number, AnnouncementImpact>> {
+  if (announcementIds.length === 0) return new Map();
+
+  const [{ data: views }, { data: allStudents }, { data: hwEvents }, { data: completions }] =
+    await Promise.all([
+      supabaseAdmin.from('announcement_views').select('announcement_id, student_id').in('announcement_id', announcementIds),
+      supabaseAdmin.from('students').select('id').eq('school_id', schoolId),
+      supabaseAdmin.from('school_events').select('id, event_date').eq('school_id', schoolId).eq('event_type', 'homework').order('event_date'),
+      supabaseAdmin.from('homework_completions').select('student_id, event_id').eq('school_id', schoolId),
+    ]);
+
+  const allStudentIds  = (allStudents ?? []).map((s: any) => s.id as number);
+  const completionSet  = new Set((completions ?? []).map((c: any) => `${c.student_id}_${c.event_id}`));
+
+  const result = new Map<number, AnnouncementImpact>();
+
+  for (const annId of announcementIds) {
+    const annDate = announcementDates[annId];
+    if (!annDate) continue;
+
+    const nextHw = (hwEvents ?? []).find((e: any) => (e.event_date as string) >= annDate.slice(0, 10));
+    if (!nextHw) continue;
+
+    const hwId      = (nextHw as any).id as number;
+    const viewerIds = new Set((views ?? []).filter((v: any) => v.announcement_id === annId).map((v: any) => v.student_id as number));
+    const nonViewerIds = allStudentIds.filter(id => !viewerIds.has(id));
+
+    const viewedCompleted    = [...viewerIds].filter(id => completionSet.has(`${id}_${hwId}`)).length;
+    const notViewedCompleted = nonViewerIds.filter(id => completionSet.has(`${id}_${hwId}`)).length;
+
+    const viewedRate    = viewerIds.size > 0 ? Math.round((viewedCompleted / viewerIds.size) * 100) : 0;
+    const notViewedRate = nonViewerIds.length > 0 ? Math.round((notViewedCompleted / nonViewerIds.length) * 100) : 0;
+
+    result.set(annId, {
+      announcementId:          annId,
+      viewedCount:             viewerIds.size,
+      notViewedCount:          nonViewerIds.length,
+      viewedAndCompleted:      viewedCompleted,
+      notViewedCompleted,
+      completionRateViewed:    viewedRate,
+      completionRateNotViewed: notViewedRate,
+      delta:                   viewedRate - notViewedRate,
+    });
+  }
+
+  return result;
+}

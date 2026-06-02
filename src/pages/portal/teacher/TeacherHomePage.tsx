@@ -11,7 +11,9 @@ import { fetchTeacherStudents } from '../../../lib/students';
 import { fetchTeacherMarkSheets, type MarkSheetGroup } from '../../../lib/marks';
 import {
   fetchTeacherImpactSummary, fetchTeacherClassHealth, fetchAtRiskStudents,
+  fetchTeacherInterventionROI,
   type TeacherImpactSummary, type TeacherSubjectHealth, type AtRiskStudent,
+  type InterventionROIRow,
 } from '../../../lib/teacherAnalytics';
 import type { TeacherSession } from '../../../lib/auth';
 
@@ -52,6 +54,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   const [impact,         setImpact]         = useState<TeacherImpactSummary | null>(null);
   const [classHealth,    setClassHealth]    = useState<TeacherSubjectHealth[]>([]);
   const [atRisk,         setAtRisk]         = useState<AtRiskStudent[]>([]);
+  const [roiRows,        setRoiRows]        = useState<InterventionROIRow[]>([]);
   const [loading,        setLoading]        = useState(true);
 
   useEffect(() => {
@@ -92,10 +95,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         fetchTeacherImpactSummary(session.teacher_id),
         fetchTeacherClassHealth(session.teacher_id, session.school_id),
         fetchAtRiskStudents(session.teacher_id, session.school_id),
-      ]).then(([imp, health, risk]) => {
+        fetchTeacherInterventionROI(session.teacher_id),
+      ]).then(([imp, health, risk, roi]) => {
         setImpact(imp);
         setClassHealth(health);
         setAtRisk(risk);
+        setRoiRows(roi);
       });
     }
     load();
@@ -238,6 +243,47 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               {impact.activeInterventions} intervention{impact.activeInterventions !== 1 ? 's' : ''} currently active
             </p>
           )}
+        </motion.div>
+      )}
+
+      {/* ── Intervention ROI ─────────────────────────────────────── */}
+      {roiRows.length >= 2 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.19 }}
+          className="bg-white border border-stone-200 rounded-2xl p-5"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">What Works Best</p>
+          <div className="space-y-2.5">
+            {roiRows.map((row, i) => (
+              <div key={row.type} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-stone-100">
+                  <span className="text-[9px] font-black text-stone-500">{i + 1}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <p className="text-xs font-black text-stone-900">{row.label}</p>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`text-[10px] font-black ${row.successRate >= 70 ? 'text-emerald-600' : row.successRate >= 50 ? 'text-amber-600' : 'text-stone-400'}`}>
+                        {row.successRate}%
+                      </span>
+                      <span className={`text-[10px] font-black ${row.avgGain > 0 ? 'text-blue-600' : 'text-stone-300'}`}>
+                        {row.avgGain > 0 ? `+${row.avgGain}%` : '—'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-1 bg-stone-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${row.avgGain > 5 ? 'bg-emerald-500' : row.avgGain > 0 ? 'bg-amber-400' : 'bg-stone-300'}`}
+                      style={{ width: `${Math.min(100, Math.max(0, (row.avgGain / 15) * 100))}%` }}
+                    />
+                  </div>
+                </div>
+                <p className="text-[10px] text-stone-300 shrink-0 w-12 text-right">{row.total} done</p>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-stone-300 mt-3 text-center">Success % · Avg gain per completed intervention</p>
         </motion.div>
       )}
 

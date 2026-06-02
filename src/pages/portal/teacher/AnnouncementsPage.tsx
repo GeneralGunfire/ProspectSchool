@@ -12,7 +12,8 @@ import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
-  fetchAnnouncementEngagement, type AnnouncementEngagement,
+  fetchAnnouncementEngagement, fetchAnnouncementImpact,
+  type AnnouncementEngagement, type AnnouncementImpact,
 } from '../../../lib/teacherAnalytics';
 
 const GRADES = [8, 9, 10, 11, 12];
@@ -70,6 +71,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [form, setForm]           = useState(emptyForm);
   const [engagement, setEngagement] = useState<Map<number, AnnouncementEngagement>>(new Map());
+  const [impact,     setImpact]     = useState<Map<number, AnnouncementImpact>>(new Map());
 
   useEffect(() => {
     reload();
@@ -87,13 +89,12 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
     const data = await fetchAnnouncements(session.school_id);
     setAnnouncements(data);
     setLoading(false);
-    // Non-blocking engagement fetch
+    // Non-blocking engagement + impact fetch
     if (data.length > 0) {
-      fetchAnnouncementEngagement(
-        session.school_id,
-        data.map(a => a.id),
-        data,
-      ).then(setEngagement);
+      const ids   = data.map(a => a.id);
+      const dates = Object.fromEntries(data.map(a => [a.id, a.created_at]));
+      fetchAnnouncementEngagement(session.school_id, ids, data).then(setEngagement);
+      fetchAnnouncementImpact(session.school_id, ids, dates).then(setImpact);
     }
   }
 
@@ -151,14 +152,14 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
   const unpinned = announcements.filter(a => !a.pinned);
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full">
+    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
 
       {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
           </motion.div>
         )}
@@ -201,7 +202,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
                     toggling={togglingId === a.id}
                     onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)}
-                    eng={engagement.get(a.id)} />
+                    eng={engagement.get(a.id)} imp={impact.get(a.id)} />
                 ))}
               </div>
             </div>
@@ -214,7 +215,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
                     toggling={togglingId === a.id}
                     onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)}
-                    eng={engagement.get(a.id)} />
+                    eng={engagement.get(a.id)} imp={impact.get(a.id)} />
                 ))}
               </div>
             </div>
@@ -431,9 +432,10 @@ interface CardProps {
   a: Announcement; i: number; subjects: Subject[];
   toggling: boolean; onPin: () => void; onDelete: () => void;
   eng?: AnnouncementEngagement;
+  imp?: AnnouncementImpact;
 }
 
-function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng }: CardProps) {
+function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp }: CardProps) {
   const [expanded, setExpanded] = useState(false);
   const audience = audienceSummary(a, subjects);
 
@@ -473,6 +475,11 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng }: Ca
               }`}>
                 {eng.readRate}% read
                 {eng.unread > 0 && ` · ${eng.unread} unread`}
+              </span>
+            )}
+            {imp && imp.delta > 5 && (
+              <span className="text-[10px] font-black px-2 py-0.5 rounded-full border bg-blue-50 text-blue-600 border-blue-100">
+                +{imp.delta}% hw completion lift
               </span>
             )}
           </div>
