@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, X, ChevronRight, ChevronDown, ClipboardList,
   Pencil, Trash2, CalendarDays, CheckCircle2, Circle,
+  AlertTriangle,
 } from 'lucide-react';
+import { computeSheetAnalytics } from '../../../lib/teacherAnalytics';
 import {
   fetchTeacherMarkSheets, createMarkSheet, deleteMarkSheet,
   fetchSheetMarks, saveStudentMark,
@@ -92,6 +94,7 @@ export default function MarksPage({ session }: MarksPageProps) {
     setView('sheet');
     setSheetLoading(true);
     setPushedCalendar(!!sheet.event_id);
+    setRiskBannerDismissed(false);
     const marks = await fetchSheetMarks(sheet.id);
     setSheetMarks(marks);
     // Init drafts from existing marks
@@ -202,13 +205,23 @@ export default function MarksPage({ session }: MarksPageProps) {
     reload();
   }
 
-  // ── Stats for sheet header ────────────────────────────────────
-
-  const marked    = sheetMarks.filter(m => m.mark !== null).length;
-  const unmarked  = sheetMarks.length - marked;
-  const avgMark   = marked > 0
+  // ── Analytics for sheet header ───────────────────────────────
+  const marked   = sheetMarks.filter(m => m.mark !== null).length;
+  const unmarked = sheetMarks.length - marked;
+  const avgMark  = marked > 0
     ? sheetMarks.filter(m => m.mark !== null).reduce((s, m) => s + m.mark!, 0) / marked
     : null;
+
+  // Full analytics from pure function — recomputed whenever sheetMarks changes
+  const analytics = activeSheet
+    ? computeSheetAnalytics(sheetMarks.map(m => ({ mark: m.mark, total: activeSheet.total })))
+    : null;
+
+  // Students at risk (below 50%) — for the risk banner
+  const atRiskMarks = activeSheet
+    ? sheetMarks.filter(m => m.mark !== null && (m.mark / activeSheet.total) * 100 < 50)
+    : [];
+  const [riskBannerDismissed, setRiskBannerDismissed] = useState(false);
 
   // ── Render ────────────────────────────────────────────────────
 
@@ -359,30 +372,87 @@ export default function MarksPage({ session }: MarksPageProps) {
               </motion.button>
             </div>
 
-            {/* Stats bar */}
-            <div className="mt-4 flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl px-3 py-2">
-                <span className="text-xs font-black text-stone-400 uppercase tracking-widest">Total</span>
-                <span className="text-sm font-black text-brand-dark">{activeSheet.total}</span>
+            {/* ── Analytics card ───────────────────────────── */}
+            {analytics && analytics.markedCount > 0 && (
+              <div className="mt-4 bg-white border border-stone-200 rounded-2xl p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                  Assessment Analytics · {marked}/{sheetMarks.length} marked
+                  {unmarked > 0 && <span className="ml-2 text-amber-500">{unmarked} unmarked</span>}
+                </p>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { label: 'Class Avg', value: `${analytics.classAvg}%`, color: analytics.classAvg >= 70 ? 'text-emerald-600' : analytics.classAvg >= 50 ? 'text-amber-600' : 'text-red-500', bg: analytics.classAvg >= 70 ? 'bg-emerald-50' : analytics.classAvg >= 50 ? 'bg-amber-50' : 'bg-red-50' },
+                    { label: 'Pass Rate', value: `${analytics.passRate}%`, color: analytics.passRate >= 70 ? 'text-emerald-600' : analytics.passRate >= 50 ? 'text-amber-600' : 'text-red-500', bg: analytics.passRate >= 70 ? 'bg-emerald-50' : analytics.passRate >= 50 ? 'bg-amber-50' : 'bg-red-50' },
+                    { label: 'Highest',   value: `${analytics.highest}%`,  color: 'text-blue-600', bg: 'bg-blue-50' },
+                    { label: 'Lowest',    value: `${analytics.lowest}%`,   color: analytics.lowest >= 50 ? 'text-stone-600' : 'text-red-500', bg: analytics.lowest >= 50 ? 'bg-stone-50' : 'bg-red-50' },
+                  ].map(stat => (
+                    <div key={stat.label} className={`${stat.bg} rounded-xl p-2.5 text-center`}>
+                      <p className={`text-base font-black ${stat.color}`}>{stat.value}</p>
+                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">{stat.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress bar showing pass rate */}
+                <div className="mt-3">
+                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${analytics.passRate >= 70 ? 'bg-emerald-500' : analytics.passRate >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
+                      style={{ width: `${analytics.passRate}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-stone-400 mt-1">
+                    {analytics.markedCount - Math.round(analytics.markedCount * analytics.passRate / 100)} student{analytics.markedCount - Math.round(analytics.markedCount * analytics.passRate / 100) !== 1 ? 's' : ''} below pass mark
+                  </p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl px-3 py-2">
-                <span className="text-xs font-black text-stone-400 uppercase tracking-widest">Marked</span>
-                <span className="text-sm font-black text-brand-dark">{marked}/{sheetMarks.length}</span>
-              </div>
-              {avgMark !== null && (
+            )}
+
+            {/* ── Risk banner ───────────────────────────────── */}
+            {atRiskMarks.length > 0 && !riskBannerDismissed && analytics && analytics.markedCount >= 3 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                className="mt-3 bg-red-50 border border-red-200 rounded-2xl p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-black text-red-700">
+                        {atRiskMarks.length} student{atRiskMarks.length !== 1 ? 's' : ''} below pass mark
+                      </p>
+                      <p className="text-[11px] text-red-500 mt-0.5">
+                        {atRiskMarks.map(m => `${m.student_surname} ${m.student_name?.[0]}.`).slice(0, 3).join(', ')}
+                        {atRiskMarks.length > 3 && ` +${atRiskMarks.length - 3} more`}
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={() => setRiskBannerDismissed(true)}
+                    className="text-red-300 hover:text-red-500 transition-colors shrink-0">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Legacy pill row — shown only when nothing is marked yet */}
+            {(!analytics || analytics.markedCount === 0) && (
+              <div className="mt-4 flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl px-3 py-2">
-                  <span className="text-xs font-black text-stone-400 uppercase tracking-widest">Avg</span>
-                  <span className="text-sm font-black text-brand-dark">
-                    {avgMark.toFixed(1)} ({Math.round((avgMark / activeSheet.total) * 100)}%)
-                  </span>
+                  <span className="text-xs font-black text-stone-400 uppercase tracking-widest">Total</span>
+                  <span className="text-sm font-black text-brand-dark">{activeSheet.total}</span>
                 </div>
-              )}
-              {unmarked > 0 && (
-                <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                  <span className="text-xs font-black text-amber-600">{unmarked} unmarked</span>
+                <div className="flex items-center gap-2 bg-white border border-stone-200 rounded-xl px-3 py-2">
+                  <span className="text-xs font-black text-stone-400 uppercase tracking-widest">Students</span>
+                  <span className="text-sm font-black text-brand-dark">{sheetMarks.length}</span>
                 </div>
-              )}
-            </div>
+                {unmarked > 0 && (
+                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                    <span className="text-xs font-black text-amber-600">{unmarked} unmarked</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {sheetLoading ? (
