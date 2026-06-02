@@ -14,6 +14,7 @@ import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProg
 import { fetchApsScore } from '../../../lib/myFuture';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { getStudentGoals } from '../../../lib/studentGoals';
+import { computeStudentInsights } from '../../../lib/studentInsights';
 import type { StudentSession } from '../../../lib/auth';
 
 function timeAgo(iso: string): string {
@@ -184,6 +185,10 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const topicsMastered = studyProgress.filter(p => p.mastery_level === 'mastered').length;
   const totalTopics    = 35;
   const libraryPct     = Math.round((topicsStarted / totalTopics) * 100);
+
+  // ── Student Intelligence Engine ───────────────────────────────────────────
+  const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr);
+  const { academicStory } = insights_engine;
 
   // Focus item
   const focusItem = (() => {
@@ -956,6 +961,85 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </motion.div>
         )}
       </div>
+
+      {/* ── Academic Story Card ──────────────────────────────────── */}
+      {academicStory.totalAssessments >= 3 && academicStory.overallAvg !== null && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.33 }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
+            Academic Story
+          </p>
+
+          {/* Main stat row */}
+          <div className="flex items-end gap-3 mb-4">
+            {academicStory.previousAvg !== null && academicStory.change !== null ? (
+              <>
+                <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Earlier</p>
+                  <p className="font-black text-stone-500 text-2xl leading-none">{academicStory.previousAvg}%</p>
+                </div>
+                <div className={`font-black text-2xl pb-1 ${academicStory.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                  {academicStory.change >= 0 ? '↑' : '↓'}
+                </div>
+                <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
+                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Now</p>
+                  <p className={`font-black text-2xl leading-none ${
+                    academicStory.overallAvg >= 70 ? 'text-emerald-600' :
+                    academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
+                  }`}>{academicStory.overallAvg}%</p>
+                </div>
+                <div className={`ml-1 px-3 py-1.5 rounded-xl text-sm font-black ${
+                  academicStory.change >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
+                }`}>
+                  {academicStory.change >= 0 ? '+' : ''}{academicStory.change}%
+                </div>
+              </>
+            ) : (
+              <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
+                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Average</p>
+                <p className={`font-black text-2xl leading-none ${
+                  academicStory.overallAvg >= 70 ? 'text-emerald-600' :
+                  academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
+                }`}>{academicStory.overallAvg}%</p>
+              </div>
+            )}
+          </div>
+
+          {/* Story bullets */}
+          <div className="space-y-2">
+            {academicStory.strongestGrowth && (
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <p className="text-sm text-stone-600">
+                  Strongest growth: <span className="font-black text-stone-900">{academicStory.strongestGrowth}</span>
+                </p>
+              </div>
+            )}
+            {academicStory.mostConsistent && academicStory.mostConsistent !== academicStory.strongestGrowth && (
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                <p className="text-sm text-stone-600">
+                  Most consistent: <span className="font-black text-stone-900">{academicStory.mostConsistent}</span>
+                </p>
+              </div>
+            )}
+            {academicStory.needsAttention && academicStory.needsAttention !== academicStory.strongestGrowth && (
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                <p className="text-sm text-stone-600">
+                  Needs attention: <span className="font-black text-stone-900">{academicStory.needsAttention}</span>
+                </p>
+              </div>
+            )}
+            <p className="text-[11px] text-stone-400 pt-1">
+              Based on {academicStory.totalAssessments} assessment{academicStory.totalAssessments !== 1 ? 's' : ''}
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       {/* ── Momentum Section ─────────────────────────────────────── */}
       {hasMomentum && (
