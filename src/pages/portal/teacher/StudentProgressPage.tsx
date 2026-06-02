@@ -19,6 +19,9 @@ import { fetchStudentAnnouncements, type Announcement } from '../../../lib/annou
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
+  fetchStudentInterventionChips, type StudentInterventionChip,
+} from '../../../lib/teacherAnalytics';
+import {
   getInterventions, getOutcomes, computeInterventionImpact,
   type Intervention, type Outcome,
 } from '../../../lib/interventions';
@@ -99,11 +102,19 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
   const [subjectIds, setSubjectIds] = useState<number[] | null>(null);
   const [interventions, setInterventions] = useState<Intervention[] | null>(null);
   const [outcomes, setOutcomes] = useState<Outcome[] | null>(null);
+  const [chips, setChips] = useState<Map<number, StudentInterventionChip>>(new Map());
 
   useEffect(() => {
     fetchTeacherStudentProgress(session.teacher_id, session.school_id).then(data => {
       setStudents(data);
       setLoading(false);
+      // Non-blocking — fetch chips after list is visible
+      if (data.length > 0) {
+        fetchStudentInterventionChips(
+          session.school_id,
+          data.map(s => s.student_id),
+        ).then(setChips);
+      }
     });
   }, []);
 
@@ -352,6 +363,37 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
                 <div className="hidden md:block text-[11px] text-stone-400 w-20 shrink-0 text-right">
                   {student.last_accessed ? timeAgo(student.last_accessed) : <span className="text-stone-300">No activity</span>}
                 </div>
+
+                {/* Intervention chips */}
+                {(() => {
+                  const chip = chips.get(student.student_id);
+                  if (!chip) return null;
+                  return (
+                    <div className="hidden lg:flex items-center gap-1.5 shrink-0">
+                      {chip.active > 0 && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
+                          {chip.active} active
+                        </span>
+                      )}
+                      {chip.completed > 0 && chip.successRate > 0 && (
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                          chip.successRate >= 70
+                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                            : chip.successRate >= 50
+                            ? 'bg-blue-50 text-blue-600 border-blue-100'
+                            : 'bg-stone-50 text-stone-500 border-stone-200'
+                        }`}>
+                          {chip.successRate}%
+                        </span>
+                      )}
+                      {chip.avgGain > 0 && (
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100">
+                          +{chip.avgGain}%
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-stone-600 transition-colors shrink-0" />
               </motion.div>

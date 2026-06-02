@@ -413,3 +413,81 @@ export function computeSheetAnalytics(
     totalCount:  marks.length,
   };
 }
+
+// ── 7. Student intervention chips — one query for all students ────────────────
+// Returns a map of studentId → chip data. Call once for the whole list.
+
+export interface StudentInterventionChip {
+  studentId:    number;
+  active:       number;
+  completed:    number;
+  successful:   number;
+  successRate:  number;   // 0 if no completed interventions
+  avgGain:      number;   // 0 if no outcomes
+}
+
+export async function fetchStudentInterventionChips(
+  schoolId: number,
+  studentIds: number[],
+): Promise<Map<number, StudentInterventionChip>> {
+  if (studentIds.length === 0) return new Map();
+
+  const [{ data: invRows }, { data: outcomeRows }] = await Promise.all([
+    supabaseAdmin
+      .from('interventions')
+      .select('student_id, status')
+      .eq('school_id', schoolId)
+      .in('student_id', studentIds),
+    supabaseAdmin
+      .from('outcomes')
+      .select('student_id, result, improvement')
+      .eq('school_id', schoolId)
+      .in('student_id', studentIds),
+  ]);
+
+  const result = new Map<number, StudentInterventionChip>();
+
+  // Initialise all students
+  for (const sid of studentIds) {
+    result.set(sid, { studentId: sid, active: 0, completed: 0, successful: 0, successRate: 0, avgGain: 0 });
+  }
+
+  // Tally interventions
+  for (const row of (invRows ?? [])) {
+    const sid = (row as any).student_id as number;
+    const chip = result.get(sid);
+    if (!chip) continue;
+    const status = (row as any).status as string;
+    if (status === 'recommended' || status === 'started') chip.active++;
+    else if (status === 'completed') chip.completed++;
+  }
+
+  // Tally outcomes
+  const gainsByStudent = new Map<number, number[]>();
+  for (const row of (outcomeRows ?? [])) {
+    const sid = (row as any).student_id as number;
+    const chip = result.get(sid);
+    if (!chip) continue;
+    if ((row as any).result === 'improved') chip.successful++;
+    if (!gainsByStudent.has(sid)) gainsByStudent.set(sid, []);
+    gainsByStudent.get(sid)!.push(Number((row as any).improvement));
+  }
+
+  // Compute derived fields
+  for (const [sid, chip] of result) {
+    chip.successRate = chip.completed > 0
+      ? Math.round((chip.successful / chip.completed) * 100)
+      : 0;
+    const gains = gainsByStudent.get(sid) ?? [];
+    chip.avgGain = gains.length > 0
+      ? Math.round(gains.reduce((s, v) => s + v, 0) / gains.length * 10) / 10
+      : 0;
+  }
+
+  // Only return students who have at least one intervention
+  for (const [sid, chip] of result) {
+    if (chip.active === 0 && chip.completed === 0) result.delete(sid);
+  }
+
+  return result;
+}
