@@ -274,7 +274,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                               <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                                 positive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'
                               }`}>
-                                {positive ? '+' : ''}{eff.avgImprovement}% avg gain
+                                {positive ? '+' : ''}{eff.avgImprovement}% avg gain · n={eff.downloaders}
                               </span>
                             );
                           })()}

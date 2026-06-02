@@ -473,13 +473,13 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
                 eng.readRate >= 60 ? 'bg-amber-50 text-amber-600 border-amber-100' :
                                      'bg-red-50 text-red-500 border-red-100'
               }`}>
-                {eng.readRate}% read
+                {eng.readRate}% read · n={eng.targetSize}
                 {eng.unread > 0 && ` · ${eng.unread} unread`}
               </span>
             )}
             {imp && imp.delta > 5 && (
               <span className="text-[10px] font-black px-2 py-0.5 rounded-full border bg-blue-50 text-blue-600 border-blue-100">
-                +{imp.delta}% hw completion lift
+                +{imp.delta}% hw lift · n={imp.viewedCount}
               </span>
             )}
           </div>

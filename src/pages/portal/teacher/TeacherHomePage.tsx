@@ -279,11 +279,11 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                     />
                   </div>
                 </div>
-                <p className="text-[10px] text-stone-300 shrink-0 w-12 text-right">{row.total} done</p>
+                <p className="text-[10px] text-stone-300 shrink-0 w-12 text-right">n={row.total}</p>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-stone-300 mt-3 text-center">Success % · Avg gain per completed intervention</p>
+          <p className="text-[10px] text-stone-300 mt-3 text-center">Success rate · Avg mark gain · n = completed interventions with outcomes</p>
         </motion.div>
       )}
 
