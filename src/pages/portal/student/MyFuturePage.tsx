@@ -9,7 +9,7 @@ import { DEGREE_DATA } from '../../../data/apsData';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals, saveStudentGoals, type StudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
-import { buildGrowthTimeline } from '../../../lib/interventions';
+import { buildGrowthTimeline, getCompletedInterventions, getOutcomes } from '../../../lib/interventions';
 
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
@@ -166,9 +166,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
     bySubject[p.subject].push(p);
   }
 
+  // ── Interventions (fetched before engine — keep engine pure) ────────────
+  const completedInv   = getCompletedInterventions(session.student_id);
+  const interventionOutcomes = getOutcomes(session.student_id);
+
   // ── Intelligence engine ───────────────────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);
-  const futureInsights = computeStudentInsights([], [], progress, goals, todayStr, session.student_id);
+  const futureInsights = computeStudentInsights([], [], progress, goals, todayStr, completedInv, interventionOutcomes);
   const { milestones, learnerStatus } = futureInsights;
 
   // ── Growth timeline ───────────────────────────────────────────────────────

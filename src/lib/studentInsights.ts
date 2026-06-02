@@ -6,7 +6,7 @@ import type { StudentResult } from './marks';
 import type { SchoolEvent }   from './events';
 import type { StudyProgress } from './studyProgress';
 import type { StudentGoals }  from './studentGoals';
-import { computeInterventionImpact, getCompletedInterventions, getOutcomes, type InterventionImpact } from './interventions';
+import { computeInterventionImpact, type InterventionImpact, type Intervention, type Outcome } from './interventions';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -137,12 +137,13 @@ function pctToNQF(pct: number): number {
 // ── Core engine ───────────────────────────────────────────────────────────────
 
 export function computeStudentInsights(
-  allMarks:      StudentResult[],
-  events:        SchoolEvent[],
-  studyProgress: StudyProgress[],
-  goals:         StudentGoals,
-  todayStr:      string,
-  studentId?:    number,
+  allMarks:           StudentResult[],
+  events:             SchoolEvent[],
+  studyProgress:      StudyProgress[],
+  goals:              StudentGoals,
+  todayStr:           string,
+  completedInvIn:     Intervention[] = [],
+  outcomesIn:         Outcome[]      = [],
 ): StudentInsights {
 
   // ── 1. Build subject profiles ─────────────────────────────────────────────
@@ -442,20 +443,18 @@ export function computeStudentInsights(
     },
   ];
 
-  // ── 8b. Intervention milestones (appended when studentId available) ──────
-  if (studentId !== undefined) {
-    const completedInv  = getCompletedInterventions(studentId);
-    const allOutcomes   = getOutcomes(studentId);
-    const improved      = allOutcomes.filter(o => o.result === 'improved');
+  // ── 8b. Intervention milestones (from caller-supplied data — engine stays pure) ─
+  if (completedInvIn.length > 0 || outcomesIn.length > 0) {
+    const improved      = outcomesIn.filter(o => o.result === 'improved');
     const firstImproved = improved[0] as { subject: string; improvement: number } | undefined;
 
     milestones.push(
       {
         id:       'first-intervention',
         label:    'First Recommendation Completed',
-        achieved: completedInv.length > 0,
-        detail:   completedInv.length > 0
-          ? `Completed ${(completedInv[0] as { subject: string }).subject} recommendation`
+        achieved: completedInvIn.length > 0,
+        detail:   completedInvIn.length > 0
+          ? `Completed ${completedInvIn[0].subject} recommendation`
           : 'Complete a coaching recommendation',
       },
       {
@@ -469,8 +468,8 @@ export function computeStudentInsights(
       {
         id:       'five-interventions',
         label:    '5 Recommendations Completed',
-        achieved: completedInv.length >= 5,
-        detail:   `${completedInv.length} recommendation${completedInv.length !== 1 ? 's' : ''} completed`,
+        achieved: completedInvIn.length >= 5,
+        detail:   `${completedInvIn.length} recommendation${completedInvIn.length !== 1 ? 's' : ''} completed`,
       },
       {
         id:       'risk-reduced',
@@ -535,9 +534,7 @@ export function computeStudentInsights(
     return { score, label, color, bg, border, contributors };
   })();
 
-  const interventionImpact: InterventionImpact = studentId !== undefined
-    ? computeInterventionImpact(studentId)
-    : { totalCompleted: 0, successful: 0, partialSuccess: 0, avgImprovement: 0, successRate: 0, bestType: null, bestTypeGain: 0, typeEffectiveness: [] };
+  const interventionImpact: InterventionImpact = computeInterventionImpact(completedInvIn, outcomesIn);
 
   return {
     subjectProfiles,

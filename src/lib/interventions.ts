@@ -254,10 +254,10 @@ export function syncOutcomesFromMarks(
 }
 
 // ── Compute impact summary ────────────────────────────────────────────────────
+// Pure function — accepts pre-fetched arrays so the engine remains side-effect free.
+// Pages call getCompletedInterventions/getOutcomes once and pass the results here.
 
-export function computeInterventionImpact(studentId: number): InterventionImpact {
-  const outcomes     = getOutcomes(studentId);
-  const completed    = getInterventions(studentId).filter(i => i.status === 'completed');
+export function computeInterventionImpact(completed: Intervention[], outcomes: Outcome[]): InterventionImpact {
   const successful   = outcomes.filter(o => o.result === 'improved');
   const partial      = outcomes.filter(o => o.result === 'unchanged' && o.improvement > 0);
   const allImprovements = outcomes.map(o => o.improvement);

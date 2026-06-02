@@ -18,7 +18,7 @@ import { computeStudentInsights } from '../../../lib/studentInsights';
 import {
   getActiveInterventions, getCompletedInterventions, getOutcomes,
   syncInterventionsFromRisk, startIntervention, completeIntervention,
-  computeInterventionImpact, type Intervention,
+  type Intervention,
 } from '../../../lib/interventions';
 import type { StudentSession } from '../../../lib/auth';
 
@@ -191,16 +191,17 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const totalTopics    = 35;
   const libraryPct     = Math.round((topicsStarted / totalTopics) * 100);
 
-  // ── Student Intelligence Engine ───────────────────────────────────────────
-  const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr, session.student_id);
-  const { academicStory } = insights_engine;
-
-  // ── Interventions ─────────────────────────────────────────────────────────
-  syncInterventionsFromRisk(session.student_id, insights_engine.examRiskSubjects, insights_engine.revisionRecs);
-  const activeInterventions    = getActiveInterventions(session.student_id);
+  // ── Interventions (fetched before engine so engine receives them as pure inputs) ─
   const completedInterventions = getCompletedInterventions(session.student_id);
   const interventionOutcomes   = getOutcomes(session.student_id);
-  const interventionImpact     = computeInterventionImpact(session.student_id);
+
+  // ── Student Intelligence Engine ───────────────────────────────────────────
+  const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr, completedInterventions, interventionOutcomes);
+  const { academicStory, interventionImpact } = insights_engine;
+
+  // ── Post-engine: sync new interventions from detected risk ────────────────
+  syncInterventionsFromRisk(session.student_id, insights_engine.examRiskSubjects, insights_engine.revisionRecs);
+  const activeInterventions = getActiveInterventions(session.student_id);
 
   // Focus item
   const focusItem = (() => {

@@ -351,7 +351,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
       ? { targetAps: apsGoal, targetCareer: null, updatedAt: '' }
       : { targetAps: null, targetCareer: null, updatedAt: '' };
     const todayStr = new Date().toISOString().slice(0, 10);
-    const ins = computeStudentInsights(storedMarks, [], [], goals, todayStr, session.student_id);
+    const ins = computeStudentInsights(storedMarks, [], [], goals, todayStr, [], []);
     return ins.apsRoadmap.slice(0, 6);
   }, [storedMarks, apsGoal]);
 

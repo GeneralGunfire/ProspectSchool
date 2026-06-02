@@ -146,14 +146,16 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   const subjectRank = new Map(subjectAverages.map((s, i) => [s.subject, i + 1]));
   const rankedCount = subjectAverages.filter(s => s.avg >= 0).length;
 
+  // ── Interventions (fetched before engine — keep engine pure) ────
+  const completedInv = getCompletedInterventions(session.student_id);
+  const allOutcomes  = getOutcomes(session.student_id);
+
   // ── Intelligence engine ───────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);
-  const insights = computeStudentInsights(markedResults, [], [], goals, todayStr, session.student_id);
+  const insights = computeStudentInsights(markedResults, [], [], goals, todayStr, completedInv, allOutcomes);
   const { examRiskSubjects, learnerStatus } = insights;
 
   // ── Intervention outcomes per subject ─────────────────────────
-  const allOutcomes  = getOutcomes(session.student_id);
-  const completedInv = getCompletedInterventions(session.student_id);
   // Map subject → { completed, successful, avgImprovement }
   const subjectImpact = new Map<string, { completed: number; successful: number; avgImprovement: number }>();
   for (const inv of completedInv) {
