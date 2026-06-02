@@ -97,9 +97,10 @@ function PerformanceZoneBar({ avg }: { avg: number }) {
 
 interface StudentMarksPageProps {
   session: StudentSession;
+  onNavigate: (page: string) => void;
 }
 
-export default function StudentMarksPage({ session }: StudentMarksPageProps) {
+export default function StudentMarksPage({ session, onNavigate }: StudentMarksPageProps) {
   const [results, setResults] = useState<StudentResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
@@ -138,6 +139,79 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
 
   const subjectRank = new Map(subjectAverages.map((s, i) => [s.subject, i + 1]));
   const rankedCount = subjectAverages.filter(s => s.avg >= 0).length;
+
+  // ── Action items ──────────────────────────────────────────────
+  type ActionItem = {
+    type: 'weak-subject' | 'exam-soon' | 'aps-opportunity';
+    subject?: string;
+    avg?: number;
+    trend?: number | null;
+    actions: { label: string; page: string }[];
+    headline: string;
+    body: string;
+  };
+
+  const actionItems: ActionItem[] = [];
+
+  const weakCandidates = subjectAverages.filter(s => s.avg >= 0 && s.avg < 65).slice(0, 1);
+  for (const candidate of weakCandidates) {
+    const subjectItems = grouped.get(candidate.subject) ?? [];
+    const markedSorted = subjectItems
+      .filter(r => r.mark !== null)
+      .sort((a, b) => new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime());
+    const recent3  = markedSorted.slice(-3).map(r => (r.mark! / r.total) * 100);
+    const prev3    = markedSorted.slice(-6, -3).map(r => (r.mark! / r.total) * 100);
+    const recentAvg  = recent3.length ? recent3.reduce((a, b) => a + b, 0) / recent3.length : null;
+    const prevAvg    = prev3.length   ? prev3.reduce((a, b)   => a + b, 0) / prev3.length   : null;
+    const subjectTrend = recentAvg !== null && prevAvg !== null ? recentAvg - prevAvg : null;
+
+    actionItems.push({
+      type: 'weak-subject',
+      subject: candidate.subject,
+      avg: Math.round(candidate.avg),
+      trend: subjectTrend,
+      headline: 'Your Highest Impact Opportunity',
+      body: `Improving ${candidate.subject} would have the largest effect on your overall average.${
+        subjectTrend !== null && subjectTrend < -3
+          ? ' Recent results show a decline — this needs attention now.'
+          : ''
+      }`,
+      actions: [
+        { label: 'Open Library', page: 'library' },
+        { label: 'Practice Past Papers', page: 'pastpapers' },
+      ],
+    });
+  }
+
+  // ── Subject health scores ─────────────────────────────────────
+  const subjectHealthScores = new Map<string, { score: number; label: string; color: string }>();
+  for (const [subject, items] of grouped.entries()) {
+    const marked = items.filter(r => r.mark !== null);
+    if (marked.length < 2) continue;
+    const avg = marked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / marked.length;
+    const hsorted = [...marked].sort((a, b) =>
+      new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime()
+    );
+    const hr3 = hsorted.slice(-3).map(r => (r.mark! / r.total) * 100);
+    const hp3 = hsorted.slice(-6, -3).map(r => (r.mark! / r.total) * 100);
+    const hrAvg = hr3.length ? hr3.reduce((a, b) => a + b, 0) / hr3.length : avg;
+    const hpAvg = hp3.length ? hp3.reduce((a, b) => a + b, 0) / hp3.length : avg;
+    const trendScore = Math.min(100, Math.max(0, 50 + (hrAvg - hpAvg) * 2));
+    const pcts = marked.map(r => (r.mark! / r.total) * 100);
+    const mean = pcts.reduce((a, b) => a + b, 0) / pcts.length;
+    const stdDev = Math.sqrt(pcts.reduce((s, p) => s + Math.pow(p - mean, 2), 0) / pcts.length);
+    const consistencyScore = Math.min(100, Math.max(0, 100 - stdDev * 2));
+    const healthScore = Math.round(avg * 0.5 + trendScore * 0.25 + consistencyScore * 0.25);
+    const label = healthScore >= 80 ? 'Strong'
+                : healthScore >= 65 ? 'Steady'
+                : healthScore >= 50 ? 'Watch'
+                :                     'Needs Attention';
+    const color = healthScore >= 80 ? 'text-emerald-600'
+                : healthScore >= 65 ? 'text-blue-600'
+                : healthScore >= 50 ? 'text-amber-600'
+                :                     'text-red-500';
+    subjectHealthScores.set(subject, { score: healthScore, label, color });
+  }
 
   return (
     <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
@@ -255,6 +329,67 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
             );
           })()}
 
+          {/* Academic Action Center */}
+          {actionItems.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mb-6"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                Recommended Actions
+              </p>
+              <div className="space-y-3">
+                {actionItems.map((item, i) => (
+                  <div key={i} className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                    <div className="px-5 pt-5 pb-4 border-b border-stone-100">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                        {item.headline}
+                      </p>
+                      {item.subject && item.avg !== undefined && (
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          <p className="font-black text-stone-900 text-base">{item.subject}</p>
+                          <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                            item.avg >= 70 ? 'bg-emerald-50 text-emerald-700' :
+                            item.avg >= 50 ? 'bg-amber-50 text-amber-700' :
+                                             'bg-red-50 text-red-600'
+                          }`}>
+                            {item.avg}% Average
+                          </span>
+                          {item.trend !== null && item.trend !== undefined && (
+                            <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
+                              item.trend > 1  ? 'bg-emerald-50 text-emerald-600' :
+                              item.trend < -1 ? 'bg-red-50 text-red-500' :
+                                                'bg-stone-100 text-stone-400'
+                            }`}>
+                              {item.trend > 1 ? 'Improving' : item.trend < -1 ? 'Declining' : 'Stable'}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <p className="text-sm text-stone-500 leading-relaxed">{item.body}</p>
+                    </div>
+                    <div className="px-5 py-3 flex flex-wrap gap-2">
+                      {item.actions.map((action, j) => (
+                        <button
+                          key={j}
+                          onClick={() => onNavigate(action.page)}
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
+                            j === 0
+                              ? 'bg-stone-900 text-white hover:bg-stone-700'
+                              : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                          }`}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {/* Strength / Weakness Banner */}
           {subjectAverages.filter(s => s.avg >= 0).length >= 2 && (() => {
             const valid = subjectAverages.filter(s => s.avg >= 0);
@@ -368,7 +503,17 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-black text-stone-900 leading-snug">{subject}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-sm font-black text-stone-900 leading-snug">{subject}</p>
+                        {subjectHealthScores.has(subject) && (() => {
+                          const h = subjectHealthScores.get(subject)!;
+                          return (
+                            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full bg-stone-100 ${h.color}`}>
+                              {h.score}/100
+                            </span>
+                          );
+                        })()}
+                      </div>
                       <p className="text-xs text-stone-400 mt-0.5">
                         {items.length} assessment{items.length !== 1 ? 's' : ''}
                         {gl && ` · ${gl.label}`}
@@ -420,6 +565,46 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
                         className="overflow-hidden"
                       >
                         <div className="border-t border-stone-100">
+
+                          {/* Subject Intelligence snapshot */}
+                          <div className="px-5 pt-4 pb-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                              {
+                                label: 'Best Result',
+                                value: markedItems.length > 0
+                                  ? `${Math.round(Math.max(...markedItems.map(r => (r.mark! / r.total) * 100)))}%`
+                                  : '—',
+                              },
+                              {
+                                label: 'Assessments',
+                                value: String(items.length),
+                              },
+                              {
+                                label: 'Consistency',
+                                value: (() => {
+                                  if (markedItems.length < 3) return '—';
+                                  const cp = markedItems.map(r => (r.mark! / r.total) * 100);
+                                  const cm = cp.reduce((a, b) => a + b, 0) / cp.length;
+                                  const cs = Math.sqrt(cp.reduce((s, p) => s + Math.pow(p - cm, 2), 0) / cp.length);
+                                  return cs < 8 ? 'High' : cs < 16 ? 'Moderate' : 'Low';
+                                })(),
+                              },
+                              {
+                                label: 'Projected Range',
+                                value: (() => {
+                                  if (markedItems.length < 2) return '—';
+                                  const lo = projectedAvg(50);
+                                  const hi = projectedAvg(90);
+                                  return `${lo.toFixed(0)}–${hi.toFixed(0)}%`;
+                                })(),
+                              },
+                            ].map(stat => (
+                              <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-2.5 text-center">
+                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">{stat.label}</p>
+                                <p className="font-black text-stone-900 text-sm">{stat.value}</p>
+                              </div>
+                            ))}
+                          </div>
 
                           {/* Achievement chips */}
                           {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (

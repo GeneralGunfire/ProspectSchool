@@ -9,6 +9,7 @@ import {
   markHomeworkDone, unmarkHomeworkDone, fetchStudentCompletions,
   EVENT_COLORS, EVENT_LABELS, type SchoolEvent,
 } from '../../../lib/events';
+import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -51,9 +52,10 @@ const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface StudentCalendarPageProps {
   session: StudentSession;
+  onNavigate: (page: string) => void;
 }
 
-export default function StudentCalendarPage({ session }: StudentCalendarPageProps) {
+export default function StudentCalendarPage({ session, onNavigate }: StudentCalendarPageProps) {
   const today = new Date();
   const [year, setYear]     = useState(today.getFullYear());
   const [month, setMonth]   = useState(today.getMonth() + 1);
@@ -63,6 +65,7 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
   const [direction, setDirection] = useState<1 | -1>(1);
   const [subjectIds, setSubjectIds] = useState<number[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [allMarks, setAllMarks] = useState<StudentResult[]>([]);
 
   // Homework completions
   const [completions, setCompletions] = useState<Set<number>>(new Set());
@@ -88,6 +91,10 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
     // Load completions once
     fetchStudentCompletions(session.student_id, session.school_id)
       .then(setCompletions);
+    // Load marks independently (non-blocking)
+    fetchStudentResults(session.student_id, session.school_id).then(marks => {
+      setAllMarks(marks.filter(m => m.mark !== null));
+    });
   }, []);
 
   // Load events whenever month/year or subjectIds change
@@ -176,6 +183,131 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
     return acc;
   }, {});
 
+  // ── Derived computations for intelligence sections ────────────
+
+  // All future events from today onwards
+  const futureEvents = events.filter(e => e.event_date >= todayStr);
+
+  // This week boundaries (Sun–Sat)
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() - today.getDay());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  const weekStartStr = toDateStr(weekStart.getFullYear(), weekStart.getMonth() + 1, weekStart.getDate());
+  const weekEndStr   = toDateStr(weekEnd.getFullYear(),   weekEnd.getMonth() + 1,   weekEnd.getDate());
+
+  const thisWeekEvents      = events.filter(e => e.event_date >= weekStartStr && e.event_date <= weekEndStr);
+  const thisWeekHomework    = thisWeekEvents.filter(e => e.event_type === 'homework');
+  const thisWeekAssessments = thisWeekEvents.filter(e => e.event_type === 'assessment');
+  const thisWeekExams       = thisWeekEvents.filter(e => e.event_type === 'exam');
+
+  const estimatedHours = (
+    thisWeekHomework.length * 0.5 +
+    thisWeekAssessments.length * 1.5 +
+    thisWeekExams.length * 2
+  );
+
+  const dayEventCounts = new Map<string, number>();
+  for (const e of thisWeekEvents) {
+    dayEventCounts.set(e.event_date, (dayEventCounts.get(e.event_date) ?? 0) + 1);
+  }
+  const busiestDay = dayEventCounts.size > 0
+    ? Array.from(dayEventCounts.entries()).reduce((a, b) => b[1] > a[1] ? b : a)
+    : null;
+  const busiestDayLabel = busiestDay
+    ? new Date(busiestDay[0] + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'long' })
+    : null;
+
+  const nextExam = futureEvents
+    .filter(e => e.event_type === 'exam')
+    .sort((a, b) => a.event_date.localeCompare(b.event_date))[0] ?? null;
+
+  const nextAssessment = futureEvents
+    .filter(e => e.event_type === 'assessment')
+    .sort((a, b) => a.event_date.localeCompare(b.event_date))[0] ?? null;
+
+  function daysUntil(dateStr: string): number {
+    return Math.round(
+      (new Date(dateStr + 'T00:00:00').getTime() - new Date(todayStr + 'T00:00:00').getTime()) / 86400000
+    );
+  }
+
+  const priorityDeadlines = futureEvents
+    .filter(e => e.event_type !== 'other')
+    .sort((a, b) => a.event_date.localeCompare(b.event_date))
+    .slice(0, 7);
+
+  const conflictDays = Array.from(dayEventCounts.entries())
+    .filter(([, count]) => count >= 3)
+    .map(([date]) => ({
+      date,
+      count: dayEventCounts.get(date)!,
+      label: new Date(date + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'short' }),
+    }));
+
+  const futureDaysThisWeek = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    return toDateStr(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  }).filter(ds => ds >= todayStr);
+
+  const lightestStudyDay = futureDaysThisWeek.length > 0
+    ? futureDaysThisWeek.reduce((lightest, ds) =>
+        (dayEventCounts.get(ds) ?? 0) < (dayEventCounts.get(lightest) ?? 0) ? ds : lightest
+      )
+    : null;
+
+  const lightestDayLabel = lightestStudyDay
+    ? new Date(lightestStudyDay + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'long' })
+    : null;
+
+  const revisionSuggestions = (() => {
+    if (allMarks.length === 0) return [];
+
+    const subjectMap = new Map<string, { sum: number; total: number; count: number }>();
+    for (const m of allMarks) {
+      const key = m.subject_label || 'Other';
+      const e = subjectMap.get(key) ?? { sum: 0, total: 0, count: 0 };
+      subjectMap.set(key, { sum: e.sum + m.mark!, total: e.total + m.total, count: e.count + 1 });
+    }
+
+    const upcomingHighPriority = futureEvents
+      .filter(e => (e.event_type === 'exam' || e.event_type === 'assessment') && daysUntil(e.event_date) <= 21)
+      .sort((a, b) => a.event_date.localeCompare(b.event_date));
+
+    const suggestions: { subject: string; avg: number; event: SchoolEvent; days: number }[] = [];
+
+    for (const [subject, data] of subjectMap.entries()) {
+      const avg = Math.round((data.sum / data.total) * 100);
+      const keyword = subject.split(' ')[0].toLowerCase();
+      const matchingEvent = upcomingHighPriority.find(e =>
+        e.title.toLowerCase().includes(keyword) ||
+        subject.toLowerCase().includes(e.title.toLowerCase().split(' ')[0])
+      );
+      if (matchingEvent) {
+        suggestions.push({ subject, avg, event: matchingEvent, days: daysUntil(matchingEvent.event_date) });
+      }
+    }
+
+    if (suggestions.length === 0 && upcomingHighPriority.length > 0) {
+      const weakest = Array.from(subjectMap.entries())
+        .map(([subject, data]) => ({ subject, avg: Math.round((data.sum / data.total) * 100) }))
+        .sort((a, b) => a.avg - b.avg)
+        .slice(0, 2);
+
+      for (const s of weakest) {
+        suggestions.push({
+          subject: s.subject,
+          avg: s.avg,
+          event: upcomingHighPriority[0],
+          days: daysUntil(upcomingHighPriority[0].event_date),
+        });
+      }
+    }
+
+    return suggestions.slice(0, 2);
+  })();
+
   return (
     <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
 
@@ -201,7 +333,7 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
             Today
           </button>
 
-          {/* Month nav — paired button group */}
+          {/* Month nav */}
           <div className="flex items-center bg-white border border-stone-200 rounded-xl overflow-hidden">
             <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-stone-200">
               <ChevronLeft className="w-4 h-4 text-stone-600" />
@@ -247,10 +379,192 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
         </div>
       </motion.div>
 
+      {/* ── Section 1: Workload Intelligence ────────────────── */}
+      {thisWeekEvents.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-[#1C1917] rounded-2xl p-5 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            {[
+              { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-blue-400' },
+              { label: 'Assessments', value: thisWeekAssessments.length, color: 'text-emerald-400' },
+              { label: 'Exams',       value: thisWeekExams.length,       color: 'text-red-400' },
+              {
+                label: 'Est. Hours',
+                value: estimatedHours % 1 === 0 ? `${estimatedHours}h` : `${estimatedHours.toFixed(1)}h`,
+                color: 'text-amber-400',
+              },
+            ].map(stat => (
+              <div key={stat.label} className="bg-white/5 rounded-xl px-3 py-2.5 text-center">
+                <p className={`font-black text-xl leading-none ${stat.color}`}>{stat.value}</p>
+                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+          {busiestDayLabel && (
+            <p className="text-xs text-stone-500">
+              Busiest day: <span className="text-white font-bold">{busiestDayLabel}</span>
+              {estimatedHours >= 6 && <span className="text-amber-400 font-bold ml-2">— Heavy week</span>}
+              {estimatedHours >= 3 && estimatedHours < 6 && <span className="text-blue-400 font-bold ml-2">— Manageable</span>}
+              {estimatedHours < 3 && <span className="text-emerald-400 font-bold ml-2">— Light week</span>}
+            </p>
+          )}
+        </motion.div>
+      )}
+
+      {/* ── Section 2: Countdown cards ──────────────────────── */}
+      {(nextExam || nextAssessment) && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+          {([nextExam, nextAssessment] as (SchoolEvent | null)[]).filter(Boolean).map((ev, i) => {
+            const days = daysUntil(ev!.event_date);
+            const urgencyColor = days <= 3 ? 'border-red-200 bg-red-50'
+                               : days <= 7 ? 'border-amber-200 bg-amber-50'
+                               :             'border-stone-200 bg-white';
+            const daysColor    = days <= 3 ? 'text-red-600'
+                               : days <= 7 ? 'text-amber-600'
+                               :             'text-stone-900';
+            return (
+              <motion.div key={ev!.id}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
+                className={`rounded-2xl border p-4 ${urgencyColor}`}
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                  {ev!.event_type === 'exam' ? 'Next Exam' : 'Next Assessment'}
+                </p>
+                <p className="font-black text-stone-900 text-sm leading-tight mb-2">{ev!.title}</p>
+                <div className="flex items-end gap-1.5">
+                  <span className={`font-black text-3xl leading-none ${daysColor}`}>{days}</span>
+                  <span className="text-sm font-bold text-stone-400 mb-0.5">
+                    {days === 1 ? 'day' : 'days'} remaining
+                  </span>
+                </div>
+                <p className="text-xs text-stone-400 mt-1">{formatDayFull(ev!.event_date)}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Section 3: Priority Deadlines ───────────────────── */}
+      {priorityDeadlines.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Priority Deadlines</p>
+          <div className="space-y-2">
+            {priorityDeadlines.map((ev) => {
+              const days = daysUntil(ev.event_date);
+              const urgency = days === 0 ? { dot: 'bg-red-500',   label: 'Today',        text: 'text-red-600' }
+                            : days === 1 ? { dot: 'bg-red-400',   label: 'Tomorrow',     text: 'text-red-500' }
+                            : days <= 3  ? { dot: 'bg-amber-500', label: `${days} days`, text: 'text-amber-600' }
+                            : days <= 7  ? { dot: 'bg-blue-400',  label: `${days} days`, text: 'text-blue-600' }
+                            :              { dot: 'bg-stone-300',  label: `${days} days`, text: 'text-stone-400' };
+              const typeLabel = EVENT_LABELS[ev.event_type];
+              return (
+                <div key={ev.id} className="flex items-center gap-3 py-1.5">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${urgency.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
+                    <p className="text-[11px] text-stone-400">{typeLabel}</p>
+                  </div>
+                  <span className={`text-[11px] font-black shrink-0 ${urgency.text}`}>{urgency.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Section 4: Conflict Detection ───────────────────── */}
+      {conflictDays.filter(d => d.date >= todayStr).length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Schedule Warning</p>
+          {conflictDays.filter(d => d.date >= todayStr).map(d => (
+            <div key={d.date} className="flex items-start gap-2 mb-1 last:mb-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
+              <p className="text-sm font-bold text-stone-700">
+                {d.label} has {d.count} deadlines — consider starting work earlier this week.
+              </p>
+            </div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* ── Section 5: Study Suggestion ─────────────────────── */}
+      {lightestDayLabel && thisWeekEvents.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.14, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-stone-50 border border-stone-200 rounded-2xl p-4 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Suggested Study Time</p>
+          <p className="text-sm font-bold text-stone-700">
+            <span className="text-stone-900 font-black">{lightestDayLabel}</span> is your lightest day this week — good time to study ahead.
+          </p>
+        </motion.div>
+      )}
+
+      {/* ── Section 6: Revision Suggestions ─────────────────── */}
+      {revisionSuggestions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.16, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Recommended Revision</p>
+          <div className="space-y-3">
+            {revisionSuggestions.map((s, i) => (
+              <div key={i} className="flex items-start justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="font-black text-stone-900 text-sm">{s.subject}</p>
+                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                      s.avg >= 70 ? 'bg-emerald-50 text-emerald-600' :
+                      s.avg >= 50 ? 'bg-amber-50 text-amber-600' :
+                                    'bg-red-50 text-red-500'
+                    }`}>
+                      {s.avg}% avg
+                    </span>
+                  </div>
+                  <p className="text-xs text-stone-400">
+                    {s.event.title} — {s.days === 0 ? 'Today' : s.days === 1 ? 'Tomorrow' : `${s.days} days away`}
+                  </p>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={() => onNavigate('library')}
+                    className="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
+                  >
+                    Library
+                  </button>
+                  <button
+                    onClick={() => onNavigate('pastpapers')}
+                    className="px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 text-[11px] font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                  >
+                    Papers
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Calendar grid / list ─────────────────────────────── */}
       <div className="flex flex-col xl:flex-row gap-5">
         <div className="flex-1 min-w-0">
 
-          {/* ── LIST VIEW ───────────────────────────────────────── */}
+          {/* LIST VIEW */}
           <AnimatePresence mode="wait" initial={false}>
             {viewMode === 'list' ? (
               <motion.div
@@ -331,7 +645,7 @@ export default function StudentCalendarPage({ session }: StudentCalendarPageProp
               </motion.div>
 
             ) : (
-              /* ── GRID VIEW ──────────────────────────────────────── */
+              /* GRID VIEW */
               <motion.div
                 key="grid"
                 initial={{ opacity: 0, y: 8 }}
