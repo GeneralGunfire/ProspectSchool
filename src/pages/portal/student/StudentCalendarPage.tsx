@@ -297,7 +297,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
       >
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Calendar</p>
-          <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+          <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
             My Schedule
           </h1>
         </div>
@@ -324,7 +324,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
                   transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="block text-sm font-black text-[#1C1917] py-1.5"
+                  className="block text-sm font-black text-brand-dark py-1.5"
                 >
                   {MONTHS[month - 1]} {year}
                 </motion.span>
@@ -340,7 +340,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'grid' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'grid' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" /> Grid
@@ -348,7 +348,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'list' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'list' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <List className="w-3.5 h-3.5" /> List
@@ -362,7 +362,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-[#1C1917] rounded-2xl p-5 mb-4"
+          className="bg-brand-dark rounded-2xl p-5 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
@@ -591,7 +591,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               >
                 {loading ? (
                   <div className="flex items-center justify-center py-24">
-                    <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
                   </div>
                 ) : allSorted.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-24">
@@ -680,7 +680,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
 
                   {loading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
                     </div>
                   ) : (
                     <AnimatePresence mode="wait" initial={false}>
@@ -706,15 +706,15 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                               key={day}
                               onClick={() => handleDayClick(day)}
                               className={`border-r border-b border-stone-100 last:border-r-0 min-h-[90px] p-2 cursor-pointer relative transition-colors hover:bg-stone-50 ${
-                                isSelected ? 'bg-stone-50 ring-2 ring-inset ring-[#1C1917]' : ''
+                                isSelected ? 'bg-stone-50 ring-2 ring-inset ring-brand-dark' : ''
                               }`}
                             >
                               <div className="mb-1 flex items-center justify-between">
                                 <span className={`text-xs font-black w-7 h-7 flex items-center justify-center rounded-full transition-colors ${
                                   isToday
-                                    ? 'bg-[#1C1917] text-white'
+                                    ? 'bg-brand-dark text-white'
                                     : isSelected
-                                    ? 'text-[#1C1917]'
+                                    ? 'text-brand-dark'
                                     : 'text-stone-400'
                                 }`}>
                                   {day}
@@ -763,7 +763,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
                   <div>
-                    <p className="text-xs font-black text-[#1C1917]">{formatDayFull(selectedDay)}</p>
+                    <p className="text-xs font-black text-brand-dark">{formatDayFull(selectedDay)}</p>
                     <p className="text-[10px] text-stone-400 font-bold mt-0.5">
                       {dayEvents.length === 0 ? 'No events' : `${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}`}
                     </p>
@@ -842,7 +842,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                   )}
                                   {ev.attachment_url && (
                                     <button onClick={() => handleDownload(ev)} disabled={downloading}
-                                      className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50">
+                                      className="flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 transition-colors disabled:opacity-50">
                                       <Paperclip className="w-3.5 h-3.5" />
                                       {downloading ? 'Opening…' : ev.attachment_name ?? 'Download'}
                                     </button>

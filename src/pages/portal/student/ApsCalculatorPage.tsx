@@ -395,7 +395,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
               APS & Universities
             </p>
-            <h1 className="font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+            <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
               APS Calculator
             </h1>
             <p className="text-sm text-stone-400 mt-1">
@@ -440,7 +440,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
                       marksLoaded
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-[#1C1917] text-white hover:bg-stone-700 disabled:opacity-50'
+                        : 'bg-brand-dark text-white hover:bg-stone-700 disabled:opacity-50'
                     }`}
                   >
                     {loadingMarks ? (
@@ -590,7 +590,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 onClick={() => setShowGoalPlanner(s => !s)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-black transition-all ${
                   showGoalPlanner
-                    ? 'bg-[#1C1917] text-white'
+                    ? 'bg-brand-dark text-white'
                     : 'bg-white border border-stone-200 text-stone-600 hover:border-stone-400'
                 }`}
               >

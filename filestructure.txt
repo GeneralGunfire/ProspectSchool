@@ -273,10 +273,13 @@
         |-- announcements.ts
         |-- auth.ts
         |-- events.ts
+        |-- interventions.ts
         |-- marks.ts
         |-- myFuture.ts
         |-- pastPapers.ts
         |-- resources.ts
+        |-- studentGoals.ts
+        |-- studentInsights.ts
         |-- students.ts
         |-- studentTasks.ts
         |-- studyProgress.ts

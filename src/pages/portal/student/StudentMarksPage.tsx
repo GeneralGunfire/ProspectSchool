@@ -55,7 +55,7 @@ function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-[#1C1917] text-white text-xs font-bold px-3 py-2 rounded-xl shadow-xl">
+    <div className="bg-brand-dark text-white text-xs font-bold px-3 py-2 rounded-xl shadow-xl">
       <p className="font-black">{d.fullTitle}</p>
       <p className="text-white/70 mt-0.5">{d.mark}/{d.total} — {d.pct}%</p>
     </div>
@@ -82,7 +82,7 @@ function PerformanceZoneBar({ avg }: { avg: number }) {
           <div key={z.from} style={{ width: `${z.to - z.from}%`, background: z.color }} />
         ))}
         <div
-          className="absolute top-0 bottom-0 w-0.5 bg-[#1C1917] rounded-full"
+          className="absolute top-0 bottom-0 w-0.5 bg-brand-dark rounded-full"
           style={{ left: `${clamped}%`, transform: 'translateX(-50%)' }}
         />
       </div>
@@ -252,9 +252,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
   return (
     <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
-      <div className="mb-6">
-        <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-1">Results</p>
-        <h1 className="text-2xl font-black font-display text-stone-900 tracking-tight">My Marks</h1>
+      <div className="mb-7">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Results</p>
+        <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>My Marks</h1>
       </div>
 
       {loading ? (
@@ -273,7 +273,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
           {/* Overall summary */}
           {overallAvg !== null && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-[#1C1917] text-white rounded-2xl p-5 mb-5 flex items-center gap-4">
+              className="bg-brand-dark text-white rounded-2xl p-5 mb-5 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                 <TrendingUp className="w-5 h-5" />
               </div>
@@ -1100,7 +1100,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                   {/* Insight */}
                   {insight && (
-                    <div className="bg-stone-900 text-white rounded-2xl px-4 py-3 mb-5 flex items-start gap-3">
+                    <div className="bg-brand-dark text-white rounded-2xl px-4 py-3 mb-5 flex items-start gap-3">
                       <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                       <p className="text-sm font-bold leading-relaxed">{insight}</p>
                     </div>

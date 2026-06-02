@@ -28,18 +28,33 @@ export interface Intervention {
 export interface Outcome {
   interventionId: string;
   subject:        string;
+  type:           InterventionType;
   previousAvg:    number;
   newAvg:         number;
   improvement:    number;         // newAvg - previousAvg
+  latestMark:     number;         // the specific mark that triggered the outcome
   result:         OutcomeResult;
   recordedAt:     string;
 }
 
 export interface InterventionImpact {
   totalCompleted:    number;
-  successful:        number;      // improvement > 2%
-  avgImprovement:    number;      // avg of successful improvements
+  successful:        number;      // improvement >= 3% OR latestMark >= 70
+  partialSuccess:    number;      // improvement > 0 but below threshold
+  avgImprovement:    number;      // avg improvement across all completed
   successRate:       number;      // successful / totalCompleted * 100
+  bestType:          InterventionType | null;
+  bestTypeGain:      number;
+  typeEffectiveness: { type: InterventionType; successRate: number; avgGain: number; count: number }[];
+}
+
+export interface GrowthTimelineEvent {
+  date:    string;        // ISO date string
+  type:    'goal_set' | 'intervention_started' | 'intervention_completed' | 'outcome_recorded' | 'mark_recorded';
+  label:   string;
+  detail:  string;
+  delta?:  number;        // improvement if outcome
+  positive?: boolean;
 }
 
 // ── Storage keys ──────────────────────────────────────────────────────────────

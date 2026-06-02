@@ -200,7 +200,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           <div className="px-5 pt-5 pb-2">
             <button
               onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 hover:text-stone-900 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> My Future
             </button>
@@ -219,16 +219,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="px-6 py-8 sm:px-8 lg:px-10 max-w-5xl mx-auto space-y-8 pb-16">
+    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto space-y-6 pb-16">
 
       {/* ── Section 1: Profile Hero ─────────────────────────────────────────── */}
       <Section delay={0}>
         <div className="rounded-3xl px-7 py-6 flex flex-col sm:flex-row sm:items-center gap-5 bg-brand-dark">
           <div className="flex-1 min-w-0">
-            <p className="text-white/40 text-xs font-bold uppercase tracking-[0.18em] mb-1">
+            <p className="text-white/40 text-[11px] font-black uppercase tracking-[0.22em] mb-1">
               {session.school_name}
             </p>
-            <h1 className="text-white font-black text-2xl leading-tight">
+            <h1 className="text-white font-display font-black text-2xl md:text-3xl leading-tight" style={{ letterSpacing: '-0.03em' }}>
               {session.name} {session.surname}
             </h1>
             <p className="text-white/50 text-sm mt-0.5">

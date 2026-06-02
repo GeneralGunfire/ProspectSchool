@@ -116,7 +116,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
         className="mb-6"
       >
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Resources</p>
-        <h1 className="font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+        <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Class Resources
         </h1>
         <p className="text-sm text-stone-400 mt-1">Study materials from your teachers.</p>
