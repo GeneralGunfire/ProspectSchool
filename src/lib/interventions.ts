@@ -14,6 +14,7 @@ export type OutcomeResult      = 'improved' | 'unchanged' | 'declined';
 export interface Intervention {
   id:            string;
   studentId:     number;
+  teacherId?:    number;       // teacher who teaches this subject to the student
   subject:       string;
   type:          InterventionType;
   reason:        InterventionReason;
@@ -65,6 +66,7 @@ function rowToIntervention(r: any): Intervention {
   return {
     id:           r.id,
     studentId:    r.student_id,
+    teacherId:    r.teacher_id   ?? undefined,
     subject:      r.subject,
     type:         r.type         as InterventionType,
     reason:       r.reason       as InterventionReason,
@@ -185,12 +187,34 @@ export async function createIntervention(
 
   const id = `${studentId}_${subject}_${type}_${Date.now()}`;
 
+  // Look up which teacher teaches this subject to this student.
+  // teacher_students links teacher_id → student_id → subject_id.
+  // We match on subject label by joining through subjects table.
+  const { data: teacherLink } = await supabaseAdmin
+    .from('teacher_students')
+    .select('teacher_id, subjects(label)')
+    .eq('student_id', studentId)
+    .then(({ data, error }) => {
+      if (error || !data) return { data: null };
+      // Match on first word of subject label (case-insensitive)
+      const subjectWord = subject.split(' ')[0].toLowerCase();
+      const match = data.find((l: any) => {
+        const label: string = l.subjects?.label ?? '';
+        return label.toLowerCase().includes(subjectWord) ||
+               subjectWord.includes(label.split(' ')[0].toLowerCase());
+      });
+      return { data: match ?? null };
+    });
+
+  const teacherId: number | undefined = (teacherLink as any)?.teacher_id ?? undefined;
+
   const { data, error } = await supabaseAdmin
     .from('interventions')
     .insert({
       id,
       student_id:   studentId,
       school_id:    schoolId,
+      teacher_id:   teacherId ?? null,
       subject,
       type,
       reason,
@@ -206,7 +230,7 @@ export async function createIntervention(
   if (error || !data) {
     // Return a local object on insert failure so the UI doesn't break
     return {
-      id, studentId, subject, type, reason, description, page,
+      id, studentId, teacherId, subject, type, reason, description, page,
       createdAt:  now.toISOString(),
       expiresAt:  expires.toISOString(),
       status:     'recommended',
