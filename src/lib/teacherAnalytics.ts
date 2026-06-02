@@ -808,3 +808,49 @@ export async function fetchAnnouncementImpact(
 
   return result;
 }
+
+// ── 13. Evidence-based intervention type selection ────────────────────────────
+// Eligible types are passed in by the caller (rule-based gatekeeping).
+// Returns the type with the best confidence-weighted score from historical outcomes.
+// Score = avgGain * min(n/10, 1) -- dampens small samples: n=3->30%, n>=10->100%.
+// Returns null when no historical data exists -- caller falls back to rule-based default.
+// Scoped to school_id to prevent cross-school data bleed.
+
+export async function fetchBestInterventionType(
+  schoolId:      number,
+  subject:       string,
+  eligibleTypes: InterventionType[],
+): Promise<InterventionType | null> {
+  if (eligibleTypes.length === 0) return null;
+
+  const { data } = await supabaseAdmin
+    .from('outcomes')
+    .select('type, improvement')
+    .eq('school_id', schoolId)
+    .in('type', eligibleTypes)
+    .ilike('subject', subject.split(' ')[0] + '%');
+
+  if (!data || data.length === 0) return null;
+
+  const groups = new Map<string, number[]>();
+  for (const row of data) {
+    const t = (row as any).type as string;
+    if (!groups.has(t)) groups.set(t, []);
+    groups.get(t)!.push(Number((row as any).improvement));
+  }
+
+  let bestType:  InterventionType | null = null;
+  let bestScore = -Infinity;
+
+  for (const type of eligibleTypes) {
+    const gains = groups.get(type);
+    if (!gains || gains.length === 0) continue;
+    const n          = gains.length;
+    const avgGain    = gains.reduce((s, v) => s + v, 0) / n;
+    const confidence = Math.min(n / 10, 1);
+    const score      = avgGain * confidence;
+    if (score > bestScore) { bestScore = score; bestType = type as InterventionType; }
+  }
+
+  return bestType;
+}
