@@ -168,30 +168,89 @@ export function recordOutcome(
   studentId:      number,
   interventionId: string,
   subject:        string,
+  type:           InterventionType,
   previousAvg:    number,
   newAvg:         number,
+  latestMark:     number,
 ): Outcome {
   const improvement = Math.round((newAvg - previousAvg) * 10) / 10;
+  // Successful: improvement >= 3% OR the latest mark itself >= 70
   const result: OutcomeResult =
-    improvement > 2  ? 'improved'  :
-    improvement < -2 ? 'declined'  :
-                       'unchanged';
+    improvement >= 3 || latestMark >= 70 ? 'improved'  :
+    improvement > 0                      ? 'unchanged' :  // partial — counts as unchanged
+                                           'declined';
 
   const outcome: Outcome = {
     interventionId,
     subject,
+    type,
     previousAvg:  Math.round(previousAvg),
     newAvg:       Math.round(newAvg),
     improvement,
+    latestMark:   Math.round(latestMark),
     result,
     recordedAt:   new Date().toISOString(),
   };
 
   const existing = getOutcomes(studentId);
-  // Prevent duplicate outcomes for same intervention
-  const deduped = existing.filter(o => o.interventionId !== interventionId);
+  const deduped  = existing.filter(o => o.interventionId !== interventionId);
   saveOutcomes(studentId, [...deduped, outcome]);
   return outcome;
+}
+
+// ── Auto-record outcomes from fresh marks ────────────────────────────────────
+// Call this on Marks page load with all marked results.
+// Finds completed interventions with no outcome yet, checks for newer marks.
+
+import type { StudentResult } from './marks';
+
+export function syncOutcomesFromMarks(
+  studentId: number,
+  allMarks:  StudentResult[],
+): void {
+  const interventions = getInterventions(studentId);
+  const outcomes      = getOutcomes(studentId);
+  const completedWithoutOutcome = interventions.filter(i =>
+    i.status === 'completed' &&
+    i.completedAt !== undefined &&
+    !outcomes.find(o => o.interventionId === i.id)
+  );
+
+  for (const inv of completedWithoutOutcome) {
+    const subjectMarks = allMarks.filter(m =>
+      m.mark !== null &&
+      (m.subject_label?.toLowerCase().includes(inv.subject.split(' ')[0].toLowerCase()) ||
+       inv.subject.toLowerCase().includes((m.subject_label ?? '').split(' ')[0].toLowerCase()))
+    );
+
+    if (subjectMarks.length === 0) continue;
+
+    // Find marks that arrived after the intervention was completed
+    const newMarks = subjectMarks.filter(m =>
+      (m.marked_at ?? m.created_at) > (inv.completedAt ?? inv.createdAt)
+    );
+
+    if (newMarks.length === 0) continue;
+
+    // Compute before avg (all marks up to completedAt)
+    const beforeMarks = subjectMarks.filter(m =>
+      (m.marked_at ?? m.created_at) <= (inv.completedAt ?? inv.createdAt)
+    );
+    const beforeAvg = beforeMarks.length > 0
+      ? beforeMarks.reduce((s, m) => s + (m.mark! / m.total) * 100, 0) / beforeMarks.length
+      : inv.previousAvg;
+
+    // After avg = all subject marks including new ones
+    const afterAvg = subjectMarks.reduce((s, m) => s + (m.mark! / m.total) * 100, 0) / subjectMarks.length;
+
+    // Latest mark percentage
+    const latest = newMarks.sort((a, b) =>
+      (b.marked_at ?? b.created_at).localeCompare(a.marked_at ?? a.created_at)
+    )[0];
+    const latestMark = (latest.mark! / latest.total) * 100;
+
+    recordOutcome(studentId, inv.id, inv.subject, inv.type, beforeAvg, afterAvg, latestMark);
+  }
 }
 
 // ── Compute impact summary ────────────────────────────────────────────────────
@@ -200,18 +259,38 @@ export function computeInterventionImpact(studentId: number): InterventionImpact
   const outcomes     = getOutcomes(studentId);
   const completed    = getInterventions(studentId).filter(i => i.status === 'completed');
   const successful   = outcomes.filter(o => o.result === 'improved');
-  const improvements = successful.map(o => o.improvement);
-  const avgImprovement = improvements.length
-    ? Math.round(improvements.reduce((s, v) => s + v, 0) / improvements.length * 10) / 10
+  const partial      = outcomes.filter(o => o.result === 'unchanged' && o.improvement > 0);
+  const allImprovements = outcomes.map(o => o.improvement);
+  const avgImprovement = allImprovements.length
+    ? Math.round(allImprovements.reduce((s, v) => s + v, 0) / allImprovements.length * 10) / 10
     : 0;
 
+  // Effectiveness by type
+  const TYPES: InterventionType[] = ['past_paper', 'library_topic', 'revision', 'resource_review'];
+  const typeEffectiveness = TYPES.map(type => {
+    const typeOutcomes = outcomes.filter(o => o.type === type);
+    const typeSuccessful = typeOutcomes.filter(o => o.result === 'improved');
+    const typeGains = typeOutcomes.map(o => o.improvement);
+    return {
+      type,
+      successRate: typeOutcomes.length > 0 ? Math.round((typeSuccessful.length / typeOutcomes.length) * 100) : 0,
+      avgGain:     typeGains.length > 0 ? Math.round(typeGains.reduce((s, v) => s + v, 0) / typeGains.length * 10) / 10 : 0,
+      count:       typeOutcomes.length,
+    };
+  }).filter(t => t.count > 0).sort((a, b) => b.avgGain - a.avgGain);
+
+  const bestType     = typeEffectiveness.length > 0 ? typeEffectiveness[0].type : null;
+  const bestTypeGain = typeEffectiveness.length > 0 ? typeEffectiveness[0].avgGain : 0;
+
   return {
-    totalCompleted:  completed.length,
-    successful:      successful.length,
+    totalCompleted:   completed.length,
+    successful:       successful.length,
+    partialSuccess:   partial.length,
     avgImprovement,
-    successRate:     completed.length > 0
-      ? Math.round((successful.length / completed.length) * 100)
-      : 0,
+    successRate:      completed.length > 0 ? Math.round((successful.length / completed.length) * 100) : 0,
+    bestType,
+    bestTypeGain,
+    typeEffectiveness,
   };
 }
 
@@ -289,4 +368,92 @@ export function getActiveInterventions(studentId: number): Intervention[] {
 
 export function getCompletedInterventions(studentId: number): Intervention[] {
   return getInterventions(studentId).filter(i => i.status === 'completed');
+}
+
+// ── Build Growth Timeline ─────────────────────────────────────────────────────
+// Chronological story of the student's academic journey for My Future page
+
+export function buildGrowthTimeline(
+  studentId:   number,
+  allMarks:    StudentResult[],
+  goals:       { targetAps: number | null; targetCareer: string | null; updatedAt: string },
+): GrowthTimelineEvent[] {
+  const events: GrowthTimelineEvent[] = [];
+  const interventions = getInterventions(studentId);
+  const outcomes      = getOutcomes(studentId);
+
+  // Goal set event
+  if (goals.updatedAt && (goals.targetAps || goals.targetCareer)) {
+    events.push({
+      date:  goals.updatedAt,
+      type:  'goal_set',
+      label: 'Goal Set',
+      detail: goals.targetAps
+        ? `Target APS: ${goals.targetAps}`
+        : `Career goal: ${goals.targetCareer}`,
+    });
+  }
+
+  // First mark
+  const sortedMarks = [...allMarks]
+    .filter(m => m.mark !== null)
+    .sort((a, b) => (a.marked_at ?? a.created_at).localeCompare(b.marked_at ?? b.created_at));
+
+  if (sortedMarks.length > 0) {
+    const first = sortedMarks[0];
+    events.push({
+      date:  first.marked_at ?? first.created_at,
+      type:  'mark_recorded',
+      label: 'First Assessment',
+      detail: `${first.subject_label}: ${Math.round((first.mark! / first.total) * 100)}%`,
+    });
+  }
+
+  // Intervention started events
+  for (const inv of interventions) {
+    if (inv.startedAt) {
+      events.push({
+        date:  inv.startedAt,
+        type:  'intervention_started',
+        label: `${inv.subject} — Started`,
+        detail: inv.description,
+      });
+    }
+    if (inv.completedAt) {
+      const outcome = outcomes.find(o => o.interventionId === inv.id);
+      events.push({
+        date:    inv.completedAt,
+        type:    'intervention_completed',
+        label:   `${inv.subject} — Completed`,
+        detail:  outcome
+          ? `${outcome.previousAvg}% → ${outcome.newAvg}%`
+          : inv.description,
+        delta:    outcome?.improvement,
+        positive: outcome ? outcome.result === 'improved' : undefined,
+      });
+    }
+  }
+
+  // Outcome events
+  for (const o of outcomes) {
+    events.push({
+      date:     o.recordedAt,
+      type:     'outcome_recorded',
+      label:    `${o.subject} ${o.result === 'improved' ? 'Improved' : o.result === 'declined' ? 'Declined' : 'Unchanged'}`,
+      detail:   `${o.previousAvg}% → ${o.newAvg}% (${o.improvement >= 0 ? '+' : ''}${o.improvement}%)`,
+      delta:    o.improvement,
+      positive: o.result === 'improved',
+    });
+  }
+
+  // Sort chronologically, deduplicate by date+label
+  const seen = new Set<string>();
+  return events
+    .filter(e => {
+      const key = `${e.date}_${e.label}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => a.date.localeCompare(b.date));
 }

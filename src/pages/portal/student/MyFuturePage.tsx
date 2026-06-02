@@ -9,6 +9,7 @@ import { DEGREE_DATA } from '../../../data/apsData';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals, saveStudentGoals, type StudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
+import { buildGrowthTimeline } from '../../../lib/interventions';
 
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
@@ -167,8 +168,15 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
   // ── Intelligence engine ───────────────────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);
-  const futureInsights = computeStudentInsights([], [], progress, goals, todayStr);
+  const futureInsights = computeStudentInsights([], [], progress, goals, todayStr, session.student_id);
   const { milestones, learnerStatus } = futureInsights;
+
+  // ── Growth timeline ───────────────────────────────────────────────────────
+  const growthTimeline = buildGrowthTimeline(
+    session.student_id,
+    [],   // no marks needed here — intervention events only + goal
+    { targetAps: goals.targetAps, targetCareer: goals.targetCareer, updatedAt: goals.updatedAt },
+  );
 
   // ── Loading skeleton ──────────────────────────────────────────────────────
 
@@ -751,6 +759,53 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           </div>
         </div>
       </Section>
+
+      {/* ── Section 8: Growth Timeline ───────────────────────────────────────── */}
+      {growthTimeline.length > 0 && (
+        <Section delay={0.35}>
+          <Eyebrow>Academic Journey</Eyebrow>
+          <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+            <div className="px-5 pt-4 pb-2">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Your Story So Far</p>
+              <div className="relative">
+                {/* vertical spine */}
+                <div className="absolute left-1.75 top-2 bottom-2 w-px bg-stone-100" />
+                <div className="space-y-4">
+                  {growthTimeline.map((evt, i) => {
+                    const date = new Date(evt.date).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const dotColor =
+                      evt.type === 'goal_set'               ? 'bg-blue-400'    :
+                      evt.type === 'intervention_completed' && evt.positive ? 'bg-emerald-500' :
+                      evt.type === 'outcome_recorded'       && evt.positive ? 'bg-emerald-500' :
+                      evt.type === 'outcome_recorded'       && evt.positive === false ? 'bg-red-400' :
+                      evt.type === 'intervention_started'   ? 'bg-amber-400'   :
+                      'bg-stone-300';
+                    return (
+                      <div key={i} className="flex items-start gap-3 pl-1">
+                        <div className={`w-3.5 h-3.5 rounded-full shrink-0 mt-0.5 z-10 border-2 border-white ${dotColor}`} />
+                        <div className="flex-1 min-w-0 pb-1">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <p className="text-xs font-black text-stone-900">{evt.label}</p>
+                            <p className="text-[10px] font-bold text-stone-300 shrink-0">{date}</p>
+                          </div>
+                          <p className="text-[11px] text-stone-400 mt-0.5">{evt.detail}</p>
+                          {evt.delta !== undefined && (
+                            <span className={`inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                              evt.positive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'
+                            }`}>
+                              {evt.delta > 0 ? `+${evt.delta}%` : `${evt.delta}%`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Section>
+      )}
 
     </div>
   );

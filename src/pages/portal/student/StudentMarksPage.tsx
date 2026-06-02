@@ -9,6 +9,7 @@ import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
+import { syncOutcomesFromMarks, getOutcomes, getCompletedInterventions } from '../../../lib/interventions';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -114,6 +115,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
     fetchStudentResults(session.student_id, session.school_id).then(data => {
       setResults(data);
       setLoading(false);
+      // Auto-record outcomes for any completed interventions that now have newer marks
+      syncOutcomesFromMarks(session.student_id, data.filter(r => r.mark !== null));
     });
   }, []);
 
@@ -145,8 +148,26 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
   // ── Intelligence engine ───────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);
-  const insights = computeStudentInsights(markedResults, [], [], goals, todayStr);
+  const insights = computeStudentInsights(markedResults, [], [], goals, todayStr, session.student_id);
   const { examRiskSubjects, learnerStatus } = insights;
+
+  // ── Intervention outcomes per subject ─────────────────────────
+  const allOutcomes  = getOutcomes(session.student_id);
+  const completedInv = getCompletedInterventions(session.student_id);
+  // Map subject → { completed, successful, avgImprovement }
+  const subjectImpact = new Map<string, { completed: number; successful: number; avgImprovement: number }>();
+  for (const inv of completedInv) {
+    const outcome = allOutcomes.find(o => o.interventionId === inv.id);
+    const key = inv.subject;
+    const prev = subjectImpact.get(key) ?? { completed: 0, successful: 0, avgImprovement: 0 };
+    subjectImpact.set(key, {
+      completed:      prev.completed + 1,
+      successful:     prev.successful + (outcome?.result === 'improved' ? 1 : 0),
+      avgImprovement: outcome
+        ? Math.round(((prev.avgImprovement * prev.completed + outcome.improvement) / (prev.completed + 1)) * 10) / 10
+        : prev.avgImprovement,
+    });
+  }
 
   // ── Action items ──────────────────────────────────────────────
   type ActionItem = {
@@ -727,6 +748,25 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                   <span className="text-xs font-black text-stone-900">{markedItems.length}</span>
                                 </div>
                               )}
+                              {(() => {
+                                // Find impact for this subject (fuzzy match on first word)
+                                const key = Array.from(subjectImpact.keys()).find(k =>
+                                  k.toLowerCase().includes(subject.split(' ')[0].toLowerCase()) ||
+                                  subject.toLowerCase().includes(k.split(' ')[0].toLowerCase())
+                                );
+                                const imp = key ? subjectImpact.get(key) : undefined;
+                                if (!imp || imp.completed === 0) return null;
+                                return (
+                                  <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">
+                                      {imp.completed} recommendation{imp.completed !== 1 ? 's' : ''} completed
+                                    </span>
+                                    {imp.avgImprovement > 0 && (
+                                      <span className="text-xs font-black text-emerald-700">+{imp.avgImprovement}%</span>
+                                    )}
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
 

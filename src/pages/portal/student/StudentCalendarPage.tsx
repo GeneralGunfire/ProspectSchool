@@ -265,7 +265,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
     : null;
 
   // ── Intelligence engine — replaces local revision logic ──────
-  const calInsights = computeStudentInsights(allMarks, futureEvents, [], goals, todayStr);
+  const calInsights = computeStudentInsights(allMarks, futureEvents, [], goals, todayStr, session.student_id);
   const revisionRecs = calInsights.revisionRecs.slice(0, 2);
 
   // Keep legacy shape for JSX compatibility — map engine recs to old format

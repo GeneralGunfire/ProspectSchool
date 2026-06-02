@@ -6,6 +6,7 @@ import type { StudentResult } from './marks';
 import type { SchoolEvent }   from './events';
 import type { StudyProgress } from './studyProgress';
 import type { StudentGoals }  from './studentGoals';
+import { computeInterventionImpact, getCompletedInterventions, getOutcomes, type InterventionImpact } from './interventions';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -111,6 +112,9 @@ export interface StudentInsights {
   // Overall learner status
   learnerStatus:     LearnerStatus;
 
+  // Intervention impact (requires studentId passed to engine)
+  interventionImpact: InterventionImpact;
+
   // Computed at
   computedAt:        string;
 }
@@ -138,6 +142,7 @@ export function computeStudentInsights(
   studyProgress: StudyProgress[],
   goals:         StudentGoals,
   todayStr:      string,
+  studentId?:    number,
 ): StudentInsights {
 
   // ── 1. Build subject profiles ─────────────────────────────────────────────
@@ -437,6 +442,45 @@ export function computeStudentInsights(
     },
   ];
 
+  // ── 8b. Intervention milestones (appended when studentId available) ──────
+  if (studentId !== undefined) {
+    const completedInv  = getCompletedInterventions(studentId);
+    const allOutcomes   = getOutcomes(studentId);
+    const improved      = allOutcomes.filter(o => o.result === 'improved');
+    const firstImproved = improved[0] as { subject: string; improvement: number } | undefined;
+
+    milestones.push(
+      {
+        id:       'first-intervention',
+        label:    'First Recommendation Completed',
+        achieved: completedInv.length > 0,
+        detail:   completedInv.length > 0
+          ? `Completed ${(completedInv[0] as { subject: string }).subject} recommendation`
+          : 'Complete a coaching recommendation',
+      },
+      {
+        id:       'first-improvement',
+        label:    'First Improvement Recorded',
+        achieved: improved.length > 0,
+        detail:   firstImproved
+          ? `${firstImproved.subject} improved +${firstImproved.improvement}%`
+          : 'Improve after completing a recommendation',
+      },
+      {
+        id:       'five-interventions',
+        label:    '5 Recommendations Completed',
+        achieved: completedInv.length >= 5,
+        detail:   `${completedInv.length} recommendation${completedInv.length !== 1 ? 's' : ''} completed`,
+      },
+      {
+        id:       'risk-reduced',
+        label:    'Reduced High Risk Subjects',
+        achieved: improved.length >= 2,
+        detail:   `${improved.length} subject${improved.length !== 1 ? 's' : ''} improved after coaching`,
+      },
+    );
+  }
+
   // ── 9. Learner Status — overall health score 0–100 ───────────────────────
 
   const learnerStatus = ((): LearnerStatus => {
@@ -491,6 +535,10 @@ export function computeStudentInsights(
     return { score, label, color, bg, border, contributors };
   })();
 
+  const interventionImpact: InterventionImpact = studentId !== undefined
+    ? computeInterventionImpact(studentId)
+    : { totalCompleted: 0, successful: 0, partialSuccess: 0, avgImprovement: 0, successRate: 0, bestType: null, bestTypeGain: 0, typeEffectiveness: [] };
+
   return {
     subjectProfiles,
     strongestSubject,
@@ -507,6 +555,7 @@ export function computeStudentInsights(
     topicsNotStarted,
     milestones,
     learnerStatus,
+    interventionImpact,
     computedAt: new Date().toISOString(),
   };
 }

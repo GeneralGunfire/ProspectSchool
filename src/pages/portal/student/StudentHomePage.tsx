@@ -192,7 +192,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const libraryPct     = Math.round((topicsStarted / totalTopics) * 100);
 
   // ── Student Intelligence Engine ───────────────────────────────────────────
-  const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr);
+  const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr, session.student_id);
   const { academicStory } = insights_engine;
 
   // ── Interventions ─────────────────────────────────────────────────────────
@@ -1060,18 +1060,57 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           transition={{ duration: 0.4, ease, delay: 0.335 }}
           className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
         >
-          <div className="flex items-center justify-between mb-4">
+          {/* Header with impact stats */}
+          <div className="flex items-start justify-between mb-4">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Academic Coaching</p>
             {interventionImpact.totalCompleted > 0 && (
-              <span className="text-[11px] font-bold text-stone-400">
-                {interventionImpact.totalCompleted} completed · {interventionImpact.successRate}% success
-              </span>
+              <div className="text-right">
+                <p className="text-[11px] font-black text-stone-700">{interventionImpact.totalCompleted} completed</p>
+                <p className="text-[10px] font-bold text-stone-400">{interventionImpact.successRate}% success rate</p>
+                {interventionImpact.avgImprovement > 0 && (
+                  <p className="text-[10px] font-bold text-emerald-500">avg +{interventionImpact.avgImprovement}%</p>
+                )}
+              </div>
             )}
           </div>
 
+          {/* Impact analytics row — shown once enough data exists */}
+          {interventionImpact.totalCompleted >= 2 && (
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-stone-50 rounded-xl p-2.5 text-center">
+                <p className="text-base font-black text-stone-900">{interventionImpact.totalCompleted}</p>
+                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">Completed</p>
+              </div>
+              <div className="bg-emerald-50 rounded-xl p-2.5 text-center">
+                <p className="text-base font-black text-emerald-700">{interventionImpact.successRate}%</p>
+                <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5">Success</p>
+              </div>
+              <div className={`rounded-xl p-2.5 text-center ${interventionImpact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
+                <p className={`text-base font-black ${interventionImpact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-400'}`}>
+                  {interventionImpact.avgImprovement > 0 ? `+${interventionImpact.avgImprovement}%` : '—'}
+                </p>
+                <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${interventionImpact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-400'}`}>Avg Gain</p>
+              </div>
+            </div>
+          )}
+
+          {/* Best action type — shown when data suggests a pattern */}
+          {interventionImpact.bestType && interventionImpact.bestTypeGain > 0 && interventionImpact.typeEffectiveness.length >= 2 && (
+            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 mb-4 flex items-center gap-2">
+              <span className="text-sm">⭐</span>
+              <p className="text-[11px] text-amber-800">
+                <span className="font-black">Most effective for you:</span>{' '}
+                {interventionImpact.bestType === 'past_paper' ? 'Past Papers' :
+                 interventionImpact.bestType === 'library_topic' ? 'Library Study' :
+                 interventionImpact.bestType === 'revision' ? 'Revision Sessions' : 'Resource Review'}
+                {' '}(avg +{interventionImpact.bestTypeGain}%)
+              </p>
+            </div>
+          )}
+
+          {/* Active intervention cards */}
           <div className="space-y-3">
-            {activeInterventions.slice(0, 3).map((inv, i) => {
-              const outcome = interventionOutcomes.find(o => o.interventionId === inv.id);
+            {activeInterventions.slice(0, 3).map((inv) => {
               const isStarted = inv.status === 'started';
               return (
                 <div key={inv.id} className={`rounded-xl border p-4 ${
@@ -1127,22 +1166,44 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               );
             })}
           </div>
+        </motion.div>
+      )}
 
-          {/* Completed outcomes feed */}
-          {interventionOutcomes.slice(-2).reverse().map(o => (
-            <div key={o.interventionId} className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-100">
-              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                o.result === 'improved' ? 'bg-emerald-500' :
-                o.result === 'declined' ? 'bg-red-400' : 'bg-stone-300'
-              }`} />
-              <p className="text-xs text-stone-500 flex-1">
-                <span className="font-bold text-stone-700">{o.subject}</span>
-                {o.result === 'improved' && ` improved ${o.previousAvg}% → ${o.newAvg}% (+${o.improvement}%)`}
-                {o.result === 'declined' && ` declined ${o.previousAvg}% → ${o.newAvg}%`}
-                {o.result === 'unchanged' && ` unchanged at ${o.newAvg}%`}
-              </p>
-            </div>
-          ))}
+      {/* ── Intervention History Card ─────────────────────────────── */}
+      {interventionOutcomes.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.34 }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Improvement History</p>
+          <div className="space-y-2">
+            {interventionOutcomes.slice(-6).reverse().map(o => (
+              <div key={o.interventionId} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
+                o.result === 'improved' ? 'bg-emerald-50 border-emerald-100' :
+                o.result === 'declined' ? 'bg-red-50 border-red-100' :
+                'bg-stone-50 border-stone-100'
+              }`}>
+                <span className={`text-base shrink-0 ${
+                  o.result === 'improved' ? '' : o.result === 'declined' ? '' : ''
+                }`}>
+                  {o.result === 'improved' ? '✓' : o.result === 'declined' ? '↓' : '→'}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black text-stone-900">{o.subject}</p>
+                  <p className="text-[10px] text-stone-400">
+                    {o.previousAvg}% → {o.newAvg}%
+                  </p>
+                </div>
+                <span className={`text-xs font-black shrink-0 ${
+                  o.result === 'improved' ? 'text-emerald-600' :
+                  o.result === 'declined' ? 'text-red-500' : 'text-stone-400'
+                }`}>
+                  {o.improvement > 0 ? `+${o.improvement}%` : `${o.improvement}%`}
+                </span>
+              </div>
+            ))}
+          </div>
         </motion.div>
       )}
 
