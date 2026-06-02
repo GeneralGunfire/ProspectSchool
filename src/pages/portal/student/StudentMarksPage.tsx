@@ -7,6 +7,7 @@ import {
 } from 'recharts';
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
+import { getStudentGoals } from '../../../lib/studentGoals';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -101,6 +102,7 @@ interface StudentMarksPageProps {
 }
 
 export default function StudentMarksPage({ session, onNavigate }: StudentMarksPageProps) {
+  const goals = getStudentGoals(session.student_id);
   const [results, setResults] = useState<StudentResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
@@ -179,6 +181,18 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
       actions: [
         { label: 'Open Library', page: 'library' },
         { label: 'Practice Past Papers', page: 'pastpapers' },
+      ],
+    });
+  }
+
+  // APS goal gap — only add if there's room
+  if (goals.targetAps && overallAvg !== null && actionItems.length < 2) {
+    actionItems.push({
+      type: 'aps-opportunity' as const,
+      headline: 'APS Goal',
+      body: `Your target is APS ${goals.targetAps}. Improving your lowest subject has the biggest impact on your APS score.`,
+      actions: [
+        { label: 'Open APS Calculator', page: 'aps' },
       ],
     });
   }

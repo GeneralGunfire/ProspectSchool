@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2 } from 'lucide-react';
+import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft } from 'lucide-react';
 import {
   fetchAllPastPapers, getPastPaperDownloadUrl, type PastPaper,
 } from '../../../lib/pastPapers';
@@ -13,6 +13,28 @@ const TERMS  = [1, 2, 3, 4];
 interface StudentPastPapersPageProps {
   session: StudentSession;
   onNavigate?: (page: string) => void;
+}
+
+type PracticePhase = 'setup' | 'active' | 'complete';
+
+interface PracticeSession {
+  paper: PastPaper;
+  phase: PracticePhase;
+  startedAt: number | null;
+  durationMinutes: number;
+  elapsed: number;
+  selfScore: number | null;
+  memoOpened: boolean;
+}
+
+interface PracticeRecord {
+  paperId: number;
+  paperTitle: string;
+  subject: string | null;
+  score: number | null;
+  total: number;
+  pct: number | null;
+  completedAt: string;
 }
 
 export default function StudentPastPapersPage({ session }: StudentPastPapersPageProps) {
@@ -32,6 +54,37 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       return JSON.parse(localStorage.getItem(`prospect_recent_papers_${session.student_id}`) ?? '[]');
     } catch { return []; }
   });
+
+  // Practice state
+  const [practice, setPractice] = useState<PracticeSession | null>(null);
+  const [setupDuration, setSetupDuration] = useState(60);
+  const [setupScore, setSetupScore] = useState('');
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [practiceHistory, setPracticeHistory] = useState<PracticeRecord[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`prospect_practice_history_${session.student_id}`) ?? '[]');
+    } catch { return []; }
+  });
+
+  // Timer effect
+  useEffect(() => {
+    if (practice?.phase === 'active' && practice.startedAt) {
+      timerRef.current = setInterval(() => {
+        setPractice(prev => {
+          if (!prev || prev.phase !== 'active') return prev;
+          const elapsed = Math.floor((Date.now() - prev.startedAt!) / 1000);
+          const totalSeconds = prev.durationMinutes * 60;
+          if (elapsed >= totalSeconds) {
+            clearInterval(timerRef.current!);
+            return { ...prev, elapsed: totalSeconds, phase: 'complete' };
+          }
+          return { ...prev, elapsed };
+        });
+      }, 1000);
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [practice?.phase, practice?.startedAt]);
 
   useEffect(() => {
     Promise.all([
@@ -99,6 +152,56 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     if (url) window.open(url, '_blank');
   }
 
+  // Helper functions
+  function formatTimer(seconds: number): string {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function startPractice(paper: PastPaper, durationMinutes: number) {
+    setPractice({
+      paper,
+      phase: 'active',
+      startedAt: Date.now(),
+      durationMinutes,
+      elapsed: 0,
+      selfScore: null,
+      memoOpened: false,
+    });
+    getPastPaperDownloadUrl(paper.file_url).then(url => {
+      if (url) window.open(url, '_blank');
+    });
+  }
+
+  function exitPractice() {
+    if (timerRef.current) clearInterval(timerRef.current);
+    setPractice(null);
+    setSetupScore('');
+  }
+
+  function submitSelfMark(score: number, total: number) {
+    const pct = Math.round((score / total) * 100);
+    const record: PracticeRecord = {
+      paperId: practice!.paper.id,
+      paperTitle: practice!.paper.title,
+      subject: practice!.paper.subject_label ?? null,
+      score,
+      total,
+      pct,
+      completedAt: new Date().toISOString(),
+    };
+    setPracticeHistory(prev => {
+      const updated = [record, ...prev].slice(0, 20);
+      localStorage.setItem(
+        `prospect_practice_history_${session.student_id}`,
+        JSON.stringify(updated)
+      );
+      return updated;
+    });
+    setPractice(prev => prev ? { ...prev, selfScore: score, phase: 'complete' } : null);
+  }
+
   // Recently opened papers (in order)
   const recentPapers = recentlyOpened
     .map(id => papers.find(p => p.id === id))
@@ -120,6 +223,296 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     if (t.includes('test') || t.includes('assessment')) return { label: 'Test', color: 'bg-amber-50 text-amber-600 border-amber-100' };
     if (t.includes('trial') || t.includes('prelim')) return { label: 'Trial', color: 'bg-violet-50 text-violet-600 border-violet-100' };
     return { label: 'Paper', color: 'bg-stone-100 text-stone-500 border-stone-200' };
+  }
+
+  // ── Practice Mode ──────────────────────────────────────────────
+  if (practice) {
+    const { paper, phase, elapsed, durationMinutes, memoOpened } = practice;
+    const totalSeconds = durationMinutes * 60;
+    const remaining = Math.max(0, totalSeconds - elapsed);
+    const progressPct = Math.min(100, Math.round((elapsed / totalSeconds) * 100));
+    const isUrgent = remaining <= 300 && phase === 'active';
+
+    return (
+      <div className="min-h-screen bg-stone-50 flex flex-col">
+
+        {/* Practice top bar */}
+        <div className="bg-brand-dark px-5 py-3 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={exitPractice}
+              className="flex items-center gap-1.5 text-stone-400 hover:text-white transition-colors text-[11px] font-black uppercase tracking-widest"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Exit
+            </button>
+            <div className="w-px h-4 bg-stone-700" />
+            <div>
+              <p className="text-white font-black text-sm leading-none">{paper.title}</p>
+              {paper.subject_label && (
+                <p className="text-stone-500 text-[10px] mt-0.5">{paper.subject_label}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Timer */}
+          {phase === 'active' && (
+            <div className={`font-black text-2xl tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
+              {formatTimer(remaining)}
+            </div>
+          )}
+          {phase === 'complete' && (
+            <span className="text-emerald-400 font-black text-sm uppercase tracking-widest">Time Up</span>
+          )}
+        </div>
+
+        {/* Timer progress bar */}
+        {phase === 'active' && (
+          <div className="h-1 bg-stone-800 shrink-0">
+            <div
+              className={`h-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-emerald-500'}`}
+              style={{ width: `${100 - progressPct}%` }}
+            />
+          </div>
+        )}
+
+        {/* Phase: setup */}
+        {phase === 'setup' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-sm w-full"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Practice Mode</p>
+              <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
+                {paper.title}
+              </h2>
+              {paper.subject_label && (
+                <p className="text-stone-400 text-sm mb-6">{paper.subject_label} · {paper.year}</p>
+              )}
+
+              <div className="bg-white rounded-2xl border border-stone-200 p-5 mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                  Set Timer
+                </p>
+                <div className="flex gap-2 flex-wrap mb-3">
+                  {[30, 60, 90, 120, 150, 180].map(mins => (
+                    <button
+                      key={mins}
+                      onClick={() => setSetupDuration(mins)}
+                      className={`px-3 py-2 rounded-xl text-xs font-black transition-colors border ${
+                        setupDuration === mins
+                          ? 'bg-stone-900 text-white border-stone-900'
+                          : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-400'
+                      }`}
+                    >
+                      {mins >= 60 ? `${mins / 60}h${mins % 60 ? ` ${mins % 60}m` : ''}` : `${mins}m`}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-stone-400">
+                  The paper will open in a new tab. Come back here to track time and self-mark.
+                </p>
+              </div>
+
+              <button
+                onClick={() => startPractice(paper, setupDuration)}
+                className="w-full py-4 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+              >
+                Start — {setupDuration >= 60 ? `${setupDuration / 60}h${setupDuration % 60 ? ` ${setupDuration % 60}m` : ''}` : `${setupDuration}m`}
+              </button>
+              <button
+                onClick={exitPractice}
+                className="w-full py-3 rounded-xl text-stone-400 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+              >
+                Cancel
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Phase: active */}
+        {phase === 'active' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-md w-full"
+            >
+              <div className={`text-7xl font-black tabular-nums mb-2 ${isUrgent ? 'text-red-500' : 'text-brand-dark'}`}>
+                {formatTimer(remaining)}
+              </div>
+              <p className="text-stone-400 text-sm mb-8">
+                {isUrgent ? 'Wrap up — time is running out.' : 'Paper is open in another tab. Work through it, then come back.'}
+              </p>
+
+              <div className="space-y-3">
+                <button
+                  onClick={() => getPastPaperDownloadUrl(paper.file_url).then(url => url && window.open(url, '_blank'))}
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-100 text-stone-700 text-sm font-black hover:bg-stone-200 transition-colors"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Reopen Paper
+                </button>
+
+                {paper.memo_url && !memoOpened && (
+                  <button
+                    onClick={() => {
+                      getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'));
+                      setPractice(prev => prev ? { ...prev, memoOpened: true } : null);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-black hover:bg-emerald-100 transition-colors"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    Open Memo
+                  </button>
+                )}
+                {memoOpened && (
+                  <p className="text-[11px] text-emerald-600 font-bold">Memo opened — self-mark when ready.</p>
+                )}
+
+                <button
+                  onClick={() => setPractice(prev => prev ? { ...prev, phase: 'complete' } : null)}
+                  className="w-full py-3 rounded-xl border border-stone-200 text-stone-500 text-sm font-black hover:border-stone-400 transition-colors"
+                >
+                  Done — Self Mark Now
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* Phase: complete / self-mark */}
+        {phase === 'complete' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-sm w-full"
+            >
+              {practice.selfScore === null ? (
+                <>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Self Mark</p>
+                  <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
+                    How did you do?
+                  </h2>
+                  <p className="text-sm text-stone-400 mb-6">
+                    Enter your score to track your performance.
+                  </p>
+
+                  <div className="bg-white rounded-2xl border border-stone-200 p-5 mb-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Your Score</p>
+                    <div className="flex items-center gap-3 mb-4">
+                      <input
+                        type="number"
+                        min={0}
+                        max={paper.total ?? 150}
+                        value={setupScore}
+                        onChange={e => setSetupScore(e.target.value)}
+                        placeholder="0"
+                        className="w-24 text-center font-black text-2xl rounded-xl border border-stone-200 py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10"
+                      />
+                      <span className="text-stone-400 font-bold text-lg">
+                        / {paper.total ?? 150}
+                      </span>
+                      {setupScore && (
+                        <span className={`font-black text-xl ml-2 ${
+                          Math.round((Number(setupScore) / (paper.total ?? 150)) * 100) >= 70 ? 'text-emerald-600' :
+                          Math.round((Number(setupScore) / (paper.total ?? 150)) * 100) >= 50 ? 'text-amber-600' :
+                          'text-red-500'
+                        }`}>
+                          {Math.round((Number(setupScore) / (paper.total ?? 150)) * 100)}%
+                        </span>
+                      )}
+                    </div>
+
+                    {paper.memo_url && (
+                      <button
+                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'))}
+                        className="flex items-center gap-1.5 text-[11px] font-black text-emerald-600 hover:text-emerald-800 transition-colors"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Open Memo to Check Answers
+                      </button>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      const score = Number(setupScore);
+                      const total = paper.total ?? 150;
+                      if (score >= 0 && score <= total) {
+                        submitSelfMark(score, total);
+                      }
+                    }}
+                    disabled={!setupScore || Number(setupScore) < 0}
+                    className="w-full py-3.5 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors disabled:opacity-40"
+                  >
+                    Save Result
+                  </button>
+
+                  <button
+                    onClick={exitPractice}
+                    className="w-full py-3 rounded-xl text-stone-400 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+                  >
+                    Skip — Exit Practice
+                  </button>
+                </>
+              ) : (
+                /* Result screen */
+                <>
+                  <div className={`rounded-2xl p-6 text-center mb-5 ${
+                    practice.selfScore / (paper.total ?? 150) >= 0.7 ? 'bg-emerald-50 border border-emerald-200' :
+                    practice.selfScore / (paper.total ?? 150) >= 0.5 ? 'bg-amber-50 border border-amber-200' :
+                    'bg-red-50 border border-red-200'
+                  }`}>
+                    <p className={`font-black leading-none mb-1 ${
+                      practice.selfScore / (paper.total ?? 150) >= 0.7 ? 'text-emerald-600' :
+                      practice.selfScore / (paper.total ?? 150) >= 0.5 ? 'text-amber-600' :
+                      'text-red-500'
+                    }`} style={{ fontSize: 'clamp(3rem, 10vw, 5rem)' }}>
+                      {Math.round((practice.selfScore / (paper.total ?? 150)) * 100)}%
+                    </p>
+                    <p className="text-stone-600 font-bold text-sm">
+                      {practice.selfScore} / {paper.total ?? 150} marks
+                    </p>
+                    <p className="text-stone-400 text-xs mt-1">
+                      Completed in {formatTimer(elapsed)}
+                    </p>
+                  </div>
+
+                  <p className="text-center text-sm text-stone-500 mb-6">
+                    {Math.round((practice.selfScore / (paper.total ?? 150)) * 100) >= 70
+                      ? 'Strong result — well done.'
+                      : Math.round((practice.selfScore / (paper.total ?? 150)) * 100) >= 50
+                      ? 'On track — review the areas you struggled with.'
+                      : 'Below pass mark — open the memo and work through the corrections.'}
+                  </p>
+
+                  <div className="space-y-2">
+                    {paper.memo_url && (
+                      <button
+                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'))}
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-sm hover:bg-emerald-100 transition-colors"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        Review Memo
+                      </button>
+                    )}
+                    <button
+                      onClick={exitPractice}
+                      className="w-full py-3 rounded-xl bg-stone-900 text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                    >
+                      Back to Past Papers
+                    </button>
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -173,14 +566,31 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.year}</span>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${diff.color}`}>{diff.label}</span>
                       </div>
-                      <button
-                        onClick={() => handleOpen(p)}
-                        disabled={downloading === p.id}
-                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl bg-stone-900 text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        {downloading === p.id ? 'Opening…' : 'Open Paper'}
-                      </button>
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => setPractice({
+                            paper: p,
+                            phase: 'setup',
+                            startedAt: null,
+                            durationMinutes: 60,
+                            elapsed: 0,
+                            selfScore: null,
+                            memoOpened: false,
+                          })}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                        >
+                          <Timer className="w-3.5 h-3.5" />
+                          Practice
+                        </button>
+                        <button
+                          onClick={() => handleOpen(p)}
+                          disabled={downloading === p.id}
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          {downloading === p.id ? '…' : 'Open'}
+                        </button>
+                      </div>
                     </div>
                   );
                 })}
@@ -213,6 +623,42 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     <p className="text-xs font-bold text-stone-900 truncate">{p.title}</p>
                     <p className="text-[10px] text-stone-400 truncate">{p.subject_label ?? `Grade ${p.grade}`} · {p.year}</p>
                   </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── Practice History ── */}
+          {practiceHistory.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+              className="mb-6"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                Practice History
+              </p>
+              <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+                {practiceHistory.slice(0, 5).map((r, i) => (
+                  <div key={i} className="flex items-center gap-4 px-4 py-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-stone-900 truncate">{r.paperTitle}</p>
+                      <p className="text-[11px] text-stone-400">
+                        {r.subject ?? 'Past Paper'} · {new Date(r.completedAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}
+                      </p>
+                    </div>
+                    {r.pct !== null ? (
+                      <span className={`font-black text-sm px-2.5 py-1 rounded-xl ${
+                        r.pct >= 70 ? 'bg-emerald-50 text-emerald-700' :
+                        r.pct >= 50 ? 'bg-amber-50 text-amber-700' :
+                                      'bg-red-50 text-red-600'
+                      }`}>
+                        {r.pct}%
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-stone-300 font-bold">No score</span>
+                    )}
+                  </div>
                 ))}
               </div>
             </motion.div>
@@ -435,6 +881,24 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
                 {/* Actions */}
                 <div className="flex items-center gap-2 shrink-0">
+                  {/* Practice button */}
+                  <button
+                    onClick={() => setPractice({
+                      paper: p,
+                      phase: 'setup',
+                      startedAt: null,
+                      durationMinutes: 60,
+                      elapsed: 0,
+                      selfScore: null,
+                      memoOpened: false,
+                    })}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                  >
+                    <Timer className="w-3.5 h-3.5" />
+                    Practice
+                  </button>
+
+                  {/* Open button */}
                   <button
                     onClick={() => handleOpen(p)}
                     disabled={downloading === p.id}
@@ -443,6 +907,8 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     <ExternalLink className="w-3.5 h-3.5" />
                     {downloading === p.id ? 'Opening…' : 'Open'}
                   </button>
+
+                  {/* Memo button */}
                   {p.memo_url && (
                     <button
                       onClick={() => handleShowMemo(p)}

@@ -11,6 +11,7 @@ import {
 } from '../../../lib/events';
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
+import { getStudentGoals } from '../../../lib/studentGoals';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -56,6 +57,7 @@ interface StudentCalendarPageProps {
 }
 
 export default function StudentCalendarPage({ session, onNavigate }: StudentCalendarPageProps) {
+  const goals = getStudentGoals(session.student_id);
   const today = new Date();
   const [year, setYear]     = useState(today.getFullYear());
   const [month, setMonth]   = useState(today.getMonth() + 1);
@@ -510,6 +512,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Suggested Study Time</p>
           <p className="text-sm font-bold text-stone-700">
             <span className="text-stone-900 font-black">{lightestDayLabel}</span> is your lightest day this week — good time to study ahead.
+            {goals.targetCareer && (
+              <span className="text-stone-500"> Focus on subjects relevant to {goals.targetCareer}.</span>
+            )}
           </p>
         </motion.div>
       )}
@@ -556,6 +561,31 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 </div>
               </div>
             ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Goal Reminder — shown when no revision suggestions and a goal is set ── */}
+      {revisionSuggestions.length === 0 && (goals.targetAps || goals.targetCareer) && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
+          className="bg-white rounded-2xl border border-stone-200 p-4 mb-4"
+        >
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Your Goals</p>
+          <div className="flex flex-wrap gap-2">
+            {goals.targetAps && (
+              <div className="flex items-center gap-2 bg-violet-50 rounded-xl px-3 py-2 border border-violet-100">
+                <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Target APS</span>
+                <span className="font-black text-violet-700">{goals.targetAps}</span>
+              </div>
+            )}
+            {goals.targetCareer && (
+              <div className="flex items-center gap-2 bg-stone-50 rounded-xl px-3 py-2 border border-stone-200">
+                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Career</span>
+                <span className="font-black text-stone-700 text-sm">{goals.targetCareer}</span>
+              </div>
+            )}
           </div>
         </motion.div>
       )}

@@ -244,6 +244,139 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         </div>
       </Section>
 
+      {/* ── Goals section ── */}
+      <Section delay={0.02}>
+        {!editingGoals ? (
+          <div className="bg-white rounded-2xl border border-stone-200 p-5">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">My Goals</p>
+              <button
+                onClick={handleEditGoals}
+                className="text-[11px] font-black text-stone-400 hover:text-stone-900 transition-colors uppercase tracking-widest"
+              >
+                {goals.targetAps || goals.targetCareer ? 'Edit' : 'Set Goals'}
+              </button>
+            </div>
+
+            {!goals.targetAps && !goals.targetCareer ? (
+              <p className="text-sm text-stone-400 mt-2">
+                Set a target APS or career to get personalised recommendations across the portal.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-3 mt-3">
+                {goals.targetAps && (
+                  <div className="flex items-center gap-2 bg-violet-50 border border-violet-100 rounded-xl px-4 py-2.5">
+                    <GraduationCap className="w-4 h-4 text-violet-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Target APS</p>
+                      <p className="font-black text-violet-700 text-lg leading-none">{goals.targetAps}</p>
+                    </div>
+                    {apsData && (
+                      <div className="ml-2 pl-2 border-l border-violet-200">
+                        <p className="text-[10px] font-bold text-violet-400">Current</p>
+                        <p className={`font-black text-sm ${apsData.aps >= goals.targetAps ? 'text-emerald-600' : 'text-violet-600'}`}>
+                          {apsData.aps}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {goals.targetCareer && (
+                  <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5">
+                    <Briefcase className="w-4 h-4 text-stone-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Target Career</p>
+                      <p className="font-black text-stone-800 text-sm leading-tight">{goals.targetCareer}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Edit mode */
+          <div className="bg-white rounded-2xl border border-stone-200 p-5">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Set Your Goals</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-black text-stone-700 block mb-1.5">
+                  Target APS Score
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min={1}
+                    max={56}
+                    value={draftAps}
+                    onChange={e => setDraftAps(e.target.value)}
+                    placeholder="e.g. 35"
+                    className="w-24 text-center font-black text-lg rounded-xl border border-stone-200 py-2.5 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-stone-50"
+                  />
+                  <div className="flex gap-2">
+                    {[28, 32, 36, 40].map(n => (
+                      <button
+                        key={n}
+                        onClick={() => setDraftAps(String(n))}
+                        className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-colors border ${
+                          draftAps === String(n)
+                            ? 'bg-stone-900 text-white border-stone-900'
+                            : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-stone-400'
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-black text-stone-700 block mb-1.5">
+                  Target Career
+                </label>
+                <input
+                  type="text"
+                  value={draftCareer}
+                  onChange={e => setDraftCareer(e.target.value)}
+                  placeholder="e.g. Civil Engineer, Teacher, Nurse"
+                  className="w-full rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-stone-50"
+                />
+                {/* Quick picks from quiz results if available */}
+                {quizResults && quizResults.topCareerMatches.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {quizResults.topCareerMatches.slice(0, 4).map(c => (
+                      <button
+                        key={c.id}
+                        onClick={() => setDraftCareer(c.title)}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-stone-50 text-stone-500 border border-stone-200 hover:border-stone-400 transition-colors"
+                      >
+                        {c.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-5">
+              <button
+                onClick={handleSaveGoals}
+                className="flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-black text-sm hover:bg-stone-700 transition-colors"
+              >
+                Save Goals
+              </button>
+              <button
+                onClick={() => setEditingGoals(false)}
+                className="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </Section>
+
       {/* ── Section 2: Explore — free features with backend ─────────────────── */}
       <Section delay={0.04}>
         <Eyebrow>Explore</Eyebrow>

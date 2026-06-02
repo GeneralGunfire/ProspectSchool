@@ -13,6 +13,7 @@ import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchApsScore } from '../../../lib/myFuture';
 import { supabaseAdmin } from '../../../lib/supabase';
+import { getStudentGoals } from '../../../lib/studentGoals';
 import type { StudentSession } from '../../../lib/auth';
 
 function timeAgo(iso: string): string {
@@ -60,6 +61,7 @@ interface StudentHomePageProps {
 }
 
 export default function StudentHomePage({ session, onNavigate }: StudentHomePageProps) {
+  const goals = getStudentGoals(session.student_id);
   const today = new Date();
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
@@ -235,6 +237,28 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     insights.push({ text: `Your average of ${avgMark}% is solid. Stay consistent and review ${lowestSubjectName ?? 'your subjects'} regularly.` });
   }
 
+  if (goals.targetAps && apsScore !== null) {
+    const gap = goals.targetAps - apsScore;
+    if (gap > 0) {
+      insights.push({
+        text: `You are ${gap} APS point${gap !== 1 ? 's' : ''} from your target of ${goals.targetAps}.`,
+        navigateTo: 'aps',
+      });
+    } else {
+      insights.push({
+        text: `APS goal of ${goals.targetAps} reached. Update your target in My Future.`,
+        navigateTo: 'future',
+      });
+    }
+  }
+
+  if (goals.targetCareer) {
+    insights.push({
+      text: `Your career goal is ${goals.targetCareer}. Check your matches and bursaries in My Future.`,
+      navigateTo: 'future',
+    });
+  }
+
   // Recent activity
   type ActivityItem =
     | { kind: 'mark'; data: StudentResult; ts: string }
@@ -346,6 +370,26 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     });
   }
 
+  // Goal: if APS goal set and student is below it
+  if (goals.targetAps && apsScore !== null && apsScore < goals.targetAps) {
+    actionQueue.push({
+      priority: 'mid',
+      label: `APS Goal: ${apsScore} / ${goals.targetAps}`,
+      sublabel: `${goals.targetAps - apsScore} points from your target — open APS planner`,
+      page: 'aps',
+    });
+  }
+
+  // Goal: career goal set — nudge toward My Future
+  if (goals.targetCareer) {
+    actionQueue.push({
+      priority: 'low',
+      label: `Career Goal: ${goals.targetCareer}`,
+      sublabel: 'View your career roadmap and matches in My Future',
+      page: 'future',
+    });
+  }
+
   const seenPages = new Set<string>();
   const dedupedQueue = actionQueue.filter(item => {
     if (seenPages.has(item.page)) return false;
@@ -430,6 +474,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <div className="shrink-0 bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 text-center hidden sm:block">
             <p className="text-[10px] font-black uppercase tracking-widest text-violet-400 mb-0.5">APS</p>
             <p className="font-black text-violet-700 text-2xl leading-none">{apsScore}</p>
+          </div>
+        )}
+        {goals.targetCareer && !apsScore && (
+          <div className="shrink-0 bg-stone-100 border border-stone-200 rounded-2xl px-4 py-3 text-center hidden sm:block">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Goal</p>
+            <p className="font-black text-stone-800 text-sm leading-tight max-w-[120px] truncate">{goals.targetCareer}</p>
           </div>
         )}
       </motion.div>
