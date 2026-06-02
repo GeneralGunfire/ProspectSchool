@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X } from 'lucide-react';
+import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen } from 'lucide-react';
 import {
   fetchStudentResources, getResourceDownloadUrl,
   RESOURCE_TYPE_META,
@@ -17,27 +17,30 @@ const TypeIcon = { file: Paperclip, link: Link2, note: FileText };
 
 interface StudentResourcesPageProps {
   session: StudentSession;
+  onNavigate: (page: string) => void;
 }
 
-export default function StudentResourcesPage({ session }: StudentResourcesPageProps) {
+export default function StudentResourcesPage({ session, onNavigate }: StudentResourcesPageProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
-  const [subjectIds, setSubjectIds] = useState<number[]>([]);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<ResourceType | 'all'>('all');
+  const [filterSubject, setFilterSubject] = useState<string>('all');
   const [downloading, setDownloading] = useState<number | null>(null);
-  // expanded note
   const [expandedNote, setExpandedNote] = useState<number | null>(null);
+  const [recentlyViewed, setRecentlyViewed] = useState<number[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(`prospect_recent_resources_${session.student_id}`) ?? '[]');
+    } catch { return []; }
+  });
 
   useEffect(() => {
-    // Load student's subject IDs, then load resources
     supabaseAdmin
       .from('teacher_students')
       .select('subject_id')
       .eq('student_id', session.student_id)
       .then(({ data }) => {
         const ids = [...new Set((data ?? []).map((r: any) => r.subject_id as number))];
-        setSubjectIds(ids);
         return fetchStudentResources(
           session.school_id,
           session.student_id,
@@ -53,6 +56,13 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
   }, []);
 
   async function handleOpen(r: Resource) {
+    // Record in recently viewed (keep last 5, most recent first)
+    setRecentlyViewed(prev => {
+      const updated = [r.id, ...prev.filter(id => id !== r.id)].slice(0, 5);
+      localStorage.setItem(`prospect_recent_resources_${session.student_id}`, JSON.stringify(updated));
+      return updated;
+    });
+
     if (r.resource_type === 'link' && r.link_url) {
       window.open(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`, '_blank');
     } else if (r.resource_type === 'file' && r.file_url) {
@@ -63,8 +73,25 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
     }
   }
 
-  // Filter
+  // Derived data
+  const subjectOptions = Array.from(
+    new Set(resources.map(r => r.subject_label).filter(Boolean) as string[])
+  ).sort();
+
+  const unviewedIds = new Set(
+    resources.filter(r => !recentlyViewed.includes(r.id)).map(r => r.id)
+  );
+
+  const recommended = resources
+    .filter(r => unviewedIds.has(r.id))
+    .slice(0, 3);
+
+  const recentResources = recentlyViewed
+    .map(id => resources.find(r => r.id === id))
+    .filter(Boolean) as Resource[];
+
   const filtered = resources.filter(r => {
+    if (filterSubject !== 'all' && r.subject_label !== filterSubject) return false;
     if (filterType !== 'all' && r.resource_type !== filterType) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -80,62 +107,197 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
 
   return (
     <div className="p-5 md:p-8 max-w-6xl w-full mx-auto">
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Resources</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Class Resources</h1>
-        </div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+        className="mb-6"
+      >
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Resources</p>
+        <h1 className="font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+          Class Resources
+        </h1>
+        <p className="text-sm text-stone-400 mt-1">Study materials from your teachers.</p>
+      </motion.div>
 
-      {/* Search + filter bar */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search resources…"
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-3.5 h-3.5 text-slate-400" />
-            </button>
-          )}
-        </div>
-
-        {/* Type filter pills */}
-        <div className="flex items-center gap-1.5">
-          {(['all', 'file', 'link', 'note'] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => setFilterType(t)}
-              className={`px-3 py-2 rounded-xl text-xs font-black transition-all ${
-                filterType === t ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-              }`}
+      {!loading && resources.length > 0 && (
+        <>
+          {/* Recommended section */}
+          {recommended.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
+              className="mb-6"
             >
-              {t === 'all' ? 'All' : RESOURCE_TYPE_META[t].label + 's'}
-            </button>
-          ))}
-        </div>
-      </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                Suggested For You
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {recommended.map(r => {
+                  const meta = RESOURCE_TYPE_META[r.resource_type];
+                  const Icon = TypeIcon[r.resource_type];
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => handleOpen(r)}
+                      disabled={downloading === r.id}
+                      className="bg-white border border-stone-200 rounded-2xl p-4 text-left hover:border-stone-400 hover:shadow-sm transition-all group disabled:opacity-40"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.badge}`}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <ExternalLink className="w-3.5 h-3.5 text-stone-300 group-hover:text-stone-600 transition-colors mt-0.5" />
+                      </div>
+                      <p className="font-black text-stone-900 text-sm leading-snug mb-1">{r.title}</p>
+                      {r.subject_label && (
+                        <p className="text-[11px] text-stone-400">{r.subject_label}</p>
+                      )}
+                      {r.description && (
+                        <p className="text-[11px] text-stone-400 mt-0.5 line-clamp-1">{r.description}</p>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Recently Viewed section */}
+          {recentResources.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
+              className="mb-6"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                Recently Viewed
+              </p>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {recentResources.map(r => {
+                  const meta = RESOURCE_TYPE_META[r.resource_type];
+                  const Icon = TypeIcon[r.resource_type];
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => handleOpen(r)}
+                      disabled={downloading === r.id}
+                      className="shrink-0 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors flex items-center gap-2.5 min-w-[180px] max-w-[220px] disabled:opacity-40"
+                    >
+                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${meta.badge}`}>
+                        <Icon className="w-3 h-3" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-stone-900 truncate">{r.title}</p>
+                        <p className="text-[10px] text-stone-400 truncate">{r.subject_label ?? meta.label}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Search + Filters */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
+            className="space-y-3 mb-5"
+          >
+            {/* Search bar */}
+            <div className="relative">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search resources…"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border border-stone-200 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-white"
+              />
+              {search && (
+                <button onClick={() => setSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  <X className="w-3.5 h-3.5 text-stone-400" />
+                </button>
+              )}
+            </div>
+
+            {/* Subject filter pills */}
+            {subjectOptions.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {(['all', ...subjectOptions] as string[]).map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setFilterSubject(s)}
+                    className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-black transition-colors whitespace-nowrap ${
+                      filterSubject === s
+                        ? 'bg-stone-900 text-white'
+                        : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                    }`}
+                  >
+                    {s === 'all' ? 'All Subjects' : s}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Type filter pills */}
+            <div className="flex gap-2">
+              {(['all', 'file', 'link', 'note'] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setFilterType(t)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-colors ${
+                    filterType === t
+                      ? 'bg-stone-900 text-white'
+                      : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
+                >
+                  {t === 'all' ? 'All Types' : RESOURCE_TYPE_META[t].label + 's'}
+                </button>
+              ))}
+            </div>
+
+            {/* Result count */}
+            <p className="text-xs font-bold text-stone-400">
+              {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
+              {filterSubject !== 'all' && ` · ${filterSubject}`}
+            </p>
+          </motion.div>
+        </>
+      )}
 
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+          <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+        </div>
+      ) : resources.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
+          <p className="text-sm font-black text-stone-400 mb-1">No resources yet.</p>
+          <p className="text-xs text-stone-300">Your teachers haven't uploaded any materials yet.</p>
+          <button
+            onClick={() => onNavigate('library')}
+            className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white text-xs font-black rounded-xl hover:bg-stone-700 transition-colors"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            Open Library Instead
+          </button>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <FolderOpen className="w-10 h-10 text-slate-200 mb-4" />
-          <p className="text-sm font-bold text-slate-400">
-            {resources.length === 0 ? 'No resources yet.' : 'No results for that search.'}
-          </p>
-          {resources.length === 0 && (
-            <p className="text-xs text-slate-300 mt-1">Your teacher hasn't added any resources yet.</p>
-          )}
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Search className="w-8 h-8 text-stone-200 mb-3" />
+          <p className="text-sm font-black text-stone-400 mb-1">No results.</p>
+          <button
+            onClick={() => { setSearch(''); setFilterSubject('all'); setFilterType('all'); }}
+            className="mt-2 text-xs font-black text-stone-500 hover:text-stone-800 transition-colors"
+          >
+            Clear filters
+          </button>
         </div>
       ) : (
         <div className="space-y-2">
@@ -144,14 +306,15 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
             const Icon = TypeIcon[r.resource_type];
             const isNote = r.resource_type === 'note';
             const noteExpanded = expandedNote === r.id;
+            const wasViewed = recentlyViewed.includes(r.id);
 
             return (
               <motion.div
                 key={r.id}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03, duration: 0.18 }}
-                className="bg-white rounded-2xl border border-slate-200 px-5 py-4"
+                transition={{ delay: Math.min(i * 0.03, 0.15), duration: 0.18 }}
+                className="bg-white rounded-2xl border border-stone-200 px-5 py-4 hover:border-stone-300 transition-colors"
               >
                 <div className="flex items-start gap-4">
                   {/* Icon */}
@@ -162,24 +325,29 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
                   {/* Body */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="text-sm font-bold text-slate-900">{r.title}</p>
+                      <p className="text-sm font-black text-stone-900">{r.title}</p>
                       {r.subject_label && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
                           {r.subject_label}
                         </span>
                       )}
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${meta.badge}`}>
                         {meta.label}
                       </span>
+                      {wasViewed && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-50 text-stone-400 border border-stone-100">
+                          Viewed
+                        </span>
+                      )}
                     </div>
                     {r.description && (
-                      <p className="text-xs text-slate-400 mb-1">{r.description}</p>
+                      <p className="text-xs text-stone-400 mb-1 leading-relaxed">{r.description}</p>
                     )}
                     {r.resource_type === 'link' && r.link_url && (
                       <p className="text-xs text-violet-500 truncate">{r.link_url}</p>
                     )}
                     {r.resource_type === 'file' && r.file_name && (
-                      <p className="text-xs text-slate-400">{r.file_name}</p>
+                      <p className="text-xs text-stone-400">{r.file_name}</p>
                     )}
                     {isNote && r.note_content && (
                       <AnimatePresence initial={false}>
@@ -190,16 +358,16 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="text-xs text-slate-600 bg-amber-50 rounded-xl px-3 py-2 mt-1 leading-relaxed border border-amber-100 overflow-hidden"
+                            className="text-xs text-stone-600 bg-amber-50 rounded-xl px-3 py-2.5 mt-2 leading-relaxed border border-amber-100 overflow-hidden"
                           >
                             {r.note_content}
                           </motion.p>
                         ) : (
-                          <p className="text-xs text-slate-400 mt-0.5 truncate">{r.note_content}</p>
+                          <p key="collapsed" className="text-xs text-stone-400 mt-0.5 truncate">{r.note_content}</p>
                         )}
                       </AnimatePresence>
                     )}
-                    <p className="text-[10px] text-slate-300 mt-1">{formatDate(r.created_at)}</p>
+                    <p className="text-[10px] text-stone-300 mt-1.5">{formatDate(r.created_at)}</p>
                   </div>
 
                   {/* Action */}
@@ -207,18 +375,18 @@ export default function StudentResourcesPage({ session }: StudentResourcesPagePr
                     {isNote ? (
                       <button
                         onClick={() => setExpandedNote(noteExpanded ? null : r.id)}
-                        className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700 text-xs font-black"
+                        className="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-black transition-colors"
                       >
-                        {noteExpanded ? 'Less' : 'Read'}
+                        {noteExpanded ? 'Collapse' : 'Read'}
                       </button>
                     ) : (
                       <button
                         onClick={() => handleOpen(r)}
                         disabled={downloading === r.id}
-                        className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700 disabled:opacity-40"
-                        title={r.resource_type === 'file' ? 'Download' : 'Open link'}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900 text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
                       >
-                        <ExternalLink className="w-4 h-4" />
+                        <ExternalLink className="w-3 h-3" />
+                        {downloading === r.id ? 'Opening…' : r.resource_type === 'file' ? 'Open' : 'Visit'}
                       </button>
                     )}
                   </div>

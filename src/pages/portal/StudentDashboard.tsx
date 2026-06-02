@@ -169,8 +169,8 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
           {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'resources'     && <StudentResourcesPage session={session} />}
-          {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} />}
+          {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+          {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'aps'           && <ApsCalculatorPage />}
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
