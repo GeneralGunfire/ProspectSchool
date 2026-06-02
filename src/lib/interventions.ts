@@ -1,6 +1,8 @@
 // ── Intervention & Outcome Tracking System ───────────────────────────────────
 // Tracks the full loop: Risk detected → Recommendation → Action → Outcome
-// Stored in localStorage per student. No backend needed.
+// Stored in Supabase — visible to teachers and queryable school-wide.
+
+import { supabaseAdmin } from './supabase';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -15,14 +17,14 @@ export interface Intervention {
   subject:       string;
   type:          InterventionType;
   reason:        InterventionReason;
-  description:   string;          // human-readable action e.g. "Complete a Physics past paper"
-  page:          string;          // navigation target: 'pastpapers' | 'library' | 'resources'
+  description:   string;
+  page:          string;
   createdAt:     string;
   startedAt?:    string;
   completedAt?:  string;
-  expiresAt:     string;          // 30 days after creation
+  expiresAt:     string;
   status:        InterventionStatus;
-  previousAvg:   number;          // subject avg when intervention was created
+  previousAvg:   number;
 }
 
 export interface Outcome {
@@ -31,156 +33,247 @@ export interface Outcome {
   type:           InterventionType;
   previousAvg:    number;
   newAvg:         number;
-  improvement:    number;         // newAvg - previousAvg
-  latestMark:     number;         // the specific mark that triggered the outcome
+  improvement:    number;
+  latestMark:     number;
   result:         OutcomeResult;
   recordedAt:     string;
 }
 
 export interface InterventionImpact {
   totalCompleted:    number;
-  successful:        number;      // improvement >= 3% OR latestMark >= 70
-  partialSuccess:    number;      // improvement > 0 but below threshold
-  avgImprovement:    number;      // avg improvement across all completed
-  successRate:       number;      // successful / totalCompleted * 100
+  successful:        number;
+  partialSuccess:    number;
+  avgImprovement:    number;
+  successRate:       number;
   bestType:          InterventionType | null;
   bestTypeGain:      number;
   typeEffectiveness: { type: InterventionType; successRate: number; avgGain: number; count: number }[];
 }
 
 export interface GrowthTimelineEvent {
-  date:    string;        // ISO date string
-  type:    'goal_set' | 'intervention_started' | 'intervention_completed' | 'outcome_recorded' | 'mark_recorded';
-  label:   string;
-  detail:  string;
-  delta?:  number;        // improvement if outcome
+  date:      string;
+  type:      'goal_set' | 'intervention_started' | 'intervention_completed' | 'outcome_recorded' | 'mark_recorded';
+  label:     string;
+  detail:    string;
+  delta?:    number;
   positive?: boolean;
 }
 
-// ── Storage keys ──────────────────────────────────────────────────────────────
+// ── Row → domain mappers ──────────────────────────────────────────────────────
 
-const INTERVENTIONS_KEY = (id: number) => `prospect_interventions_${id}`;
-const OUTCOMES_KEY      = (id: number) => `prospect_outcomes_${id}`;
-
-// ── Read/write helpers ────────────────────────────────────────────────────────
-
-export function getInterventions(studentId: number): Intervention[] {
-  try {
-    const raw = localStorage.getItem(INTERVENTIONS_KEY(studentId));
-    if (!raw) return [];
-    const all: Intervention[] = JSON.parse(raw);
-    // Auto-expire anything older than 30 days that's still recommended/started
-    const now = new Date().toISOString();
-    return all.map(i =>
-      (i.status === 'recommended' || i.status === 'started') && i.expiresAt < now
-        ? { ...i, status: 'expired' as InterventionStatus }
-        : i
-    );
-  } catch { return []; }
+function rowToIntervention(r: any): Intervention {
+  return {
+    id:           r.id,
+    studentId:    r.student_id,
+    subject:      r.subject,
+    type:         r.type         as InterventionType,
+    reason:       r.reason       as InterventionReason,
+    description:  r.description,
+    page:         r.page,
+    createdAt:    r.created_at,
+    startedAt:    r.started_at   ?? undefined,
+    completedAt:  r.completed_at ?? undefined,
+    expiresAt:    r.expires_at,
+    status:       r.status       as InterventionStatus,
+    previousAvg:  Number(r.previous_avg),
+  };
 }
 
-function saveInterventions(studentId: number, interventions: Intervention[]): void {
-  // Keep last 50 interventions to avoid localStorage bloat
-  const trimmed = interventions.slice(-50);
-  localStorage.setItem(INTERVENTIONS_KEY(studentId), JSON.stringify(trimmed));
+function rowToOutcome(r: any): Outcome {
+  return {
+    interventionId: r.intervention_id,
+    subject:        r.subject,
+    type:           r.type         as InterventionType,
+    previousAvg:    Number(r.previous_avg),
+    newAvg:         Number(r.new_avg),
+    improvement:    Number(r.improvement),
+    latestMark:     Number(r.latest_mark),
+    result:         r.result       as OutcomeResult,
+    recordedAt:     r.recorded_at,
+  };
 }
 
-export function getOutcomes(studentId: number): Outcome[] {
-  try {
-    const raw = localStorage.getItem(OUTCOMES_KEY(studentId));
-    return raw ? JSON.parse(raw) : [];
-  } catch { return []; }
+// ── Read helpers ──────────────────────────────────────────────────────────────
+
+export async function getInterventions(studentId: number): Promise<Intervention[]> {
+  const now = new Date().toISOString();
+
+  // Auto-expire overdue rows first (fire-and-forget, don't await error)
+  supabaseAdmin
+    .from('interventions')
+    .update({ status: 'expired' })
+    .eq('student_id', studentId)
+    .in('status', ['recommended', 'started'])
+    .lt('expires_at', now)
+    .then(() => {});
+
+  const { data, error } = await supabaseAdmin
+    .from('interventions')
+    .select('*')
+    .eq('student_id', studentId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error || !data) return [];
+  return data.map(rowToIntervention);
 }
 
-function saveOutcomes(studentId: number, outcomes: Outcome[]): void {
-  localStorage.setItem(OUTCOMES_KEY(studentId), JSON.stringify(outcomes.slice(-100)));
+export async function getOutcomes(studentId: number): Promise<Outcome[]> {
+  const { data, error } = await supabaseAdmin
+    .from('outcomes')
+    .select('*')
+    .eq('student_id', studentId)
+    .order('recorded_at', { ascending: false })
+    .limit(100);
+
+  if (error || !data) return [];
+  return data.map(rowToOutcome);
+}
+
+export async function getActiveInterventions(studentId: number): Promise<Intervention[]> {
+  const { data, error } = await supabaseAdmin
+    .from('interventions')
+    .select('*')
+    .eq('student_id', studentId)
+    .in('status', ['recommended', 'started'])
+    .order('created_at', { ascending: false });
+
+  if (error || !data) return [];
+  return data.map(rowToIntervention);
+}
+
+export async function getCompletedInterventions(studentId: number): Promise<Intervention[]> {
+  const { data, error } = await supabaseAdmin
+    .from('interventions')
+    .select('*')
+    .eq('student_id', studentId)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false });
+
+  if (error || !data) return [];
+  return data.map(rowToIntervention);
 }
 
 // ── Create intervention ───────────────────────────────────────────────────────
 
-export function createIntervention(
+export async function createIntervention(
   studentId:   number,
+  schoolId:    number,
   subject:     string,
   type:        InterventionType,
   reason:      InterventionReason,
   description: string,
   page:        string,
   previousAvg: number,
-): Intervention {
-  const existing = getInterventions(studentId);
+): Promise<Intervention> {
+  // Deduplicate: check for active intervention for same student+subject+type
+  const { data: existing } = await supabaseAdmin
+    .from('interventions')
+    .select('*')
+    .eq('student_id', studentId)
+    .eq('subject', subject)
+    .eq('type', type)
+    .in('status', ['recommended', 'started'])
+    .limit(1)
+    .single();
 
-  // Deduplicate: don't create if an active intervention for same subject+type exists
-  const duplicate = existing.find(i =>
-    i.subject === subject &&
-    i.type === type &&
-    (i.status === 'recommended' || i.status === 'started')
-  );
-  if (duplicate) return duplicate;
+  if (existing) return rowToIntervention(existing);
 
   const now     = new Date();
   const expires = new Date(now);
   expires.setDate(expires.getDate() + 30);
 
-  const intervention: Intervention = {
-    id:          `${studentId}_${subject}_${type}_${Date.now()}`,
-    studentId,
-    subject,
-    type,
-    reason,
-    description,
-    page,
-    createdAt:   now.toISOString(),
-    expiresAt:   expires.toISOString(),
-    status:      'recommended',
-    previousAvg,
-  };
+  const id = `${studentId}_${subject}_${type}_${Date.now()}`;
 
-  saveInterventions(studentId, [...existing, intervention]);
-  return intervention;
+  const { data, error } = await supabaseAdmin
+    .from('interventions')
+    .insert({
+      id,
+      student_id:   studentId,
+      school_id:    schoolId,
+      subject,
+      type,
+      reason,
+      description,
+      page,
+      status:       'recommended',
+      previous_avg: previousAvg,
+      expires_at:   expires.toISOString(),
+    })
+    .select('*')
+    .single();
+
+  if (error || !data) {
+    // Return a local object on insert failure so the UI doesn't break
+    return {
+      id, studentId, subject, type, reason, description, page,
+      createdAt:  now.toISOString(),
+      expiresAt:  expires.toISOString(),
+      status:     'recommended',
+      previousAvg,
+    };
+  }
+
+  return rowToIntervention(data);
 }
 
 // ── Update intervention status ────────────────────────────────────────────────
 
-export function startIntervention(studentId: number, interventionId: string): void {
-  const all = getInterventions(studentId);
-  const updated = all.map(i =>
-    i.id === interventionId && i.status === 'recommended'
-      ? { ...i, status: 'started' as InterventionStatus, startedAt: new Date().toISOString() }
-      : i
-  );
-  saveInterventions(studentId, updated);
+export async function startIntervention(studentId: number, interventionId: string): Promise<void> {
+  await supabaseAdmin
+    .from('interventions')
+    .update({ status: 'started', started_at: new Date().toISOString() })
+    .eq('id', interventionId)
+    .eq('student_id', studentId)
+    .eq('status', 'recommended');
 }
 
-export function completeIntervention(studentId: number, interventionId: string): void {
-  const all = getInterventions(studentId);
-  const updated = all.map(i =>
-    i.id === interventionId && (i.status === 'recommended' || i.status === 'started')
-      ? { ...i, status: 'completed' as InterventionStatus, completedAt: new Date().toISOString() }
-      : i
-  );
-  saveInterventions(studentId, updated);
+export async function completeIntervention(studentId: number, interventionId: string): Promise<void> {
+  await supabaseAdmin
+    .from('interventions')
+    .update({ status: 'completed', completed_at: new Date().toISOString() })
+    .eq('id', interventionId)
+    .eq('student_id', studentId)
+    .in('status', ['recommended', 'started']);
 }
 
 // ── Record outcome ────────────────────────────────────────────────────────────
-// Called when a new mark arrives for a subject that had a completed intervention
 
-export function recordOutcome(
+export async function recordOutcome(
   studentId:      number,
+  schoolId:       number,
   interventionId: string,
   subject:        string,
   type:           InterventionType,
   previousAvg:    number,
   newAvg:         number,
   latestMark:     number,
-): Outcome {
+): Promise<Outcome> {
   const improvement = Math.round((newAvg - previousAvg) * 10) / 10;
-  // Successful: improvement >= 3% OR the latest mark itself >= 70
   const result: OutcomeResult =
     improvement >= 3 || latestMark >= 70 ? 'improved'  :
-    improvement > 0                      ? 'unchanged' :  // partial — counts as unchanged
+    improvement > 0                      ? 'unchanged' :
                                            'declined';
 
-  const outcome: Outcome = {
+  const row = {
+    intervention_id: interventionId,
+    student_id:      studentId,
+    school_id:       schoolId,
+    subject,
+    type,
+    previous_avg:    Math.round(previousAvg),
+    new_avg:         Math.round(newAvg),
+    improvement,
+    latest_mark:     Math.round(latestMark),
+    result,
+  };
+
+  // Upsert — one outcome per intervention (intervention_id is PK)
+  await supabaseAdmin
+    .from('outcomes')
+    .upsert(row, { onConflict: 'intervention_id' });
+
+  return {
     interventionId,
     subject,
     type,
@@ -191,25 +284,22 @@ export function recordOutcome(
     result,
     recordedAt:   new Date().toISOString(),
   };
-
-  const existing = getOutcomes(studentId);
-  const deduped  = existing.filter(o => o.interventionId !== interventionId);
-  saveOutcomes(studentId, [...deduped, outcome]);
-  return outcome;
 }
 
 // ── Auto-record outcomes from fresh marks ────────────────────────────────────
-// Call this on Marks page load with all marked results.
-// Finds completed interventions with no outcome yet, checks for newer marks.
 
 import type { StudentResult } from './marks';
 
-export function syncOutcomesFromMarks(
+export async function syncOutcomesFromMarks(
   studentId: number,
+  schoolId:  number,
   allMarks:  StudentResult[],
-): void {
-  const interventions = getInterventions(studentId);
-  const outcomes      = getOutcomes(studentId);
+): Promise<void> {
+  const [interventions, outcomes] = await Promise.all([
+    getInterventions(studentId),
+    getOutcomes(studentId),
+  ]);
+
   const completedWithoutOutcome = interventions.filter(i =>
     i.status === 'completed' &&
     i.completedAt !== undefined &&
@@ -225,14 +315,12 @@ export function syncOutcomesFromMarks(
 
     if (subjectMarks.length === 0) continue;
 
-    // Find marks that arrived after the intervention was completed
     const newMarks = subjectMarks.filter(m =>
       (m.marked_at ?? m.created_at) > (inv.completedAt ?? inv.createdAt)
     );
 
     if (newMarks.length === 0) continue;
 
-    // Compute before avg (all marks up to completedAt)
     const beforeMarks = subjectMarks.filter(m =>
       (m.marked_at ?? m.created_at) <= (inv.completedAt ?? inv.createdAt)
     );
@@ -240,42 +328,39 @@ export function syncOutcomesFromMarks(
       ? beforeMarks.reduce((s, m) => s + (m.mark! / m.total) * 100, 0) / beforeMarks.length
       : inv.previousAvg;
 
-    // After avg = all subject marks including new ones
     const afterAvg = subjectMarks.reduce((s, m) => s + (m.mark! / m.total) * 100, 0) / subjectMarks.length;
 
-    // Latest mark percentage
-    const latest = newMarks.sort((a, b) =>
+    const latest = [...newMarks].sort((a, b) =>
       (b.marked_at ?? b.created_at).localeCompare(a.marked_at ?? a.created_at)
     )[0];
     const latestMark = (latest.mark! / latest.total) * 100;
 
-    recordOutcome(studentId, inv.id, inv.subject, inv.type, beforeAvg, afterAvg, latestMark);
+    await recordOutcome(studentId, schoolId, inv.id, inv.subject, inv.type, beforeAvg, afterAvg, latestMark);
   }
 }
 
-// ── Compute impact summary ────────────────────────────────────────────────────
-// Pure function — accepts pre-fetched arrays so the engine remains side-effect free.
-// Pages call getCompletedInterventions/getOutcomes once and pass the results here.
+// ── Compute impact summary (pure — no I/O) ────────────────────────────────────
 
 export function computeInterventionImpact(completed: Intervention[], outcomes: Outcome[]): InterventionImpact {
-  const successful   = outcomes.filter(o => o.result === 'improved');
-  const partial      = outcomes.filter(o => o.result === 'unchanged' && o.improvement > 0);
+  const successful      = outcomes.filter(o => o.result === 'improved');
+  const partial         = outcomes.filter(o => o.result === 'unchanged' && o.improvement > 0);
   const allImprovements = outcomes.map(o => o.improvement);
-  const avgImprovement = allImprovements.length
+  const avgImprovement  = allImprovements.length
     ? Math.round(allImprovements.reduce((s, v) => s + v, 0) / allImprovements.length * 10) / 10
     : 0;
 
-  // Effectiveness by type
   const TYPES: InterventionType[] = ['past_paper', 'library_topic', 'revision', 'resource_review'];
   const typeEffectiveness = TYPES.map(type => {
-    const typeOutcomes = outcomes.filter(o => o.type === type);
+    const typeOutcomes  = outcomes.filter(o => o.type === type);
     const typeSuccessful = typeOutcomes.filter(o => o.result === 'improved');
-    const typeGains = typeOutcomes.map(o => o.improvement);
+    const typeGains     = typeOutcomes.map(o => o.improvement);
     return {
       type,
-      successRate: typeOutcomes.length > 0 ? Math.round((typeSuccessful.length / typeOutcomes.length) * 100) : 0,
-      avgGain:     typeGains.length > 0 ? Math.round(typeGains.reduce((s, v) => s + v, 0) / typeGains.length * 10) / 10 : 0,
-      count:       typeOutcomes.length,
+      successRate: typeOutcomes.length > 0
+        ? Math.round((typeSuccessful.length / typeOutcomes.length) * 100) : 0,
+      avgGain: typeGains.length > 0
+        ? Math.round(typeGains.reduce((s, v) => s + v, 0) / typeGains.length * 10) / 10 : 0,
+      count: typeOutcomes.length,
     };
   }).filter(t => t.count > 0).sort((a, b) => b.avgGain - a.avgGain);
 
@@ -283,11 +368,12 @@ export function computeInterventionImpact(completed: Intervention[], outcomes: O
   const bestTypeGain = typeEffectiveness.length > 0 ? typeEffectiveness[0].avgGain : 0;
 
   return {
-    totalCompleted:   completed.length,
-    successful:       successful.length,
-    partialSuccess:   partial.length,
+    totalCompleted:  completed.length,
+    successful:      successful.length,
+    partialSuccess:  partial.length,
     avgImprovement,
-    successRate:      completed.length > 0 ? Math.round((successful.length / completed.length) * 100) : 0,
+    successRate:     completed.length > 0
+      ? Math.round((successful.length / completed.length) * 100) : 0,
     bestType,
     bestTypeGain,
     typeEffectiveness,
@@ -295,61 +381,45 @@ export function computeInterventionImpact(completed: Intervention[], outcomes: O
 }
 
 // ── Auto-generate interventions from engine risk ──────────────────────────────
-// Called by pages after computing studentInsights — creates interventions for
-// high/medium risk subjects that don't already have one
 
 import type { SubjectRisk, RevisionRecommendation } from './studentInsights';
 
-export function syncInterventionsFromRisk(
-  studentId: number,
+export async function syncInterventionsFromRisk(
+  studentId:        number,
+  schoolId:         number,
   examRiskSubjects: SubjectRisk[],
-  revisionRecs: RevisionRecommendation[],
-): Intervention[] {
+  revisionRecs:     RevisionRecommendation[],
+): Promise<Intervention[]> {
   const created: Intervention[] = [];
 
   for (const risk of examRiskSubjects) {
     if (risk.risk !== 'high' && risk.risk !== 'medium') continue;
 
-    // Past paper intervention for exam-soon risks
     if (risk.examDays !== null && risk.examDays <= 14) {
-      const i = createIntervention(
-        studentId,
-        risk.subject,
-        'past_paper',
+      const i = await createIntervention(
+        studentId, schoolId, risk.subject, 'past_paper',
         risk.examDays <= 7 ? 'exam_soon' : 'high_risk',
-        `Complete a ${risk.subject} past paper`,
-        'pastpapers',
-        risk.avg,
+        `Complete a ${risk.subject} past paper`, 'pastpapers', risk.avg,
       );
       created.push(i);
     }
 
-    // Library intervention for low averages
     if (risk.avg < 60) {
-      const i = createIntervention(
-        studentId,
-        risk.subject,
-        'library_topic',
+      const i = await createIntervention(
+        studentId, schoolId, risk.subject, 'library_topic',
         risk.avg < 50 ? 'below_pass' : 'high_risk',
-        `Study ${risk.subject} in the library`,
-        'library',
-        risk.avg,
+        `Study ${risk.subject} in the library`, 'library', risk.avg,
       );
       created.push(i);
     }
   }
 
-  // Revision interventions from recommendations
   for (const rec of revisionRecs.slice(0, 2)) {
     if (rec.urgency === 'critical' || rec.urgency === 'high') {
-      const i = createIntervention(
-        studentId,
-        rec.subject,
-        'revision',
+      const i = await createIntervention(
+        studentId, schoolId, rec.subject, 'revision',
         rec.examDays !== null ? 'exam_soon' : 'declining_trend',
-        `Revise ${rec.subject} — ${rec.reason}`,
-        'library',
-        rec.avg,
+        `Revise ${rec.subject} — ${rec.reason}`, 'library', rec.avg,
       );
       created.push(i);
     }
@@ -358,43 +428,27 @@ export function syncInterventionsFromRisk(
   return created;
 }
 
-// ── Get active interventions for a student (recommended + started) ────────────
-
-export function getActiveInterventions(studentId: number): Intervention[] {
-  return getInterventions(studentId).filter(
-    i => i.status === 'recommended' || i.status === 'started'
-  );
-}
-
-export function getCompletedInterventions(studentId: number): Intervention[] {
-  return getInterventions(studentId).filter(i => i.status === 'completed');
-}
-
-// ── Build Growth Timeline ─────────────────────────────────────────────────────
-// Chronological story of the student's academic journey for My Future page
+// ── Build Growth Timeline (pure — receives pre-fetched data) ──────────────────
 
 export function buildGrowthTimeline(
-  studentId:   number,
-  allMarks:    StudentResult[],
-  goals:       { targetAps: number | null; targetCareer: string | null; updatedAt: string },
+  interventions: Intervention[],
+  outcomes:      Outcome[],
+  allMarks:      StudentResult[],
+  goals:         { targetAps: number | null; targetCareer: string | null; updatedAt: string },
 ): GrowthTimelineEvent[] {
   const events: GrowthTimelineEvent[] = [];
-  const interventions = getInterventions(studentId);
-  const outcomes      = getOutcomes(studentId);
 
-  // Goal set event
   if (goals.updatedAt && (goals.targetAps || goals.targetCareer)) {
     events.push({
-      date:  goals.updatedAt,
-      type:  'goal_set',
-      label: 'Goal Set',
+      date:   goals.updatedAt,
+      type:   'goal_set',
+      label:  'Goal Set',
       detail: goals.targetAps
         ? `Target APS: ${goals.targetAps}`
         : `Career goal: ${goals.targetCareer}`,
     });
   }
 
-  // First mark
   const sortedMarks = [...allMarks]
     .filter(m => m.mark !== null)
     .sort((a, b) => (a.marked_at ?? a.created_at).localeCompare(b.marked_at ?? b.created_at));
@@ -402,39 +456,35 @@ export function buildGrowthTimeline(
   if (sortedMarks.length > 0) {
     const first = sortedMarks[0];
     events.push({
-      date:  first.marked_at ?? first.created_at,
-      type:  'mark_recorded',
-      label: 'First Assessment',
+      date:   first.marked_at ?? first.created_at,
+      type:   'mark_recorded',
+      label:  'First Assessment',
       detail: `${first.subject_label}: ${Math.round((first.mark! / first.total) * 100)}%`,
     });
   }
 
-  // Intervention started events
   for (const inv of interventions) {
     if (inv.startedAt) {
       events.push({
-        date:  inv.startedAt,
-        type:  'intervention_started',
-        label: `${inv.subject} — Started`,
+        date:   inv.startedAt,
+        type:   'intervention_started',
+        label:  `${inv.subject} — Started`,
         detail: inv.description,
       });
     }
     if (inv.completedAt) {
       const outcome = outcomes.find(o => o.interventionId === inv.id);
       events.push({
-        date:    inv.completedAt,
-        type:    'intervention_completed',
-        label:   `${inv.subject} — Completed`,
-        detail:  outcome
-          ? `${outcome.previousAvg}% → ${outcome.newAvg}%`
-          : inv.description,
+        date:     inv.completedAt,
+        type:     'intervention_completed',
+        label:    `${inv.subject} — Completed`,
+        detail:   outcome ? `${outcome.previousAvg}% → ${outcome.newAvg}%` : inv.description,
         delta:    outcome?.improvement,
         positive: outcome ? outcome.result === 'improved' : undefined,
       });
     }
   }
 
-  // Outcome events
   for (const o of outcomes) {
     events.push({
       date:     o.recordedAt,
@@ -446,7 +496,6 @@ export function buildGrowthTimeline(
     });
   }
 
-  // Sort chronologically, deduplicate by date+label
   const seen = new Set<string>();
   return events
     .filter(e => {

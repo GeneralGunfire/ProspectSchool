@@ -9,7 +9,7 @@ import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
-import { syncOutcomesFromMarks, getOutcomes, getCompletedInterventions } from '../../../lib/interventions';
+import { syncOutcomesFromMarks, getOutcomes, getCompletedInterventions, type Intervention, type Outcome } from '../../../lib/interventions';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -105,19 +105,30 @@ interface StudentMarksPageProps {
 
 export default function StudentMarksPage({ session, onNavigate }: StudentMarksPageProps) {
   const goals = getStudentGoals(session.student_id);
-  const [results, setResults] = useState<StudentResult[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [results, setResults]         = useState<StudentResult[]>([]);
+  const [loading, setLoading]         = useState(true);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<Record<string, string>>({});
+  const [typeFilter, setTypeFilter]   = useState<Record<string, string>>({});
   const [drawerResult, setDrawerResult] = useState<StudentResult | null>(null);
+  const [completedInv, setCompletedInv] = useState<Intervention[]>([]);
+  const [allOutcomes, setAllOutcomes]   = useState<Outcome[]>([]);
 
   useEffect(() => {
-    fetchStudentResults(session.student_id, session.school_id).then(data => {
+    async function load() {
+      const data = await fetchStudentResults(session.student_id, session.school_id);
       setResults(data);
       setLoading(false);
-      // Auto-record outcomes for any completed interventions that now have newer marks
-      syncOutcomesFromMarks(session.student_id, data.filter(r => r.mark !== null));
-    });
+      // Sync outcomes then load intervention data into state
+      const marked = data.filter(r => r.mark !== null);
+      await syncOutcomesFromMarks(session.student_id, session.school_id, marked);
+      const [completed, outcomes] = await Promise.all([
+        getCompletedInterventions(session.student_id),
+        getOutcomes(session.student_id),
+      ]);
+      setCompletedInv(completed);
+      setAllOutcomes(outcomes);
+    }
+    load();
   }, []);
 
   // Group by subject
@@ -145,10 +156,6 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
   const subjectRank = new Map(subjectAverages.map((s, i) => [s.subject, i + 1]));
   const rankedCount = subjectAverages.filter(s => s.avg >= 0).length;
-
-  // ── Interventions (fetched before engine — keep engine pure) ────
-  const completedInv = getCompletedInterventions(session.student_id);
-  const allOutcomes  = getOutcomes(session.student_id);
 
   // ── Intelligence engine ───────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);

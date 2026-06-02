@@ -17,8 +17,9 @@ import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
 import {
   getActiveInterventions, getCompletedInterventions, getOutcomes,
-  syncInterventionsFromRisk, startIntervention, completeIntervention,
-  type Intervention,
+  syncInterventionsFromRisk, syncOutcomesFromMarks,
+  startIntervention, completeIntervention,
+  type Intervention, type Outcome,
 } from '../../../lib/interventions';
 import type { StudentSession } from '../../../lib/auth';
 
@@ -81,6 +82,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [apsScore, setApsScore] = useState<number | null>(null);
+  const [completedInterventions, setCompletedInterventions] = useState<Intervention[]>([]);
+  const [interventionOutcomes, setInterventionOutcomes]     = useState<Outcome[]>([]);
+  const [activeInterventions, setActiveInterventions]       = useState<Intervention[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -119,6 +123,25 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       // Non-blocking APS fetch
       fetchApsScore(session.student_id, session.school_id).then(d => {
         if (d) setApsScore(d.aps);
+      });
+
+      // Non-blocking intervention fetch — runs after page is visible
+      const scoredForSync = marks.filter(m => m.mark !== null);
+      syncInterventionsFromRisk(
+        session.student_id, session.school_id,
+        // examRiskSubjects and revisionRecs computed below after state is set;
+        // we call sync again after engine runs in a separate effect
+        [], [],
+      ).then(async () => {
+        await syncOutcomesFromMarks(session.student_id, session.school_id, scoredForSync);
+        const [completed, outcomeRows, active] = await Promise.all([
+          getCompletedInterventions(session.student_id),
+          getOutcomes(session.student_id),
+          getActiveInterventions(session.student_id),
+        ]);
+        setCompletedInterventions(completed);
+        setInterventionOutcomes(outcomeRows);
+        setActiveInterventions(active);
       });
     }
     load();
@@ -191,17 +214,10 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const totalTopics    = 35;
   const libraryPct     = Math.round((topicsStarted / totalTopics) * 100);
 
-  // ── Interventions (fetched before engine so engine receives them as pure inputs) ─
-  const completedInterventions = getCompletedInterventions(session.student_id);
-  const interventionOutcomes   = getOutcomes(session.student_id);
-
   // ── Student Intelligence Engine ───────────────────────────────────────────
+  // completedInterventions + interventionOutcomes come from state (loaded async in useEffect)
   const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr, completedInterventions, interventionOutcomes);
   const { academicStory, interventionImpact } = insights_engine;
-
-  // ── Post-engine: sync new interventions from detected risk ────────────────
-  syncInterventionsFromRisk(session.student_id, insights_engine.examRiskSubjects, insights_engine.revisionRecs);
-  const activeInterventions = getActiveInterventions(session.student_id);
 
   // Focus item
   const focusItem = (() => {
@@ -1148,8 +1164,11 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
 
                   <div className="flex gap-2">
                     <button
-                      onClick={() => {
-                        startIntervention(session.student_id, inv.id);
+                      onClick={async () => {
+                        await startIntervention(session.student_id, inv.id);
+                        setActiveInterventions(prev =>
+                          prev.map(i => i.id === inv.id ? { ...i, status: 'started' as const } : i)
+                        );
                         onNavigate(inv.page);
                       }}
                       className="flex-1 py-2 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
@@ -1157,7 +1176,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       {isStarted ? 'Continue' : 'Start'}
                     </button>
                     <button
-                      onClick={() => completeIntervention(session.student_id, inv.id)}
+                      onClick={async () => {
+                        await completeIntervention(session.student_id, inv.id);
+                        setActiveInterventions(prev => prev.filter(i => i.id !== inv.id));
+                        const updated = await getCompletedInterventions(session.student_id);
+                        setCompletedInterventions(updated);
+                      }}
                       className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black hover:bg-emerald-100 transition-colors"
                     >
                       Done

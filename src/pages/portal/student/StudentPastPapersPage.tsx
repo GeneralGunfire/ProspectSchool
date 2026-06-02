@@ -140,13 +140,13 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       return updated;
     });
     // Mark any matching past_paper intervention as started
-    const active = getActiveInterventions(session.student_id);
+    const active = await getActiveInterventions(session.student_id);
     const matching = active.find(i =>
       i.type === 'past_paper' &&
       (p.subject_label?.toLowerCase().includes(i.subject.split(' ')[0].toLowerCase()) ||
        i.subject.toLowerCase().includes((p.subject_label ?? '').split(' ')[0].toLowerCase()))
     );
-    if (matching) startIntervention(session.student_id, matching.id);
+    if (matching) await startIntervention(session.student_id, matching.id);
 
     setDownloading(p.id);
     const url = await getPastPaperDownloadUrl(p.file_url);
@@ -190,7 +190,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     setSetupScore('');
   }
 
-  function submitSelfMark(score: number, total: number) {
+  async function submitSelfMark(score: number, total: number) {
     const pct = Math.round((score / total) * 100);
     const record: PracticeRecord = {
       paperId: practice!.paper.id,
@@ -210,13 +210,13 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       return updated;
     });
     // Complete any matching past_paper intervention
-    const active = getActiveInterventions(session.student_id);
+    const active = await getActiveInterventions(session.student_id);
     const matching = active.find(i =>
       i.type === 'past_paper' &&
       (practice!.paper.subject_label?.toLowerCase().includes(i.subject.split(' ')[0].toLowerCase()) ||
        i.subject.toLowerCase().includes((practice!.paper.subject_label ?? '').split(' ')[0].toLowerCase()))
     );
-    if (matching) completeIntervention(session.student_id, matching.id);
+    if (matching) await completeIntervention(session.student_id, matching.id);
 
     setPractice(prev => prev ? { ...prev, selfScore: score, phase: 'complete' } : null);
   }

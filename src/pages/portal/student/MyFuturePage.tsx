@@ -80,6 +80,8 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
   const [subView,         setSubView]         = useState<SubView>(null);
+  const [completedInv,    setCompletedInv]    = useState<import('../../../lib/interventions').Intervention[]>([]);
+  const [interventionOutcomes, setInterventionOutcomes] = useState<import('../../../lib/interventions').Outcome[]>([]);
 
   const [goals,        setGoals]        = useState<StudentGoals>(() => getStudentGoals(session.student_id));
   const [editingGoals, setEditingGoals] = useState(false);
@@ -144,6 +146,15 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    // Non-blocking intervention fetch
+    Promise.all([
+      getCompletedInterventions(student_id),
+      getOutcomes(student_id),
+    ]).then(([completed, outcomes]) => {
+      setCompletedInv(completed);
+      setInterventionOutcomes(outcomes);
+    });
   }, [session.student_id, session.school_id]);
 
   // ── Derived values ────────────────────────────────────────────────────────
@@ -166,19 +177,17 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
     bySubject[p.subject].push(p);
   }
 
-  // ── Interventions (fetched before engine — keep engine pure) ────────────
-  const completedInv   = getCompletedInterventions(session.student_id);
-  const interventionOutcomes = getOutcomes(session.student_id);
-
   // ── Intelligence engine ───────────────────────────────────────────────────
+  // completedInv + interventionOutcomes loaded async into state above
   const todayStr = new Date().toISOString().slice(0, 10);
   const futureInsights = computeStudentInsights([], [], progress, goals, todayStr, completedInv, interventionOutcomes);
   const { milestones, learnerStatus } = futureInsights;
 
-  // ── Growth timeline ───────────────────────────────────────────────────────
+  // ── Growth timeline (pure — receives pre-fetched arrays) ─────────────────
   const growthTimeline = buildGrowthTimeline(
-    session.student_id,
-    [],   // no marks needed here — intervention events only + goal
+    completedInv,
+    interventionOutcomes,
+    [],   // no marks on this page
     { targetAps: goals.targetAps, targetCareer: goals.targetCareer, updatedAt: goals.updatedAt },
   );
 
