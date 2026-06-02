@@ -816,11 +816,23 @@ export async function fetchAnnouncementImpact(
 // Returns null when no historical data exists -- caller falls back to rule-based default.
 // Scoped to school_id to prevent cross-school data bleed.
 
+export interface BestInterventionResult {
+  type:      InterventionType;
+  rationale: string;   // human-readable explanation for why this type was chosen
+}
+
+const INTERVENTION_TYPE_LABEL: Record<string, string> = {
+  past_paper:      'Past Paper Practice',
+  library_topic:   'Library Study',
+  revision:        'Revision Session',
+  resource_review: 'Resource Review',
+};
+
 export async function fetchBestInterventionType(
   schoolId:      number,
   subject:       string,
   eligibleTypes: InterventionType[],
-): Promise<InterventionType | null> {
+): Promise<BestInterventionResult | null> {
   if (eligibleTypes.length === 0) return null;
 
   const { data } = await supabaseAdmin
@@ -839,8 +851,10 @@ export async function fetchBestInterventionType(
     groups.get(t)!.push(Number((row as any).improvement));
   }
 
-  let bestType:  InterventionType | null = null;
-  let bestScore = -Infinity;
+  let bestType:   InterventionType | null = null;
+  let bestScore   = -Infinity;
+  let bestN       = 0;
+  let bestAvgGain = 0;
 
   for (const type of eligibleTypes) {
     const gains = groups.get(type);
@@ -849,8 +863,19 @@ export async function fetchBestInterventionType(
     const avgGain    = gains.reduce((s, v) => s + v, 0) / n;
     const confidence = Math.min(n / 10, 1);
     const score      = avgGain * confidence;
-    if (score > bestScore) { bestScore = score; bestType = type as InterventionType; }
+    if (score > bestScore) {
+      bestScore   = score;
+      bestType    = type as InterventionType;
+      bestN       = n;
+      bestAvgGain = Math.round(avgGain * 10) / 10;
+    }
   }
 
-  return bestType;
+  if (!bestType) return null;
+
+  const label     = INTERVENTION_TYPE_LABEL[bestType] ?? bestType;
+  const gainStr   = bestAvgGain > 0 ? `+${bestAvgGain}%` : `${bestAvgGain}%`;
+  const rationale = `Recommended based on school outcomes: ${label} has produced an average ${gainStr} improvement in ${subject} (n=${bestN})`;
+
+  return { type: bestType, rationale };
 }

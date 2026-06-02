@@ -17,6 +17,7 @@ export interface Intervention {
   teacherId?:    number;       // teacher who teaches this subject to the student
   subjectId?:    number;       // FK to subjects — enables exact joins
   subject:       string;
+  rationale?:    string;       // human-readable explanation of why this was recommended
   type:          InterventionType;
   reason:        InterventionReason;
   description:   string;
@@ -70,6 +71,7 @@ function rowToIntervention(r: any): Intervention {
     teacherId:    r.teacher_id   ?? undefined,
     subjectId:    r.subject_id   ?? undefined,
     subject:      r.subject,
+    rationale:    r.rationale    ?? undefined,
     type:         r.type         as InterventionType,
     reason:       r.reason       as InterventionReason,
     description:  r.description,
@@ -170,6 +172,7 @@ export async function createIntervention(
   description: string,
   page:        string,
   previousAvg: number,
+  rationale?:  string,             // why this type was chosen (evidence-based explanation)
 ): Promise<Intervention> {
   // Deduplicate: check for active intervention for same student+subject+type
   // Use subject_id for exact match when available, fall back to label
@@ -216,6 +219,7 @@ export async function createIntervention(
       reason,
       description,
       page,
+      rationale:    rationale ?? null,
       status:       'recommended',
       previous_avg: previousAvg,
       expires_at:   expires.toISOString(),
@@ -226,6 +230,7 @@ export async function createIntervention(
   if (error || !data) {
     return {
       id, studentId, teacherId, subjectId, subject, type, reason, description, page,
+      rationale,
       createdAt:  now.toISOString(),
       expiresAt:  expires.toISOString(),
       status:     'recommended',
@@ -428,33 +433,27 @@ export async function syncInterventionsFromRisk(
     if (risk.risk !== 'high' && risk.risk !== 'medium') continue;
 
     if (risk.examDays !== null && risk.examDays <= 14) {
-      // Eligible for exam prep: past_paper or revision — ROI picks the winner
-      const bestType = await fetchBestInterventionType(
-        schoolId, risk.subject, ['past_paper', 'revision'],
-      ) ?? 'past_paper';  // default if no history
-
+      const best = await fetchBestInterventionType(schoolId, risk.subject, ['past_paper', 'revision']);
+      const type = best?.type ?? 'past_paper';
       const DESCRIPTION: Record<string, string> = {
         past_paper: `Complete a ${risk.subject} past paper`,
         revision:   `Revise ${risk.subject} before the exam`,
       };
       const PAGE: Record<string, string> = { past_paper: 'pastpapers', revision: 'library' };
-
       const i = await createIntervention(
-        studentId, schoolId, risk.subject, risk.subjectId, bestType as InterventionType,
+        studentId, schoolId, risk.subject, risk.subjectId, type as InterventionType,
         risk.examDays <= 7 ? 'exam_soon' : 'high_risk',
-        DESCRIPTION[bestType] ?? DESCRIPTION.past_paper,
-        PAGE[bestType] ?? 'pastpapers',
+        DESCRIPTION[type] ?? DESCRIPTION.past_paper,
+        PAGE[type] ?? 'pastpapers',
         risk.avg,
+        best?.rationale,
       );
       created.push(i);
     }
 
     if (risk.avg < 60) {
-      // Eligible for low-average support: library, revision, resource_review
-      const bestType = await fetchBestInterventionType(
-        schoolId, risk.subject, ['library_topic', 'revision', 'resource_review'],
-      ) ?? 'library_topic';
-
+      const best = await fetchBestInterventionType(schoolId, risk.subject, ['library_topic', 'revision', 'resource_review']);
+      const type = best?.type ?? 'library_topic';
       const DESCRIPTION: Record<string, string> = {
         library_topic:   `Study ${risk.subject} in the library`,
         revision:        `Revise ${risk.subject} core concepts`,
@@ -463,13 +462,13 @@ export async function syncInterventionsFromRisk(
       const PAGE: Record<string, string> = {
         library_topic: 'library', revision: 'library', resource_review: 'resources',
       };
-
       const i = await createIntervention(
-        studentId, schoolId, risk.subject, risk.subjectId, bestType as InterventionType,
+        studentId, schoolId, risk.subject, risk.subjectId, type as InterventionType,
         risk.avg < 50 ? 'below_pass' : 'high_risk',
-        DESCRIPTION[bestType] ?? DESCRIPTION.library_topic,
-        PAGE[bestType] ?? 'library',
+        DESCRIPTION[type] ?? DESCRIPTION.library_topic,
+        PAGE[type] ?? 'library',
         risk.avg,
+        best?.rationale,
       );
       created.push(i);
     }
@@ -477,11 +476,8 @@ export async function syncInterventionsFromRisk(
 
   for (const rec of revisionRecs.slice(0, 2)) {
     if (rec.urgency === 'critical' || rec.urgency === 'high') {
-      // Eligible for revision/critical: revision, past_paper, or library
-      const bestType = await fetchBestInterventionType(
-        schoolId, rec.subject, ['revision', 'past_paper', 'library_topic'],
-      ) ?? 'revision';
-
+      const best = await fetchBestInterventionType(schoolId, rec.subject, ['revision', 'past_paper', 'library_topic']);
+      const type = best?.type ?? 'revision';
       const DESCRIPTION: Record<string, string> = {
         revision:      `Revise ${rec.subject} — ${rec.reason}`,
         past_paper:    `Complete a ${rec.subject} past paper — ${rec.reason}`,
@@ -490,13 +486,13 @@ export async function syncInterventionsFromRisk(
       const PAGE: Record<string, string> = {
         revision: 'library', past_paper: 'pastpapers', library_topic: 'library',
       };
-
       const i = await createIntervention(
-        studentId, schoolId, rec.subject, rec.subjectId, bestType as InterventionType,
+        studentId, schoolId, rec.subject, rec.subjectId, type as InterventionType,
         rec.examDays !== null ? 'exam_soon' : 'declining_trend',
-        DESCRIPTION[bestType] ?? DESCRIPTION.revision,
-        PAGE[bestType] ?? 'library',
+        DESCRIPTION[type] ?? DESCRIPTION.revision,
+        PAGE[type] ?? 'library',
         rec.avg,
+        best?.rationale,
       );
       created.push(i);
     }

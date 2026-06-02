@@ -1159,6 +1159,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                         )}
                       </div>
                       <p className="text-xs text-stone-500">{inv.description}</p>
+                      {inv.rationale && (
+                        <p className="text-[10px] text-stone-400 mt-1 italic">{inv.rationale}</p>
+                      )}
                     </div>
                   </div>
 

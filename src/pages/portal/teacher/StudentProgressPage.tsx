@@ -822,6 +822,11 @@ function InterventionsTab({
                   {inv.startedAt && <span>· Started {formatDate(inv.startedAt)}</span>}
                   <span>· Subject avg {inv.previousAvg}%</span>
                 </div>
+                {inv.rationale && (
+                  <p className="text-[10px] text-stone-400 italic mt-1.5 border-t border-stone-100 pt-1.5">
+                    {inv.rationale}
+                  </p>
+                )}
               </div>
             ))}
           </div>
@@ -896,6 +901,11 @@ function InterventionsTab({
                   <p className="text-[10px] text-stone-300 mt-2">
                     Completed {inv.completedAt ? formatDate(inv.completedAt) : '—'}
                   </p>
+                  {inv.rationale && (
+                    <p className="text-[10px] text-stone-400 italic mt-1.5 border-t border-stone-100 pt-1.5">
+                      {inv.rationale}
+                    </p>
+                  )}
                 </div>
               );
             })}
