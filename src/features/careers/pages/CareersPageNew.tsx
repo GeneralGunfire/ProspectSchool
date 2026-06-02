@@ -56,13 +56,8 @@ function CareersPageNew({ onNavigate }: { onNavigate: (page: any) => void }) {
   const [isLoadingSaves, setIsLoadingSaves] = useState(true);
 
   useEffect(() => {
-    const load = async () => {
-      setIsLoadingSaves(true);
-      setSavedCareers(bookmarks.careers);
-      setIsLoadingSaves(false);
-    };
-    load();
-  }, [user.id]);
+    setIsLoadingSaves(false);
+  }, []);
 
   const categories = useMemo(
     () => Array.from(new Set(allCareersComplete.map((c) => c.category))).sort(),
@@ -124,26 +119,32 @@ function CareersPageNew({ onNavigate }: { onNavigate: (page: any) => void }) {
     setDisplayCount(25);
   };
 
-  const handleCareerClick = async (career: CareerFull) => {
+  const handleCareerClick = (career: CareerFull) => {
+    const related = allCareersComplete
+      .filter(c => c.id !== career.id && c.category === career.category)
+      .slice(0, 4);
     setSelectedCareer(career);
     setRelatedCareers(related);
     setShowDetailModal(true);
   };
 
-  const toggleSaveCareer = async (careerId: string) => {
+  const toggleSaveCareer = (careerId: string) => {
     if (savedCareers.includes(careerId)) {
-      if (ok) setSavedCareers((prev) => prev.filter((s) => s !== careerId));
+      setSavedCareers(prev => prev.filter(s => s !== careerId));
     } else {
-      if (ok) setSavedCareers((prev) => [...prev, careerId]);
+      setSavedCareers(prev => [...prev, careerId]);
     }
   };
 
   const handleModalNavigate = (page: string) => {
     setShowDetailModal(false);
-    if (page === 'library' || page === 'bursaries') onNavigate(page as any);
+    onNavigate(page);
   };
 
-  const handleSelectRelatedCareer = async (career: CareerFull) => {
+  const handleSelectRelatedCareer = (career: CareerFull) => {
+    const related = allCareersComplete
+      .filter(c => c.id !== career.id && c.category === career.category)
+      .slice(0, 4);
     setSelectedCareer(career);
     setRelatedCareers(related);
   };

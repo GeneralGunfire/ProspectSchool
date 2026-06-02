@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, Map, ChevronLeft, type LucideIcon } from 'lucide-react';
+import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
 import { computeQuizResults, type QuizResults } from '../../../features/careers/data/quizScoringLogic';
@@ -11,13 +11,7 @@ import type { StudentSession } from '../../../lib/auth';
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
 const QuizPage        = lazy(() => import('../../../features/careers/pages/QuizPage'));
-const TVETPage        = lazy(() => import('../../../features/tvet/pages/TVETPage'));
-const TVETCareersPage = lazy(() => import('../../../features/tvet/pages/TVETCareersPage'));
-const TVETCollegesPage = lazy(() => import('../../../features/tvet/pages/TVETCollegesPage'));
-const TVETFundingPage = lazy(() => import('../../../features/tvet/pages/TVETFundingPage'));
-const TVETRequirementsPage = lazy(() => import('../../../features/tvet/pages/TVETRequirementsPage'));
-
-type SubView = null | 'quiz' | 'careers' | 'bursaries' | 'tvet' | 'tvet-careers' | 'tvet-colleges' | 'tvet-funding' | 'tvet-requirements';
+type SubView = null | 'quiz' | 'careers' | 'bursaries';
 
 interface MyFuturePageProps {
   session: StudentSession;
@@ -86,14 +80,10 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
   // Sub-view navigate handler — keeps everything inside MyFuturePage
   function handleSubNavigate(page: string) {
-    const internalPages: SubView[] = ['quiz', 'careers', 'bursaries', 'tvet', 'tvet-careers', 'tvet-colleges', 'tvet-funding', 'tvet-requirements'];
+    const internalPages: SubView[] = ['quiz', 'careers', 'bursaries'];
     if (internalPages.includes(page as SubView)) {
       setSubView(page as SubView);
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (page === 'aps') {
-      onNavigate('aps');
-    } else if (page === 'library') {
-      onNavigate('library');
     } else if (page === 'student-dashboard') {
       setSubView(null);
     } else {
@@ -191,14 +181,9 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           </div>
 
           <Suspense fallback={<SubSpinner />}>
-            {subView === 'quiz'              && <QuizPage        onNavigate={handleSubNavigate} />}
-            {subView === 'careers'           && <CareersPage     onNavigate={handleSubNavigate} />}
-            {subView === 'bursaries'         && <BursariesPage   onNavigate={handleSubNavigate} />}
-            {subView === 'tvet'              && <TVETPage        onNavigate={handleSubNavigate} />}
-            {subView === 'tvet-careers'      && <TVETCareersPage onNavigate={handleSubNavigate} />}
-            {subView === 'tvet-colleges'     && <TVETCollegesPage onNavigate={handleSubNavigate} />}
-            {subView === 'tvet-funding'      && <TVETFundingPage onNavigate={handleSubNavigate} />}
-            {subView === 'tvet-requirements' && <TVETRequirementsPage onNavigate={handleSubNavigate} />}
+            {subView === 'quiz'      && <QuizPage     onNavigate={handleSubNavigate} />}
+            {subView === 'careers'   && <CareersPage  onNavigate={handleSubNavigate} />}
+            {subView === 'bursaries' && <BursariesPage onNavigate={handleSubNavigate} />}
           </Suspense>
         </motion.div>
       </AnimatePresence>
@@ -320,20 +305,6 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             </p>
           </button>
 
-          {/* TVET */}
-          <button
-            onClick={() => handleSubNavigate('tvet')}
-            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group sm:col-span-2"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
-                <Map className="w-4.5 h-4.5 text-stone-700" />
-              </div>
-              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
-            </div>
-            <p className="font-black text-stone-900 text-sm mb-0.5">TVET Pathways</p>
-            <p className="text-xs text-stone-400 leading-snug">Trade careers, 26 colleges, funding options — no university required</p>
-          </button>
         </div>
       </Section>
 
