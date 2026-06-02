@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ClipboardList, TrendingUp } from 'lucide-react';
+import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
@@ -31,19 +31,18 @@ function gradeLabel(mark: number | null, total: number): { label: string; color:
 }
 
 function barColor(p: number): string {
-  if (p >= 80) return '#10b981'; // emerald
-  if (p >= 70) return '#3b82f6'; // blue
-  if (p >= 60) return '#0ea5e9'; // sky
-  if (p >= 50) return '#f59e0b'; // amber
-  if (p >= 40) return '#f97316'; // orange
-  return '#ef4444';              // red
+  if (p >= 80) return '#10b981';
+  if (p >= 70) return '#3b82f6';
+  if (p >= 60) return '#0ea5e9';
+  if (p >= 50) return '#f59e0b';
+  if (p >= 40) return '#f97316';
+  return '#ef4444';
 }
 
 function formatDate(s: string) {
   return new Date(s).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-// Short label for chart x-axis
 function shortTitle(title: string): string {
   return title.length > 12 ? title.slice(0, 11) + '…' : title;
 }
@@ -61,6 +60,39 @@ function ChartTooltip({ active, payload }: any) {
   );
 }
 
+// ── Performance zone bar ──────────────────────────────────────
+
+const ZONES = [
+  { from: 0,  to: 40,  color: '#fca5a5' },
+  { from: 40, to: 50,  color: '#fdba74' },
+  { from: 50, to: 70,  color: '#fcd34d' },
+  { from: 70, to: 80,  color: '#93c5fd' },
+  { from: 80, to: 100, color: '#6ee7b7' },
+];
+
+function PerformanceZoneBar({ avg }: { avg: number }) {
+  const clamped = Math.max(0, Math.min(100, avg));
+  return (
+    <div className="px-5 pt-4 pb-2">
+      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Zone</p>
+      <div className="relative h-3 rounded-full overflow-hidden flex">
+        {ZONES.map(z => (
+          <div key={z.from} style={{ width: `${z.to - z.from}%`, background: z.color }} />
+        ))}
+        <div
+          className="absolute top-0 bottom-0 w-0.5 bg-[#1C1917] rounded-full"
+          style={{ left: `${clamped}%`, transform: 'translateX(-50%)' }}
+        />
+      </div>
+      <div className="flex justify-between mt-1">
+        {[0, 40, 50, 70, 80, 100].map(v => (
+          <span key={v} className="text-[9px] font-bold text-stone-300">{v}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────
 
 interface StudentMarksPageProps {
@@ -70,8 +102,9 @@ interface StudentMarksPageProps {
 export default function StudentMarksPage({ session }: StudentMarksPageProps) {
   const [results, setResults] = useState<StudentResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [whatIfSubject, setWhatIfSubject] = useState<string | null>(null);
-  const [whatIfMark, setWhatIfMark] = useState(75);
+  const [openSubject, setOpenSubject] = useState<string | null>(null);
+  const [typeFilter, setTypeFilter] = useState<Record<string, string>>({});
+  const [drawerResult, setDrawerResult] = useState<StudentResult | null>(null);
 
   useEffect(() => {
     fetchStudentResults(session.student_id, session.school_id).then(data => {
@@ -92,22 +125,19 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
     ? markedResults.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / markedResults.length
     : null;
 
-  // Strength / weakness
-  const subjectAverages = Array.from(grouped.entries())
-    .map(([subject, items]) => {
-      const marked = items.filter(r => r.mark !== null);
-      if (marked.length === 0) return null;
-      const avg = marked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / marked.length;
-      return { subject, avg: Math.round(avg), count: marked.length };
-    })
-    .filter(Boolean) as { subject: string; avg: number; count: number }[];
+  // Subject averages + ranking
+  const subjectAverages = Array.from(grouped.entries()).map(([subject, items]) => {
+    const marked = items.filter(r => r.mark !== null);
+    return {
+      subject,
+      avg: marked.length
+        ? marked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / marked.length
+        : -1,
+    };
+  }).sort((a, b) => b.avg - a.avg);
 
-  const strongest = subjectAverages.length >= 2
-    ? subjectAverages.reduce((a, b) => a.avg >= b.avg ? a : b)
-    : null;
-  const weakest = subjectAverages.length >= 2
-    ? subjectAverages.reduce((a, b) => a.avg <= b.avg ? a : b)
-    : null;
+  const subjectRank = new Map(subjectAverages.map((s, i) => [s.subject, i + 1]));
+  const rankedCount = subjectAverages.filter(s => s.avg >= 0).length;
 
   return (
     <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
@@ -132,7 +162,7 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
           {/* Overall summary */}
           {overallAvg !== null && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-[#1C1917] text-white rounded-2xl p-5 mb-6 flex items-center gap-4">
+              className="bg-[#1C1917] text-white rounded-2xl p-5 mb-5 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
                 <TrendingUp className="w-5 h-5" />
               </div>
@@ -147,30 +177,116 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
             </motion.div>
           )}
 
-          {/* Strength / Weakness Banner */}
-          {strongest && weakest && strongest.subject !== weakest.subject && (
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-2">Strongest Subject</p>
-                <p className="font-black text-[#1C1917] text-lg leading-tight">{strongest.subject}</p>
-                <p className="text-emerald-600 font-black text-2xl mt-1">{strongest.avg}%</p>
-                <p className="text-[10px] text-emerald-500 font-bold mt-1">{strongest.count} assessment{strongest.count !== 1 ? 's' : ''}</p>
-              </div>
-              <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Needs Attention</p>
-                <p className="font-black text-[#1C1917] text-lg leading-tight">{weakest.subject}</p>
-                <p className="text-amber-600 font-black text-2xl mt-1">{weakest.avg}%</p>
-                <p className="text-[10px] text-amber-500 font-bold mt-1">{weakest.count} assessment{weakest.count !== 1 ? 's' : ''}</p>
-              </div>
-            </div>
-          )}
+          {/* Performance Journey card */}
+          {(() => {
+            if (markedResults.length < 4) return null;
+            const sortedAll = [...markedResults].sort((a, b) =>
+              new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime()
+            );
+            const half = Math.floor(sortedAll.length / 2);
+            const firstHalf  = sortedAll.slice(0, half);
+            const secondHalf = sortedAll.slice(half);
+            const startAvg   = firstHalf.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / firstHalf.length;
+            const currentAvg = secondHalf.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / secondHalf.length;
+            const change     = currentAvg - startAvg;
 
-          {/* Results by subject */}
-          <div className="space-y-4">
+            const subjectGrowth = Array.from(grouped.entries())
+              .map(([subject, items]) => {
+                const m = items.filter(r => r.mark !== null)
+                  .sort((a, b) => new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime());
+                if (m.length < 2) return null;
+                const first = (m[0].mark! / m[0].total) * 100;
+                const last  = (m[m.length - 1].mark! / m[m.length - 1].total) * 100;
+                return { subject, change: last - first };
+              })
+              .filter(Boolean) as { subject: string; change: number }[];
+
+            const mostImproved = subjectGrowth.length ? subjectGrowth.reduce((a, b) => b.change > a.change ? b : a) : null;
+            const mostDeclined = subjectGrowth.filter(s => s.change < 0).length
+              ? subjectGrowth.filter(s => s.change < 0).reduce((a, b) => b.change < a.change ? b : a)
+              : null;
+
+            return (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white rounded-2xl border border-stone-200 p-5 mb-5"
+              >
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Performance Journey</p>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Early</p>
+                    <p className="font-black text-stone-700 text-xl">{startAvg.toFixed(0)}%</p>
+                  </div>
+                  <div className={`font-black text-2xl ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
+                    {change >= 0 ? '↑' : '↓'}
+                  </div>
+                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Recent</p>
+                    <p className="font-black text-stone-900 text-xl">{currentAvg.toFixed(0)}%</p>
+                  </div>
+                  <div className={`flex-1 text-center rounded-xl p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-400">Change</p>
+                    <p className={`font-black text-xl ${change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {change >= 0 ? '+' : ''}{change.toFixed(1)}%
+                    </p>
+                  </div>
+                </div>
+                {(mostImproved || mostDeclined) && (
+                  <div className="space-y-2">
+                    {mostImproved && mostImproved.change > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-emerald-500 text-xs font-black">↑</span>
+                        <span className="text-xs font-bold text-stone-600 truncate">
+                          Strongest growth: {mostImproved.subject} (+{mostImproved.change.toFixed(0)}%)
+                        </span>
+                      </div>
+                    )}
+                    {mostDeclined && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-red-400 text-xs font-black">↓</span>
+                        <span className="text-xs font-bold text-stone-500 truncate">
+                          Needs attention: {mostDeclined.subject} ({mostDeclined.change.toFixed(0)}%)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            );
+          })()}
+
+          {/* Strength / Weakness Banner */}
+          {subjectAverages.filter(s => s.avg >= 0).length >= 2 && (() => {
+            const valid = subjectAverages.filter(s => s.avg >= 0);
+            const best  = valid[0];
+            const worst = valid[valid.length - 1];
+            return best.subject !== worst.subject ? (
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
+                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{best.subject}</p>
+                  <p className="text-emerald-600 font-black text-2xl mt-1">{best.avg.toFixed(0)}%</p>
+                </div>
+                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
+                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{worst.subject}</p>
+                  <p className="text-amber-600 font-black text-2xl mt-1">{worst.avg.toFixed(0)}%</p>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
+          {/* Subject panels */}
+          <div className="space-y-3">
             {Array.from(grouped.entries()).map(([subject, items], gi) => {
-              // Chart data — only marked items
-              const chartData = items
-                .filter(r => r.mark !== null)
+              const markedItems = items.filter(r => r.mark !== null);
+
+              const subjectAvg = markedItems.length > 0
+                ? markedItems.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / markedItems.length
+                : null;
+
+              const chartData = [...markedItems]
+                .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
                 .map(r => ({
                   name:      shortTitle(r.sheet_title ?? ''),
                   fullTitle: r.sheet_title ?? '',
@@ -179,64 +295,123 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
                   total:     r.total,
                 }));
 
-              // Subject average
-              const subjectMarked = items.filter(r => r.mark !== null);
-              const subjectAvg = subjectMarked.length > 0
-                ? subjectMarked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / subjectMarked.length
-                : null;
+              const sorted = [...markedItems].sort((a, b) =>
+                new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime()
+              );
+              const recent3   = sorted.slice(-3).map(r => (r.mark! / r.total) * 100);
+              const prev3     = sorted.slice(-6, -3).map(r => (r.mark! / r.total) * 100);
+              const recentAvg = recent3.length ? recent3.reduce((a, b) => a + b, 0) / recent3.length : null;
+              const prevAvg   = prev3.length   ? prev3.reduce((a, b) => a + b, 0)   / prev3.length   : null;
+              const trend     = recentAvg !== null && prevAvg !== null ? recentAvg - prevAvg : null;
 
-              // Type breakdown
-              const typeBreakdown = (() => {
-                const map = new Map<string, { sum: number; count: number; total: number }>();
-                for (const r of items) {
-                  if (r.mark === null) continue;
-                  const key = r.sheet_scope ?? 'Other';
-                  const existing = map.get(key) ?? { sum: 0, count: 0, total: 0 };
-                  map.set(key, {
-                    sum: existing.sum + r.mark,
-                    count: existing.count + 1,
-                    total: existing.total + r.total,
-                  });
+              const typeMap = new Map<string, { sum: number; count: number; total: number }>();
+              for (const r of markedItems) {
+                const key = r.sheet_scope ?? 'Other';
+                const e = typeMap.get(key) ?? { sum: 0, count: 0, total: 0 };
+                typeMap.set(key, { sum: e.sum + r.mark!, count: e.count + 1, total: e.total + r.total });
+              }
+              const typeBreakdown = Array.from(typeMap.entries()).map(([type, d]) => ({
+                type,
+                avg: Math.round((d.sum / d.total) * 100),
+                count: d.count,
+              })).sort((a, b) => b.avg - a.avg);
+
+              const strongestType    = typeBreakdown[0] ?? null;
+              const weakestType      = typeBreakdown[typeBreakdown.length - 1] ?? null;
+              const hasTypeBreakdown = typeBreakdown.length >= 2;
+
+              const projectedAvg = (mark: number) =>
+                markedItems.length > 0
+                  ? (markedItems.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) + mark) / (markedItems.length + 1)
+                  : mark;
+
+              const activeType    = typeFilter[subject] ?? 'All';
+              const filteredItems = activeType === 'All'
+                ? items
+                : items.filter(r => (r.sheet_scope ?? 'Other') === activeType);
+
+              const pcts        = markedItems.map(r => pctNum(r.mark!, r.total));
+              const highestMark = pcts.length ? Math.max(...pcts) : null;
+              const bestImprove = (() => {
+                if (sorted.length < 2) return null;
+                let best = -Infinity;
+                for (let i = 1; i < sorted.length; i++) {
+                  const delta = (sorted[i].mark! / sorted[i].total - sorted[i - 1].mark! / sorted[i - 1].total) * 100;
+                  if (delta > best) best = delta;
                 }
-                return Array.from(map.entries()).map(([type, d]) => ({
-                  type,
-                  avg: Math.round((d.sum / d.total) * 100),
-                  count: d.count,
-                }));
+                return best > 0 ? Math.round(best) : null;
               })();
+
+              const isOpen = openSubject === subject;
+              const rank   = subjectRank.get(subject);
+              const gl     = subjectAvg !== null ? gradeLabel(subjectAvg, 100) : null;
+
+              const trendUp   = trend !== null && trend > 1;
+              const trendDown = trend !== null && trend < -1;
+              const trendFlat = trend !== null && !trendUp && !trendDown;
 
               return (
                 <motion.div key={subject}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: gi * 0.06 }}
-                  className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-
-                  {/* Subject header */}
-                  <div className="px-5 py-3 border-b border-stone-100 flex items-center justify-between">
-                    <p className="text-sm font-black text-stone-900">{subject}</p>
-                    <div className="flex items-center gap-3">
-                      {subjectAvg !== null && (
-                        <span className={`text-xs font-black px-2.5 py-1 rounded-xl ${gradeLabel(subjectAvg, 100).bg} ${gradeLabel(subjectAvg, 100).color}`}>
-                          Avg {subjectAvg.toFixed(0)}%
-                        </span>
-                      )}
-                      <button
-                        onClick={() => setWhatIfSubject(prev => prev === subject ? null : subject)}
-                        className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-xl border transition-colors ${
-                          whatIfSubject === subject
-                            ? 'bg-[#1C1917] text-white border-[#1C1917]'
-                            : 'bg-white text-stone-400 border-stone-200 hover:border-stone-400'
-                        }`}
-                      >
-                        What If
-                      </button>
-                      <p className="text-xs text-stone-400 font-bold">{items.length} assessment{items.length !== 1 ? 's' : ''}</p>
+                  transition={{ delay: gi * 0.05 }}
+                  className="bg-white rounded-2xl border border-stone-200 overflow-hidden"
+                >
+                  {/* Panel header */}
+                  <button
+                    onClick={() => setOpenSubject(isOpen ? null : subject)}
+                    className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-stone-50 transition-colors"
+                  >
+                    {rank && rankedCount > 1 && (
+                      <div className="shrink-0 flex flex-col items-center w-6">
+                        <span className="text-[9px] font-black text-stone-300 leading-none">#{rank}</span>
+                        <span className="text-[8px] font-bold text-stone-200 leading-none">of {rankedCount}</span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-black text-stone-900 leading-snug">{subject}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">
+                        {items.length} assessment{items.length !== 1 ? 's' : ''}
+                        {gl && ` · ${gl.label}`}
+                      </p>
                     </div>
-                  </div>
+                    {trend !== null && (
+                      <div className={`shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded-xl ${
+                        trendUp   ? 'bg-emerald-50' :
+                        trendDown ? 'bg-red-50'      :
+                                    'bg-stone-100'
+                      }`}>
+                        {trendUp   && <TrendingUp  className="w-3.5 h-3.5 text-emerald-500 mb-0.5" />}
+                        {trendDown && <TrendingDown className="w-3.5 h-3.5 text-red-400 mb-0.5" />}
+                        {trendFlat && <Minus        className="w-3.5 h-3.5 text-stone-400 mb-0.5" />}
+                        <span className={`text-[10px] font-black leading-none ${
+                          trendUp   ? 'text-emerald-600' :
+                          trendDown ? 'text-red-500'     :
+                                      'text-stone-400'
+                        }`}>
+                          {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
+                        </span>
+                        <span className={`text-[8px] font-bold leading-none mt-0.5 ${
+                          trendUp   ? 'text-emerald-400' :
+                          trendDown ? 'text-red-300'     :
+                                      'text-stone-300'
+                        }`}>
+                          {trendUp ? 'Improving' : trendDown ? 'Declining' : 'Steady'}
+                        </span>
+                      </div>
+                    )}
+                    {subjectAvg !== null && gl && (
+                      <div className="shrink-0 text-right">
+                        <p className={`text-2xl font-black leading-none ${gl.color}`}>
+                          {subjectAvg.toFixed(0)}%
+                        </p>
+                      </div>
+                    )}
+                    <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                  </button>
 
-                  {/* What If panel */}
-                  <AnimatePresence mode="wait">
-                    {whatIfSubject === subject && (
+                  {/* Expanded panel */}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
@@ -244,145 +419,464 @@ export default function StudentMarksPage({ session }: StudentMarksPageProps) {
                         transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 py-4 bg-stone-50 border-b border-stone-100">
-                          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
-                            What if my next result is...
-                          </p>
-                          <div className="flex items-center gap-4 mb-3">
-                            <input
-                              type="range"
-                              min={0}
-                              max={100}
-                              value={whatIfMark}
-                              onChange={e => setWhatIfMark(Number(e.target.value))}
-                              className="flex-1 accent-[#1C1917]"
-                            />
-                            <span className="font-black text-[#1C1917] text-lg w-12 text-right">{whatIfMark}%</span>
-                          </div>
-                          {(() => {
-                            const marked = items.filter(r => r.mark !== null);
-                            const currentAvg = marked.length > 0
-                              ? marked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / marked.length
-                              : 0;
-                            const projectedAvg = (marked.length * currentAvg + whatIfMark) / (marked.length + 1);
-                            const diff = projectedAvg - currentAvg;
-                            const diffColor = diff >= 0 ? 'text-emerald-600' : 'text-red-500';
+                        <div className="border-t border-stone-100">
+
+                          {/* Achievement chips */}
+                          {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (
+                            <div className="px-5 pt-4 pb-3 flex flex-wrap gap-2">
+                              {highestMark !== null && (
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5">
+                                  <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider">Best</span>
+                                  <span className="text-xs font-black text-stone-900">{highestMark}%</span>
+                                </div>
+                              )}
+                              {bestImprove !== null && (
+                                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                  <TrendingUp className="w-3 h-3 text-emerald-500" />
+                                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Best jump</span>
+                                  <span className="text-xs font-black text-emerald-700">+{bestImprove}%</span>
+                                </div>
+                              )}
+                              {markedItems.length > 0 && (
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5">
+                                  <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider">Completed</span>
+                                  <span className="text-xs font-black text-stone-900">{markedItems.length}</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Performance zone bar */}
+                          {subjectAvg !== null && (
+                            <div className="border-t border-stone-100">
+                              <PerformanceZoneBar avg={subjectAvg} />
+                            </div>
+                          )}
+
+                          {/* Chart */}
+                          {chartData.length >= 2 && (
+                            <div className="px-5 pt-4 pb-2 border-t border-stone-100">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Performance</p>
+                              <ResponsiveContainer width="100%" height={140}>
+                                <BarChart data={chartData} barCategoryGap="30%" margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                                  <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }} axisLine={false} tickLine={false} />
+                                  <YAxis domain={[0, 100]} ticks={[0, 50, 70, 80, 100]} tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }} axisLine={false} tickLine={false} />
+                                  <Tooltip content={<ChartTooltip />} cursor={{ fill: '#f5f5f4' }} />
+                                  <ReferenceLine y={80} stroke="#d1fae5" strokeDasharray="3 3" />
+                                  <ReferenceLine y={70} stroke="#dbeafe" strokeDasharray="3 3" />
+                                  <ReferenceLine y={50} stroke="#fef3c7" strokeDasharray="3 3" />
+                                  <Bar dataKey="pct" radius={[4, 4, 0, 0]}>
+                                    {chartData.map((entry, index) => (
+                                      <Cell key={index} fill={barColor(entry.pct)} />
+                                    ))}
+                                  </Bar>
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          )}
+
+                          {/* Assessment type breakdown */}
+                          {hasTypeBreakdown && (
+                            <div className="px-5 py-4 border-t border-stone-100">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">By Type</p>
+                              <div className="flex flex-wrap gap-2">
+                                {typeBreakdown.map(({ type, avg, count }) => {
+                                  const color = avg >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                              : avg >= 50 ? 'bg-amber-50 text-amber-700 border-amber-100'
+                                              :             'bg-red-50 text-red-700 border-red-100';
+                                  return (
+                                    <div key={type} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${color}`}>
+                                      <span className="font-black">{type}</span>
+                                      <span className="opacity-50">·</span>
+                                      <span>{avg}%</span>
+                                      <span className="opacity-40 text-[10px]">({count})</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Grade Distribution */}
+                          {markedItems.length >= 3 && (() => {
+                            const gradeBands = [
+                              { label: 'Outstanding', min: 80,  max: 101, color: 'bg-emerald-500' },
+                              { label: 'Merit',       min: 70,  max: 80,  color: 'bg-blue-500' },
+                              { label: 'Adequate',    min: 60,  max: 70,  color: 'bg-sky-500' },
+                              { label: 'Moderate',    min: 50,  max: 60,  color: 'bg-amber-500' },
+                              { label: 'Elementary',  min: 40,  max: 50,  color: 'bg-orange-500' },
+                              { label: 'Not Achieved', min: 0,  max: 40,  color: 'bg-red-500' },
+                            ];
+                            const counts = gradeBands.map(g => ({
+                              ...g,
+                              count: markedItems.filter(r => {
+                                const p = (r.mark! / r.total) * 100;
+                                return p >= g.min && p < g.max;
+                              }).length,
+                            })).filter(g => g.count > 0);
+                            if (counts.length === 0) return null;
+                            const maxCount = Math.max(...counts.map(g => g.count));
                             return (
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Current avg</p>
-                                  <p className="font-black text-stone-700 text-lg">{currentAvg.toFixed(1)}%</p>
-                                </div>
-                                <div className="text-stone-300 font-black text-xl">→</div>
-                                <div>
-                                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">Projected avg</p>
-                                  <p className="font-black text-[#1C1917] text-lg">{projectedAvg.toFixed(1)}%</p>
-                                </div>
-                                <div className={`font-black text-lg ${diffColor}`}>
-                                  {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
+                              <div className="px-5 py-4 border-t border-stone-100">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Grade Distribution</p>
+                                <div className="space-y-2">
+                                  {counts.map(g => (
+                                    <div key={g.label} className="flex items-center gap-3">
+                                      <span className="text-[11px] font-bold text-stone-500 w-24 shrink-0">{g.label}</span>
+                                      <div className="flex-1 bg-stone-100 rounded-full h-2 overflow-hidden">
+                                        <motion.div
+                                          initial={{ width: 0 }}
+                                          animate={{ width: `${(g.count / maxCount) * 100}%` }}
+                                          transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+                                          className={`h-full rounded-full ${g.color}`}
+                                        />
+                                      </div>
+                                      <span className="text-[11px] font-black text-stone-600 w-4 text-right">{g.count}</span>
+                                    </div>
+                                  ))}
                                 </div>
                               </div>
                             );
                           })()}
+
+                          {/* Focus Area card */}
+                          {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
+                            <div className="mx-5 mb-4 bg-stone-50 rounded-2xl p-4 border border-stone-100">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Focus Area</p>
+                              <p className="text-sm font-bold text-stone-900 mb-1">
+                                Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
+                              </p>
+                              <p className="text-xs text-stone-500 leading-relaxed">
+                                Improving {weakestType.type.toLowerCase()} performance would raise your subject average fastest.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Smart Insights */}
+                          {(() => {
+                            if (subjectAvg === null) return null;
+                            const insights: string[] = [];
+
+                            const testType   = typeBreakdown.find(t => t.type.toLowerCase().includes('test'));
+                            const assignType = typeBreakdown.find(t => t.type.toLowerCase().includes('assign'));
+                            if (testType && assignType) {
+                              const gap = testType.avg - assignType.avg;
+                              if (Math.abs(gap) >= 10) {
+                                insights.push(gap > 0
+                                  ? `Test average is ${gap}% higher than assignments.`
+                                  : `Assignment average is ${Math.abs(gap)}% higher than tests — check test preparation.`
+                                );
+                              }
+                            }
+
+                            if (trend !== null && Math.abs(trend) >= 5) {
+                              insights.push(trend > 0
+                                ? `Last 3 assessments are trending upward (+${trend.toFixed(0)}%).`
+                                : `Recent assessments show a decline (${trend.toFixed(0)}%) — worth addressing.`
+                              );
+                            }
+
+                            const nextAvg = projectedAvg(75);
+                            if (nextAvg >= 70 && subjectAvg < 70) {
+                              insights.push(`One more 75%+ result would move this subject into Merit.`);
+                            } else if (nextAvg >= 80 && subjectAvg < 80) {
+                              insights.push(`One more 75%+ result could push this into Outstanding.`);
+                            }
+
+                            const subPcts = markedItems.map(r => (r.mark! / r.total) * 100);
+                            const stdDev = subPcts.length >= 3
+                              ? Math.sqrt(subPcts.reduce((s, p) => s + Math.pow(p - subjectAvg, 2), 0) / subPcts.length)
+                              : null;
+                            if (stdDev !== null && stdDev < 8) {
+                              insights.push(`Very consistent performance — low variation between results.`);
+                            } else if (stdDev !== null && stdDev > 20) {
+                              insights.push(`High variation between results — performance is inconsistent.`);
+                            }
+
+                            if (insights.length === 0) return null;
+
+                            return (
+                              <div className="px-5 py-4 border-t border-stone-100">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Insights</p>
+                                <div className="space-y-2">
+                                  {insights.map((text, i) => (
+                                    <div key={i} className="flex items-start gap-2">
+                                      <span className="w-1 h-1 rounded-full bg-stone-400 shrink-0 mt-[7px]" />
+                                      <p className="text-sm text-stone-600 leading-relaxed">{text}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })()}
+
+                          {/* Three-scenario projection */}
+                          {subjectAvg !== null && markedItems.length >= 2 && (
+                            <div className="px-5 py-4 border-t border-stone-100">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                                What If Next Result Is...
+                              </p>
+                              <div className="grid grid-cols-3 gap-2">
+                                {[50, 70, 90].map(mark => {
+                                  const projected = projectedAvg(mark);
+                                  const diff = projected - subjectAvg;
+                                  return (
+                                    <div key={mark} className="bg-stone-50 rounded-xl p-3 text-center border border-stone-100">
+                                      <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{mark}%</p>
+                                      <p className="font-black text-stone-900 text-lg leading-none">{projected.toFixed(1)}%</p>
+                                      <p className={`text-[10px] font-bold mt-1 ${diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                        {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
+                                      </p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Type filter pills */}
+                          {typeBreakdown.length >= 2 && (
+                            <div className="px-5 pb-3 pt-1 border-t border-stone-100">
+                              <div className="flex flex-wrap gap-1.5">
+                                {['All', ...typeBreakdown.map(t => t.type)].map(type => (
+                                  <button
+                                    key={type}
+                                    onClick={() => setTypeFilter(prev => ({ ...prev, [subject]: type }))}
+                                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors ${
+                                      activeType === type
+                                        ? 'bg-stone-900 text-white'
+                                        : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                                    }`}
+                                  >
+                                    {type}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Assessment timeline */}
+                          <div className="px-5 pb-5 pt-3 border-t border-stone-100">
+                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Results</p>
+                            <div className="relative">
+                              <div className="absolute left-[7px] top-2 bottom-2 w-px bg-stone-200" />
+                              <div className="space-y-4">
+                                {[...filteredItems]
+                                  .sort((a, b) => new Date(b.marked_at ?? b.created_at).getTime() - new Date(a.marked_at ?? a.created_at).getTime())
+                                  .map((r, i) => {
+                                    const g = gradeLabel(r.mark, r.total);
+                                    const p = r.mark !== null ? pctNum(r.mark, r.total) : null;
+                                    return (
+                                      <motion.div key={r.sheet_id}
+                                        initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.04 }}
+                                        className="flex items-start gap-4 relative cursor-pointer"
+                                        onClick={() => setDrawerResult(r)}
+                                      >
+                                        <div className={`w-3.5 h-3.5 rounded-full border-2 border-white shrink-0 mt-1 z-10 ${
+                                          p === null ? 'bg-stone-300' :
+                                          p >= 80   ? 'bg-emerald-500' :
+                                          p >= 70   ? 'bg-blue-500' :
+                                          p >= 50   ? 'bg-amber-500' : 'bg-red-500'
+                                        }`} />
+                                        <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors">
+                                          <div className="min-w-0">
+                                            <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
+                                            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                                              {r.sheet_scope && (
+                                                <span className="text-[10px] font-bold text-stone-400">{r.sheet_scope}</span>
+                                              )}
+                                              {r.marked_at && (
+                                                <span className="text-[10px] text-stone-300">{formatDate(r.marked_at)}</span>
+                                              )}
+                                            </div>
+                                            {r.note && (
+                                              <p className="text-xs text-stone-400 mt-1 bg-stone-50 rounded-lg px-2 py-1">
+                                                {r.note}
+                                              </p>
+                                            )}
+                                          </div>
+                                          <div className="shrink-0 text-right">
+                                            {r.mark !== null ? (
+                                              <>
+                                                <p className="text-base font-black text-stone-900 leading-none">
+                                                  {r.mark}<span className="text-xs font-bold text-stone-400">/{r.total}</span>
+                                                </p>
+                                                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${g.bg} ${g.color}`}>
+                                                  {p}%
+                                                </span>
+                                              </>
+                                            ) : (
+                                              <span className="text-xs font-bold text-stone-300">Pending</span>
+                                            )}
+                                          </div>
+                                        </div>
+                                      </motion.div>
+                                    );
+                                  })}
+                              </div>
+                            </div>
+                          </div>
+
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-
-                  {/* Chart — only when 2+ marked results */}
-                  {chartData.length >= 2 && (
-                    <div className="px-5 pt-4 pb-2">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-3">Performance</p>
-                      <ResponsiveContainer width="100%" height={120}>
-                        <BarChart data={chartData} barCategoryGap="30%" margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
-                          <XAxis
-                            dataKey="name"
-                            tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }}
-                            axisLine={false} tickLine={false}
-                          />
-                          <YAxis
-                            domain={[0, 100]} ticks={[0, 50, 100]}
-                            tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }}
-                            axisLine={false} tickLine={false}
-                          />
-                          <Tooltip content={<ChartTooltip />} cursor={{ fill: '#fafaf9' }} />
-                          <ReferenceLine y={50} stroke="#e7e5e4" strokeDasharray="3 3" />
-                          <Bar dataKey="pct" radius={[4, 4, 0, 0]}>
-                            {chartData.map((entry, index) => (
-                              <Cell key={index} fill={barColor(entry.pct)} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  )}
-
-                  {/* Type breakdown */}
-                  {typeBreakdown.length >= 2 && (
-                    <div className="px-5 pb-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">By Type</p>
-                      <div className="flex flex-wrap gap-2">
-                        {typeBreakdown.map(({ type, avg, count }) => {
-                          const color = avg >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                      : avg >= 50 ? 'bg-amber-50 text-amber-700 border-amber-100'
-                                      :             'bg-red-50 text-red-700 border-red-100';
-                          return (
-                            <div key={type} className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold ${color}`}>
-                              <span className="font-black">{type}</span>
-                              <span className="opacity-60">·</span>
-                              <span>{avg}%</span>
-                              <span className="opacity-40 text-[10px]">{count}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Result rows */}
-                  <div className="divide-y divide-stone-100">
-                    {items.map((r, i) => {
-                      const g = gradeLabel(r.mark, r.total);
-                      return (
-                        <motion.div key={r.sheet_id}
-                          initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: gi * 0.06 + i * 0.04 }}
-                          className="px-5 py-4">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
-                              {r.sheet_scope && <p className="text-xs text-stone-400 mt-0.5">{r.sheet_scope}</p>}
-                              {r.marked_at && <p className="text-[10px] text-stone-300 mt-1">{formatDate(r.marked_at)}</p>}
-                            </div>
-                            <div className="flex items-center gap-3 shrink-0">
-                              <div className="text-right">
-                                <p className="text-lg font-black text-stone-900 leading-none">
-                                  {r.mark !== null ? r.mark : '—'}
-                                  <span className="text-xs font-bold text-stone-400">/{r.total}</span>
-                                </p>
-                                <p className="text-xs font-bold text-stone-400 mt-0.5">{pct(r.mark, r.total)}</p>
-                              </div>
-                              <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-xl ${g.bg} ${g.color}`}>
-                                {g.label}
-                              </span>
-                            </div>
-                          </div>
-                          {r.note && (
-                            <div className="mt-3 p-3 bg-stone-50 rounded-xl border border-stone-100">
-                              <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1">Teacher note</p>
-                              <p className="text-xs text-stone-600 leading-relaxed">{r.note}</p>
-                            </div>
-                          )}
-                        </motion.div>
-                      );
-                    })}
-                  </div>
                 </motion.div>
               );
             })}
           </div>
         </>
       )}
+
+      {/* Assessment Detail Drawer */}
+      <AnimatePresence>
+        {drawerResult && (() => {
+          const r = drawerResult;
+          const p = r.mark !== null ? pctNum(r.mark, r.total) : null;
+          const g = gradeLabel(r.mark, r.total);
+
+          const subjectResults = results
+            .filter(x => x.subject_label === r.subject_label && x.mark !== null)
+            .sort((a, b) => new Date(a.marked_at ?? a.created_at).getTime() - new Date(b.marked_at ?? b.created_at).getTime());
+          const thisIndex  = subjectResults.findIndex(x => x.sheet_id === r.sheet_id);
+          const leadingIn  = subjectResults.slice(Math.max(0, thisIndex - 3), thisIndex);
+          const leadingAvg = leadingIn.length
+            ? leadingIn.reduce((s, x) => s + (x.mark! / x.total) * 100, 0) / leadingIn.length
+            : null;
+          const leadingDiff = p !== null && leadingAvg !== null ? p - leadingAvg : null;
+
+          const insight = (() => {
+            if (p === null) return null;
+            if (p >= 80) return 'Outstanding result — this lifted your subject average.';
+            if (leadingDiff !== null && leadingDiff >= 10) return `Up ${leadingDiff.toFixed(0)}% from your recent trend — strong improvement.`;
+            if (leadingDiff !== null && leadingDiff <= -10) return `Down ${Math.abs(leadingDiff).toFixed(0)}% from your recent trend — worth reviewing.`;
+            if (p >= 70) return 'Solid result — consistent with your profile.';
+            if (p < 50) return 'Below pass mark — check teacher notes and revisit the topic.';
+            return 'On track — keep building on this.';
+          })();
+
+          return (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+                onClick={() => setDrawerResult(null)}
+              />
+              <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 32, stiffness: 320 }}
+                className="fixed bottom-0 left-0 right-0 z-50 bg-white rounded-t-3xl shadow-2xl max-h-[80vh] overflow-y-auto"
+              >
+                <div className="flex justify-center pt-3 pb-1">
+                  <div className="w-10 h-1 bg-stone-200 rounded-full" />
+                </div>
+
+                <div className="px-6 pb-8 pt-3">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="flex-1 min-w-0 pr-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                        {r.subject_label} · {r.sheet_scope ?? 'Assessment'}
+                      </p>
+                      <h2 className="font-black text-stone-900 text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
+                        {r.sheet_title}
+                      </h2>
+                      {r.marked_at && (
+                        <p className="text-xs text-stone-400 mt-1">{formatDate(r.marked_at)}</p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => setDrawerResult(null)}
+                      className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center shrink-0 hover:bg-stone-200 transition-colors"
+                    >
+                      <X className="w-4 h-4 text-stone-500" />
+                    </button>
+                  </div>
+
+                  {/* Score hero */}
+                  {p !== null ? (
+                    <div className={`rounded-2xl p-5 mb-5 ${g.bg}`}>
+                      <div className="flex items-end gap-3">
+                        <p className={`font-black leading-none ${g.color}`} style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)' }}>
+                          {p}%
+                        </p>
+                        <div className="mb-1">
+                          <p className={`font-black text-lg leading-none ${g.color}`}>{g.label}</p>
+                          <p className="text-sm text-stone-500 mt-0.5">{r.mark} / {r.total} marks</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-stone-100 rounded-2xl p-5 mb-5 text-center">
+                      <p className="font-black text-stone-400 text-lg">Pending</p>
+                      <p className="text-xs text-stone-400 mt-1">Mark not yet recorded</p>
+                    </div>
+                  )}
+
+                  {/* Insight */}
+                  {insight && (
+                    <div className="bg-stone-900 text-white rounded-2xl px-4 py-3 mb-5 flex items-start gap-3">
+                      <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                      <p className="text-sm font-bold leading-relaxed">{insight}</p>
+                    </div>
+                  )}
+
+                  {/* Leading trend mini chart */}
+                  {leadingIn.length > 0 && (
+                    <div className="bg-stone-50 rounded-2xl p-4 mb-5">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                        Trend Leading In
+                      </p>
+                      <div className="flex items-end gap-2">
+                        {leadingIn.map((x, i) => {
+                          const xp = pctNum(x.mark!, x.total);
+                          return (
+                            <div key={x.sheet_id} className="flex-1 flex flex-col items-center gap-1">
+                              <span className="text-[10px] font-bold text-stone-500">{xp}%</span>
+                              <div className="w-full rounded-t-sm" style={{
+                                height: `${Math.max(8, xp * 0.5)}px`,
+                                background: barColor(xp),
+                                opacity: 0.6 + (i / leadingIn.length) * 0.4,
+                              }} />
+                              <span className="text-[9px] text-stone-300 truncate w-full text-center">
+                                {x.sheet_title.slice(0, 8)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {p !== null && (
+                          <div className="flex-1 flex flex-col items-center gap-1">
+                            <span className="text-[10px] font-black text-stone-900">{p}%</span>
+                            <div className="w-full rounded-t-sm border-2 border-stone-900" style={{
+                              height: `${Math.max(8, p * 0.5)}px`,
+                              background: barColor(p),
+                            }} />
+                            <span className="text-[9px] font-black text-stone-600 truncate w-full text-center">This</span>
+                          </div>
+                        )}
+                      </div>
+                      {leadingDiff !== null && (
+                        <p className={`text-xs font-bold mt-2 ${leadingDiff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                          {leadingDiff >= 0 ? '+' : ''}{leadingDiff.toFixed(1)}% vs your recent average
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Teacher note */}
+                  {r.note && (
+                    <div className="border border-amber-200 bg-amber-50 rounded-2xl p-4">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Teacher Note</p>
+                      <p className="text-sm text-stone-700 leading-relaxed">{r.note}</p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
