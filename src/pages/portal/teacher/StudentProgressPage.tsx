@@ -18,11 +18,15 @@ import {
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
+import {
+  getInterventions, getOutcomes, computeInterventionImpact,
+  type Intervention, type Outcome,
+} from '../../../lib/interventions';
 
 // ── Types ─────────────────────────────────────────────────────
 
 type View = 'list' | 'profile';
-type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements';
+type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements' | 'interventions';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -93,6 +97,8 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
   const [completions, setCompletions] = useState<Set<number> | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[] | null>(null);
   const [subjectIds, setSubjectIds] = useState<number[] | null>(null);
+  const [interventions, setInterventions] = useState<Intervention[] | null>(null);
+  const [outcomes, setOutcomes] = useState<Outcome[] | null>(null);
 
   useEffect(() => {
     fetchTeacherStudentProgress(session.teacher_id, session.school_id).then(data => {
@@ -127,6 +133,8 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
     setCompletions(null);
     setAnnouncements(null);
     setSubjectIds(null);
+    setInterventions(null);
+    setOutcomes(null);
   }
 
   function backToList() {
@@ -188,6 +196,15 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
         setAnnouncements(data);
       }
     }
+
+    if (tab === 'interventions' && interventions === null) {
+      const [invs, outs] = await Promise.all([
+        getInterventions(selected.student_id),
+        getOutcomes(selected.student_id),
+      ]);
+      setInterventions(invs);
+      setOutcomes(outs);
+    }
   }
 
   // ── Render ─────────────────────────────────────────────────
@@ -201,6 +218,8 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
       events={events}
       completions={completions}
       announcements={announcements}
+      interventions={interventions}
+      outcomes={outcomes}
       onBack={backToList}
       onTabChange={loadTab}
     />;
@@ -354,12 +373,15 @@ interface ProfileProps {
   events: SchoolEvent[] | null;
   completions: Set<number> | null;
   announcements: Announcement[] | null;
+  interventions: Intervention[] | null;
+  outcomes: Outcome[] | null;
   onBack: () => void;
   onTabChange: (tab: ProfileTab) => void;
 }
 
 function StudentProfile({
   student, session, activeTab, marks, events, completions, announcements,
+  interventions, outcomes,
   onBack, onTabChange,
 }: ProfileProps) {
   const tabs: { key: ProfileTab; label: string; icon: React.ElementType }[] = [
@@ -367,6 +389,7 @@ function StudentProfile({
     { key: 'marks',         label: 'Marks',          icon: ClipboardList },
     { key: 'homework',      label: 'Homework',       icon: CalendarDays },
     { key: 'announcements', label: 'Announcements',  icon: Megaphone },
+    { key: 'interventions', label: 'Coaching',       icon: CheckCircle2 },
   ];
 
   return (
@@ -443,6 +466,7 @@ function StudentProfile({
           {activeTab === 'marks'         && <MarksTab marks={marks} />}
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
           {activeTab === 'announcements' && <AnnouncementsTab announcements={announcements} />}
+          {activeTab === 'interventions' && <InterventionsTab interventions={interventions} outcomes={outcomes} />}
         </motion.div>
       </AnimatePresence>
     </motion.div>
@@ -644,6 +668,199 @@ function AnnouncementsTab({ announcements }: { announcements: Announcement[] | n
           <p className="text-[10px] text-stone-300 mt-2">{timeAgo(a.created_at)}</p>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ── Tab: Interventions ────────────────────────────────────────
+
+function InterventionsTab({
+  interventions, outcomes,
+}: {
+  interventions: Intervention[] | null;
+  outcomes: Outcome[] | null;
+}) {
+  if (interventions === null || outcomes === null) return <LoadingSpinner />;
+
+  const completed = interventions.filter(i => i.status === 'completed');
+  const active    = interventions.filter(i => i.status === 'recommended' || i.status === 'started');
+  const impact    = computeInterventionImpact(completed, outcomes);
+
+  const TYPE_LABEL: Record<string, string> = {
+    past_paper:      'Past Paper Practice',
+    library_topic:   'Library Study',
+    revision:        'Revision Session',
+    resource_review: 'Resource Review',
+  };
+  const REASON_LABEL: Record<string, string> = {
+    high_risk:        'High Risk',
+    declining_trend:  'Declining Trend',
+    exam_soon:        'Exam Soon',
+    aps_gap:          'APS Gap',
+    below_pass:       'Below Pass',
+  };
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  if (interventions.length === 0) {
+    return (
+      <EmptyState
+        icon={CheckCircle2}
+        text="No interventions have been created for this learner yet."
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+
+      {/* ── Impact summary card ─────────────────────────── */}
+      {completed.length > 0 && (
+        <div className="bg-white border border-stone-200 rounded-2xl p-5">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Intervention Impact</p>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { label: 'Completed', value: String(impact.totalCompleted),                          color: 'text-brand-dark', bg: 'bg-stone-50' },
+              { label: 'Success',   value: `${impact.successRate}%`,                               color: impact.successRate >= 70 ? 'text-emerald-600' : impact.successRate >= 50 ? 'text-amber-600' : 'text-red-500', bg: impact.successRate >= 70 ? 'bg-emerald-50' : impact.successRate >= 50 ? 'bg-amber-50' : 'bg-stone-50' },
+              { label: 'Avg Gain',  value: impact.avgImprovement > 0 ? `+${impact.avgImprovement}%` : '—', color: impact.avgImprovement > 0 ? 'text-blue-600' : 'text-stone-400', bg: impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50' },
+              { label: 'Active',    value: String(active.length),                                  color: active.length > 0 ? 'text-amber-600' : 'text-stone-400', bg: active.length > 0 ? 'bg-amber-50' : 'bg-stone-50' },
+            ].map(s => (
+              <div key={s.label} className={`${s.bg} rounded-xl p-2.5 text-center`}>
+                <p className={`text-base font-black ${s.color}`}>{s.value}</p>
+                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">{s.label}</p>
+              </div>
+            ))}
+          </div>
+          {impact.bestType && impact.bestTypeGain > 0 && (
+            <div className="mt-3 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+              <p className="text-[11px] text-amber-800">
+                <span className="font-black">Most effective:</span>{' '}
+                {TYPE_LABEL[impact.bestType] ?? impact.bestType} — avg +{impact.bestTypeGain}%
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Active interventions ─────────────────────────── */}
+      {active.length > 0 && (
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Active</p>
+          <div className="space-y-2">
+            {active.map(inv => (
+              <div key={inv.id} className={`bg-white border rounded-2xl px-4 py-3.5 ${
+                inv.reason === 'exam_soon' || inv.reason === 'below_pass'
+                  ? 'border-red-200 bg-red-50'
+                  : 'border-amber-200 bg-amber-50'
+              }`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                    <p className="text-[11px] text-stone-500 mt-0.5">{inv.subject}</p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                      inv.reason === 'exam_soon' || inv.reason === 'below_pass'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {REASON_LABEL[inv.reason] ?? inv.reason}
+                    </span>
+                    <p className={`text-[10px] font-bold mt-1 ${
+                      inv.status === 'started' ? 'text-blue-500' : 'text-stone-400'
+                    }`}>
+                      {inv.status === 'started' ? 'In Progress' : 'Recommended'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 mt-2 text-[10px] text-stone-400">
+                  <span>Created {formatDate(inv.createdAt)}</span>
+                  {inv.startedAt && <span>· Started {formatDate(inv.startedAt)}</span>}
+                  <span>· Subject avg {inv.previousAvg}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Completed interventions ──────────────────────── */}
+      {completed.length > 0 && (
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Completed</p>
+          <div className="space-y-2">
+            {completed.map(inv => {
+              const outcome = outcomes.find(o => o.interventionId === inv.id);
+              return (
+                <div key={inv.id} className={`bg-white border rounded-2xl px-4 py-3.5 ${
+                  outcome?.result === 'improved' ? 'border-emerald-200' :
+                  outcome?.result === 'declined' ? 'border-red-200' :
+                  'border-stone-200'
+                }`}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-sm ${
+                          outcome?.result === 'improved' ? 'text-emerald-500' :
+                          outcome?.result === 'declined' ? 'text-red-400' : 'text-stone-300'
+                        }`}>
+                          {outcome?.result === 'improved' ? '✓' : outcome?.result === 'declined' ? '↓' : '→'}
+                        </span>
+                        <p className="text-sm font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                      </div>
+                      <p className="text-[11px] text-stone-500 mt-0.5">{inv.subject}</p>
+                    </div>
+                    {outcome && (
+                      <div className="text-right shrink-0">
+                        <p className={`text-sm font-black ${
+                          outcome.result === 'improved' ? 'text-emerald-600' :
+                          outcome.result === 'declined' ? 'text-red-500' : 'text-stone-400'
+                        }`}>
+                          {outcome.improvement > 0 ? `+${outcome.improvement}%` : `${outcome.improvement}%`}
+                        </p>
+                        <p className="text-[10px] text-stone-400">
+                          {outcome.previousAvg}% → {outcome.newAvg}%
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Outcome detail */}
+                  {outcome && (
+                    <div className={`mt-3 rounded-xl px-3 py-2 ${
+                      outcome.result === 'improved' ? 'bg-emerald-50' :
+                      outcome.result === 'declined' ? 'bg-red-50' : 'bg-stone-50'
+                    }`}>
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-stone-500">Latest assessment</span>
+                        <span className={`font-black ${
+                          outcome.latestMark >= 70 ? 'text-emerald-600' :
+                          outcome.latestMark >= 50 ? 'text-amber-600' : 'text-red-500'
+                        }`}>{outcome.latestMark}%</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] mt-1">
+                        <span className="text-stone-500">Subject average</span>
+                        <span className="font-black text-stone-700">{outcome.previousAvg}% → {outcome.newAvg}%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {!outcome && (
+                    <p className="text-[10px] text-stone-300 mt-2">No outcome data yet — awaiting new assessment</p>
+                  )}
+
+                  <p className="text-[10px] text-stone-300 mt-2">
+                    Completed {inv.completedAt ? formatDate(inv.completedAt) : '—'}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
