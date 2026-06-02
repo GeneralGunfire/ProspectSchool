@@ -66,6 +66,17 @@ export interface Milestone {
   detail:    string;
 }
 
+export type LearnerStatusLabel = 'Flourishing' | 'On Track' | 'Needs Focus' | 'At Risk';
+
+export interface LearnerStatus {
+  score:        number;              // 0–100
+  label:        LearnerStatusLabel;
+  color:        string;              // Tailwind text class
+  bg:           string;              // Tailwind bg class
+  border:       string;              // Tailwind border class
+  contributors: string[];            // short phrases explaining the score
+}
+
 export interface StudentInsights {
   // Subject profiles (all subjects with marks)
   subjectProfiles:   SubjectProfile[];
@@ -96,6 +107,9 @@ export interface StudentInsights {
 
   // Milestones
   milestones:        Milestone[];
+
+  // Overall learner status
+  learnerStatus:     LearnerStatus;
 
   // Computed at
   computedAt:        string;
@@ -420,6 +434,60 @@ export function computeStudentInsights(
     },
   ];
 
+  // ── 9. Learner Status — overall health score 0–100 ───────────────────────
+
+  const learnerStatus = ((): LearnerStatus => {
+    const contributors: string[] = [];
+    let score = 50; // neutral baseline
+
+    // Average mark component (0–35 pts)
+    if (overallAvg !== null) {
+      const avgScore = Math.round((overallAvg / 100) * 35);
+      score += avgScore - 17; // centre around 17 (50% avg = neutral)
+      if (overallAvg >= 70) contributors.push(`Strong average (${overallAvg}%)`);
+      else if (overallAvg < 50) contributors.push(`Average below pass (${overallAvg}%)`);
+    }
+
+    // Trend component (0–20 pts)
+    if (academicStory.change !== null) {
+      if (academicStory.change >= 5) { score += 15; contributors.push('Improving trend'); }
+      else if (academicStory.change >= 0) { score += 8; }
+      else if (academicStory.change < -5) { score -= 15; contributors.push('Declining trend'); }
+      else { score -= 5; }
+    }
+
+    // High risk subjects (-10 per high risk, -5 per medium)
+    const highRisk   = examRiskSubjects.filter(s => s.risk === 'high').length;
+    const mediumRisk = examRiskSubjects.filter(s => s.risk === 'medium').length;
+    if (highRisk > 0) {
+      score -= highRisk * 10;
+      contributors.push(`${highRisk} high-risk subject${highRisk !== 1 ? 's' : ''}`);
+    }
+    if (mediumRisk > 0) score -= mediumRisk * 5;
+
+    // Library progress (+5 if any mastery)
+    if (topicsMastered >= 5) { score += 5; contributors.push(`${topicsMastered} topics mastered`); }
+    else if (topicsMastered > 0) { score += 2; }
+
+    // Goal set bonus (+5)
+    if (goals.targetAps || goals.targetCareer) score += 5;
+
+    // Clamp
+    score = Math.max(0, Math.min(100, Math.round(score)));
+
+    const label: LearnerStatusLabel =
+      score >= 90 ? 'Flourishing' :
+      score >= 75 ? 'On Track'    :
+      score >= 60 ? 'Needs Focus' :
+                    'At Risk';
+
+    const color  = score >= 90 ? 'text-emerald-600' : score >= 75 ? 'text-blue-600'  : score >= 60 ? 'text-amber-600'  : 'text-red-500';
+    const bg     = score >= 90 ? 'bg-emerald-50'    : score >= 75 ? 'bg-blue-50'     : score >= 60 ? 'bg-amber-50'     : 'bg-red-50';
+    const border = score >= 90 ? 'border-emerald-200' : score >= 75 ? 'border-blue-200' : score >= 60 ? 'border-amber-200' : 'border-red-200';
+
+    return { score, label, color, bg, border, contributors };
+  })();
+
   return {
     subjectProfiles,
     strongestSubject,
@@ -435,6 +503,7 @@ export function computeStudentInsights(
     topicsInProgress,
     topicsNotStarted,
     milestones,
+    learnerStatus,
     computedAt: new Date().toISOString(),
   };
 }

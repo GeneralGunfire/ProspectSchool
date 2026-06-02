@@ -14,7 +14,9 @@ import {
   type DegreeEntry,
 } from '../../../data/apsData';
 import { saveApsScore } from '../../../lib/myFuture';
-import { fetchStudentResults } from '../../../lib/marks';
+import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
+import { getStudentGoals } from '../../../lib/studentGoals';
+import { computeStudentInsights } from '../../../lib/studentInsights';
 
 // ── NQF level badge colour ────────────────────────────────────────────────────
 function nqfColor(level: number) {
@@ -244,6 +246,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
   const [loadingMarks, setLoadingMarks] = useState(false);
   const [marksLoaded, setMarksLoaded]   = useState(false);
+  const [storedMarks, setStoredMarks]   = useState<StudentResult[]>([]);
 
   // Persistent APS goal — saved to localStorage per student
   const [apsGoal, setApsGoal] = useState<number>(() => {
@@ -334,11 +337,23 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
     if (populated.length > 0) {
       setSubjects(populated);
+      setStoredMarks(marked);
       setMarksLoaded(true);
     }
 
     setLoadingMarks(false);
   }
+
+  // ── Engine-powered APS Roadmap (only when marks loaded + goal set) ────────
+  const apsRoadmap = useMemo(() => {
+    if (storedMarks.length === 0 || !apsGoal) return [];
+    const goals = session
+      ? { targetAps: apsGoal, targetCareer: null, updatedAt: '' }
+      : { targetAps: null, targetCareer: null, updatedAt: '' };
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const ins = computeStudentInsights(storedMarks, [], [], goals, todayStr);
+    return ins.apsRoadmap.slice(0, 6);
+  }, [storedMarks, apsGoal]);
 
   // Filtered + sorted degrees
   const filteredDegrees = useMemo(() => {
@@ -504,6 +519,34 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 {aps >= apsGoal && (
                   <p className="text-[11px] text-emerald-600 font-bold mt-1.5">Goal reached.</p>
                 )}
+              </div>
+            )}
+
+            {/* APS Roadmap — engine-powered, shown when marks loaded + goal set */}
+            {apsRoadmap.length > 0 && apsGoal > aps && (
+              <div className="bg-white rounded-2xl border border-stone-200 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">APS Roadmap</p>
+                <p className="text-xs text-stone-400 mb-3">
+                  +{apsGoal - aps} needed · Prioritised by biggest gain
+                </p>
+                <div className="space-y-2">
+                  {apsRoadmap.map((step, i) => (
+                    <div key={i} className="flex items-center gap-3 py-2 border-b border-stone-100 last:border-0">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-stone-900 truncate">{step.subject}</p>
+                        <p className="text-[11px] text-stone-400">
+                          {step.currentPct}% → {step.targetPct}%
+                          <span className="ml-1 text-stone-300">
+                            (L{step.currentLevel} → L{step.targetLevel})
+                          </span>
+                        </p>
+                      </div>
+                      <span className="shrink-0 bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black px-2.5 py-1 rounded-full">
+                        +{step.apsGain} pt{step.apsGain !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

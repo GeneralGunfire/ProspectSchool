@@ -12,6 +12,7 @@ import {
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
+import { computeStudentInsights } from '../../../lib/studentInsights';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -263,52 +264,27 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
     ? new Date(lightestStudyDay + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'long' })
     : null;
 
-  const revisionSuggestions = (() => {
-    if (allMarks.length === 0) return [];
+  // ── Intelligence engine — replaces local revision logic ──────
+  const calInsights = computeStudentInsights(allMarks, futureEvents, [], goals, todayStr);
+  const revisionRecs = calInsights.revisionRecs.slice(0, 2);
 
-    const subjectMap = new Map<string, { sum: number; total: number; count: number }>();
-    for (const m of allMarks) {
-      const key = m.subject_label || 'Other';
-      const e = subjectMap.get(key) ?? { sum: 0, total: 0, count: 0 };
-      subjectMap.set(key, { sum: e.sum + m.mark!, total: e.total + m.total, count: e.count + 1 });
-    }
-
-    const upcomingHighPriority = futureEvents
-      .filter(e => (e.event_type === 'exam' || e.event_type === 'assessment') && daysUntil(e.event_date) <= 21)
-      .sort((a, b) => a.event_date.localeCompare(b.event_date));
-
-    const suggestions: { subject: string; avg: number; event: SchoolEvent; days: number }[] = [];
-
-    for (const [subject, data] of subjectMap.entries()) {
-      const avg = Math.round((data.sum / data.total) * 100);
-      const keyword = subject.split(' ')[0].toLowerCase();
-      const matchingEvent = upcomingHighPriority.find(e =>
-        e.title.toLowerCase().includes(keyword) ||
-        subject.toLowerCase().includes(e.title.toLowerCase().split(' ')[0])
-      );
-      if (matchingEvent) {
-        suggestions.push({ subject, avg, event: matchingEvent, days: daysUntil(matchingEvent.event_date) });
-      }
-    }
-
-    if (suggestions.length === 0 && upcomingHighPriority.length > 0) {
-      const weakest = Array.from(subjectMap.entries())
-        .map(([subject, data]) => ({ subject, avg: Math.round((data.sum / data.total) * 100) }))
-        .sort((a, b) => a.avg - b.avg)
-        .slice(0, 2);
-
-      for (const s of weakest) {
-        suggestions.push({
-          subject: s.subject,
-          avg: s.avg,
-          event: upcomingHighPriority[0],
-          days: daysUntil(upcomingHighPriority[0].event_date),
-        });
-      }
-    }
-
-    return suggestions.slice(0, 2);
-  })();
+  // Keep legacy shape for JSX compatibility — map engine recs to old format
+  const revisionSuggestions = revisionRecs.map(rec => ({
+    subject: rec.subject,
+    avg:     rec.avg,
+    event:   futureEvents.find(e =>
+      (e.event_type === 'exam' || e.event_type === 'assessment') &&
+      e.event_date >= todayStr &&
+      e.title.toLowerCase().includes(rec.subject.split(' ')[0].toLowerCase())
+    ) ?? futureEvents.find(e => e.event_type === 'exam' || e.event_type === 'assessment') ?? null,
+    days:    rec.examDays,
+    urgency: rec.urgency,
+    reason:  rec.reason,
+  })).filter(s => s.event !== null) as {
+    subject: string; avg: number;
+    event: SchoolEvent; days: number | null;
+    urgency: string; reason: string;
+  }[];
 
   return (
     <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
@@ -526,38 +502,47 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           transition={{ delay: 0.16, ease: [0.23, 1, 0.32, 1] }}
           className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Recommended Revision</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
+            {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical Revision' : 'Recommended Revision'}
+          </p>
           <div className="space-y-3">
             {revisionSuggestions.map((s, i) => (
-              <div key={i} className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="font-black text-stone-900 text-sm">{s.subject}</p>
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                      s.avg >= 70 ? 'bg-emerald-50 text-emerald-600' :
-                      s.avg >= 50 ? 'bg-amber-50 text-amber-600' :
-                                    'bg-red-50 text-red-500'
-                    }`}>
-                      {s.avg}% avg
-                    </span>
+              <div key={i} className={`rounded-xl p-3 ${
+                s.urgency === 'critical' ? 'bg-red-50 border border-red-200' :
+                s.urgency === 'high'     ? 'bg-amber-50 border border-amber-200' :
+                                           'bg-stone-50 border border-stone-200'
+              }`}>
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                      <p className="font-black text-stone-900 text-sm">{s.subject}</p>
+                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                        s.urgency === 'critical' ? 'bg-red-100 text-red-700' :
+                        s.urgency === 'high'     ? 'bg-amber-100 text-amber-700' :
+                                                   'bg-stone-100 text-stone-500'
+                      }`}>
+                        {s.urgency === 'critical' ? 'Critical' : s.urgency === 'high' ? 'High Priority' : 'Recommended'}
+                      </span>
+                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500">
+                        {s.avg}% avg
+                      </span>
+                    </div>
+                    <p className="text-xs text-stone-500">{s.reason}</p>
                   </div>
-                  <p className="text-xs text-stone-400">
-                    {s.event.title} — {s.days === 0 ? 'Today' : s.days === 1 ? 'Tomorrow' : `${s.days} days away`}
-                  </p>
-                </div>
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => onNavigate('library')}
-                    className="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
-                  >
-                    Library
-                  </button>
-                  <button
-                    onClick={() => onNavigate('pastpapers')}
-                    className="px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 text-[11px] font-black hover:bg-stone-200 transition-colors border border-stone-200"
-                  >
-                    Papers
-                  </button>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={() => onNavigate('library')}
+                      className="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
+                    >
+                      Library
+                    </button>
+                    <button
+                      onClick={() => onNavigate('pastpapers')}
+                      className="px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 text-[11px] font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                    >
+                      Papers
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

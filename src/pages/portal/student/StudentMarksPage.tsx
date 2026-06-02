@@ -8,6 +8,7 @@ import {
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
+import { computeStudentInsights } from '../../../lib/studentInsights';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -142,6 +143,11 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   const subjectRank = new Map(subjectAverages.map((s, i) => [s.subject, i + 1]));
   const rankedCount = subjectAverages.filter(s => s.avg >= 0).length;
 
+  // ── Intelligence engine ───────────────────────────────────────
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const insights = computeStudentInsights(markedResults, [], [], goals, todayStr);
+  const { examRiskSubjects, learnerStatus } = insights;
+
   // ── Action items ──────────────────────────────────────────────
   type ActionItem = {
     type: 'weak-subject' | 'exam-soon' | 'aps-opportunity';
@@ -181,6 +187,23 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
       actions: [
         { label: 'Open Library', page: 'library' },
         { label: 'Practice Past Papers', page: 'pastpapers' },
+      ],
+    });
+  }
+
+  // High-risk subject from engine (exam within 14 days + low avg)
+  const highRisk = examRiskSubjects.find(s => s.risk === 'high' && s.examDays !== null);
+  if (highRisk && actionItems.length < 2 && highRisk.subject !== (weakCandidates[0]?.subject ?? '')) {
+    actionItems.push({
+      type: 'exam-soon' as const,
+      subject: highRisk.subject,
+      avg: highRisk.avg,
+      trend: null,
+      headline: 'Exam Risk',
+      body: highRisk.reasons.join(' · '),
+      actions: [
+        { label: 'Practice Past Papers', page: 'pastpapers' },
+        { label: 'Open Library', page: 'library' },
       ],
     });
   }
@@ -258,9 +281,71 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 <p className="text-xs font-black uppercase tracking-widest text-white/50 mb-0.5">Overall Average</p>
                 <p className="text-2xl font-black tracking-tight">{overallAvg.toFixed(1)}%</p>
               </div>
-              <div className="ml-auto text-right">
+              <div className="ml-auto text-right flex flex-col items-end gap-1.5">
+                <div className={`px-2.5 py-1 rounded-xl text-[11px] font-black border ${learnerStatus.bg} ${learnerStatus.color} ${learnerStatus.border}`}>
+                  {learnerStatus.score}/100 · {learnerStatus.label}
+                </div>
                 <p className="text-xs text-white/50 font-bold">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''}</p>
-                <p className="text-xs text-white/50 font-bold">{results.length - markedResults.length} pending</p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Subject Risk section — from intelligence engine */}
+          {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').length > 0 && (
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="mb-5"
+            >
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Subject Risk</p>
+              <div className="space-y-2">
+                {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
+                  <div key={risk.subject} className={`rounded-2xl border p-4 ${
+                    risk.risk === 'high'
+                      ? 'bg-red-50 border-red-200'
+                      : 'bg-amber-50 border-amber-200'
+                  }`}>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-black text-stone-900 text-sm">{risk.subject}</p>
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
+                          risk.risk === 'high'
+                            ? 'bg-red-100 text-red-700 border-red-200'
+                            : 'bg-amber-100 text-amber-700 border-amber-200'
+                        }`}>
+                          {risk.risk === 'high' ? 'High Risk' : 'Watch'}
+                        </span>
+                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
+                          {risk.avg}% avg
+                        </span>
+                      </div>
+                      {risk.examDays !== null && (
+                        <span className={`shrink-0 text-[10px] font-black px-2 py-0.5 rounded-full ${
+                          risk.examDays <= 7 ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600'
+                        }`}>
+                          Exam in {risk.examDays}d
+                        </span>
+                      )}
+                    </div>
+                    <div className="space-y-0.5 mb-3">
+                      {risk.reasons.map((r, i) => (
+                        <div key={i} className="flex items-center gap-1.5">
+                          <span className="w-1 h-1 rounded-full bg-stone-400 shrink-0" />
+                          <p className="text-xs text-stone-600">{r}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => onNavigate('pastpapers')}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
+                        Practice Papers
+                      </button>
+                      <button onClick={() => onNavigate('library')}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-700 text-[11px] font-black hover:bg-stone-50 transition-colors">
+                        Open Library
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </motion.div>
           )}

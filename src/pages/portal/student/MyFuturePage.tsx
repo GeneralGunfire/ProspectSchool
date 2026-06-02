@@ -8,6 +8,7 @@ import { bursaries, type Bursary } from '../../../features/careers/data/bursarie
 import { DEGREE_DATA } from '../../../data/apsData';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals, saveStudentGoals, type StudentGoals } from '../../../lib/studentGoals';
+import { computeStudentInsights } from '../../../lib/studentInsights';
 
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
@@ -163,6 +164,11 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
     if (!bySubject[p.subject]) bySubject[p.subject] = [];
     bySubject[p.subject].push(p);
   }
+
+  // ── Intelligence engine ───────────────────────────────────────────────────
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const futureInsights = computeStudentInsights([], [], progress, goals, todayStr);
+  const { milestones, learnerStatus } = futureInsights;
 
   // ── Loading skeleton ──────────────────────────────────────────────────────
 
@@ -673,6 +679,77 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             </p>
           </div>
         )}
+      </Section>
+
+      {/* ── Section 7: Academic Journey Milestones ───────────────────────────── */}
+      <Section delay={0.34}>
+        <Eyebrow>Academic Journey</Eyebrow>
+        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+
+          {/* Learner status header */}
+          <div className={`px-5 py-4 border-b border-stone-100 flex items-center justify-between ${learnerStatus.bg}`}>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-0.5">Overall Status</p>
+              <p className={`font-black text-xl leading-none ${learnerStatus.color}`}>{learnerStatus.label}</p>
+            </div>
+            <div className={`rounded-xl px-4 py-2 text-center border ${learnerStatus.border} bg-white`}>
+              <p className={`font-black text-2xl leading-none ${learnerStatus.color}`}>{learnerStatus.score}</p>
+              <p className="text-[10px] font-bold text-stone-400 mt-0.5">/ 100</p>
+            </div>
+          </div>
+
+          {/* Milestones list */}
+          <div className="divide-y divide-stone-100">
+            {milestones.map(m => (
+              <div key={m.id} className="flex items-center gap-3 px-5 py-3.5">
+                <div className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
+                  m.achieved ? 'bg-emerald-500' : 'bg-stone-100'
+                }`}>
+                  {m.achieved ? (
+                    <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                      <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  ) : (
+                    <div className="w-2 h-2 rounded-full bg-stone-300" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm font-bold truncate ${m.achieved ? 'text-stone-900' : 'text-stone-400'}`}>
+                    {m.label}
+                  </p>
+                  {m.achieved && m.detail && (
+                    <p className="text-[11px] text-stone-400 truncate">{m.detail}</p>
+                  )}
+                </div>
+                {!m.achieved && (
+                  <span className="text-[10px] font-bold text-stone-300 shrink-0 uppercase tracking-widest">
+                    Not yet
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Progress footer */}
+          <div className="px-5 py-3 bg-stone-50 border-t border-stone-100">
+            <div className="flex items-center justify-between mb-1.5">
+              <p className="text-[11px] font-bold text-stone-400">
+                {milestones.filter(m => m.achieved).length} of {milestones.length} milestones reached
+              </p>
+              <p className="text-[11px] font-black text-stone-600">
+                {Math.round((milestones.filter(m => m.achieved).length / milestones.length) * 100)}%
+              </p>
+            </div>
+            <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.round((milestones.filter(m => m.achieved).length / milestones.length) * 100)}%` }}
+                transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1] }}
+                className="h-full bg-emerald-500 rounded-full"
+              />
+            </div>
+          </div>
+        </div>
       </Section>
 
     </div>
