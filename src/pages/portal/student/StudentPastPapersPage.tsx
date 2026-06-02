@@ -6,6 +6,7 @@ import {
 } from '../../../lib/pastPapers';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import type { StudentSession } from '../../../lib/auth';
+import { getActiveInterventions, startIntervention, completeIntervention } from '../../../lib/interventions';
 
 const GRADES = [8, 9, 10, 11, 12];
 const TERMS  = [1, 2, 3, 4];
@@ -138,6 +139,15 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       localStorage.setItem(`prospect_recent_papers_${session.student_id}`, JSON.stringify(updated));
       return updated;
     });
+    // Mark any matching past_paper intervention as started
+    const active = getActiveInterventions(session.student_id);
+    const matching = active.find(i =>
+      i.type === 'past_paper' &&
+      (p.subject_label?.toLowerCase().includes(i.subject.split(' ')[0].toLowerCase()) ||
+       i.subject.toLowerCase().includes((p.subject_label ?? '').split(' ')[0].toLowerCase()))
+    );
+    if (matching) startIntervention(session.student_id, matching.id);
+
     setDownloading(p.id);
     const url = await getPastPaperDownloadUrl(p.file_url);
     setDownloading(null);
@@ -199,6 +209,15 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       );
       return updated;
     });
+    // Complete any matching past_paper intervention
+    const active = getActiveInterventions(session.student_id);
+    const matching = active.find(i =>
+      i.type === 'past_paper' &&
+      (practice!.paper.subject_label?.toLowerCase().includes(i.subject.split(' ')[0].toLowerCase()) ||
+       i.subject.toLowerCase().includes((practice!.paper.subject_label ?? '').split(' ')[0].toLowerCase()))
+    );
+    if (matching) completeIntervention(session.student_id, matching.id);
+
     setPractice(prev => prev ? { ...prev, selfScore: score, phase: 'complete' } : null);
   }
 

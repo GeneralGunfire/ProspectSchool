@@ -115,6 +115,9 @@ export interface StudentInsights {
   computedAt:        string;
 }
 
+// ── Re-export intervention types for convenience ──────────────────────────────
+export type { Intervention, Outcome, InterventionImpact } from './interventions';
+
 // ── NQF helpers (mirrors apsData.ts logic without importing the whole module) ──
 
 function pctToNQF(pct: number): number {

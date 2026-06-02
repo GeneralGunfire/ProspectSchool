@@ -15,6 +15,11 @@ import { fetchApsScore } from '../../../lib/myFuture';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
+import {
+  getActiveInterventions, getCompletedInterventions, getOutcomes,
+  syncInterventionsFromRisk, startIntervention, completeIntervention,
+  computeInterventionImpact, type Intervention,
+} from '../../../lib/interventions';
 import type { StudentSession } from '../../../lib/auth';
 
 function timeAgo(iso: string): string {
@@ -137,7 +142,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
       </div>
     );
   }
@@ -189,6 +194,13 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   // ── Student Intelligence Engine ───────────────────────────────────────────
   const insights_engine = computeStudentInsights(allMarks, upcomingEvents, studyProgress, goals, todayStr);
   const { academicStory } = insights_engine;
+
+  // ── Interventions ─────────────────────────────────────────────────────────
+  syncInterventionsFromRisk(session.student_id, insights_engine.examRiskSubjects, insights_engine.revisionRecs);
+  const activeInterventions    = getActiveInterventions(session.student_id);
+  const completedInterventions = getCompletedInterventions(session.student_id);
+  const interventionOutcomes   = getOutcomes(session.student_id);
+  const interventionImpact     = computeInterventionImpact(session.student_id);
 
   // Focus item
   const focusItem = (() => {
@@ -463,7 +475,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       >
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Dashboard</p>
-          <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+          <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
             {(() => {
               const h = new Date().getHours();
               if (h < 12) return `Good morning, ${session.name}.`;
@@ -493,7 +505,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       <motion.div
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-        className="bg-[#1C1917] rounded-3xl p-6 md:p-8 mb-5 relative overflow-hidden"
+        className="bg-brand-dark rounded-3xl p-6 md:p-8 mb-5 relative overflow-hidden"
       >
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(245,240,232,0.07) 0%, transparent 65%)' }} />
@@ -583,14 +595,14 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               <>
                 {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
                   <button onClick={() => onNavigate('calendar')}
-                    className="flex items-center justify-center gap-2 bg-white text-[#1C1917] font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
                     <CalendarDays className="w-4 h-4" />
                     View Calendar
                   </button>
                 )}
                 {focusItem.type === 'exam' && (
                   <button onClick={() => onNavigate('pastpapers')}
-                    className="flex items-center justify-center gap-2 bg-white text-[#1C1917] font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
                     <BookOpen className="w-4 h-4" />
                     Practice Papers
                   </button>
@@ -603,7 +615,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               </>
             ) : (
               <button onClick={() => onNavigate('library')}
-                className="flex items-center justify-center gap-2 bg-white text-[#1C1917] font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
                 <BookOpen className="w-4 h-4" />
                 Start Studying
               </button>
@@ -619,7 +631,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="bg-[#1C1917] rounded-2xl p-5 flex flex-col justify-between min-h-[130px]"
+          className="bg-brand-dark rounded-2xl p-5 flex flex-col justify-between min-h-[130px]"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Upcoming Event</p>
           {upcomingEvents[0] ? (() => {
@@ -659,12 +671,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Pending Homework</p>
           {pendingHomework.length === 0 ? (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">0</p>
+              <p className="font-black text-4xl text-brand-dark">0</p>
               <p className="text-emerald-600 font-bold text-xs mt-1">All caught up</p>
             </div>
           ) : (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">{pendingHomework.length}</p>
+              <p className="font-black text-4xl text-brand-dark">{pendingHomework.length}</p>
               {hwToday.length > 0
                 ? <p className="text-red-500 font-bold text-xs mt-1">{hwToday.length} due today</p>
                 : <p className="text-stone-400 text-sm mt-0.5">tasks remaining</p>
@@ -672,7 +684,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             </div>
           )}
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-blue-600 hover:text-blue-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
             View Homework
           </button>
         </motion.div>
@@ -686,7 +698,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Average Mark</p>
           {avgMark !== null ? (
             <div>
-              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-[#1C1917]'}`}>{avgMark}%</p>
+              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}>{avgMark}%</p>
               {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
                 <p className="text-[11px] text-stone-400 mt-1 leading-snug">
                   Best: <span className="text-stone-600 font-bold">{highestSubject.label.split(' ')[0]}</span>
@@ -706,7 +718,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             <p className="text-stone-400 font-bold text-sm mt-auto">No marks yet</p>
           )}
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-blue-600 hover:text-blue-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
             View Marks
           </button>
         </motion.div>
@@ -722,12 +734,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             <p className="text-stone-400 font-bold text-sm mt-auto">No announcements</p>
           ) : (
             <div>
-              <p className="font-black text-4xl text-[#1C1917]">{announcements.length}</p>
+              <p className="font-black text-4xl text-brand-dark">{announcements.length}</p>
               <p className="text-stone-400 text-sm mt-0.5 truncate">{announcements[0]?.title}</p>
             </div>
           )}
           <button onClick={() => onNavigate('announcements')}
-            className="self-start text-[11px] font-black text-amber-600 hover:text-amber-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
             View All
           </button>
         </motion.div>
@@ -780,7 +792,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   <span className="text-sm font-black text-stone-700">{topicsStarted}/{studyProgress.length}</span>
                 </div>
                 <p className="text-[11px] text-stone-400 mb-1">{topicsMastered} mastered · {topicsStarted - topicsMastered} in progress</p>
-                <HealthBar pct={libraryPct} color="bg-[#1C1917]" />
+                <HealthBar pct={libraryPct} color="bg-brand-dark" />
               </div>
             )}
 
@@ -845,7 +857,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               <div key={day.dateStr} className="flex flex-col items-center gap-1">
                 <span className="text-[10px] font-black uppercase tracking-wide text-stone-400">{day.label}</span>
                 <span className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full transition-colors ${
-                  day.isToday ? 'bg-[#1C1917] text-white' : 'text-stone-500'
+                  day.isToday ? 'bg-brand-dark text-white' : 'text-stone-500'
                 }`}>{day.num}</span>
               </div>
             ))}
@@ -906,7 +918,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 initial={{ width: 0 }}
                 animate={{ width: `${hwCompletionPct}%` }}
                 transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                className="h-full bg-[#1C1917] rounded-full"
+                className="h-full bg-brand-dark rounded-full"
               />
             </div>
 
@@ -1038,6 +1050,99 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               Based on {academicStory.totalAssessments} assessment{academicStory.totalAssessments !== 1 ? 's' : ''}
             </p>
           </div>
+        </motion.div>
+      )}
+
+      {/* ── Academic Coaching Card ───────────────────────────────── */}
+      {activeInterventions.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.335 }}
+          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Academic Coaching</p>
+            {interventionImpact.totalCompleted > 0 && (
+              <span className="text-[11px] font-bold text-stone-400">
+                {interventionImpact.totalCompleted} completed · {interventionImpact.successRate}% success
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            {activeInterventions.slice(0, 3).map((inv, i) => {
+              const outcome = interventionOutcomes.find(o => o.interventionId === inv.id);
+              const isStarted = inv.status === 'started';
+              return (
+                <div key={inv.id} className={`rounded-xl border p-4 ${
+                  inv.reason === 'exam_soon' || inv.reason === 'below_pass'
+                    ? 'bg-red-50 border-red-200'
+                    : inv.reason === 'high_risk' || inv.reason === 'declining_trend'
+                    ? 'bg-amber-50 border-amber-200'
+                    : 'bg-stone-50 border-stone-200'
+                }`}>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                        <p className="font-black text-stone-900 text-sm">{inv.subject}</p>
+                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                          inv.reason === 'exam_soon' ? 'bg-red-100 text-red-700' :
+                          inv.reason === 'below_pass' ? 'bg-red-100 text-red-700' :
+                          inv.reason === 'high_risk' ? 'bg-amber-100 text-amber-700' :
+                          'bg-stone-100 text-stone-500'
+                        }`}>
+                          {inv.reason === 'exam_soon' ? 'Exam Soon' :
+                           inv.reason === 'below_pass' ? 'Below Pass' :
+                           inv.reason === 'high_risk' ? 'High Risk' :
+                           inv.reason === 'declining_trend' ? 'Declining' : 'APS Gap'}
+                        </span>
+                        {isStarted && (
+                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                            In Progress
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-stone-500">{inv.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        startIntervention(session.student_id, inv.id);
+                        onNavigate(inv.page);
+                      }}
+                      className="flex-1 py-2 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
+                    >
+                      {isStarted ? 'Continue' : 'Start'}
+                    </button>
+                    <button
+                      onClick={() => completeIntervention(session.student_id, inv.id)}
+                      className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black hover:bg-emerald-100 transition-colors"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Completed outcomes feed */}
+          {interventionOutcomes.slice(-2).reverse().map(o => (
+            <div key={o.interventionId} className="flex items-center gap-2 mt-3 pt-3 border-t border-stone-100">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                o.result === 'improved' ? 'bg-emerald-500' :
+                o.result === 'declined' ? 'bg-red-400' : 'bg-stone-300'
+              }`} />
+              <p className="text-xs text-stone-500 flex-1">
+                <span className="font-bold text-stone-700">{o.subject}</span>
+                {o.result === 'improved' && ` improved ${o.previousAvg}% → ${o.newAvg}% (+${o.improvement}%)`}
+                {o.result === 'declined' && ` declined ${o.previousAvg}% → ${o.newAvg}%`}
+                {o.result === 'unchanged' && ` unchanged at ${o.newAvg}%`}
+              </p>
+            </div>
+          ))}
         </motion.div>
       )}
 
