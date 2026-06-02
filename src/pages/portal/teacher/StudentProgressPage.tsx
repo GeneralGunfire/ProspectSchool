@@ -207,7 +207,7 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full">
+    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
       {/* Header */}
       <div className="mb-6">
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">LIBRARY</p>
@@ -374,7 +374,7 @@ function StudentProfile({
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-      className="p-5 md:p-8 max-w-6xl w-full"
+      className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8"
     >
       {/* Back */}
       <button

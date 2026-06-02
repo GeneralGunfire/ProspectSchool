@@ -365,7 +365,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   // ── Render ────────────────────────────────────────────────
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
+    <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-8">
 
       {/* ── Header ──────────────────────────────────────────── */}
       <motion.div

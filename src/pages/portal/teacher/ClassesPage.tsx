@@ -171,15 +171,15 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   }, [students, search, filterGrade, filterCohort]);
 
   return (
-    <div className="p-5 md:p-8 max-w-7xl w-full">
+    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Portal</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Classes</h1>
+          <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-1">Portal</p>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Classes</h1>
         </div>
         <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-slate-900 text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
+          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-stone-800 transition-colors">
           <Plus className="w-4 h-4" /> Add Student
         </motion.button>
       </div>
@@ -188,18 +188,18 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       {!loading && students.length > 0 && (
         <div className="flex items-center gap-3 mb-4 flex-wrap">
           <div className="flex-1 min-w-48 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300" />
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, code or subject…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-brand-dark placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark"
             />
           </div>
           <select
             value={filterGrade}
             onChange={e => setFilterGrade(e.target.value)}
-            className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+            className="px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
           >
             <option value="">All grades</option>
             {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
@@ -208,7 +208,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
             <select
               value={filterCohort}
               onChange={e => setFilterCohort(e.target.value)}
-              className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+              className="px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
             >
               <option value="">All classes</option>
               {cohortOptions.map(c => <option key={c} value={c}>{c}</option>)}
@@ -217,12 +217,12 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           {(search || filterGrade || filterCohort) && (
             <button
               onClick={() => { setSearch(''); setFilterGrade(''); setFilterCohort(''); }}
-              className="px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-500 hover:bg-slate-100 transition-colors"
+              className="px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-500 hover:bg-stone-100 transition-colors"
             >
               Clear
             </button>
           )}
-          <p className="text-xs font-bold text-slate-400 ml-auto">
+          <p className="text-xs font-bold text-stone-400 ml-auto">
             {filtered.length} of {students.length} student{students.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -231,48 +231,48 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       {/* List */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : students.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-5 h-5 text-slate-400" />
+        <div className="bg-white border border-stone-200 rounded-2xl p-12 text-center">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+            <Plus className="w-5 h-5 text-stone-400" />
           </div>
-          <p className="font-bold text-slate-900 mb-1">No students yet</p>
-          <p className="text-sm text-slate-400 mb-6">Add your first student to get started.</p>
+          <p className="font-bold text-brand-dark mb-1">No students yet</p>
+          <p className="text-sm text-stone-400 mb-6">Add your first student to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-stone-200 hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
             Add Student <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Student</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Code</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Class</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Subjects</th>
+              <tr className="border-b border-stone-100">
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Student</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Code</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Class</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Subjects</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center text-sm font-bold text-slate-400">
+                  <td colSpan={5} className="px-5 py-12 text-center text-sm font-bold text-stone-400">
                     No students match your search.
                   </td>
                 </tr>
               ) : filtered.map((s, i) => (
-                <tr key={s.id} className={`border-b border-slate-50 hover:bg-slate-50 transition-colors ${i === filtered.length - 1 ? 'border-0' : ''}`}>
-                  <td className="px-5 py-3.5 font-bold text-slate-900">{s.surname}, {s.name}</td>
-                  <td className="px-5 py-3.5 font-mono text-slate-500 text-xs tracking-widest">{s.student_code}</td>
-                  <td className="px-5 py-3.5 text-slate-500">{s.cohort ? s.cohort.name : `Gr ${s.grade}`}</td>
+                <tr key={s.id} className={`border-b border-stone-50 hover:bg-stone-50 transition-colors ${i === filtered.length - 1 ? 'border-0' : ''}`}>
+                  <td className="px-5 py-3.5 font-bold text-brand-dark">{s.surname}, {s.name}</td>
+                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{s.student_code}</td>
+                  <td className="px-5 py-3.5 text-stone-500">{s.cohort ? s.cohort.name : `Gr ${s.grade}`}</td>
                   <td className="px-5 py-3.5">
                     <div className="flex flex-wrap gap-1">
                       {s.subjects?.map((sub) => (
-                        <span key={sub.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg">
+                        <span key={sub.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
                           <BookOpen className="w-2.5 h-2.5" />{sub.label}
                         </span>
                       ))}
@@ -281,11 +281,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1 justify-end">
                       <button onClick={() => openEdit(s)}
-                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors">
+                        className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => setConfirmDelete(s)}
-                        className="p-2 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-600 transition-colors">
+                        className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -311,11 +311,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
-                  <h2 className="text-lg font-black text-slate-900">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100">
+                  <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Student' : 'Edit Student'}
                   </h2>
-                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors">
+                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -333,55 +333,55 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     {/* Name + Surname */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Name</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">Name</label>
                         <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="John" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Surname</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">Surname</label>
                         <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Doe" />
                       </div>
                     </div>
 
                     {/* Student Code — readonly in edit mode */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Student Code</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">Student Code</label>
                       <input required type="text" value={form.student_code}
                         onChange={(e) => modalMode === 'add' && set('student_code', e.target.value.toUpperCase())}
                         readOnly={modalMode === 'edit'}
-                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 ${
-                          modalMode === 'edit' ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 text-slate-900'
+                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
+                          modalMode === 'edit' ? 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed' : 'bg-stone-50 border-stone-200 text-brand-dark'
                         }`}
                         placeholder="e.g. STU-0001" autoCapitalize="characters" />
                     </div>
 
                     {/* PIN */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">
-                        PIN {modalMode === 'edit' && <span className="normal-case font-medium text-slate-300">(leave blank to keep current)</span>}
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">
+                        PIN {modalMode === 'edit' && <span className="normal-case font-medium text-stone-300">(leave blank to keep current)</span>}
                       </label>
                       <input type="password" inputMode="numeric" maxLength={10}
                         required={modalMode === 'add'}
                         value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all tracking-widest"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                         placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
                     </div>
 
                     {/* Class + Grade */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Class</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">Class</label>
                         <input required type="text" value={form.cohort} onChange={(e) => set('cohort', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="e.g. 10A" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Grade</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-1.5">Grade</label>
                         <select required value={form.grade} onChange={(e) => set('grade', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all">
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
                           <option value="">Select</option>
                           {GRADES.map((g) => <option key={g} value={g}>Grade {g}</option>)}
                         </select>
@@ -390,7 +390,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
                     {/* Subjects */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">
                         Subjects you teach this student
                       </label>
                       <div className="grid grid-cols-2 gap-1.5">
@@ -399,9 +399,9 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                           return (
                             <button key={s.code} type="button" onClick={() => toggleSubject(s.code)}
                               className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
-                                selected ? 'bg-slate-900 text-white' : 'bg-slate-50 border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                                selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                               }`}>
-                              <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-slate-300'}`}>
+                              <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
                                 {selected && <Check className="w-2.5 h-2.5" />}
                               </div>
                               {s.label}
@@ -413,13 +413,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   </form>
                 </div>
 
-                <div className="flex gap-3 px-6 py-4 border-t border-slate-100">
+                <div className="flex gap-3 px-6 py-4 border-t border-stone-100">
                   <button type="button" onClick={closeForm}
-                    className="flex-1 py-2.5 text-sm font-bold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-stone-200 rounded-xl hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="student-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-stone-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>{modalMode === 'add' ? 'Add Student' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
@@ -448,13 +448,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
-                <h2 className="text-base font-black text-slate-900 mb-1">Remove student?</h2>
-                <p className="text-sm text-slate-500 mb-6">
-                  This will remove <span className="font-bold text-slate-900">{confirmDelete.name} {confirmDelete.surname}</span> from your classes. If no other teacher teaches them, their account will be deleted.
+                <h2 className="text-base font-black text-brand-dark mb-1">Remove student?</h2>
+                <p className="text-sm text-stone-500 mb-6">
+                  This will remove <span className="font-bold text-brand-dark">{confirmDelete.name} {confirmDelete.surname}</span> from your classes. If no other teacher teaches them, their account will be deleted.
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setConfirmDelete(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-stone-200 rounded-xl hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button onClick={handleDelete} disabled={deleting}

@@ -154,7 +154,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const TypeIcon = { file: Paperclip, link: Link2, note: FileText };
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full">
+    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
 
       {/* ── Toast ─────────────────────────────────────────────── */}
       <AnimatePresence>
@@ -164,7 +164,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-slate-900 text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             {toast}
@@ -174,13 +174,13 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Resources</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Class Resources</h1>
+          <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-1">Resources</p>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Class Resources</h1>
         </div>
         <motion.button
           whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={() => { setCreateModal(true); setFormError(''); setForm(emptyForm); setAttachmentFile(null); }}
-          className="flex items-center gap-2 bg-slate-900 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-slate-700 transition-colors"
+          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
         >
           <Plus className="w-4 h-4" /> Add Resource
         </motion.button>
@@ -189,13 +189,13 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
       {loading ? (
         <div className="flex items-center justify-center py-24">
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full" />
+            className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full" />
         </div>
       ) : resources.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
-          <FolderOpen className="w-10 h-10 text-slate-200 mb-4" />
-          <p className="text-sm font-bold text-slate-400">No resources yet.</p>
-          <p className="text-xs text-slate-300 mt-1">Add files, links or notes for your students.</p>
+          <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
+          <p className="text-sm font-bold text-stone-400">No resources yet.</p>
+          <p className="text-xs text-stone-300 mt-1">Add files, links or notes for your students.</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -208,7 +208,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
               <div key={type}>
                 <div className="flex items-center gap-2 mb-3">
                   <span className={`w-2 h-2 rounded-full ${meta.dot}`} />
-                  <p className="text-xs font-black uppercase tracking-widest text-slate-400">{meta.label}s</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-stone-400">{meta.label}s</p>
                 </div>
                 <div className="space-y-2">
                   {list.map((r, i) => (
@@ -217,39 +217,39 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.04 }}
-                      className="bg-white rounded-2xl border border-slate-200 px-5 py-4 flex items-start gap-4"
+                      className="bg-white rounded-2xl border border-stone-200 px-5 py-4 flex items-start gap-4"
                     >
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.badge}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                          <p className="text-sm font-bold text-slate-900">{r.title}</p>
+                          <p className="text-sm font-bold text-brand-dark">{r.title}</p>
                           {r.subject_label && (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{r.subject_label}</span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{r.subject_label}</span>
                           )}
                         </div>
-                        {r.description && <p className="text-xs text-slate-400 mb-1">{r.description}</p>}
+                        {r.description && <p className="text-xs text-stone-400 mb-1">{r.description}</p>}
                         {r.resource_type === 'note' && r.note_content && (
-                          <p className="text-xs text-slate-600 bg-amber-50 rounded-xl px-3 py-2 mt-1 leading-relaxed border border-amber-100">{r.note_content}</p>
+                          <p className="text-xs text-stone-600 bg-amber-50 rounded-xl px-3 py-2 mt-1 leading-relaxed border border-amber-100">{r.note_content}</p>
                         )}
                         {r.resource_type === 'link' && r.link_url && (
                           <p className="text-xs text-violet-500 truncate mt-0.5">{r.link_url}</p>
                         )}
                         {r.resource_type === 'file' && r.file_name && (
-                          <p className="text-xs text-slate-400 mt-0.5">{r.file_name}</p>
+                          <p className="text-xs text-stone-400 mt-0.5">{r.file_name}</p>
                         )}
-                        <p className="text-[10px] text-slate-300 mt-1">{formatDate(r.created_at)}</p>
+                        <p className="text-[10px] text-stone-300 mt-1">{formatDate(r.created_at)}</p>
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
                         {(r.resource_type === 'file' || r.resource_type === 'link') && (
                           <button onClick={() => handleOpen(r)} disabled={downloading === r.id}
-                            className="p-2 rounded-xl hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-700 disabled:opacity-40">
+                            className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-700 disabled:opacity-40">
                             <ExternalLink className="w-4 h-4" />
                           </button>
                         )}
                         <button onClick={() => setDeleteTarget(r)}
-                          className="p-2 rounded-xl hover:bg-red-50 transition-colors text-slate-300 hover:text-red-500">
+                          className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-300 hover:text-red-500">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -275,17 +275,17 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
               className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}>
 
-              <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-slate-900">Add Resource</h2>
-                <button onClick={() => setCreateModal(false)} className="p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                  <X className="w-4 h-4 text-slate-500" />
+              <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+                <h2 className="text-base font-black text-brand-dark">Add Resource</h2>
+                <button onClick={() => setCreateModal(false)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                  <X className="w-4 h-4 text-stone-500" />
                 </button>
               </div>
 
               <div className="p-6 space-y-5">
                 {/* Type */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Type</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Type</label>
                   <div className="grid grid-cols-3 gap-2">
                     {(['file', 'link', 'note'] as ResourceType[]).map(t => {
                       const m = RESOURCE_TYPE_META[t];
@@ -293,7 +293,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       const active = form.resource_type === t;
                       return (
                         <button key={t} onClick={() => setForm(f => ({ ...f, resource_type: t }))}
-                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           <Icon className="w-4 h-4 shrink-0" />
                           {m.label}
                         </button>
@@ -304,25 +304,25 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
 
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Title *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Title *</label>
                   <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Chapter 3 Notes"
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-brand-dark placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Description <span className="normal-case font-bold text-slate-300">(optional)</span></label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Description <span className="normal-case font-bold text-stone-300">(optional)</span></label>
                   <input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                     placeholder="Brief description…"
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
                 </div>
 
                 {/* Subject tag */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Subject <span className="normal-case font-bold text-slate-300">(optional)</span></label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Subject <span className="normal-case font-bold text-stone-300">(optional)</span></label>
                   <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white">
+                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white">
                     <option value="">No subject tag</option>
                     {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
                   </select>
@@ -331,7 +331,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                 {/* Type-specific input */}
                 {form.resource_type === 'file' && (
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">File *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">File *</label>
                     {attachmentFile ? (
                       <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
                         <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
@@ -341,7 +341,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       </div>
                     ) : (
                       <button onClick={() => fileRef.current?.click()}
-                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-slate-200 text-sm font-bold text-slate-400 hover:border-slate-400 hover:text-slate-600 transition-colors">
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-stone-200 text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
                         <Paperclip className="w-4 h-4" /> Attach file
                       </button>
                     )}
@@ -353,25 +353,25 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
 
                 {form.resource_type === 'link' && (
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">URL *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">URL *</label>
                     <input value={form.link_url} onChange={e => setForm(f => ({ ...f, link_url: e.target.value }))}
                       placeholder="https://youtube.com/..."
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900" />
+                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-brand-dark placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
                   </div>
                 )}
 
                 {form.resource_type === 'note' && (
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Note *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Note *</label>
                     <textarea value={form.note_content} onChange={e => setForm(f => ({ ...f, note_content: e.target.value }))}
                       rows={4} placeholder="Write your note here…"
-                      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900 resize-none" />
+                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
                   </div>
                 )}
 
                 {/* Audience */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Who sees this?</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Who sees this?</label>
                   <div className="grid grid-cols-2 gap-1.5 mb-3">
                     {([
                       { value: 'all', label: 'Everyone', icon: Users },
@@ -385,7 +385,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       return (
                         <button key={opt.value}
                           onClick={() => setForm(f => ({ ...f, target_type: opt.value, target_grades: [], target_cohort_ids: [], target_subject_ids: [], target_student_ids: [] }))}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           <Icon className="w-3.5 h-3.5 shrink-0" />{opt.label}
                         </button>
                       );
@@ -396,7 +396,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                     <div className="flex flex-wrap gap-1.5">
                       {GRADES.map(g => (
                         <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           Grade {g}
                         </button>
                       ))}
@@ -406,7 +406,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                     <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                       {cohorts.map(c => (
                         <button key={c.id} onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
                       ))}
@@ -415,22 +415,22 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                   {form.target_type === 'subject' && (
                     <div className="space-y-3">
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Subject *</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1.5">Subject *</p>
                         <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                           {subjects.map(s => (
                             <button key={s.id} onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                               {s.label}
                             </button>
                           ))}
                         </div>
                       </div>
                       <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Grade *</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1.5">Grade *</p>
                         <div className="flex flex-wrap gap-1.5">
                           {GRADES.map(g => (
                             <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                               Grade {g}
                             </button>
                           ))}
@@ -439,13 +439,13 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                     </div>
                   )}
                   {form.target_type === 'specific' && (
-                    <div className="space-y-1 max-h-36 overflow-y-auto border border-slate-100 rounded-xl p-2">
+                    <div className="space-y-1 max-h-36 overflow-y-auto border border-stone-100 rounded-xl p-2">
                       {allStudents.map(s => {
                         const active = form.target_student_ids.includes(s.id);
                         return (
                           <button key={s.id} onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-slate-900 text-white' : 'hover:bg-slate-100 text-slate-700'}`}>
-                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-slate-900' : 'border-slate-300'}`}>{active ? '✓' : ''}</span>
+                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-brand-dark text-white' : 'hover:bg-stone-100 text-stone-700'}`}>
+                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>{active ? '✓' : ''}</span>
                             {s.surname}, {s.name}
                           </button>
                         );
@@ -457,11 +457,11 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-slate-100 px-6 py-4 rounded-b-2xl flex gap-2">
+              <div className="sticky bottom-0 bg-white border-t border-stone-100 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button onClick={() => setCreateModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleCreate} disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-black hover:bg-slate-700 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                   {saving ? 'Saving…' : 'Add Resource'}
                 </button>
               </div>
@@ -482,11 +482,11 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
               onClick={e => e.stopPropagation()}>
-              <h2 className="text-base font-black text-slate-900 mb-1">Delete resource?</h2>
-              <p className="text-sm text-slate-500 mb-5"><strong>{deleteTarget.title}</strong> will be permanently removed.</p>
+              <h2 className="text-base font-black text-brand-dark mb-1">Delete resource?</h2>
+              <p className="text-sm text-stone-500 mb-5"><strong>{deleteTarget.title}</strong> will be permanently removed.</p>
               <div className="flex gap-2">
                 <button onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-black text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleDelete} disabled={deleting}
                   className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
