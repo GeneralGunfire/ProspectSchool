@@ -14,6 +14,7 @@ import {
   type DegreeEntry,
 } from '../../../data/apsData';
 import { saveApsScore } from '../../../lib/myFuture';
+import { fetchStudentResults } from '../../../lib/marks';
 
 // ── NQF level badge colour ────────────────────────────────────────────────────
 function nqfColor(level: number) {
@@ -227,7 +228,7 @@ function DegreeCard({
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ApsCalculatorPage() {
+export default function ApsCalculatorPage({ session }: { session?: { student_id: number; school_id: number; grade: number } }) {
   const [subjects, setSubjects] = useState<StudentSubject[]>([
     { code: 'english', percent: 0 },
     { code: 'mathematics', percent: 0 },
@@ -241,7 +242,30 @@ export default function ApsCalculatorPage() {
   const [showGoalPlanner, setShowGoalPlanner] = useState(false);
   const [targetAps, setTargetAps] = useState(0);
 
+  const [loadingMarks, setLoadingMarks] = useState(false);
+  const [marksLoaded, setMarksLoaded]   = useState(false);
+
+  // Persistent APS goal — saved to localStorage per student
+  const [apsGoal, setApsGoal] = useState<number>(() => {
+    if (!session) return 0;
+    return Number(localStorage.getItem(`prospect_aps_goal_${session.student_id}`) ?? 0);
+  });
+
   const aps = useMemo(() => calculateAPS(subjects.filter(s => s.percent > 0)), [subjects]);
+
+  // Sync apsGoal to localStorage whenever it changes
+  useEffect(() => {
+    if (!session || apsGoal === 0) return;
+    localStorage.setItem(`prospect_aps_goal_${session.student_id}`, String(apsGoal));
+  }, [apsGoal, session?.student_id]);
+
+  // On mount: if apsGoal was loaded from localStorage and targetAps is 0, sync them
+  useEffect(() => {
+    if (apsGoal > 0 && targetAps === 0) {
+      setTargetAps(apsGoal);
+      setShowGoalPlanner(true);
+    }
+  }, []); // run once on mount
 
   // Debounce-save to Supabase whenever aps or subjects change (no-op for guests)
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -268,6 +292,53 @@ export default function ApsCalculatorPage() {
   const removeSubject = (i: number) => {
     setSubjects(prev => prev.filter((_, idx) => idx !== i));
   };
+
+  // Use My Marks — fetch real results and populate subject rows
+  async function handleUseMyMarks() {
+    if (!session) return;
+    setLoadingMarks(true);
+
+    const results = await fetchStudentResults(session.student_id, session.school_id);
+    const marked  = results.filter(r => r.mark !== null);
+
+    if (marked.length === 0) {
+      setLoadingMarks(false);
+      return;
+    }
+
+    // Group by subject_label, compute average percentage per subject
+    const subjectAvgMap = new Map<string, { sum: number; total: number }>();
+    for (const r of marked) {
+      const key = r.subject_label || 'Other';
+      const e = subjectAvgMap.get(key) ?? { sum: 0, total: 0 };
+      subjectAvgMap.set(key, { sum: e.sum + r.mark!, total: e.total + r.total });
+    }
+
+    // Map subject labels to NSC_SUBJECTS codes by keyword matching
+    const labelToCode = (label: string): SubjectCode | null => {
+      const l = label.toLowerCase();
+      const match = NSC_SUBJECTS.find(s =>
+        l.includes(s.label.toLowerCase().split(' ')[0]) ||
+        s.label.toLowerCase().includes(l.split(' ')[0])
+      );
+      return match ? match.value : null;
+    };
+
+    const populated: StudentSubject[] = [];
+    for (const [label, data] of subjectAvgMap.entries()) {
+      const code = labelToCode(label);
+      if (!code) continue;
+      const percent = Math.round((data.sum / data.total) * 100);
+      populated.push({ code, percent });
+    }
+
+    if (populated.length > 0) {
+      setSubjects(populated);
+      setMarksLoaded(true);
+    }
+
+    setLoadingMarks(false);
+  }
 
   // Filtered + sorted degrees
   const filteredDegrees = useMemo(() => {
@@ -300,17 +371,42 @@ export default function ApsCalculatorPage() {
       <div>
 
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-stone-900 flex items-center justify-center shrink-0">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-black text-stone-900 tracking-tight">APS Calculator</h1>
-              <p className="text-sm text-stone-500">Enter your Grade 12 marks to see which university programmes you qualify for</p>
-            </div>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+          className="mb-6 flex items-start justify-between gap-4"
+        >
+          <div>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+              APS & Universities
+            </p>
+            <h1 className="font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+              APS Calculator
+            </h1>
+            <p className="text-sm text-stone-400 mt-1">
+              Enter your Grade 12 marks to see which programmes you qualify for.
+            </p>
           </div>
-        </div>
+          {aps > 0 && apsGoal > 0 && (
+            <div className="shrink-0 hidden sm:block">
+              <div className={`rounded-2xl px-4 py-3 text-center border-2 ${
+                aps >= apsGoal
+                  ? 'bg-emerald-50 border-emerald-200'
+                  : 'bg-amber-50 border-amber-200'
+              }`}>
+                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-0.5">
+                  {aps >= apsGoal ? 'Goal Reached' : 'Goal'}
+                </p>
+                <p className={`font-black text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {aps} / {apsGoal}
+                </p>
+                {aps < apsGoal && (
+                  <p className="text-[10px] text-stone-400 mt-0.5">{apsGoal - aps} to go</p>
+                )}
+              </div>
+            </div>
+          )}
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
 
@@ -318,8 +414,28 @@ export default function ApsCalculatorPage() {
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
               <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
-                <h2 className="text-sm font-bold text-stone-900">Your Subjects & Marks</h2>
-                <span className="text-xs text-stone-400">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</span>
+                <div>
+                  <h2 className="text-sm font-bold text-stone-900">Your Subjects & Marks</h2>
+                  <p className="text-[11px] text-stone-400 mt-0.5">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
+                </div>
+                {session && (
+                  <button
+                    onClick={handleUseMyMarks}
+                    disabled={loadingMarks}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
+                      marksLoaded
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-[#1C1917] text-white hover:bg-stone-700 disabled:opacity-50'
+                    }`}
+                  >
+                    {loadingMarks ? (
+                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <TrendingUp className="w-3 h-3" />
+                    )}
+                    {marksLoaded ? 'Marks Loaded' : 'Use My Marks'}
+                  </button>
+                )}
               </div>
 
               <div className="px-5 py-2">
@@ -362,6 +478,34 @@ export default function ApsCalculatorPage() {
                 {aps >= 38 && 'Competitive for top university programmes'}
               </p>
             </div>
+
+            {/* APS Goal progress bar */}
+            {apsGoal > 0 && aps > 0 && (
+              <div className="bg-white rounded-2xl border border-stone-200 p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">APS Goal Progress</p>
+                  <span className={`text-xs font-black ${aps >= apsGoal ? 'text-emerald-600' : 'text-stone-600'}`}>
+                    {aps} / {apsGoal}
+                  </span>
+                </div>
+                <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${Math.min(100, Math.round((aps / apsGoal) * 100))}%` }}
+                    transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                    className={`h-full rounded-full ${aps >= apsGoal ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                  />
+                </div>
+                {aps < apsGoal && (
+                  <p className="text-[11px] text-stone-400 mt-1.5">
+                    {apsGoal - aps} more point{apsGoal - aps !== 1 ? 's' : ''} to reach your goal
+                  </p>
+                )}
+                {aps >= apsGoal && (
+                  <p className="text-[11px] text-emerald-600 font-bold mt-1.5">Goal reached.</p>
+                )}
+              </div>
+            )}
 
             {/* NQF conversion guide */}
             <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
@@ -440,6 +584,7 @@ export default function ApsCalculatorPage() {
                       onChange={e => {
                         const val = Math.min(56, Math.max(0, Number(e.target.value)));
                         setTargetAps(val);
+                        setApsGoal(val);
                       }}
                       placeholder="—"
                       className="rounded-xl border border-stone-200 w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
@@ -448,7 +593,7 @@ export default function ApsCalculatorPage() {
                       {[30, 35, 40].map(t => (
                         <button
                           key={t}
-                          onClick={() => setTargetAps(t)}
+                          onClick={() => { setTargetAps(t); setApsGoal(t); }}
                           className={`bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
                             targetAps === t ? 'bg-stone-200 ring-1 ring-stone-400' : ''
                           }`}

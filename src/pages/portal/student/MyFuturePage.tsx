@@ -7,6 +7,7 @@ import { computeQuizResults, type QuizResults } from '../../../features/careers/
 import { bursaries, type Bursary } from '../../../features/careers/data/bursaries';
 import { DEGREE_DATA } from '../../../data/apsData';
 import type { StudentSession } from '../../../lib/auth';
+import { getStudentGoals, saveStudentGoals, type StudentGoals } from '../../../lib/studentGoals';
 
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
@@ -77,6 +78,25 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
   const [subView,         setSubView]         = useState<SubView>(null);
+
+  const [goals,        setGoals]        = useState<StudentGoals>(() => getStudentGoals(session.student_id));
+  const [editingGoals, setEditingGoals] = useState(false);
+  const [draftAps,     setDraftAps]     = useState<string>('');
+  const [draftCareer,  setDraftCareer]  = useState<string>('');
+
+  function handleSaveGoals() {
+    const targetAps = draftAps ? Math.min(56, Math.max(1, Number(draftAps))) : null;
+    const targetCareer = draftCareer.trim() || null;
+    const updated = saveStudentGoals(session.student_id, { targetAps, targetCareer });
+    setGoals(updated);
+    setEditingGoals(false);
+  }
+
+  function handleEditGoals() {
+    setDraftAps(goals.targetAps ? String(goals.targetAps) : '');
+    setDraftCareer(goals.targetCareer ?? '');
+    setEditingGoals(true);
+  }
 
   // Sub-view navigate handler — keeps everything inside MyFuturePage
   function handleSubNavigate(page: string) {
