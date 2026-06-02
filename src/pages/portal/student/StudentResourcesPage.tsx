@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen } from 'lucide-react';
 import {
-  fetchStudentResources, getResourceDownloadUrl,
+  fetchStudentResources, getResourceDownloadUrl, trackResourceDownload,
   RESOURCE_TYPE_META,
   type Resource, type ResourceType,
 } from '../../../lib/resources';
@@ -62,6 +62,9 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
       localStorage.setItem(`prospect_recent_resources_${session.student_id}`, JSON.stringify(updated));
       return updated;
     });
+
+    // Track download — fire-and-forget, unique per student+resource
+    trackResourceDownload(r.id, session.student_id, session.school_id);
 
     if (r.resource_type === 'link' && r.link_url) {
       window.open(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`, '_blank');

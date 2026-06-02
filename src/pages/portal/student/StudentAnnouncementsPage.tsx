@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Pin, Megaphone } from 'lucide-react';
-import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
+import { fetchStudentAnnouncements, trackAnnouncementViews, type Announcement } from '../../../lib/announcements';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { StudentSession } from '../../../lib/auth';
 
@@ -69,6 +69,14 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
       .then(data => {
         setAnnouncements(data);
         setLoading(false);
+        // Track views for all visible announcements — batch, fire-and-forget
+        if (data.length > 0) {
+          trackAnnouncementViews(
+            data.map((a: Announcement) => a.id),
+            session.student_id,
+            session.school_id,
+          );
+        }
       });
   }, []);
 

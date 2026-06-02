@@ -220,3 +220,19 @@ export async function deleteResource(resource_id: number, school_id: number, fil
   if (error) return { success: false, error: 'Failed to delete resource.' };
   return { success: true };
 }
+
+// ── Track resource download (unique per student+resource) ─────────────────────
+// Fire-and-forget — never blocks UI. ON CONFLICT DO NOTHING via upsert.
+
+export async function trackResourceDownload(
+  resourceId: number,
+  studentId:  number,
+  schoolId:   number,
+): Promise<void> {
+  await supabaseAdmin
+    .from('resource_downloads')
+    .upsert(
+      { resource_id: resourceId, student_id: studentId, school_id: schoolId },
+      { onConflict: 'resource_id,student_id', ignoreDuplicates: true }
+    );
+}

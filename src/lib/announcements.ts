@@ -169,3 +169,24 @@ export async function deleteAnnouncement(
   if (error) return { success: false, error: 'Failed to delete announcement.' };
   return { success: true };
 }
+
+// ── Track announcement views (unique per student+announcement) ────────────────
+// Batch upsert all visible IDs at once. ON CONFLICT DO NOTHING.
+
+export async function trackAnnouncementViews(
+  announcementIds: number[],
+  studentId:       number,
+  schoolId:        number,
+): Promise<void> {
+  if (announcementIds.length === 0) return;
+  await supabaseAdmin
+    .from('announcement_views')
+    .upsert(
+      announcementIds.map(id => ({
+        announcement_id: id,
+        student_id:      studentId,
+        school_id:       schoolId,
+      })),
+      { onConflict: 'announcement_id,student_id', ignoreDuplicates: true }
+    );
+}
