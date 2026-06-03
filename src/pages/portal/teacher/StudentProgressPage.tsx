@@ -19,7 +19,8 @@ import { fetchStudentAnnouncements, type Announcement } from '../../../lib/annou
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
-  fetchStudentInterventionChips, type StudentInterventionChip,
+  fetchStudentInterventionChips, fetchTeacherClassHealth,
+  type StudentInterventionChip, type TeacherSubjectHealth,
 } from '../../../lib/teacherAnalytics';
 import {
   getInterventions, getOutcomes, computeInterventionImpact,
@@ -102,19 +103,21 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
   const [subjectIds, setSubjectIds] = useState<number[] | null>(null);
   const [interventions, setInterventions] = useState<Intervention[] | null>(null);
   const [outcomes, setOutcomes] = useState<Outcome[] | null>(null);
-  const [chips, setChips] = useState<Map<number, StudentInterventionChip>>(new Map());
+  const [chips,       setChips]       = useState<Map<number, StudentInterventionChip>>(new Map());
+  const [classHealth, setClassHealth] = useState<TeacherSubjectHealth[]>([]);
 
   useEffect(() => {
     fetchTeacherStudentProgress(session.teacher_id, session.school_id).then(data => {
       setStudents(data);
       setLoading(false);
-      // Non-blocking — fetch chips after list is visible
+      // Non-blocking — fetch chips + class health after list is visible
       if (data.length > 0) {
         fetchStudentInterventionChips(
           session.school_id,
           data.map(s => s.student_id),
         ).then(setChips);
       }
+      fetchTeacherClassHealth(session.teacher_id, session.school_id).then(setClassHealth);
     });
   }, []);
 
@@ -231,6 +234,7 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
       announcements={announcements}
       interventions={interventions}
       outcomes={outcomes}
+      classHealth={classHealth}
       onBack={backToList}
       onTabChange={loadTab}
     />;
@@ -417,15 +421,51 @@ interface ProfileProps {
   announcements: Announcement[] | null;
   interventions: Intervention[] | null;
   outcomes: Outcome[] | null;
+  classHealth: TeacherSubjectHealth[];
   onBack: () => void;
   onTabChange: (tab: ProfileTab) => void;
 }
 
 function StudentProfile({
   student, session, activeTab, marks, events, completions, announcements,
-  interventions, outcomes,
+  interventions, outcomes, classHealth,
   onBack, onTabChange,
 }: ProfileProps) {
+  // ── Comparison strip data ──────────────────────────────────────
+  // Build per-subject avg for this student from marks data (available after Marks tab visited)
+  // Compare against class avg from classHealth for same subject + grade
+
+  interface ComparisonRow {
+    subject:    string;
+    studentAvg: number;
+    classAvg:   number | null;
+    delta:      number | null;   // studentAvg - classAvg
+  }
+
+  const comparisonRows: ComparisonRow[] = (() => {
+    if (!marks || marks.length === 0) return [];
+
+    // Group marks by subject
+    const subjectMap = new Map<string, number[]>();
+    for (const m of marks) {
+      if (m.mark === null) continue;
+      if (!subjectMap.has(m.subject_label)) subjectMap.set(m.subject_label, []);
+      subjectMap.get(m.subject_label)!.push((m.mark / m.total) * 100);
+    }
+
+    const rows: ComparisonRow[] = [];
+    for (const [subject, pcts] of subjectMap) {
+      const studentAvg = Math.round(pcts.reduce((s, v) => s + v, 0) / pcts.length);
+      const health     = classHealth.find(
+        h => h.subject.toLowerCase() === subject.toLowerCase() && h.grade === student.grade
+      );
+      const classAvg   = health ? health.classAvg : null;
+      const delta      = classAvg !== null ? studentAvg - classAvg : null;
+      rows.push({ subject, studentAvg, classAvg, delta });
+    }
+
+    return rows.sort((a, b) => a.subject.localeCompare(b.subject));
+  })();
   const tabs: { key: ProfileTab; label: string; icon: React.ElementType }[] = [
     { key: 'progress',      label: 'Progress',      icon: BookOpen },
     { key: 'marks',         label: 'Marks',          icon: ClipboardList },
@@ -450,31 +490,66 @@ function StudentProfile({
       </button>
 
       {/* Hero card */}
-      <div className="bg-[#1C1917] rounded-3xl px-7 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 mb-5">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
-            <span className="text-lg font-black text-white">{initials(student)}</span>
-          </div>
-          <div>
-            <p className="text-xl font-black text-white">{student.student_surname}, {student.student_name}</p>
-            <p className="text-sm text-stone-400 mt-0.5">
-              Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {[
-            { label: 'Started',       value: student.topics_started,   color: 'text-white' },
-            { label: 'Mastered',      value: student.topics_mastered,  color: 'text-emerald-400' },
-            { label: 'Needs Practice',value: student.topics_struggling, color: 'text-amber-400' },
-            { label: 'Last Active',   value: timeAgo(student.last_accessed), color: 'text-stone-300' },
-          ].map(stat => (
-            <div key={stat.label} className="bg-white/10 rounded-2xl px-4 py-3 text-center min-w-20">
-              <p className={`text-sm font-black ${stat.color} leading-none`}>{stat.value}</p>
-              <p className="text-[10px] text-stone-500 mt-1">{stat.label}</p>
+      <div className="bg-[#1C1917] rounded-3xl px-7 py-6 mb-5">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+              <span className="text-lg font-black text-white">{initials(student)}</span>
             </div>
-          ))}
+            <div>
+              <p className="text-xl font-black text-white">{student.student_surname}, {student.student_name}</p>
+              <p className="text-sm text-stone-400 mt-0.5">
+                Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { label: 'Started',        value: student.topics_started,    color: 'text-white' },
+              { label: 'Mastered',       value: student.topics_mastered,   color: 'text-emerald-400' },
+              { label: 'Needs Practice', value: student.topics_struggling, color: 'text-amber-400' },
+              { label: 'Last Active',    value: timeAgo(student.last_accessed), color: 'text-stone-300' },
+            ].map(stat => (
+              <div key={stat.label} className="bg-white/10 rounded-2xl px-4 py-3 text-center min-w-20">
+                <p className={`text-sm font-black ${stat.color} leading-none`}>{stat.value}</p>
+                <p className="text-[10px] text-stone-500 mt-1">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* ── Comparison strip — shown once marks data is loaded ── */}
+        {comparisonRows.length > 0 && (
+          <div className="mt-5 pt-4 border-t border-white/10">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">vs Class Average</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {comparisonRows.map(row => {
+                const deltaPositive = row.delta !== null && row.delta > 0;
+                const deltaNegative = row.delta !== null && row.delta < 0;
+                const deltaColor = deltaPositive ? 'text-emerald-400' : deltaNegative ? 'text-red-400' : 'text-stone-400';
+                const avgColor   = row.studentAvg >= 70 ? 'text-emerald-400'
+                                 : row.studentAvg >= 50 ? 'text-amber-400'
+                                 : 'text-red-400';
+                return (
+                  <div key={row.subject} className="bg-white/5 rounded-xl px-3 py-2.5">
+                    <p className="text-[10px] font-black text-stone-400 truncate mb-1">{row.subject}</p>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
+                      {row.classAvg !== null && (
+                        <span className="text-[10px] text-stone-500">vs {row.classAvg}%</span>
+                      )}
+                    </div>
+                    {row.delta !== null && (
+                      <p className={`text-[10px] font-black mt-0.5 ${deltaColor}`}>
+                        {deltaPositive ? `+${row.delta}` : row.delta} vs class
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Tab bar */}

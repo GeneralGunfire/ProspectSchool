@@ -1,14 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, LayoutList, TrendingUp } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchSubjects, createStudent, updateStudent,
   removeStudentFromTeacher, fetchTeacherStudents,
   type Subject, type Student,
 } from '../../../lib/students';
+import {
+  fetchStudentTiers, computeLearnerTier,
+  type StudentTierSummary, type LearnerTier,
+} from '../../../lib/teacherAnalytics';
 
-interface ClassesPageProps { session: TeacherSession; }
+interface ClassesPageProps { session: TeacherSession; onNavigate?: (page: string) => void; }
 
 interface StudentForm {
   name: string; surname: string; student_code: string;
@@ -40,6 +44,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   const [filterGrade, setFilterGrade] = useState<string>('');
   const [filterCohort, setFilterCohort] = useState<string>('');
 
+  // Smart grouping by performance tier
+  const [groupByTier, setGroupByTier] = useState(false);
+  const [tiers, setTiers] = useState<StudentTierSummary[]>([]);
+  const [tiersLoading, setTiersLoading] = useState(false);
+
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -50,6 +59,12 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       setAllSubjects(subs);
       if (studs.success) setStudents(studs.students);
       setLoading(false);
+
+      // Non-blocking: load tier data for grouping
+      setTiersLoading(true);
+      fetchStudentTiers(session.teacher_id, session.school_id)
+        .then(setTiers)
+        .finally(() => setTiersLoading(false));
     }
     load();
   }, []);
@@ -225,6 +240,20 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           <p className="text-xs font-bold text-stone-400 ml-auto">
             {filtered.length} of {students.length} student{students.length !== 1 ? 's' : ''}
           </p>
+          {/* Group by performance toggle */}
+          <button
+            onClick={() => setGroupByTier(g => !g)}
+            disabled={tiersLoading}
+            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-black transition-all ${
+              groupByTier
+                ? 'bg-brand-dark text-white border-brand-dark'
+                : 'bg-white text-stone-500 border-stone-200 hover:border-stone-400'
+            } disabled:opacity-40`}
+            title="Group students by performance tier"
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            Group
+          </button>
         </div>
       )}
 
@@ -245,7 +274,17 @@ export default function ClassesPage({ session }: ClassesPageProps) {
             Add Student <ArrowRight className="w-4 h-4" />
           </button>
         </div>
+      ) : groupByTier ? (
+        // ── Grouped by performance tier ────────────────────────────
+        <TierGroupView
+          students={students}
+          tiers={tiers}
+          filtered={filtered}
+          onEdit={openEdit}
+          onDelete={setConfirmDelete}
+        />
       ) : (
+        // ── Flat table ─────────────────────────────────────────────
         <div className="bg-white border border-stone-200 rounded-2xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
@@ -432,6 +471,8 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         )}
       </AnimatePresence>
 
+      {/* ── Grouped view is rendered inline above via TierGroupView ── */}
+
       {/* Delete confirm */}
       <AnimatePresence>
         {confirmDelete && (
@@ -470,6 +511,126 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ── TierGroupView ─────────────────────────────────────────────────────────────
+// Groups students into 4 performance tiers.
+// Falls back to student list ordering when tier data is unavailable for a student.
+
+const TIER_CONFIG: Record<LearnerTier, {
+  label: string; description: string;
+  bg: string; border: string; badge: string; dot: string;
+}> = {
+  high_risk:   { label: 'High Risk',   description: 'Below 40% — urgent intervention needed', bg: 'bg-red-50',     border: 'border-red-200',    badge: 'bg-red-500 text-white',          dot: 'bg-red-500' },
+  medium_risk: { label: 'Medium Risk', description: '40–55% — monitor and support',            bg: 'bg-amber-50',  border: 'border-amber-200',  badge: 'bg-amber-500 text-white',        dot: 'bg-amber-500' },
+  on_track:    { label: 'On Track',    description: '55–75% — performing adequately',           bg: 'bg-blue-50',   border: 'border-blue-200',   badge: 'bg-blue-500 text-white',         dot: 'bg-blue-500' },
+  flourishing: { label: 'Flourishing', description: 'Above 75% — excelling',                   bg: 'bg-emerald-50',border: 'border-emerald-200', badge: 'bg-emerald-600 text-white',      dot: 'bg-emerald-500' },
+};
+
+const TIER_ORDER: LearnerTier[] = ['high_risk', 'medium_risk', 'on_track', 'flourishing'];
+
+interface TierGroupViewProps {
+  students:  Student[];
+  tiers:     StudentTierSummary[];
+  filtered:  Student[];
+  onEdit:    (s: Student) => void;
+  onDelete:  (s: Student) => void;
+}
+
+function TierGroupView({ students, tiers, filtered, onEdit, onDelete }: TierGroupViewProps) {
+  // Build lookup: studentId → tier
+  const tierMap = new Map<number, LearnerTier>(tiers.map(t => [t.studentId, t.tier]));
+  const avgMap  = new Map<number, number>(tiers.map(t => [t.studentId, t.avg]));
+
+  // Group filtered students by tier
+  const groups = new Map<LearnerTier, Student[]>();
+  for (const tier of TIER_ORDER) groups.set(tier, []);
+
+  for (const s of filtered) {
+    const tier = tierMap.get(s.id) ?? 'on_track';   // default on_track if no marks yet
+    groups.get(tier)!.push(s);
+  }
+
+  const populated = TIER_ORDER.filter(t => groups.get(t)!.length > 0);
+
+  if (populated.length === 0) {
+    return (
+      <div className="bg-white border border-stone-200 rounded-2xl px-5 py-12 text-center">
+        <p className="text-sm font-bold text-stone-400">No students match your search.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {populated.map(tier => {
+        const cfg      = TIER_CONFIG[tier];
+        const group    = groups.get(tier)!;
+        return (
+          <div key={tier} className={`rounded-2xl border ${cfg.border} overflow-hidden`}>
+            {/* Tier header */}
+            <div className={`${cfg.bg} px-5 py-3 flex items-center justify-between`}>
+              <div className="flex items-center gap-2.5">
+                <span className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
+                <p className="text-sm font-black text-stone-900">{cfg.label}</p>
+                <p className="text-[11px] text-stone-500">{cfg.description}</p>
+              </div>
+              <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${cfg.badge}`}>
+                {group.length}
+              </span>
+            </div>
+            {/* Student rows */}
+            <div className="bg-white divide-y divide-stone-50">
+              {group.map(s => {
+                const avg = avgMap.get(s.id);
+                return (
+                  <div key={s.id} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-bold text-brand-dark">{s.surname}, {s.name}</p>
+                        <span className="text-[10px] font-mono text-stone-400 tracking-widest">{s.student_code}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <p className="text-[10px] text-stone-400">{s.cohort ? s.cohort.name : `Gr ${s.grade}`}</p>
+                        {avg !== undefined && (
+                          <span className={`text-[10px] font-black ${
+                            avg >= 75 ? 'text-emerald-600' : avg >= 55 ? 'text-blue-600' : avg >= 40 ? 'text-amber-600' : 'text-red-600'
+                          }`}>
+                            {avg}% avg
+                          </span>
+                        )}
+                        <div className="flex flex-wrap gap-0.5">
+                          {s.subjects?.slice(0, 3).map(sub => (
+                            <span key={sub.id} className="text-[10px] text-stone-400">{sub.label}{s.subjects && s.subjects.indexOf(sub) < Math.min(s.subjects.length - 1, 2) ? ' ·' : ''}</span>
+                          ))}
+                          {s.subjects && s.subjects.length > 3 && (
+                            <span className="text-[10px] text-stone-300"> +{s.subjects.length - 3}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => onEdit(s)}
+                        className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => onDelete(s)}
+                        className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+      <p className="text-[11px] text-stone-400 text-center pb-2">
+        Tiers based on overall mark average across all subjects
+      </p>
     </div>
   );
 }

@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Plus, X, ChevronRight, ChevronDown, ClipboardList,
+  Plus, X, ChevronRight, ClipboardList,
   Pencil, Trash2, CalendarDays, CheckCircle2, Circle,
-  AlertTriangle,
+  AlertTriangle, Zap,
 } from 'lucide-react';
 import { computeSheetAnalytics } from '../../../lib/teacherAnalytics';
+import { fetchBestInterventionType } from '../../../lib/teacherAnalytics';
 import {
   fetchTeacherMarkSheets, createMarkSheet, deleteMarkSheet,
   fetchSheetMarks, saveStudentMark,
   type MarkSheetGroup, type MarkSheet, type StudentMark,
 } from '../../../lib/marks';
-import { fetchSubjects, type Subject } from '../../../lib/students';
+import { fetchSubjects, fetchTeacherStudents, type Subject } from '../../../lib/students';
 import { createEvent } from '../../../lib/events';
+import { createIntervention } from '../../../lib/interventions';
+import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 
 const GRADES = [8, 9, 10, 11, 12];
@@ -69,6 +72,10 @@ export default function MarksPage({ session }: MarksPageProps) {
   const [pushingCalendar, setPushingCalendar] = useState(false);
   const [pushedCalendar, setPushedCalendar] = useState(false);
 
+  // Campaign: bulk-assign interventions to all at-risk students on this sheet
+  const [campaignState, setCampaignState] = useState<'idle' | 'running' | 'done'>('idle');
+  const [campaignCount, setCampaignCount] = useState(0);
+
   useEffect(() => {
     fetchSubjects().then(setSubjects);
     reload();
@@ -95,6 +102,8 @@ export default function MarksPage({ session }: MarksPageProps) {
     setSheetLoading(true);
     setPushedCalendar(!!sheet.event_id);
     setRiskBannerDismissed(false);
+    setCampaignState('idle');
+    setCampaignCount(0);
     const marks = await fetchSheetMarks(sheet.id);
     setSheetMarks(marks);
     // Init drafts from existing marks
@@ -203,6 +212,74 @@ export default function MarksPage({ session }: MarksPageProps) {
     setDeleting(false);
     setDeleteSheet(null);
     reload();
+  }
+
+  // ── Campaign: bulk-assign interventions to at-risk students ──
+  // Finds every student below 50% on the current sheet and creates
+  // an evidence-based intervention for each via createIntervention().
+
+  async function handleCampaign() {
+    if (!activeSheet || campaignState !== 'idle') return;
+    setCampaignState('running');
+
+    const subjectLabel = subjects.find(s => s.id === activeSheet.subject_id)?.label ?? 'Unknown';
+    const below = sheetMarks.filter(m => m.mark !== null && (m.mark / activeSheet.total) * 100 < 50);
+
+    // Get best intervention type once for this subject (shared for all students)
+    const best = await fetchBestInterventionType(
+      session.school_id,
+      subjectLabel,
+      ['library_topic', 'revision', 'resource_review'],
+    );
+    const type = best?.type ?? 'library_topic';
+    const rationale = best?.rationale ?? `Recommended: ${type} for ${subjectLabel}`;
+
+    const descMap: Record<string, string> = {
+      library_topic:   `Study ${subjectLabel} in the library`,
+      revision:        `Revise ${subjectLabel} core concepts`,
+      resource_review: `Review ${subjectLabel} resources`,
+      past_paper:      `Complete a ${subjectLabel} past paper`,
+    };
+    const pageMap: Record<string, string> = {
+      library_topic: 'library', revision: 'library',
+      resource_review: 'resources', past_paper: 'pastpapers',
+    };
+
+    let created = 0;
+    for (const sm of below) {
+      // Look up subjectId for this student
+      const { data: link } = await supabaseAdmin
+        .from('teacher_students')
+        .select('subject_id')
+        .eq('student_id', sm.student_id)
+        .eq('teacher_id', session.teacher_id)
+        .limit(1)
+        .single();
+      const subjectId = (link as any)?.subject_id as number ?? activeSheet.subject_id;
+
+      const avg = Math.round((sm.mark! / activeSheet.total) * 100);
+
+      try {
+        await createIntervention(
+          sm.student_id,
+          session.school_id,
+          subjectLabel,
+          subjectId,
+          type as any,
+          avg < 40 ? 'below_pass' : 'high_risk',
+          descMap[type] ?? `Intervention for ${subjectLabel}`,
+          pageMap[type] ?? 'library',
+          avg,
+          rationale,
+        );
+        created++;
+      } catch {
+        // createIntervention is idempotent — dedup handles existing ones
+      }
+    }
+
+    setCampaignCount(created);
+    setCampaignState('done');
   }
 
   // ── Analytics for sheet header ───────────────────────────────
@@ -408,16 +485,16 @@ export default function MarksPage({ session }: MarksPageProps) {
               </div>
             )}
 
-            {/* ── Risk banner ───────────────────────────────── */}
+            {/* ── Risk banner + campaign ────────────────────── */}
             {atRiskMarks.length > 0 && !riskBannerDismissed && analytics && analytics.markedCount >= 3 && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 className="mt-3 bg-red-50 border border-red-200 rounded-2xl p-4"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-2.5">
+                  <div className="flex items-start gap-2.5 flex-1 min-w-0">
                     <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-black text-red-700">
                         {atRiskMarks.length} student{atRiskMarks.length !== 1 ? 's' : ''} below pass mark
                       </p>
@@ -431,6 +508,34 @@ export default function MarksPage({ session }: MarksPageProps) {
                     className="text-red-300 hover:text-red-500 transition-colors shrink-0">
                     <X className="w-4 h-4" />
                   </button>
+                </div>
+
+                {/* Campaign button */}
+                <div className="mt-3 pt-3 border-t border-red-200">
+                  {campaignState === 'done' ? (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <p className="text-[11px] font-black text-emerald-700">
+                        {campaignCount} intervention{campaignCount !== 1 ? 's' : ''} assigned — visible on each student's home
+                      </p>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={handleCampaign}
+                      disabled={campaignState === 'running'}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${
+                        campaignState === 'running'
+                          ? 'bg-red-100 text-red-400 cursor-default'
+                          : 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
+                      }`}
+                    >
+                      {campaignState === 'running' ? (
+                        <><div className="w-3 h-3 border border-red-300 border-t-transparent rounded-full animate-spin" /> Assigning…</>
+                      ) : (
+                        <><Zap className="w-3 h-3" /> Assign intervention to all {atRiskMarks.length}</>
+                      )}
+                    </button>
+                  )}
                 </div>
               </motion.div>
             )}

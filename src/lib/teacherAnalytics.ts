@@ -879,3 +879,296 @@ export async function fetchBestInterventionType(
 
   return { type: bestType, rationale };
 }
+
+// ── 14. Stale intervention queue ─────────────────────────────────────────────
+// Returns active interventions that are stale (started > 7 days ago, no outcome)
+// or completed but awaiting outcome recording.
+
+export interface StaleIntervention {
+  interventionId: string;
+  studentId:      number;
+  studentName:    string;
+  studentSurname: string;
+  subject:        string;
+  type:           string;
+  typeLabel:      string;
+  status:         string;
+  startedAt:      string | null;
+  completedAt:    string | null;
+  staleDays:      number;
+  reason:         'stale_active' | 'awaiting_outcome';
+}
+
+const INTERVENTION_TYPE_LABELS_MAP: Record<string, string> = {
+  past_paper:      'Past Paper',
+  library_topic:   'Library Study',
+  revision:        'Revision',
+  resource_review: 'Resource Review',
+};
+
+export async function fetchStaleInterventions(
+  teacherId: number,
+  schoolId:  number,
+): Promise<StaleIntervention[]> {
+  const now = new Date();
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 7);
+
+  // Get active/completed interventions for this teacher
+  const { data: invRows } = await supabaseAdmin
+    .from('interventions')
+    .select('id, student_id, subject, type, status, started_at, completed_at, created_at')
+    .eq('teacher_id', teacherId)
+    .eq('school_id', schoolId)
+    .in('status', ['started', 'completed'])
+    .order('created_at', { ascending: false })
+    .limit(100);
+
+  if (!invRows || invRows.length === 0) return [];
+
+  // Get existing outcomes so we can exclude completed-with-outcome
+  const completedIds = invRows
+    .filter((r: any) => r.status === 'completed')
+    .map((r: any) => r.id as string);
+
+  const outcomeMap = new Set<string>();
+  if (completedIds.length > 0) {
+    const { data: outRows } = await supabaseAdmin
+      .from('outcomes')
+      .select('intervention_id')
+      .in('intervention_id', completedIds);
+    for (const o of (outRows ?? [])) outcomeMap.add((o as any).intervention_id as string);
+  }
+
+  // Get student names
+  const studentIds = [...new Set(invRows.map((r: any) => r.student_id as number))];
+  const { data: studentRows } = await supabaseAdmin
+    .from('students')
+    .select('id, name, surname')
+    .in('id', studentIds);
+  const studentMap = new Map<number, { name: string; surname: string }>(
+    (studentRows ?? []).map((s: any) => [s.id as number, { name: s.name as string, surname: s.surname as string }])
+  );
+
+  const stale: StaleIntervention[] = [];
+
+  for (const inv of invRows) {
+    const student = studentMap.get((inv as any).student_id as number);
+    if (!student) continue;
+
+    const status = (inv as any).status as string;
+
+    if (status === 'started') {
+      const startedAt = (inv as any).started_at as string | null;
+      if (!startedAt) continue;
+      const startedDate = new Date(startedAt);
+      if (startedDate <= sevenDaysAgo) {
+        const staleDays = Math.floor((now.getTime() - startedDate.getTime()) / 86400000);
+        stale.push({
+          interventionId: (inv as any).id as string,
+          studentId:      (inv as any).student_id as number,
+          studentName:    student.name,
+          studentSurname: student.surname,
+          subject:        (inv as any).subject as string,
+          type:           (inv as any).type as string,
+          typeLabel:      INTERVENTION_TYPE_LABELS_MAP[(inv as any).type] ?? (inv as any).type,
+          status,
+          startedAt,
+          completedAt:    null,
+          staleDays,
+          reason:         'stale_active',
+        });
+      }
+    } else if (status === 'completed') {
+      // Completed but no outcome yet
+      if (!outcomeMap.has((inv as any).id as string)) {
+        const completedAt = (inv as any).completed_at as string | null;
+        const completedDate = completedAt ? new Date(completedAt) : now;
+        const staleDays = Math.floor((now.getTime() - completedDate.getTime()) / 86400000);
+        stale.push({
+          interventionId: (inv as any).id as string,
+          studentId:      (inv as any).student_id as number,
+          studentName:    student.name,
+          studentSurname: student.surname,
+          subject:        (inv as any).subject as string,
+          type:           (inv as any).type as string,
+          typeLabel:      INTERVENTION_TYPE_LABELS_MAP[(inv as any).type] ?? (inv as any).type,
+          status,
+          startedAt:      (inv as any).started_at ?? null,
+          completedAt:    completedAt,
+          staleDays,
+          reason:         'awaiting_outcome',
+        });
+      }
+    }
+  }
+
+  return stale
+    .sort((a, b) => b.staleDays - a.staleDays)
+    .slice(0, 10);
+}
+
+// ── 15. Assessment gap detector ──────────────────────────────────────────────
+// Finds subject+grade groups where the last mark sheet was created > 30 days ago.
+
+export interface AssessmentGap {
+  subject:        string;
+  subjectId:      number;
+  grade:          number;
+  daysSinceLast:  number;
+  lastSheetDate:  string;
+  sheetCount:     number;
+}
+
+export async function fetchAssessmentGaps(
+  teacherId: number,
+  schoolId:  number,
+  thresholdDays = 30,
+): Promise<AssessmentGap[]> {
+  const { data: sheets } = await supabaseAdmin
+    .from('mark_sheets')
+    .select('id, subject_id, grade, created_at')
+    .eq('teacher_id', teacherId)
+    .eq('school_id', schoolId);
+
+  if (!sheets || sheets.length === 0) return [];
+
+  const subjectIds = [...new Set(sheets.map((s: any) => s.subject_id as number))];
+  const { data: subjectsData } = await supabaseAdmin
+    .from('subjects').select('id, label').in('id', subjectIds);
+  const subjectMap = new Map((subjectsData ?? []).map((s: any) => [s.id as number, s.label as string]));
+
+  // Group by subject_id + grade, find max created_at per group
+  const groups = new Map<string, { subjectId: number; grade: number; dates: string[] }>();
+  for (const s of sheets) {
+    const key = `${(s as any).subject_id}-${(s as any).grade}`;
+    if (!groups.has(key)) {
+      groups.set(key, { subjectId: (s as any).subject_id as number, grade: (s as any).grade as number, dates: [] });
+    }
+    groups.get(key)!.dates.push((s as any).created_at as string);
+  }
+
+  const now = new Date();
+  const gaps: AssessmentGap[] = [];
+
+  for (const [, group] of groups) {
+    const sorted     = [...group.dates].sort();
+    const lastDate   = sorted[sorted.length - 1];
+    const lastMs     = new Date(lastDate).getTime();
+    const daysSince  = Math.floor((now.getTime() - lastMs) / 86400000);
+
+    if (daysSince > thresholdDays) {
+      gaps.push({
+        subject:       subjectMap.get(group.subjectId) ?? 'Unknown',
+        subjectId:     group.subjectId,
+        grade:         group.grade,
+        daysSinceLast: daysSince,
+        lastSheetDate: lastDate.split('T')[0],
+        sheetCount:    group.dates.length,
+      });
+    }
+  }
+
+  return gaps.sort((a, b) => b.daysSinceLast - a.daysSinceLast);
+}
+
+// ── 16. Class performance by learner status ───────────────────────────────────
+// For each student in teacher's classes, compute a learner status tier
+// based on their average mark across all subjects.
+// Returns students grouped into risk tiers for smart class grouping.
+
+export type LearnerTier = 'high_risk' | 'medium_risk' | 'on_track' | 'flourishing';
+
+export interface StudentTierSummary {
+  studentId:    number;
+  name:         string;
+  surname:      string;
+  grade:        number;
+  cohort:       string | null;
+  avg:          number;   // overall average %
+  tier:         LearnerTier;
+  subjectCount: number;
+}
+
+export function computeLearnerTier(avg: number): LearnerTier {
+  if (avg < 40) return 'high_risk';
+  if (avg < 55) return 'medium_risk';
+  if (avg < 75) return 'on_track';
+  return 'flourishing';
+}
+
+export async function fetchStudentTiers(
+  teacherId: number,
+  schoolId:  number,
+): Promise<StudentTierSummary[]> {
+  // Get teacher's students
+  const { data: links } = await supabaseAdmin
+    .from('teacher_students')
+    .select('student_id, subject_id, students(id, name, surname, grade, cohort_id)')
+    .eq('teacher_id', teacherId);
+
+  if (!links || links.length === 0) return [];
+
+  const studentIds = [...new Set(links.map((l: any) => l.student_id as number))];
+
+  // Get all marks for teacher's sheets
+  const { data: sheets } = await supabaseAdmin
+    .from('mark_sheets')
+    .select('id, subject_id')
+    .eq('teacher_id', teacherId)
+    .eq('school_id', schoolId);
+
+  const sheetIds = (sheets ?? []).map((s: any) => s.id as number);
+
+  const { data: marks } = sheetIds.length > 0
+    ? await supabaseAdmin
+        .from('student_marks')
+        .select('student_id, mark, mark_sheets(total)')
+        .in('sheet_id', sheetIds)
+        .in('student_id', studentIds)
+        .not('mark', 'is', null)
+    : { data: [] };
+
+  // Build per-student average
+  const marksByStudent = new Map<number, number[]>();
+  for (const m of (marks ?? [])) {
+    const ms = (m as any).mark_sheets;
+    if (!ms) continue;
+    const sid = (m as any).student_id as number;
+    const pct = (Number((m as any).mark) / Number(ms.total)) * 100;
+    if (!marksByStudent.has(sid)) marksByStudent.set(sid, []);
+    marksByStudent.get(sid)!.push(pct);
+  }
+
+  // Unique students
+  const seen = new Set<number>();
+  const result: StudentTierSummary[] = [];
+
+  for (const link of links) {
+    const student = (link as any).students;
+    if (!student) continue;
+    const sid = link.student_id as number;
+    if (seen.has(sid)) continue;
+    seen.add(sid);
+
+    const pcts = marksByStudent.get(sid) ?? [];
+    const avg  = pcts.length > 0
+      ? Math.round(pcts.reduce((s, v) => s + v, 0) / pcts.length)
+      : 0;
+
+    const subjectCount = links.filter((l: any) => l.student_id === sid).length;
+
+    result.push({
+      studentId:    sid,
+      name:         student.name as string,
+      surname:      student.surname as string,
+      grade:        student.grade as number,
+      cohort:       null,   // cohort_id not carried in this join — omit for now
+      avg,
+      tier:         computeLearnerTier(avg),
+      subjectCount,
+    });
+  }
+
+  return result.sort((a, b) => a.avg - b.avg);
+}
