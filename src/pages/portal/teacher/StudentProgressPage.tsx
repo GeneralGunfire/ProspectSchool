@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronRight, BookOpen, AlertTriangle,
   CheckCircle2, Users, ClipboardList, CalendarDays,
-  Megaphone, Pin,
+  Megaphone, Pin, Phone, Trash2,
 } from 'lucide-react';
 import {
   fetchTeacherStudentProgress,
@@ -23,6 +23,12 @@ import {
   type StudentInterventionChip, type TeacherSubjectHealth,
 } from '../../../lib/teacherAnalytics';
 import {
+  fetchParentContacts, logParentContact, deleteParentContact,
+  fetchLastContactDates, lastContactLabel, daysSince,
+  CONTACT_METHOD_LABELS,
+  type ParentContact, type ContactMethod,
+} from '../../../lib/parentContacts';
+import {
   getInterventions, getOutcomes, computeInterventionImpact,
   type Intervention, type Outcome,
 } from '../../../lib/interventions';
@@ -30,7 +36,7 @@ import {
 // ── Types ─────────────────────────────────────────────────────
 
 type View = 'list' | 'profile';
-type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements' | 'interventions';
+type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements' | 'interventions' | 'contacts';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -103,8 +109,10 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
   const [subjectIds, setSubjectIds] = useState<number[] | null>(null);
   const [interventions, setInterventions] = useState<Intervention[] | null>(null);
   const [outcomes, setOutcomes] = useState<Outcome[] | null>(null);
-  const [chips,       setChips]       = useState<Map<number, StudentInterventionChip>>(new Map());
-  const [classHealth, setClassHealth] = useState<TeacherSubjectHealth[]>([]);
+  const [contacts, setContacts] = useState<ParentContact[] | null>(null);
+  const [chips,        setChips]        = useState<Map<number, StudentInterventionChip>>(new Map());
+  const [classHealth,  setClassHealth]  = useState<TeacherSubjectHealth[]>([]);
+  const [lastContacts, setLastContacts] = useState<Map<number, string>>(new Map());
 
   useEffect(() => {
     fetchTeacherStudentProgress(session.teacher_id, session.school_id).then(data => {
@@ -118,6 +126,13 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
         ).then(setChips);
       }
       fetchTeacherClassHealth(session.teacher_id, session.school_id).then(setClassHealth);
+      if (data.length > 0) {
+        fetchLastContactDates(
+          session.teacher_id,
+          session.school_id,
+          data.map(s => s.student_id),
+        ).then(setLastContacts);
+      }
     });
   }, []);
 
@@ -149,6 +164,7 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
     setSubjectIds(null);
     setInterventions(null);
     setOutcomes(null);
+    setContacts(null);
   }
 
   function backToList() {
@@ -219,6 +235,11 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
       setInterventions(invs);
       setOutcomes(outs);
     }
+
+    if (tab === 'contacts' && contacts === null) {
+      const data = await fetchParentContacts(selected.student_id, session.teacher_id);
+      setContacts(data);
+    }
   }
 
   // ── Render ─────────────────────────────────────────────────
@@ -235,8 +256,15 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
       interventions={interventions}
       outcomes={outcomes}
       classHealth={classHealth}
+      contacts={contacts}
       onBack={backToList}
       onTabChange={loadTab}
+      onContactsChange={(updated) => {
+        setContacts(updated);
+        if (updated.length > 0) {
+          setLastContacts(prev => new Map(prev).set(selected.student_id, updated[0].createdAt));
+        }
+      }}
     />;
   }
 
@@ -422,14 +450,16 @@ interface ProfileProps {
   interventions: Intervention[] | null;
   outcomes: Outcome[] | null;
   classHealth: TeacherSubjectHealth[];
+  contacts: ParentContact[] | null;
   onBack: () => void;
   onTabChange: (tab: ProfileTab) => void;
+  onContactsChange: (updated: ParentContact[]) => void;
 }
 
 function StudentProfile({
   student, session, activeTab, marks, events, completions, announcements,
-  interventions, outcomes, classHealth,
-  onBack, onTabChange,
+  interventions, outcomes, classHealth, contacts,
+  onBack, onTabChange, onContactsChange,
 }: ProfileProps) {
   // ── Comparison strip data ──────────────────────────────────────
   // Build per-subject avg for this student from marks data (available after Marks tab visited)
@@ -472,6 +502,7 @@ function StudentProfile({
     { key: 'homework',      label: 'Homework',       icon: CalendarDays },
     { key: 'announcements', label: 'Announcements',  icon: Megaphone },
     { key: 'interventions', label: 'Coaching',       icon: CheckCircle2 },
+    { key: 'contacts',      label: 'Contacts',       icon: Phone },
   ];
 
   return (
@@ -584,6 +615,14 @@ function StudentProfile({
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
           {activeTab === 'announcements' && <AnnouncementsTab announcements={announcements} />}
           {activeTab === 'interventions' && <InterventionsTab interventions={interventions} outcomes={outcomes} />}
+          {activeTab === 'contacts'      && (
+            <ContactsTab
+              contacts={contacts}
+              student={student}
+              session={session}
+              onContactsChange={onContactsChange}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
     </motion.div>
@@ -988,6 +1027,117 @@ function InterventionsTab({
         </div>
       )}
 
+    </div>
+  );
+}
+
+// ── Tab: Contacts ─────────────────────────────────────────────
+
+function ContactsTab({
+  contacts, student, session, onContactsChange,
+}: {
+  contacts: ParentContact[] | null;
+  student: StudentProgressSummary;
+  session: TeacherSession;
+  onContactsChange: (updated: ParentContact[]) => void;
+}) {
+  const [method, setMethod] = useState<ContactMethod>('call');
+  const [note, setNote]     = useState('');
+  const [saving, setSaving] = useState(false);
+
+  if (contacts === null) return <LoadingSpinner />;
+
+  async function handleLog() {
+    setSaving(true);
+    const contact = await logParentContact(
+      student.student_id,
+      session.teacher_id,
+      session.school_id,
+      method,
+      note,
+    );
+    setSaving(false);
+    if (contact) {
+      setNote('');
+      onContactsChange([contact, ...contacts]);
+    }
+  }
+
+  async function handleDelete(id: number) {
+    await deleteParentContact(id, session.teacher_id);
+    const updated = contacts.filter(c => c.id !== id);
+    onContactsChange(updated);
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Log new contact */}
+      <div className="bg-white rounded-2xl border border-stone-200 p-5">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Log Parent Contact</p>
+
+        <div className="flex gap-1.5 flex-wrap mb-3">
+          {(Object.keys(CONTACT_METHOD_LABELS) as ContactMethod[]).map(m => (
+            <button
+              key={m}
+              onClick={() => setMethod(m)}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all ${
+                method === m
+                  ? 'bg-brand-dark text-white'
+                  : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+              }`}
+            >
+              {CONTACT_METHOD_LABELS[m]}
+            </button>
+          ))}
+        </div>
+
+        <textarea
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          placeholder="Note (optional)"
+          rows={2}
+          className="w-full px-3 py-2 rounded-xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
+        />
+
+        <button
+          onClick={handleLog}
+          disabled={saving}
+          className="w-full py-2 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+        >
+          {saving ? 'Saving…' : 'Log Contact'}
+        </button>
+      </div>
+
+      {/* History */}
+      {contacts.length === 0 ? (
+        <EmptyState icon={Phone} text="No parent contacts logged yet." />
+      ) : (
+        <div>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">History</p>
+          <div className="space-y-2">
+            {contacts.map(c => (
+              <div key={c.id} className="bg-white rounded-2xl border border-stone-200 px-4 py-3 flex items-start gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-stone-900">{CONTACT_METHOD_LABELS[c.method]}</span>
+                    <span className="text-[10px] text-stone-400">
+                      {new Date(c.createdAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </span>
+                    <span className="text-[10px] text-stone-300">{daysSince(c.createdAt) === 0 ? 'Today' : `${daysSince(c.createdAt)}d ago`}</span>
+                  </div>
+                  {c.note && <p className="text-[12px] text-stone-500 mt-0.5">{c.note}</p>}
+                </div>
+                <button
+                  onClick={() => handleDelete(c.id)}
+                  className="shrink-0 p-1.5 rounded-lg hover:bg-red-50 text-stone-300 hover:text-red-400 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

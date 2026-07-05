@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, LayoutList, TrendingUp } from 'lucide-react';
+import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, TrendingUp, Phone, Clock } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchSubjects, createStudent, updateStudent,
@@ -8,9 +8,15 @@ import {
   type Subject, type Student,
 } from '../../../lib/students';
 import {
-  fetchStudentTiers, computeLearnerTier,
+  fetchStudentTiers,
   type StudentTierSummary, type LearnerTier,
 } from '../../../lib/teacherAnalytics';
+import {
+  fetchLastContactDates, logParentContact, fetchParentContacts, deleteParentContact,
+  lastContactLabel, daysSince,
+  CONTACT_METHOD_LABELS,
+  type ContactMethod, type ParentContact,
+} from '../../../lib/parentContacts';
 
 interface ClassesPageProps { session: TeacherSession; onNavigate?: (page: string) => void; }
 
@@ -49,6 +55,15 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   const [tiers, setTiers] = useState<StudentTierSummary[]>([]);
   const [tiersLoading, setTiersLoading] = useState(false);
 
+  // Parent contact log
+  const [lastContacts, setLastContacts]       = useState<Map<number, string>>(new Map());
+  const [contactModal, setContactModal]       = useState<Student | null>(null);
+  const [contactHistory, setContactHistory]   = useState<ParentContact[]>([]);
+  const [contactHistoryLoading, setContactHistoryLoading] = useState(false);
+  const [contactMethod, setContactMethod]     = useState<ContactMethod>('call');
+  const [contactNote, setContactNote]         = useState('');
+  const [contactSaving, setContactSaving]     = useState(false);
+
   useEffect(() => {
     async function load() {
       setLoading(true);
@@ -65,6 +80,15 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       fetchStudentTiers(session.teacher_id, session.school_id)
         .then(setTiers)
         .finally(() => setTiersLoading(false));
+
+      // Non-blocking: load last contact dates for all students
+      if (studs.success && studs.students.length > 0) {
+        fetchLastContactDates(
+          session.teacher_id,
+          session.school_id,
+          studs.students.map(s => s.id),
+        ).then(setLastContacts);
+      }
     }
     load();
   }, []);
@@ -73,6 +97,58 @@ export default function ClassesPage({ session }: ClassesPageProps) {
     const result = await fetchTeacherStudents(session.teacher_id, session.school_id);
     if (result.success) setStudents(result.students);
   };
+
+  // ── Parent contact handlers ───────────────────────────────────────────────
+
+  async function openContactModal(student: Student) {
+    setContactModal(student);
+    setContactMethod('call');
+    setContactNote('');
+    setContactHistoryLoading(true);
+    setContactHistory([]);
+    const history = await fetchParentContacts(student.id, session.teacher_id);
+    setContactHistory(history);
+    setContactHistoryLoading(false);
+  }
+
+  function closeContactModal() {
+    setContactModal(null);
+    setContactHistory([]);
+    setContactNote('');
+  }
+
+  async function handleLogContact() {
+    if (!contactModal) return;
+    setContactSaving(true);
+    const contact = await logParentContact(
+      contactModal.id,
+      session.teacher_id,
+      session.school_id,
+      contactMethod,
+      contactNote,
+    );
+    setContactSaving(false);
+    if (contact) {
+      // Update chip map immediately
+      setLastContacts(prev => new Map(prev).set(contactModal.id, contact.createdAt));
+      // Prepend to history
+      setContactHistory(prev => [contact, ...prev]);
+      setContactNote('');
+    }
+  }
+
+  async function handleDeleteContact(id: number) {
+    await deleteParentContact(id, session.teacher_id);
+    setContactHistory(prev => prev.filter(c => c.id !== id));
+    // If we deleted the latest, refresh dates
+    const updated = await fetchParentContacts(contactModal!.id, session.teacher_id);
+    setContactHistory(updated);
+    if (updated.length > 0) {
+      setLastContacts(prev => new Map(prev).set(contactModal!.id, updated[0].createdAt));
+    } else {
+      setLastContacts(prev => { const m = new Map(prev); m.delete(contactModal!.id); return m; });
+    }
+  }
 
   const set = (field: keyof StudentForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -292,23 +368,31 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Student</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Code</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Class</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400">Subjects</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400 hidden md:table-cell">Subjects</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-400 hidden lg:table-cell">Last Contact</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-5 py-12 text-center text-sm font-bold text-stone-400">
+                  <td colSpan={6} className="px-5 py-12 text-center text-sm font-bold text-stone-400">
                     No students match your search.
                   </td>
                 </tr>
-              ) : filtered.map((s, i) => (
+              ) : filtered.map((s, i) => {
+                const lastContact = lastContacts.get(s.id);
+                const contactDays = lastContact ? daysSince(lastContact) : null;
+                const contactChipColor = contactDays === null ? 'bg-stone-100 text-stone-400'
+                  : contactDays <= 7  ? 'bg-emerald-50 text-emerald-700'
+                  : contactDays <= 30 ? 'bg-amber-50 text-amber-700'
+                  : 'bg-red-50 text-red-600';
+                return (
                 <tr key={s.id} className={`border-b border-stone-50 hover:bg-stone-50 transition-colors ${i === filtered.length - 1 ? 'border-0' : ''}`}>
                   <td className="px-5 py-3.5 font-bold text-brand-dark">{s.surname}, {s.name}</td>
                   <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{s.student_code}</td>
                   <td className="px-5 py-3.5 text-stone-500">{s.cohort ? s.cohort.name : `Gr ${s.grade}`}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 hidden md:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {s.subjects?.map((sub) => (
                         <span key={sub.id} className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
@@ -317,8 +401,22 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       ))}
                     </div>
                   </td>
+                  <td className="px-5 py-3.5 hidden lg:table-cell">
+                    <button
+                      onClick={() => openContactModal(s)}
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black transition-colors hover:opacity-80 ${contactChipColor}`}
+                    >
+                      <Phone className="w-2.5 h-2.5" />
+                      {lastContact ? lastContactLabel(lastContact) : 'No contact'}
+                    </button>
+                  </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1 justify-end">
+                      <button onClick={() => openContactModal(s)}
+                        className="p-2 rounded-lg hover:bg-blue-50 text-stone-300 hover:text-blue-500 transition-colors lg:hidden"
+                        title="Log parent contact">
+                        <Phone className="w-3.5 h-3.5" />
+                      </button>
                       <button onClick={() => openEdit(s)}
                         className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
@@ -330,7 +428,8 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     </div>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -471,7 +570,110 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         )}
       </AnimatePresence>
 
-      {/* ── Grouped view is rendered inline above via TierGroupView ── */}
+      {/* ── Parent Contact Log Modal ──────────────────────────── */}
+      <AnimatePresence>
+        {contactModal && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={closeContactModal} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100 shrink-0">
+                  <div>
+                    <h2 className="text-base font-black text-brand-dark">Parent Contact Log</h2>
+                    <p className="text-xs text-stone-400 mt-0.5">{contactModal.surname}, {contactModal.name}</p>
+                  </div>
+                  <button onClick={closeContactModal} className="p-2 rounded-xl hover:bg-stone-100 text-stone-400 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Log new contact form */}
+                <div className="px-6 py-4 border-b border-stone-100 shrink-0">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 mb-3">Log New Contact</p>
+
+                  {/* Method selector */}
+                  <div className="flex gap-1.5 flex-wrap mb-3">
+                    {(Object.keys(CONTACT_METHOD_LABELS) as ContactMethod[]).map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setContactMethod(m)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all ${
+                          contactMethod === m
+                            ? 'bg-brand-dark text-white'
+                            : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                        }`}
+                      >
+                        {CONTACT_METHOD_LABELS[m]}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Note */}
+                  <textarea
+                    value={contactNote}
+                    onChange={e => setContactNote(e.target.value)}
+                    placeholder="Note (optional) — e.g. discussed term progress, parent satisfied"
+                    rows={2}
+                    className="w-full px-3 py-2 rounded-xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
+                  />
+
+                  <button
+                    onClick={handleLogContact}
+                    disabled={contactSaving}
+                    className="w-full py-2 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  >
+                    {contactSaving ? 'Saving…' : 'Log Contact'}
+                  </button>
+                </div>
+
+                {/* History */}
+                <div className="flex-1 overflow-y-auto px-6 py-4">
+                  <p className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 mb-3">History</p>
+                  {contactHistoryLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="w-4 h-4 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+                    </div>
+                  ) : contactHistory.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Clock className="w-8 h-8 text-stone-200 mx-auto mb-2" />
+                      <p className="text-sm text-stone-400 font-bold">No contacts logged yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {contactHistory.map(c => (
+                        <div key={c.id} className="flex items-start gap-3 bg-stone-50 rounded-xl px-3 py-2.5">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[11px] font-black text-stone-700">{CONTACT_METHOD_LABELS[c.method]}</span>
+                              <span className="text-[10px] text-stone-400">
+                                {new Date(c.createdAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                            </div>
+                            {c.note && <p className="text-xs text-stone-500 mt-0.5">{c.note}</p>}
+                          </div>
+                          <button
+                            onClick={() => handleDeleteContact(c.id)}
+                            className="shrink-0 p-1 rounded hover:bg-red-50 text-stone-300 hover:text-red-400 transition-colors"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Delete confirm */}
       <AnimatePresence>
