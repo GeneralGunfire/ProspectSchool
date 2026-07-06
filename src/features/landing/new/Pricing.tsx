@@ -11,7 +11,7 @@ const features = [
 ];
 
 export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
-  const { ref, onMouseMove } = useSpotlight<HTMLDivElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLDivElement>();
   return (
     <section id="pricing" className="py-28 px-5">
       <div className="max-w-2xl mx-auto text-center">
@@ -26,6 +26,7 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
       <FadeIn delay={0.1} className="max-w-lg mx-auto mt-10">
         <div
           ref={ref}
+          onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
           className="group/spot card-premium relative overflow-hidden bg-white border border-brand-border px-8 py-10 sm:px-10 sm:py-12 text-center"
         >

@@ -14,10 +14,11 @@ const subjects = [
 
 const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]; onNavigate: (p: string) => void }) => {
   const Icon = subject.icon;
-  const { ref, onMouseMove } = useSpotlight<HTMLButtonElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLButtonElement>();
   return (
     <button
       ref={ref}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onClick={() => onNavigate('library')}
       className="group group/spot card-premium relative overflow-hidden w-full bg-white border border-brand-border p-6 text-left hover:border-accent/50 active:scale-[0.98] cursor-pointer"

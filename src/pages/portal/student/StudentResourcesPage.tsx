@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen } from 'lucide-react';
 import {
   fetchStudentResources, getResourceDownloadUrl, trackResourceDownload,
-  RESOURCE_TYPE_META,
-  type Resource, type ResourceType,
+  RESOURCE_TYPE_META, RESOURCE_CATEGORY_META,
+  type Resource, type ResourceType, type ResourceCategory,
 } from '../../../lib/resources';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { StudentSession } from '../../../lib/auth';
@@ -25,6 +25,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState<ResourceType | 'all'>('all');
+  const [filterCategory, setFilterCategory] = useState<ResourceCategory | 'all'>('all');
   const [filterSubject, setFilterSubject] = useState<string>('all');
   const [downloading, setDownloading] = useState<number | null>(null);
   const [expandedNote, setExpandedNote] = useState<number | null>(null);
@@ -96,6 +97,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   const filtered = resources.filter(r => {
     if (filterSubject !== 'all' && r.subject_label !== filterSubject) return false;
     if (filterType !== 'all' && r.resource_type !== filterType) return false;
+    if (filterCategory !== 'all' && r.category !== filterCategory) return false;
     if (search.trim()) {
       const q = search.toLowerCase();
       return (
@@ -264,6 +266,23 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
               ))}
             </div>
 
+            {/* Category filter pills */}
+            <div className="flex gap-2">
+              {(['all', 'homework', 'notes', 'general'] as (ResourceCategory | 'all')[]).map(c => (
+                <button
+                  key={c}
+                  onClick={() => setFilterCategory(c)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-colors ${
+                    filterCategory === c
+                      ? 'bg-brand-dark text-white'
+                      : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
+                >
+                  {c === 'all' ? 'All Tags' : RESOURCE_CATEGORY_META[c].label}
+                </button>
+              ))}
+            </div>
+
             {/* Result count */}
             <p className="text-xs font-bold text-stone-500">
               {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
@@ -329,6 +348,9 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
                       <p className="text-sm font-black text-stone-900">{r.title}</p>
+                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${RESOURCE_CATEGORY_META[r.category].badge}`}>
+                        {RESOURCE_CATEGORY_META[r.category].label}
+                      </span>
                       {r.subject_label && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
                           {r.subject_label}

@@ -42,7 +42,7 @@ const Float = ({
 }) => (
   <div
     className={`absolute ${className}`}
-    style={{ transform: `translate(calc(var(--mx, 0) * ${depth}px), calc(var(--my, 0) * ${depth}px))`, transition: 'transform 0.3s ease-out' }}
+    style={{ transform: `translate(calc(var(--mx, 0) * ${depth}px), calc(var(--my, 0) * ${depth}px))`, transition: 'transform 0.12s linear', willChange: 'transform' }}
   >
     <div className="animate-float" style={{ animationDuration: `${duration}s`, animationDelay: `${delay}s` }}>
       {children}
@@ -51,11 +51,12 @@ const Float = ({
 );
 
 export const DashboardPreview = ({ standalone = true }: { standalone?: boolean }) => {
-  const { ref, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
+  const { ref, onMouseEnter, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
 
   return (
     <div
       ref={ref}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       className={standalone ? 'relative w-full max-w-135 aspect-4/5 mx-auto' : 'relative w-full h-full'}

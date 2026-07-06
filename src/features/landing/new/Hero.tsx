@@ -6,9 +6,9 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
     <section className="relative overflow-hidden pt-40 pb-24 px-5">
       {/* Decorative grey accent blobs */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-32 -left-40 w-[600px] h-[600px] rounded-full bg-slate-200/50 blur-[120px]" />
-        <div className="absolute top-20 right-[-10%] w-[480px] h-[480px] rounded-full bg-slate-300/35 blur-[100px]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-slate-200/40 blur-[90px]" />
+        <div className="absolute -top-32 -left-40 w-[600px] h-[600px] rounded-full bg-slate-200/50 blur-[72px]" />
+        <div className="absolute top-20 right-[-10%] w-[480px] h-[480px] rounded-full bg-slate-300/35 blur-[64px]" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-slate-200/40 blur-[56px]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-10 items-center">

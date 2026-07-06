@@ -62,9 +62,7 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
       {/* Top nav */}
       <div className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-brand-border">
         <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
-          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
-            <span className="text-accent-foreground font-black text-xs">P</span>
-          </div>
+          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
           <span className="text-brand-dark font-black text-sm tracking-tight">Prospect</span>
         </button>
         <button

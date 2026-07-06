@@ -97,7 +97,7 @@ export async function fetchStudentAnnouncements(
     if (a.target_type === 'grade') return a.target_grades?.includes(grade);
     if (a.target_type === 'class') return cohort_id && a.target_cohort_ids?.includes(cohort_id);
     if (a.target_type === 'subject') return (
-      a.target_subject_ids?.some((id: number) => subject_ids.includes(id)) &&
+      a.target_subject_ids?.some((id: number) => subject_ids.includes(Number(id))) &&
       (!a.target_grades?.length || a.target_grades.includes(grade))
     );
     if (a.target_type === 'specific') return a.target_student_ids?.includes(student_id);

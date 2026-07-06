@@ -178,7 +178,7 @@ export async function fetchStudentEvents(
     if (ev.target_type === 'grade' && ev.target_grades?.includes(grade)) return true;
     if (ev.target_type === 'class' && cohort_id && ev.target_cohort_ids?.includes(cohort_id)) return true;
     if (ev.target_type === 'subject' &&
-        ev.target_subject_ids?.some(id => subject_ids.includes(id)) &&
+        ev.target_subject_ids?.some(id => subject_ids.includes(Number(id))) &&
         (!ev.target_grades?.length || ev.target_grades.includes(grade))) return true;
     if (ev.target_type === 'specific' && ev.target_student_ids?.includes(student_id)) return true;
     return false;

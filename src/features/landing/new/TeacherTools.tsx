@@ -10,10 +10,11 @@ const features = [
 
 const FeatureCard = ({ feature }: { feature: typeof features[number] }) => {
   const Icon = feature.icon;
-  const { ref, onMouseMove } = useSpotlight<HTMLDivElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLDivElement>();
   return (
     <div
       ref={ref}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       className="group group/spot card-premium relative overflow-hidden bg-white p-5 h-full border border-brand-border hover:border-accent/50"
     >

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useParallax } from './Animations';
 import { ChaosCollage } from './ChaosCollage';
@@ -12,20 +12,44 @@ const SWITCH_MS = 3000;
 // swaps) sells the idea that the mess literally turns into the product.
 export const FlipShowcase = () => {
   const [showClean, setShowClean] = useState(false);
+  const [inView, setInView] = useState(true);
   const reduced = useReducedMotion();
-  const { ref, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
+  const { ref: parallaxRef, onMouseEnter, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Pause the flip cycle (and the CSS float loop inside DashboardPreview,
+  // via the `paused` class) once this leaves the viewport — otherwise the
+  // 3D flip + backdrop-filter cards keep compositing every 3s forever,
+  // even while the user has scrolled well past the hero.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.01 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!inView) return;
     const t = setTimeout(() => setShowClean(v => !v), SWITCH_MS);
     return () => clearTimeout(t);
-  }, [showClean]);
+  }, [showClean, inView]);
+
+  const setRefs = (el: HTMLDivElement | null) => {
+    containerRef.current = el;
+    parallaxRef.current = el;
+  };
 
   return (
     <div
-      ref={ref}
+      ref={setRefs}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative w-full max-w-135 aspect-4/5 mx-auto"
+      className={`relative w-full max-w-135 aspect-4/5 mx-auto ${!inView ? 'paused' : ''}`}
       style={{ perspective: 1600 }}
     >
       {/* Status pill */}

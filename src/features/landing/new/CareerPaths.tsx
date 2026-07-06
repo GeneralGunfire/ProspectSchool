@@ -24,10 +24,11 @@ const paths = [
 ];
 
 const PathCard = ({ path, onNavigate }: { path: typeof paths[number]; onNavigate: (p: string) => void }) => {
-  const { ref, onMouseMove } = useSpotlight<HTMLButtonElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLButtonElement>();
   return (
     <button
       ref={ref}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onClick={() => onNavigate('quiz')}
       className="group group/spot card-premium-dark relative overflow-hidden w-full aspect-4/5 cursor-pointer text-left bg-brand-dark"

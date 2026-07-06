@@ -42,16 +42,16 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
         <AudienceSection onNavigate={onNavigate} />
         <CareerPaths onNavigate={onNavigate} />
         <StudentDeepDive onNavigate={onNavigate} />
-        <StudyLibrary onNavigate={onNavigate} />
-        <TeacherTools onNavigate={onNavigate} />
+        <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
+        <div className="cv-auto"><TeacherTools onNavigate={onNavigate} /></div>
       </div>
 
       <QuoteSection />
 
       <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 40%, #FAF9F6 100%)' }}>
-        <Pricing onNavigate={onNavigate} />
-        <FinalCTA onNavigate={onNavigate} />
-        <Footer onNavigate={onNavigate} />
+        <div className="cv-auto"><Pricing onNavigate={onNavigate} /></div>
+        <div className="cv-auto"><FinalCTA onNavigate={onNavigate} /></div>
+        <div className="cv-auto"><Footer onNavigate={onNavigate} /></div>
       </div>
     </main>
   );

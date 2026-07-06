@@ -42,16 +42,37 @@ export const FadeIn = ({
 // Cursor-tracking spotlight glow — the "feels expensive" hover trick used by
 // Linear/Vercel/Stripe. Mutates a CSS custom property directly via ref instead
 // of React state, so the mousemove handler never triggers a re-render.
+// The bounding rect is cached on enter (not re-read on every move — avoids a
+// forced synchronous layout on each mousemove tick) and property writes are
+// batched to one per animation frame via rAF.
 export function useSpotlight<T extends HTMLElement = HTMLDivElement>() {
   const ref = useRef<T>(null);
-  const onMouseMove = (e: React.MouseEvent) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty('--spot-x', `${e.clientX - rect.left}px`);
-    el.style.setProperty('--spot-y', `${e.clientY - rect.top}px`);
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const pendingRef = useRef<{ x: number; y: number } | null>(null);
+
+  const onMouseEnter = () => {
+    rectRef.current = ref.current?.getBoundingClientRect() ?? null;
   };
-  return { ref, onMouseMove };
+
+  const flush = () => {
+    rafRef.current = null;
+    const el = ref.current;
+    const pending = pendingRef.current;
+    if (!el || !pending) return;
+    el.style.setProperty('--spot-x', `${pending.x}px`);
+    el.style.setProperty('--spot-y', `${pending.y}px`);
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const rect = rectRef.current ?? ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    rectRef.current = rect;
+    pendingRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    if (rafRef.current === null) rafRef.current = requestAnimationFrame(flush);
+  };
+
+  return { ref, onMouseEnter, onMouseMove };
 }
 
 // Drop as the first child of the element returned by useSpotlight. Relies on
@@ -94,24 +115,48 @@ export const CountUp = ({ value, suffix = '', duration = 1.4 }: { value: number;
 // properties directly (no React state), matching useSpotlight's approach —
 // each floating child reads --mx/--my with its own depth multiplier via
 // `translate(calc(var(--mx) * <depth>px), calc(var(--my) * <depth>px))`.
+// Rect is cached on enter and property writes are batched to one per frame
+// via rAF, so a fast mousemove burst doesn't force a layout read/write per event.
 export function useParallax<T extends HTMLElement = HTMLDivElement>() {
   const ref = useRef<T>(null);
-  const onMouseMove = (e: React.MouseEvent) => {
-    const el = ref.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const nx = (e.clientX - rect.left) / rect.width - 0.5;  // -0.5..0.5
-    const ny = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.setProperty('--mx', String(nx));
-    el.style.setProperty('--my', String(ny));
+  const rectRef = useRef<DOMRect | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const pendingRef = useRef<{ nx: number; ny: number } | null>(null);
+
+  const onMouseEnter = () => {
+    rectRef.current = ref.current?.getBoundingClientRect() ?? null;
   };
+
+  const flush = () => {
+    rafRef.current = null;
+    const el = ref.current;
+    const pending = pendingRef.current;
+    if (!el || !pending) return;
+    el.style.setProperty('--mx', String(pending.nx));
+    el.style.setProperty('--my', String(pending.ny));
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    const rect = rectRef.current ?? ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    rectRef.current = rect;
+    pendingRef.current = {
+      nx: (e.clientX - rect.left) / rect.width - 0.5,
+      ny: (e.clientY - rect.top) / rect.height - 0.5,
+    };
+    if (rafRef.current === null) rafRef.current = requestAnimationFrame(flush);
+  };
+
   const onMouseLeave = () => {
     const el = ref.current;
+    if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    pendingRef.current = null;
     if (!el) return;
     el.style.setProperty('--mx', '0');
     el.style.setProperty('--my', '0');
   };
-  return { ref, onMouseMove, onMouseLeave };
+
+  return { ref, onMouseEnter, onMouseMove, onMouseLeave };
 }
 
 export const StaggerContainer = ({

@@ -7,7 +7,7 @@ export default function LandingFooter({ onNavigate }: { onNavigate: (page: Page)
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-16 md:mb-20">
           <div className="col-span-2 md:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded bg-slate-900 flex items-center justify-center text-white font-black text-xs" aria-hidden="true">P</div>
+              <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
               <span className="text-sm font-black tracking-widest text-slate-900 uppercase">Prospect</span>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed">

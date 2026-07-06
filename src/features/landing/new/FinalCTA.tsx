@@ -2,12 +2,13 @@ import { FadeIn, useSpotlight, SpotlightGlow } from './Animations';
 import { ArrowRight } from './icons';
 
 export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
-  const { ref, onMouseMove } = useSpotlight<HTMLDivElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLDivElement>();
   return (
     <section className="pb-24 px-5">
       <FadeIn>
         <div
           ref={ref}
+          onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
           className="group/spot card-premium-dark relative overflow-hidden max-w-5xl mx-auto bg-brand-dark px-8 md:px-16 py-16 flex flex-col lg:flex-row items-center justify-between gap-10"
         >

@@ -4,6 +4,7 @@ import { supabaseAdmin } from './supabase';
 
 export type ResourceType = 'file' | 'link' | 'note';
 export type TargetType = 'all' | 'grade' | 'class' | 'subject' | 'specific';
+export type ResourceCategory = 'homework' | 'notes' | 'general';
 
 export interface Resource {
   id: number;
@@ -13,6 +14,7 @@ export interface Resource {
   title: string;
   description: string | null;
   resource_type: ResourceType;
+  category: ResourceCategory;
   file_url: string | null;
   file_name: string | null;
   link_url: string | null;
@@ -34,6 +36,7 @@ export interface CreateResourceInput {
   title: string;
   description?: string;
   resource_type: ResourceType;
+  category: ResourceCategory;
   file?: File;
   link_url?: string;
   note_content?: string;
@@ -58,6 +61,12 @@ export const RESOURCE_TYPE_META: Record<ResourceType, { label: string; badge: st
   file: { label: 'File',  badge: 'bg-blue-100 text-blue-700',   dot: 'bg-blue-500' },
   link: { label: 'Link',  badge: 'bg-violet-100 text-violet-700', dot: 'bg-violet-500' },
   note: { label: 'Note',  badge: 'bg-amber-100 text-amber-700',  dot: 'bg-amber-500' },
+};
+
+export const RESOURCE_CATEGORY_META: Record<ResourceCategory, { label: string; badge: string }> = {
+  homework: { label: 'Homework', badge: 'bg-rose-100 text-rose-700' },
+  notes:    { label: 'Notes',    badge: 'bg-emerald-100 text-emerald-700' },
+  general:  { label: 'General',  badge: 'bg-stone-100 text-stone-600' },
 };
 
 // ── Upload file ───────────────────────────────────────────────
@@ -149,7 +158,7 @@ export async function fetchStudentResources(
     if (r.target_type === 'grade' && r.target_grades?.includes(grade)) return true;
     if (r.target_type === 'class' && cohort_id && r.target_cohort_ids?.includes(cohort_id)) return true;
     if (r.target_type === 'subject' &&
-        r.target_subject_ids?.some((id: number) => subject_ids.includes(id)) &&
+        r.target_subject_ids?.some((id: number) => subject_ids.includes(Number(id))) &&
         (!r.target_grades?.length || r.target_grades.includes(grade))) return true;
     if (r.target_type === 'specific' && r.target_student_ids?.includes(student_id)) return true;
     return false;
@@ -191,6 +200,7 @@ export async function createResource(input: CreateResourceInput): Promise<Resour
       title: input.title.trim(),
       description: input.description?.trim() || null,
       resource_type: input.resource_type,
+      category: input.category,
       file_url,
       file_name,
       link_url: input.link_url?.trim() || null,

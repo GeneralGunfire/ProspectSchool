@@ -17,9 +17,7 @@ export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           <div className="w-full flex justify-between items-center">
             {/* Logo */}
             <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer">
-              <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center shrink-0">
-                <span className="text-accent-foreground font-black text-xs leading-none">P</span>
-              </div>
+              <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
               <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
             </button>
 

@@ -39,11 +39,12 @@ interface AudienceCardProps {
 
 const AudienceCard = ({ card, light, onNavigate }: AudienceCardProps) => {
   const Icon: LucideIcon = card.icon;
-  const { ref, onMouseMove } = useSpotlight<HTMLDivElement>();
+  const { ref, onMouseEnter, onMouseMove } = useSpotlight<HTMLDivElement>();
 
   return (
     <div
       ref={ref}
+      onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       className={`group group/spot relative overflow-hidden p-8 md:p-9 h-full flex flex-col ${
         light
@@ -54,7 +55,7 @@ const AudienceCard = ({ card, light, onNavigate }: AudienceCardProps) => {
       <SpotlightGlow tone={light ? 'accent' : 'white'} />
 
       <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6 ${light ? 'bg-brand-dark/5' : 'bg-white/10 shadow-inner shadow-black/30'}`}>
-        <Icon className={`w-5 h-5 ${light ? 'text-brand-dark' : 'text-accent'}`} />
+        <Icon className={`w-5 h-5 ${light ? 'text-brand-dark' : 'text-white'}`} />
       </div>
 
       <span className={`text-[9px] font-black uppercase tracking-[0.2em] mt-7 ${light ? 'text-slate-400' : 'text-brand-eyebrow'}`}>{card.eyebrow}</span>

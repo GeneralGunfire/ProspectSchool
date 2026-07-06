@@ -7,8 +7,8 @@ import {
 } from 'lucide-react';
 import {
   fetchTeacherResources, createResource, deleteResource, getResourceDownloadUrl,
-  RESOURCE_TYPE_META,
-  type Resource, type ResourceType, type TargetType,
+  RESOURCE_TYPE_META, RESOURCE_CATEGORY_META,
+  type Resource, type ResourceType, type TargetType, type ResourceCategory,
 } from '../../../lib/resources';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
@@ -43,12 +43,14 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const [formError, setFormError] = useState('');
   const [downloading, setDownloading] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [filterCategory, setFilterCategory] = useState<ResourceCategory | 'all'>('all');
   const [engagement,    setEngagement]    = useState<Map<number, ResourceEngagement>>(new Map());
   const [effectiveness, setEffectiveness] = useState<Map<number, ResourceEffectiveness>>(new Map());
   const fileRef = useRef<HTMLInputElement>(null);
 
   const emptyForm = {
     resource_type: 'file' as ResourceType,
+    category: 'general' as ResourceCategory,
     title: '',
     description: '',
     subject_id: '',
@@ -116,6 +118,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
       title: form.title,
       description: form.description,
       resource_type: form.resource_type,
+      category: form.category,
       file: attachmentFile ?? undefined,
       link_url: form.link_url,
       note_content: form.note_content,
@@ -156,11 +159,15 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
     }
   }
 
-  // Group resources by type
+  // Filter by category, then group by type
+  const categoryFiltered = filterCategory === 'all'
+    ? resources
+    : resources.filter(r => r.category === filterCategory);
+
   const byType = {
-    file: resources.filter(r => r.resource_type === 'file'),
-    link: resources.filter(r => r.resource_type === 'link'),
-    note: resources.filter(r => r.resource_type === 'note'),
+    file: categoryFiltered.filter(r => r.resource_type === 'file'),
+    link: categoryFiltered.filter(r => r.resource_type === 'link'),
+    note: categoryFiltered.filter(r => r.resource_type === 'note'),
   };
 
   const TypeIcon = { file: Paperclip, link: Link2, note: FileText };
@@ -197,6 +204,17 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
           <Plus className="w-4 h-4" /> Add Resource
         </motion.button>
       </div>
+
+      {!loading && resources.length > 0 && (
+        <div className="flex gap-2 mb-5">
+          {(['all', 'homework', 'notes', 'general'] as (ResourceCategory | 'all')[]).map(c => (
+            <button key={c} onClick={() => setFilterCategory(c)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-colors ${filterCategory === c ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              {c === 'all' ? 'All Tags' : RESOURCE_CATEGORY_META[c].label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -237,6 +255,9 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
                           <p className="text-sm font-bold text-brand-dark">{r.title}</p>
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${RESOURCE_CATEGORY_META[r.category].badge}`}>
+                            {RESOURCE_CATEGORY_META[r.category].label}
+                          </span>
                           {r.subject_label && (
                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{r.subject_label}</span>
                           )}
@@ -334,6 +355,23 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         <button key={t} onClick={() => setForm(f => ({ ...f, resource_type: t }))}
                           className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           <Icon className="w-4 h-4 shrink-0" />
+                          {m.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Category tag */}
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Tag</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(['homework', 'notes', 'general'] as ResourceCategory[]).map(c => {
+                      const m = RESOURCE_CATEGORY_META[c];
+                      const active = form.category === c;
+                      return (
+                        <button key={c} onClick={() => setForm(f => ({ ...f, category: c }))}
+                          className={`px-3 py-2.5 rounded-xl text-sm font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           {m.label}
                         </button>
                       );

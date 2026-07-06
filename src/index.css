@@ -511,6 +511,20 @@ html {
 }
 .animate-float { animation: float-y 6s ease-in-out infinite; }
 
+/* Applied to FlipShowcase's outer container while scrolled out of view —
+   stops the float loop (and any other continuous animation inside it) from
+   burning compositor time when nothing is visible. */
+.paused, .paused * { animation-play-state: paused !important; }
+
+/* Lets the browser skip layout/paint/style work for sections far below the
+   fold until they're about to scroll into view — no visual change, just
+   defers rendering cost. contain-intrinsic-size is a rough placeholder
+   height so scrollbar/scroll position doesn't jump before first paint. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 800px;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

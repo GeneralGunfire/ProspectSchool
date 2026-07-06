@@ -59,9 +59,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
         {/* Logo */}
         <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shadow-sm shrink-0">
-              <span className="text-accent-foreground font-black text-xs">P</span>
-            </div>
+            <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
             <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
           </div>
           <NotificationBell userType="teacher" userId={session.teacher_id} />
@@ -122,9 +120,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center shadow-sm shrink-0">
-              <span className="text-accent-foreground font-black text-[10px]">P</span>
-            </div>
+            <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
             <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
           </div>
           <div className="flex items-center gap-2">
@@ -159,9 +155,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                 {/* Logo + close */}
                 <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shadow-sm shrink-0">
-                      <span className="text-accent-foreground font-black text-xs">P</span>
-                    </div>
+                    <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                     <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
                   </div>
                   <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
