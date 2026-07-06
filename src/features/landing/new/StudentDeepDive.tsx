@@ -33,19 +33,19 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
             <h2 className="text-brand-dark text-[clamp(1.9rem,3.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
               Know exactly where you're going.
             </h2>
-            <p className="mt-5 text-stone-500 text-[15px] leading-relaxed max-w-[40ch] font-medium">
+            <p className="mt-5 text-brand-eyebrow text-[15px] leading-relaxed max-w-[40ch] font-medium">
               Your personality, APS score, and subjects — combined into one career roadmap.
             </p>
             <div className="flex flex-wrap gap-2 mt-7">
               {pills.map(pill => (
-                <span key={pill} className="bg-stone-100 text-stone-600 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider border border-stone-200/60">
+                <span key={pill} className="bg-slate-100 text-slate-600 rounded-full px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider border border-slate-200/60">
                   {pill}
                 </span>
               ))}
             </div>
             <button
               onClick={() => onNavigate('quiz')}
-              className="mt-8 bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-stone-800 active:scale-[0.97] transition-all cursor-pointer"
+              className="mt-8 bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-slate-800 active:scale-[0.97] transition-all cursor-pointer"
             >
               Take the Quiz →
             </button>
@@ -60,12 +60,12 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
                 <p className="text-white font-mono font-black text-[clamp(2.5rem,5.5vw,4rem)] leading-none tracking-tight">
                   <CountUp value={400} suffix="+" />
                 </p>
-                <p className="text-stone-400 font-black uppercase tracking-[0.16em] text-[11px] mt-3">
+                <p className="text-slate-400 font-black uppercase tracking-[0.16em] text-[11px] mt-3">
                   SA careers mapped to your profile
                 </p>
               </div>
               <img
-                src="/images/stat-map-graphic.jpg"
+                src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800&q=80&fit=crop"
                 alt=""
                 aria-hidden
                 loading="lazy"
@@ -87,7 +87,7 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
                     </div>
                     <div>
                       <h4 className="font-black text-[15px] tracking-tight text-brand-dark">{f.heading}</h4>
-                      <p className="text-[13px] mt-1 leading-relaxed font-medium text-stone-500">{f.body}</p>
+                      <p className="text-[13px] mt-1 leading-relaxed font-medium text-brand-eyebrow">{f.body}</p>
                     </div>
                   </div>
                 </FadeIn>

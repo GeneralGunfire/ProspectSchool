@@ -30,4 +30,12 @@ export {
   Wrench,
   Bell,
   Sparkles,
+  MessageSquare,
+  FileSpreadsheet,
+  StickyNote,
+  Phone,
+  Mail,
+  AlertTriangle,
+  FileText,
+  Paperclip,
 } from 'lucide-react';

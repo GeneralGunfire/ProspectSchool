@@ -23,7 +23,7 @@ export const StatsBar = () => {
               <div className="text-brand-dark font-mono font-black text-[clamp(1.75rem,4vw,2.25rem)] tracking-tight leading-none">
                 <CountUp value={stat.value} suffix={stat.suffix} />
               </div>
-              <div className="text-stone-400 font-black uppercase tracking-[0.18em] text-[9px] mt-2">
+              <div className="text-slate-400 font-black uppercase tracking-[0.18em] text-[9px] mt-2">
                 {stat.label}
               </div>
             </FadeIn>

@@ -64,7 +64,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                     ? 'bg-brand-dark text-white shadow-sm'
                     : 'text-stone-500 hover:bg-dash-bg hover:text-brand-dark'
                 }`}>
-                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-accent' : ''}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                 <span>{label}</span>
               </button>
             );
@@ -156,7 +156,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                             ? 'bg-brand-dark text-white shadow-sm'
                             : 'text-stone-500 hover:bg-dash-bg hover:text-brand-dark'
                         }`}>
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-accent' : ''}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                         <span>{label}</span>
                       </button>
                     );

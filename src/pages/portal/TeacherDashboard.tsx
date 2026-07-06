@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import ClassesPage from './teacher/ClassesPage';
 import CalendarPage from './teacher/CalendarPage';
 import MarksPage from './teacher/MarksPage';
 import StudentProgressPage from './teacher/StudentProgressPage';
 import ResourcesPage from './teacher/ResourcesPage';
+import PastPapersPage from './teacher/PastPapersPage';
 import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'announcements';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -38,6 +39,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
     { id: 'marks',         label: 'Marks',         icon: ClipboardList },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
+    { id: 'past-papers',   label: 'Past Papers',   icon: FileText },
     { id: 'library',       label: 'Progress',      icon: BookOpen },
   ];
 
@@ -79,7 +81,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                     : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-accent' : ''}`} />
+                <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                 <span>{label}</span>
               </button>
             );
@@ -181,7 +183,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                             : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                         }`}
                       >
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-accent' : ''}`} />
+                        <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                         <span>{label}</span>
                       </button>
                     );
@@ -220,6 +222,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'calendar'      && <CalendarPage session={session} />}
           {activePage === 'marks'         && <MarksPage session={session} />}
           {activePage === 'resources'     && <ResourcesPage session={session} />}
+          {activePage === 'past-papers'   && <PastPapersPage session={session} />}
           {activePage === 'library'       && <StudentProgressPage session={session} />}
         </div>
       </div>

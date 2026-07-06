@@ -35,7 +35,7 @@ export const HowItWorks = () => {
               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 py-7">
                 <span className="font-mono text-[13px] font-black text-accent tracking-wide shrink-0 w-8">{step.n}</span>
                 <h3 className="font-black text-brand-dark text-[19px] tracking-tight shrink-0 sm:w-64">{step.title}</h3>
-                <p className="text-stone-500 text-[15px] leading-relaxed font-medium">{step.body}</p>
+                <p className="text-brand-eyebrow text-[15px] leading-relaxed font-medium">{step.body}</p>
               </div>
             </FadeIn>
           ))}

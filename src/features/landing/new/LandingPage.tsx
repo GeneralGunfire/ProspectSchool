@@ -38,7 +38,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       <HowItWorks />
       <StatsBar />
 
-      <div style={{ background: 'linear-gradient(180deg, #FBF2E2 0%, #F5F0E8 35%, #EEF3F1 100%)' }}>
+      <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 35%, #F8FAFC 100%)' }}>
         <AudienceSection onNavigate={onNavigate} />
         <CareerPaths onNavigate={onNavigate} />
         <StudentDeepDive onNavigate={onNavigate} />
@@ -48,7 +48,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
       <QuoteSection />
 
-      <div style={{ background: 'linear-gradient(180deg, #FBF2E2 0%, #F5F0E8 40%, #F5F0E8 100%)' }}>
+      <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 40%, #FAF9F6 100%)' }}>
         <Pricing onNavigate={onNavigate} />
         <FinalCTA onNavigate={onNavigate} />
         <Footer onNavigate={onNavigate} />

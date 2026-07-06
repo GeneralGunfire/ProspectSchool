@@ -8,16 +8,16 @@
   --font-mono-jetbrains: "JetBrains Mono", monospace;
 
   /* ── Landing page brand tokens ── */
-  --color-brand-bg: #F5F0E8;
-  --color-brand-dark: #1C1917;
-  --color-brand-border: #D6CFC4;
-  --color-brand-eyebrow: #78716C;
+  --color-brand-bg: #FAFAFA;
+  --color-brand-dark: #0F172A;
+  --color-brand-border: #E2E8F0;
+  --color-brand-eyebrow: #64748B;
 
   /* ── Dashboard-only background ──
      Same cream family as brand-bg but a shade deeper — the portal packs many
      white/glass cards edge-to-edge, and at brand-bg's brightness the card
      borders nearly disappear. Landing page keeps --color-brand-bg untouched. */
-  --color-dash-bg: #EBE3D3;
+  --color-dash-bg: #FAFAFA;
 
   /* ── Design system ── */
   --color-primary: #1e293b;
@@ -100,8 +100,8 @@
     --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
-    --accent: 45 94% 56%;
-    --accent-foreground: 215 28% 17%;
+    --accent: 221 83% 53%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
@@ -125,8 +125,8 @@
 
   body {
     @apply font-sans;
-    background-color: #F5F0E8;
-    color: #1e293b;
+    background-color: #FAFAFA;
+    color: #0F172A;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -443,17 +443,17 @@ html {
 .card-premium {
   border-radius: 28px;
   box-shadow:
-    0 1px 2px rgba(28,25,23,0.04),
-    0 8px 24px -8px rgba(28,25,23,0.10),
-    0 24px 48px -16px rgba(28,25,23,0.08);
+    0 1px 2px rgba(15,23,42,0.04),
+    0 8px 24px -8px rgba(15,23,42,0.10),
+    0 24px 48px -16px rgba(15,23,42,0.08);
   transition: transform 0.45s cubic-bezier(0.23,1,0.32,1), box-shadow 0.45s ease, border-color 0.45s ease;
 }
 .card-premium:hover {
   transform: translateY(-6px) rotate(-0.4deg);
   box-shadow:
-    0 1px 2px rgba(28,25,23,0.05),
-    0 16px 32px -8px rgba(28,25,23,0.16),
-    0 40px 64px -16px rgba(28,25,23,0.14);
+    0 1px 2px rgba(15,23,42,0.05),
+    0 16px 32px -8px rgba(15,23,42,0.16),
+    0 40px 64px -16px rgba(15,23,42,0.14);
 }
 /* Dark-surface cards need lighter-toned shadows or they just look flat */
 .card-premium-dark {

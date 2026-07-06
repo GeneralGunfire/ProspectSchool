@@ -38,12 +38,12 @@ export const TeacherTools = ({ onNavigate }: { onNavigate: (p: string) => void }
                 <p className="text-white font-mono font-black text-[clamp(2.5rem,5.5vw,4rem)] leading-none tracking-tight">
                   <CountUp value={4} />
                 </p>
-                <p className="text-stone-400 font-black uppercase tracking-[0.16em] text-[11px] mt-3">
+                <p className="text-slate-400 font-black uppercase tracking-[0.16em] text-[11px] mt-3">
                   Tools replaced by one dashboard
                 </p>
               </div>
               <img
-                src="/images/stat-dashboard-graphic.jpg"
+                src="https://images.unsplash.com/photo-1596495577886-d920f1fb7238?w=800&q=80&fit=crop"
                 alt=""
                 aria-hidden
                 loading="lazy"
@@ -70,12 +70,12 @@ export const TeacherTools = ({ onNavigate }: { onNavigate: (p: string) => void }
             <h2 className="text-brand-dark text-[clamp(1.9rem,3.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
               Your class.<br />Under control.
             </h2>
-            <p className="mt-5 text-stone-500 text-[15px] leading-relaxed max-w-[38ch] font-medium">
+            <p className="mt-5 text-brand-eyebrow text-[15px] leading-relaxed max-w-[38ch] font-medium">
               Progress tracking, marks, resources, announcements, and homework — all replaced by one clean dashboard.
             </p>
             <button
               onClick={() => onNavigate('portal')}
-              className="mt-8 bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-stone-800 active:scale-[0.97] transition-all cursor-pointer inline-flex items-center gap-2.5"
+              className="mt-8 bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-slate-800 active:scale-[0.97] transition-all cursor-pointer inline-flex items-center gap-2.5"
             >
               Teacher Portal <ArrowRight className="w-4 h-4 opacity-70" />
             </button>

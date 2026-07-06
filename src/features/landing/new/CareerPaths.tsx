@@ -1,16 +1,26 @@
 import { FadeIn, useSpotlight, SpotlightGlow } from './Animations';
 
-// These images already have the icon badge + title + body baked in (design
-// reference supplied as a single composite, cropped into per-card assets) —
-// rendered as-is rather than re-drawing the same text as a live HTML overlay,
-// which would either duplicate it or require pixel-perfect alignment against
-// a raster image for no real benefit.
 const paths = [
-  { image: 'career-engineering.jpg', title: 'Engineering' },
-  { image: 'career-healthcare.jpg',  title: 'Healthcare' },
-  { image: 'career-education.jpg',   title: 'Education' },
-  { image: 'career-trades.jpg',      title: 'Trades & Technical' },
-  { image: 'career-learning.jpg',    title: 'Keep Learning' },
+  {
+    title: 'Engineering',
+    image: 'https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?w=600&q=80&fit=crop',
+  },
+  {
+    title: 'Healthcare',
+    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=600&q=80&fit=crop',
+  },
+  {
+    title: 'Education',
+    image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80&fit=crop',
+  },
+  {
+    title: 'Trades & Technical',
+    image: 'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=600&q=80&fit=crop',
+  },
+  {
+    title: 'Keep Learning',
+    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80&fit=crop',
+  },
 ];
 
 const PathCard = ({ path, onNavigate }: { path: typeof paths[number]; onNavigate: (p: string) => void }) => {
@@ -24,12 +34,17 @@ const PathCard = ({ path, onNavigate }: { path: typeof paths[number]; onNavigate
     >
       <SpotlightGlow tone="white" />
       <img
-        src={`/images/${path.image}`}
+        src={path.image}
         alt={path.title}
         loading="lazy"
         decoding="async"
         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
       />
+      {/* Gradient overlay + label */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-[#0F172A]/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 p-4">
+        <p className="text-white font-black text-[13px] tracking-tight leading-tight">{path.title}</p>
+      </div>
     </button>
   );
 };
@@ -43,7 +58,7 @@ export const CareerPaths = ({ onNavigate }: { onNavigate: (p: string) => void })
           <h2 className="text-brand-dark text-[clamp(2rem,4vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Every path has a place to start.
           </h2>
-          <p className="mt-4 text-stone-500 text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
+          <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
             Engineering, healthcare, education, trades — explore the careers South Africa needs, with real salary and demand data behind every one.
           </p>
         </FadeIn>

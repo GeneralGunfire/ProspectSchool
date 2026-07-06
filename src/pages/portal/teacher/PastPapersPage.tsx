@@ -44,6 +44,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
   const [deleteTarget, setDeleteTarget] = useState<PastPaper | null>(null);
   const [deleting, setDeleting]   = useState(false);
   const [downloading, setDownloading] = useState<number | null>(null);
+  const [memoLoading, setMemoLoading] = useState<number | null>(null);
   const fileRef     = useRef<HTMLInputElement>(null);
   const memoFileRef = useRef<HTMLInputElement>(null);
 
@@ -117,6 +118,14 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
     setDownloading(p.id);
     const url = await getPastPaperDownloadUrl(p.file_url);
     setDownloading(null);
+    if (url) window.open(url, '_blank');
+  }
+
+  async function handleOpenMemo(p: PastPaper) {
+    if (!p.memo_url) return;
+    setMemoLoading(p.id);
+    const url = await getPastPaperDownloadUrl(p.memo_url);
+    setMemoLoading(null);
     if (url) window.open(url, '_blank');
   }
 
@@ -230,9 +239,20 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                         onClick={() => handleOpen(p)}
                         disabled={downloading === p.id}
                         className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-500 hover:text-stone-700 disabled:opacity-40"
+                        title="Open question paper"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </button>
+                      {p.memo_url && (
+                        <button
+                          onClick={() => handleOpenMemo(p)}
+                          disabled={memoLoading === p.id}
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          {memoLoading === p.id ? 'Opening…' : 'Memo'}
+                        </button>
+                      )}
                       <button
                         onClick={() => setDeleteTarget(p)}
                         className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"

@@ -1,9 +1,16 @@
 import { FadeIn } from './Animations';
-import { DashboardPreview } from './DashboardPreview';
+import { FlipShowcase } from './FlipShowcase';
 
 export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
     <section className="relative overflow-hidden pt-40 pb-24 px-5">
+      {/* Decorative grey accent blobs */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-32 -left-40 w-[600px] h-[600px] rounded-full bg-slate-200/50 blur-[120px]" />
+        <div className="absolute top-20 right-[-10%] w-[480px] h-[480px] rounded-full bg-slate-300/35 blur-[100px]" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] rounded-full bg-slate-200/40 blur-[90px]" />
+      </div>
+
       <div className="relative max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 lg:gap-10 items-center">
 
         {/* Left — copy (unchanged) */}
@@ -20,7 +27,7 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           </FadeIn>
 
           <FadeIn delay={0.16}>
-            <p className="mt-7 text-stone-500 text-[17px] md:text-[18px] leading-relaxed max-w-[46ch] mx-auto lg:mx-0 font-medium">
+            <p className="mt-7 text-brand-eyebrow text-[17px] md:text-[18px] leading-relaxed max-w-[46ch] mx-auto lg:mx-0 font-medium">
               Career discovery, matric study support, teacher tools, and school management — one platform for every South African school.
             </p>
           </FadeIn>
@@ -41,7 +48,7 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           </FadeIn>
 
           <FadeIn delay={0.3} className="mt-6">
-            <p className="text-[11px] font-black uppercase tracking-widest text-stone-400">
+            <p className="text-[11px] font-black uppercase tracking-widest text-brand-eyebrow">
               No credit card · Free for every SA school
             </p>
           </FadeIn>
@@ -52,7 +59,7 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
             below ~700px) — hidden on mobile/tablet rather than shipping a
             cramped version; the text side stands on its own there. */}
         <FadeIn delay={0.2} direction="left" className="hidden lg:block">
-          <DashboardPreview />
+          <FlipShowcase />
         </FadeIn>
       </div>
     </section>

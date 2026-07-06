@@ -27,7 +27,7 @@ const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]
         <Icon className="text-white w-4 h-4" />
       </div>
       <h4 className="text-brand-dark font-black text-[13px] leading-snug tracking-tight">{subject.name}</h4>
-      <p className="text-stone-400 text-[10px] mt-1 font-black uppercase tracking-widest">{subject.topics} topics</p>
+      <p className="text-slate-400 text-[10px] mt-1 font-black uppercase tracking-widest">{subject.topics} topics</p>
     </button>
   );
 };
@@ -42,7 +42,7 @@ export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }
           <h2 className="text-brand-dark text-[clamp(1.9rem,3.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Study smarter, not harder.
           </h2>
-          <p className="mt-4 text-stone-500 text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
+          <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
             Curriculum-aligned lessons for Grade 10–12. Interactive steps, worked examples, practice questions, and instant feedback.
           </p>
         </FadeIn>
@@ -56,7 +56,7 @@ export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }
         </div>
 
         <FadeIn delay={0.35} className="text-center mt-10">
-          <span className="inline-block text-[11px] font-black uppercase tracking-wider text-stone-400 bg-stone-200/50 rounded-full px-5 py-1.5">
+          <span className="inline-block text-[11px] font-black uppercase tracking-wider text-slate-400 bg-slate-200/50 rounded-full px-5 py-1.5">
             Grade 11 & 12 content coming soon
           </span>
         </FadeIn>

@@ -30,7 +30,7 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
           className="group/spot card-premium relative overflow-hidden bg-white border border-brand-border px-8 py-10 sm:px-10 sm:py-12 text-center"
         >
           <SpotlightGlow tone="accent" />
-          <p className="text-stone-500 text-[15px] leading-relaxed font-medium">
+          <p className="text-brand-eyebrow text-[15px] leading-relaxed font-medium">
             No trials. No freemium tiers. No hidden costs. Prospect is free for every South African school.
           </p>
 
@@ -46,11 +46,11 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
           <div className="mt-9 flex flex-col items-center">
             <button
               onClick={() => onNavigate('portal')}
-              className="w-full sm:w-auto bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-stone-800 active:scale-[0.97] transition-all cursor-pointer"
+              className="w-full sm:w-auto bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-slate-800 active:scale-[0.97] transition-all cursor-pointer"
             >
               Set Up Your School Free
             </button>
-            <p className="mt-3.5 text-[10px] text-stone-400 font-black uppercase tracking-widest">
+            <p className="mt-3.5 text-[10px] text-slate-400 font-black uppercase tracking-widest">
               No credit card required
             </p>
           </div>

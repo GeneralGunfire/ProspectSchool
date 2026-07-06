@@ -14,11 +14,11 @@ export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
           <SpotlightGlow tone="white" />
 
           <div className="max-w-md text-center lg:text-left">
-            <span className="text-stone-600 text-[9px] font-black uppercase tracking-[0.2em]">Get Started Today</span>
+            <span className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em]">Get Started Today</span>
             <h2 className="text-white font-black text-[clamp(1.9rem,4vw,2.75rem)] tracking-tight mt-4 leading-[1.1]">
               Ready to shape your future?
             </h2>
-            <p className="mt-5 text-stone-400 text-[15px] leading-relaxed font-medium max-w-[38ch]">
+            <p className="mt-5 text-slate-400 text-[15px] leading-relaxed font-medium max-w-[38ch]">
               Join South African students using Prospect to discover careers, find bursaries, and ace matric.
             </p>
           </div>
@@ -26,13 +26,13 @@ export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
           <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full sm:w-auto shrink-0">
             <button
               onClick={() => onNavigate('quiz')}
-              className="bg-white text-brand-dark rounded-xl px-10 py-3.5 font-black text-[13px] tracking-wide hover:bg-stone-100 active:scale-[0.97] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5"
+              className="bg-white text-brand-dark rounded-xl px-10 py-3.5 font-black text-[13px] tracking-wide hover:bg-slate-100 active:scale-[0.97] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5"
             >
               Start Career Quiz <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => onNavigate('portal')}
-              className="border border-stone-700 text-stone-500 rounded-xl px-10 py-3.5 font-black text-[13px] tracking-wide hover:text-white hover:border-stone-500 active:scale-[0.97] transition-all cursor-pointer"
+              className="border border-slate-700 text-stone-500 rounded-xl px-10 py-3.5 font-black text-[13px] tracking-wide hover:text-white hover:border-slate-500 active:scale-[0.97] transition-all cursor-pointer"
             >
               School Portal Login
             </button>

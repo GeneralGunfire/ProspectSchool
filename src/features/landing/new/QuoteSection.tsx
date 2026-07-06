@@ -12,7 +12,7 @@ export const QuoteSection = () => {
         className="pointer-events-none absolute inset-x-0 bottom-0 h-32"
         style={{
           background:
-            'linear-gradient(to top, color-mix(in srgb, var(--color-accent) 16%, transparent), transparent)',
+            'linear-gradient(to top, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent)',
         }}
       />
       <div className="relative max-w-xl mx-auto text-center">

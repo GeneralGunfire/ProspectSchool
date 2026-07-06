@@ -50,7 +50,7 @@ const Float = ({
   </div>
 );
 
-export const DashboardPreview = () => {
+export const DashboardPreview = ({ standalone = true }: { standalone?: boolean }) => {
   const { ref, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
 
   return (
@@ -58,7 +58,7 @@ export const DashboardPreview = () => {
       ref={ref}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      className="relative w-full max-w-135 aspect-4/5 mx-auto"
+      className={standalone ? 'relative w-full max-w-135 aspect-4/5 mx-auto' : 'relative w-full h-full'}
     >
       {/* Soft yellow lighting behind the whole stack */}
       <div
@@ -118,7 +118,7 @@ export const DashboardPreview = () => {
           </div>
           <div>
             <p className="text-[9px] font-black uppercase tracking-wider text-stone-400 leading-none">APS Score</p>
-            <p className="text-base font-black text-brand-dark leading-none mt-1">34</p>
+            <p className="text-base font-black text-brand-dark leading-none mt-1">34 <span className="text-[9px] font-bold text-stone-400">/ 42</span></p>
           </div>
         </div>
       </Float>
@@ -135,10 +135,13 @@ export const DashboardPreview = () => {
       <Float depth={16} duration={6.5} delay={0.15} className="right-[-8%] top-[32%] w-44 z-20">
         <div className="glass-panel card-premium rounded-3xl p-4">
           <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mb-2.5">Upcoming Tests</p>
-          {[['Mathematics', '2d'], ['Physical Sciences', '5d']].map(([subj, when]) => (
+          {[['Mathematics', 'Mon', '2d'], ['Physical Sciences', 'Thu', '5d']].map(([subj, day, when]) => (
             <div key={subj} className="flex items-center justify-between py-1.5 border-t border-stone-100 first:border-0">
-              <span className="text-[11px] font-bold text-brand-dark">{subj}</span>
-              <span className="text-[10px] font-black text-accent">{when}</span>
+              <div>
+                <span className="text-[11px] font-bold text-brand-dark block leading-tight">{subj}</span>
+                <span className="text-[9px] text-stone-400">{day}</span>
+              </div>
+              <span className="text-[10px] font-black text-accent shrink-0">{when}</span>
             </div>
           ))}
         </div>
@@ -147,14 +150,17 @@ export const DashboardPreview = () => {
       {/* ── Small chart ── */}
       <Float depth={14} duration={7.5} delay={0.45} className="right-[2%] top-[46%] w-32 z-10">
         <div className="glass-panel card-premium rounded-3xl p-4">
-          <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mb-2.5 flex items-center gap-1">
-            <TrendingUp className="w-3 h-3" /> This Term
-          </p>
+          <div className="flex items-center justify-between mb-2.5">
+            <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" /> This Term
+            </p>
+            <span className="text-[9px] font-black text-emerald-500">+12%</span>
+          </div>
           <div className="flex items-end gap-1.5 h-12">
             {[40, 65, 50, 80, 60, 95].map((h, i) => (
               <motion.div
                 key={i}
-                className="flex-1 rounded-full bg-accent/70"
+                className={`flex-1 rounded-full ${i === 5 ? 'bg-accent' : 'bg-accent/50'}`}
                 initial={{ height: 0 }}
                 whileInView={{ height: `${h}%` }}
                 viewport={{ once: true }}
@@ -169,10 +175,10 @@ export const DashboardPreview = () => {
       <Float depth={12} duration={6.2} delay={0.2} className="left-[-6%] top-[42%] w-40 z-10">
         <div className="glass-panel card-premium rounded-3xl p-4">
           <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mb-2.5 flex items-center gap-1">
-            <Sparkles className="w-3 h-3" /> Recommended
+            <Sparkles className="w-3 h-3" /> Recommended For You
           </p>
           <div className="flex flex-wrap gap-1.5">
-            {['Engineer', 'Data Analyst', 'UX Designer'].map(c => (
+            {['Software Engineer', 'Data Analyst', 'UX Designer'].map(c => (
               <span key={c} className="text-[10px] font-bold text-brand-dark bg-brand-dark/5 rounded-full px-2.5 py-1">{c}</span>
             ))}
           </div>
@@ -183,10 +189,10 @@ export const DashboardPreview = () => {
       <Float depth={18} duration={5.8} delay={0.5} className="left-[4%] top-[64%] w-42 z-20">
         <div className="glass-panel card-premium rounded-3xl p-4">
           <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mb-2.5 flex items-center gap-1">
-            <Award className="w-3 h-3" /> Scholarships
+            <Award className="w-3 h-3" /> Bursary Matches
           </p>
           <p className="text-[13px] font-black text-brand-dark">12 matches found</p>
-          <p className="text-[10px] text-stone-400 mt-0.5">Up to R45,000/year</p>
+          <p className="text-[10px] text-stone-400 mt-0.5">Up to R45,000/year · closes in 18 days</p>
         </div>
       </Float>
 
@@ -212,8 +218,13 @@ export const DashboardPreview = () => {
           <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mb-2 flex items-center gap-1">
             <BookOpen className="w-3 h-3" /> Recent Activity
           </p>
-          <p className="text-[11px] font-bold text-brand-dark">Completed "Chemical Bonding" quiz</p>
-          <p className="text-[10px] text-stone-400 mt-0.5">2 hours ago · Scored 88%</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold text-brand-dark">Completed "Chemical Bonding" quiz</p>
+              <p className="text-[10px] text-stone-400 mt-0.5">2 hours ago</p>
+            </div>
+            <span className="text-[11px] font-black text-emerald-500 shrink-0">88%</span>
+          </div>
         </div>
       </Float>
     </div>

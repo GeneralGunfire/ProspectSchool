@@ -57,17 +57,17 @@ const AudienceCard = ({ card, light, onNavigate }: AudienceCardProps) => {
         <Icon className={`w-5 h-5 ${light ? 'text-brand-dark' : 'text-accent'}`} />
       </div>
 
-      <span className={`text-[9px] font-black uppercase tracking-[0.2em] mt-7 ${light ? 'text-stone-400' : 'text-stone-500'}`}>{card.eyebrow}</span>
+      <span className={`text-[9px] font-black uppercase tracking-[0.2em] mt-7 ${light ? 'text-slate-400' : 'text-brand-eyebrow'}`}>{card.eyebrow}</span>
 
       <h3 className={`text-lg font-black mt-2 leading-snug tracking-tight ${light ? 'text-brand-dark' : 'text-white'}`}>{card.heading}</h3>
 
-      <p className={`text-[14px] leading-relaxed mt-3 font-medium ${light ? 'text-stone-500' : 'text-stone-400'}`}>{card.body}</p>
+      <p className={`text-[14px] leading-relaxed mt-3 font-medium ${light ? 'text-brand-eyebrow' : 'text-slate-400'}`}>{card.body}</p>
 
       <ul className="mt-6 space-y-2.5 mb-8 flex-1">
         {card.features.map(item => (
           <li key={item} className="flex items-center gap-2.5 text-[13px] font-medium">
             <div className={`w-1 h-1 rounded-full shrink-0 ${light ? 'bg-brand-dark/25' : 'bg-white/25'}`} />
-            <span className={light ? 'text-stone-500' : 'text-white/65'}>{item}</span>
+            <span className={light ? 'text-brand-eyebrow' : 'text-white/65'}>{item}</span>
           </li>
         ))}
       </ul>
