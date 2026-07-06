@@ -5,6 +5,8 @@
 |-- .env.local
 |-- .github
 |-- .gitignore
+|-- .planning
+    |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
     |-- project.json
     |-- README.txt
@@ -304,6 +306,7 @@
         |-- supabase.ts
         |-- teacherAnalytics.ts
         |-- teachers.ts
+        |-- topicTests.ts
         |-- types.ts
         |-- utils.ts
     |-- main.tsx
@@ -316,6 +319,7 @@
             |-- admin
                 |-- AdminAnnouncementsPage.tsx
                 |-- AdminHomePage.tsx
+                |-- StudentAssignmentsPage.tsx
                 |-- TeachersPage.tsx
             |-- AdminDashboard.tsx
             |-- PortalEntry.tsx
@@ -330,6 +334,7 @@
                 |-- StudentMarksPage.tsx
                 |-- StudentPastPapersPage.tsx
                 |-- StudentResourcesPage.tsx
+                |-- StudentTopicTestsPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
                 |-- AnnouncementsPage.tsx
@@ -342,6 +347,7 @@
                 |-- RiskEnginePage.tsx
                 |-- StudentProgressPage.tsx
                 |-- TeacherHomePage.tsx
+                |-- TopicTestsPage.tsx
             |-- TeacherDashboard.tsx
     |-- providers
         |-- AuthProvider.tsx

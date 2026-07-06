@@ -126,7 +126,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   // Load events whenever month/year changes
   useEffect(() => {
     setLoading(true);
-    fetchMonthEvents(session.school_id, year, month).then(data => {
+    fetchMonthEvents(session.school_id, session.teacher_id, year, month).then(data => {
       setEvents(data);
       setLoading(false);
     });
@@ -309,7 +309,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
     }
 
     // Reload events for current month
-    const updated = await fetchMonthEvents(session.school_id, year, month);
+    const updated = await fetchMonthEvents(session.school_id, session.teacher_id, year, month);
     setEvents(updated);
     setSaving(false);
     closeModal();
@@ -321,7 +321,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
     if (!selectedEvent) return;
     setSaving(true);
     await deleteEvent(selectedEvent.id, session.school_id, selectedEvent.attachment_url);
-    const updated = await fetchMonthEvents(session.school_id, year, month);
+    const updated = await fetchMonthEvents(session.school_id, session.teacher_id, year, month);
     setEvents(updated);
     setSaving(false);
     closeModal();

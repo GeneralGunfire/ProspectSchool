@@ -9,8 +9,8 @@ import { computeSheetAnalytics } from '../../../lib/teacherAnalytics';
 import { fetchBestInterventionType } from '../../../lib/teacherAnalytics';
 import {
   fetchTeacherMarkSheets, createMarkSheet, deleteMarkSheet,
-  fetchSheetMarks, saveStudentMark,
-  type MarkSheetGroup, type MarkSheet, type StudentMark,
+  fetchSheetMarks, saveStudentMark, fetchTeacherTermWeightStatus,
+  type MarkSheetGroup, type MarkSheet, type StudentMark, type TermWeightStatus,
 } from '../../../lib/marks';
 import { fetchSubjects, fetchTeacherStudents, type Subject } from '../../../lib/students';
 import { createEvent } from '../../../lib/events';
@@ -46,6 +46,7 @@ export default function MarksPage({ session }: MarksPageProps) {
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
+  const [termStatus, setTermStatus] = useState<TermWeightStatus[]>([]);
 
   // View state
   const [view, setView] = useState<View>('groups');
@@ -55,7 +56,7 @@ export default function MarksPage({ session }: MarksPageProps) {
 
   // Create sheet modal
   const [createModal, setCreateModal] = useState(false);
-  const [form, setForm] = useState({ title: '', subject_id: '', grade: '', scope: '', total: '' });
+  const [form, setForm] = useState({ title: '', subject_id: '', grade: '', scope: '', total: '', term: '1', weight: '' });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -83,8 +84,12 @@ export default function MarksPage({ session }: MarksPageProps) {
 
   async function reload() {
     setLoading(true);
-    const g = await fetchTeacherMarkSheets(session.teacher_id, session.school_id);
+    const [g, ts] = await Promise.all([
+      fetchTeacherMarkSheets(session.teacher_id, session.school_id),
+      fetchTeacherTermWeightStatus(session.teacher_id, session.school_id),
+    ]);
     setGroups(g);
+    setTermStatus(ts);
     setLoading(false);
   }
 
@@ -136,6 +141,10 @@ export default function MarksPage({ session }: MarksPageProps) {
     if (!form.total || isNaN(Number(form.total)) || Number(form.total) <= 0) {
       setFormError('Enter a valid total mark.'); return;
     }
+    const weightNum = form.weight === '' ? 0 : Number(form.weight);
+    if (isNaN(weightNum) || weightNum < 0 || weightNum > 100) {
+      setFormError('Weight must be between 0 and 100.'); return;
+    }
 
     setSaving(true);
     setFormError('');
@@ -147,12 +156,14 @@ export default function MarksPage({ session }: MarksPageProps) {
       title: form.title,
       scope: form.scope,
       total: Number(form.total),
+      weight: weightNum,
+      term: Number(form.term),
     });
 
     if (!result.success) { setFormError(result.error); setSaving(false); return; }
 
     setCreateModal(false);
-    setForm({ title: '', subject_id: '', grade: '', scope: '', total: '' });
+    setForm({ title: '', subject_id: '', grade: '', scope: '', total: '', term: '1', weight: '' });
     setSaving(false);
 
     await reload();
@@ -372,6 +383,27 @@ export default function MarksPage({ session }: MarksPageProps) {
                           transition={{ duration: 0.2, ease: 'easeOut' }}
                           className="overflow-hidden"
                         >
+                          {/* Per-term weight status */}
+                          {(() => {
+                            const groupTermStatus = termStatus
+                              .filter(t => t.subject_id === group.subject_id && t.grade === group.grade)
+                              .sort((a, b) => a.term - b.term);
+                            if (groupTermStatus.length === 0) return null;
+                            return (
+                              <div className="border-t border-brand-border/60 px-5 py-3 flex flex-wrap gap-2 bg-stone-50/60">
+                                {groupTermStatus.map(t => (
+                                  <span key={t.key} className={`text-[11px] font-black px-2.5 py-1 rounded-full ${
+                                    t.isComplete
+                                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                      : 'bg-stone-100 text-stone-500 border border-transparent'
+                                  }`}>
+                                    Term {t.term}: {t.isComplete ? 'Final mark ready' : `${t.weightTotal}% weight used`}
+                                  </span>
+                                ))}
+                              </div>
+                            );
+                          })()}
+
                           <div className="border-t border-brand-border/60 divide-y divide-stone-100">
                             {group.sheets.map(sheet => {
                               return (
@@ -382,7 +414,8 @@ export default function MarksPage({ session }: MarksPageProps) {
                                   >
                                     <p className="text-sm font-bold text-brand-dark">{sheet.title}</p>
                                     <p className="text-xs text-stone-500 mt-0.5">
-                                      {sheet.scope ? `${sheet.scope} · ` : ''}Out of {sheet.total}
+                                      Term {sheet.term} · {sheet.scope ? `${sheet.scope} · ` : ''}Out of {sheet.total}
+                                      {sheet.weight > 0 ? ` · ${sheet.weight}% weight` : ' · record only'}
                                       {sheet.event_id ? ' · 📅 On calendar' : ''}
                                     </p>
                                   </button>
@@ -765,6 +798,43 @@ export default function MarksPage({ session }: MarksPageProps) {
                     placeholder="e.g. 100"
                     className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
+                </div>
+
+                {/* Term */}
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Term *</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {[1, 2, 3, 4].map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setForm(f => ({ ...f, term: String(t) }))}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                          form.term === String(t) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                        }`}
+                      >
+                        Term {t}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Weight */}
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
+                    Weight toward final mark <span className="normal-case font-bold text-stone-400">(% — 0 if just for record)</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={form.weight}
+                    onChange={e => setForm(f => ({ ...f, weight: e.target.value }))}
+                    placeholder="e.g. 20"
+                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                  />
+                  <p className="text-xs text-stone-400 mt-1.5">
+                    Weights for this subject, grade and term add up to the final mark once they reach 100%.
+                  </p>
                 </div>
 
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}

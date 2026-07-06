@@ -106,7 +106,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
     async function load() {
       const [studentsResult, events, sheetsResult] = await Promise.all([
         fetchTeacherStudents(session.teacher_id, session.school_id),
-        fetchSchoolEvents(session.school_id),
+        fetchSchoolEvents(session.school_id, session.teacher_id),
         fetchTeacherMarkSheets(session.teacher_id, session.school_id),
       ]);
 

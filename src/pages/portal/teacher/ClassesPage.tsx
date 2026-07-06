@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, TrendingUp, Phone, Clock } from 'lucide-react';
+import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, TrendingUp, Phone, Clock, UserPlus } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchSubjects, createStudent, updateStudent,
   removeStudentFromTeacher, fetchTeacherStudents,
+  lookupStudentByCode, assignStudentToTeacher,
   type Subject, type Student,
 } from '../../../lib/students';
 import {
@@ -44,6 +45,16 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
   const [confirmDelete, setConfirmDelete] = useState<Student | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Assign Student (link an existing student from another teacher's roster)
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignStep, setAssignStep] = useState<'code' | 'confirm'>('code');
+  const [assignCode, setAssignCode] = useState('');
+  const [assignLookingUp, setAssignLookingUp] = useState(false);
+  const [assignError, setAssignError] = useState<string | null>(null);
+  const [assignFoundStudent, setAssignFoundStudent] = useState<Student | null>(null);
+  const [assignSubjects, setAssignSubjects] = useState<string[]>([]);
+  const [assignSubmitting, setAssignSubmitting] = useState(false);
 
   // Search + filter
   const [search, setSearch] = useState('');
@@ -228,6 +239,58 @@ export default function ClassesPage({ session }: ClassesPageProps) {
     setSubmitting(false);
   };
 
+  // ── Assign Student handlers ────────────────────────────────────
+
+  const openAssign = () => {
+    setShowAssign(true);
+    setAssignStep('code');
+    setAssignCode('');
+    setAssignError(null);
+    setAssignFoundStudent(null);
+    setAssignSubjects([]);
+  };
+
+  const closeAssign = () => {
+    setShowAssign(false);
+    setAssignStep('code');
+    setAssignCode('');
+    setAssignError(null);
+    setAssignFoundStudent(null);
+    setAssignSubjects([]);
+  };
+
+  const handleAssignLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAssignLookingUp(true);
+    setAssignError(null);
+    const result = await lookupStudentByCode(assignCode, session.school_id);
+    setAssignLookingUp(false);
+    if (!result.success) { setAssignError(result.error); return; }
+    setAssignFoundStudent(result.student);
+    setAssignStep('confirm');
+  };
+
+  const toggleAssignSubject = (code: string) =>
+    setAssignSubjects((s) => (s.includes(code) ? s.filter((c) => c !== code) : [...s, code]));
+
+  const handleAssignSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assignFoundStudent) return;
+    if (assignSubjects.length === 0) {
+      setAssignError('Please select at least one subject.');
+      return;
+    }
+    setAssignSubmitting(true);
+    setAssignError(null);
+    const result = await assignStudentToTeacher(
+      session.teacher_id, assignFoundStudent.id, session.school_id, assignSubjects,
+    );
+    setAssignSubmitting(false);
+    if (!result.success) { setAssignError(result.error); return; }
+    await reload();
+    closeAssign();
+  };
+
   const handleDelete = async () => {
     if (!confirmDelete) return;
     setDeleting(true);
@@ -278,10 +341,16 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           <span className="eyebrow">Portal</span>
           <h1 className="text-2xl font-black text-brand-dark tracking-tight">Classes</h1>
         </div>
-        <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
-          <Plus className="w-4 h-4" /> Add Student
-        </motion.button>
+        <div className="flex items-center gap-2">
+          <motion.button onClick={openAssign} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-2 bg-white border border-brand-border text-brand-dark text-sm font-black px-5 py-2.5 rounded-xl hover:border-stone-300 transition-colors">
+            <UserPlus className="w-4 h-4" /> Assign Student
+          </motion.button>
+          <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
+            <Plus className="w-4 h-4" /> Add Student
+          </motion.button>
+        </div>
       </div>
 
       {/* Class switcher — pill tabs, e.g. 10A / 10B, like the reference the student portal uses */}
@@ -601,6 +670,118 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       : <>{modalMode === 'add' ? 'Add Student' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
                     }
                   </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ── Assign Student Modal ──────────────────────────────── */}
+      <AnimatePresence>
+        {showAssign && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={closeAssign} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
+                  <div>
+                    <h2 className="text-lg font-black text-brand-dark">Assign Student</h2>
+                    <p className="text-xs text-stone-500 mt-0.5">Link a student already in this school to your subjects</p>
+                  </div>
+                  <button onClick={closeAssign} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="overflow-y-auto flex-1 px-6 py-4">
+                  {assignError && (
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                      className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-4">
+                      <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                      <p className="text-red-700 text-sm">{assignError}</p>
+                    </motion.div>
+                  )}
+
+                  {assignStep === 'code' ? (
+                    <form id="assign-code-form" onSubmit={handleAssignLookup} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student Code</label>
+                        <input required type="text" value={assignCode}
+                          onChange={(e) => setAssignCode(e.target.value.toUpperCase())}
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          placeholder="e.g. STU-0001" autoCapitalize="characters" autoFocus />
+                        <p className="text-xs text-stone-500 mt-2">
+                          Enter the student's existing code. You won't be able to edit their name, grade or PIN — only pick which subjects you teach them.
+                        </p>
+                      </div>
+                    </form>
+                  ) : (
+                    <form id="assign-subjects-form" onSubmit={handleAssignSubmit} className="space-y-4">
+                      {assignFoundStudent && (
+                        <div className="bg-stone-50 border border-brand-border rounded-xl px-4 py-3">
+                          <p className="font-bold text-brand-dark">{assignFoundStudent.surname}, {assignFoundStudent.name}</p>
+                          <p className="text-xs text-stone-500 mt-0.5">
+                            {assignFoundStudent.cohort ? assignFoundStudent.cohort.name : `Grade ${assignFoundStudent.grade}`}
+                            {' · '}
+                            <span className="font-mono tracking-widest">{assignFoundStudent.student_code}</span>
+                          </p>
+                        </div>
+                      )}
+
+                      <div>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
+                          Subjects you teach this student
+                        </label>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {allSubjects.map((s) => {
+                            const selected = assignSubjects.includes(s.code);
+                            return (
+                              <button key={s.code} type="button" onClick={() => toggleAssignSubject(s.code)}
+                                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
+                                  selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
+                                }`}>
+                                <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
+                                  {selected && <Check className="w-2.5 h-2.5" />}
+                                </div>
+                                {s.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </form>
+                  )}
+                </div>
+
+                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
+                  <button type="button" onClick={assignStep === 'confirm' ? () => setAssignStep('code') : closeAssign}
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    {assignStep === 'confirm' ? 'Back' : 'Cancel'}
+                  </button>
+                  {assignStep === 'code' ? (
+                    <button type="submit" form="assign-code-form" disabled={assignLookingUp}
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      {assignLookingUp
+                        ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Looking up...</>
+                        : <>Find Student <ArrowRight className="w-4 h-4" /></>
+                      }
+                    </button>
+                  ) : (
+                    <button type="submit" form="assign-subjects-form" disabled={assignSubmitting}
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      {assignSubmitting
+                        ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Assigning...</>
+                        : <>Assign Student <ArrowRight className="w-4 h-4" /></>
+                      }
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>

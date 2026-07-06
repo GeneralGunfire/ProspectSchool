@@ -1,5 +1,5 @@
 // ── LessonEnrichment — Four enrichment components for learning pages ──────────
-// Design system: warm beige (#F5F0E8), stone palette, Emil Kowalski easing.
+// Design system: warm beige (#EEF2F7), stone palette, Emil Kowalski easing.
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
@@ -53,16 +53,16 @@ export function KnowledgeCheck({ question, options, correctIndex, explanation }:
   return (
     <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden my-6">
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-stone-100 bg-amber-50/50">
-        <span className="w-5 h-5 rounded-md bg-amber-400 flex items-center justify-center shrink-0">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-stone-100 bg-blue-50/60">
+        <span className="w-5 h-5 rounded-md bg-blue-600 flex items-center justify-center shrink-0">
           <span className="text-[9px] font-black text-white">?</span>
         </span>
-        <span className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-700">Quick Check</span>
+        <span className="text-[10px] font-black uppercase tracking-[0.22em] text-blue-700">Quick Check</span>
       </div>
 
       {/* Question */}
       <div className="px-5 py-4">
-        <p className="text-[15px] font-black text-[#1C1917] leading-snug">{question}</p>
+        <p className="text-[15px] font-black text-[#1e293b] leading-snug">{question}</p>
       </div>
 
       {/* Options — full-width rows */}
@@ -78,9 +78,9 @@ export function KnowledgeCheck({ question, options, correctIndex, explanation }:
 
           if (!answered) {
             containerCls += isSelected
-              ? 'border-[#1C1917] bg-[#1C1917]'
+              ? 'border-[#1e293b] bg-[#1e293b]'
               : 'border-stone-200 bg-stone-50/40 hover:border-stone-300 hover:bg-white'
-            labelCls += isSelected ? 'bg-white text-[#1C1917]' : 'bg-stone-200 text-stone-500'
+            labelCls += isSelected ? 'bg-white text-[#1e293b]' : 'bg-stone-200 text-stone-500'
             textCls += isSelected ? 'text-white font-bold' : 'text-stone-700'
           } else if (isCorrect) {
             containerCls += 'border-emerald-300 bg-emerald-50'
@@ -128,7 +128,7 @@ export function KnowledgeCheck({ question, options, correctIndex, explanation }:
             <div className={`mx-5 mb-5 rounded-xl px-4 py-3.5 border ${
               selected === correctIndex
                 ? 'bg-emerald-50 border-emerald-200/80'
-                : 'bg-[#F5F0E8] border-stone-200/80'
+                : 'bg-[#EEF2F7] border-stone-200/80'
             }`}>
               <p className={`text-[10px] font-black uppercase tracking-[0.18em] mb-1.5 ${
                 selected === correctIndex ? 'text-emerald-600' : 'text-stone-400'
@@ -153,13 +153,13 @@ export interface ExamTipProps { tip: string }
 
 export function ExamTip({ tip }: ExamTipProps) {
   return (
-    <div className="rounded-2xl bg-amber-50 border border-amber-200/80 px-5 py-4 my-2">
+    <div className="rounded-2xl border border-blue-100 bg-blue-50/60 px-5 py-4 my-2">
       <div className="flex items-start gap-3">
-        <div className="w-7 h-7 rounded-xl bg-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+        <div className="w-7 h-7 rounded-xl bg-blue-600 flex items-center justify-center shrink-0 mt-0.5">
           <Lightbulb className="w-3.5 h-3.5 text-white" />
         </div>
         <div>
-          <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-amber-700 mb-1">
+          <span className="block text-[10px] font-black uppercase tracking-[0.22em] text-blue-700 mb-1">
             Exam Tip
           </span>
           <p className="text-[13px] text-stone-700 leading-relaxed">{tip}</p>
@@ -174,7 +174,7 @@ export interface SummaryCardProps { points: string[] }
 
 export function SummaryCard({ points }: SummaryCardProps) {
   return (
-    <div className="bg-[#1C1917] rounded-2xl overflow-hidden">
+    <div className="bg-[#1e293b] rounded-2xl overflow-hidden">
       <div className="px-5 py-4 border-b border-stone-800">
         <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-500">
           Key Concepts to Remember

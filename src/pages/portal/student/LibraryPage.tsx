@@ -1,5 +1,4 @@
 import { Suspense, lazy } from 'react';
-import { ChevronLeft, BookOpen } from 'lucide-react';
 import { StudySessionProvider } from '../../../providers/StudySessionContext';
 import type { StudentSession } from '../../../lib/auth';
 
@@ -54,43 +53,6 @@ const Spinner = () => (
   </div>
 );
 
-// ── Topic label from page key ─────────────────────────────────────────────────
-function topicLabel(key: string): string {
-  // 'learning-algebra-g10-t1-linear-equations' → 'Linear Equations'
-  const slug = key.replace(/^learning-[^-]+-g\d+-t\d+-/, '');
-  return slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-}
-
-// ── Portal top-bar shared between hub and topic pages ─────────────────────────
-function PortalBar({
-  onBack,
-  backLabel,
-  title,
-}: {
-  onBack: () => void;
-  backLabel: string;
-  title?: string;
-}) {
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-14 bg-white border-b border-slate-100 flex items-center px-5 gap-3 shrink-0">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm font-black text-slate-500 hover:text-slate-900 transition-colors"
-      >
-        <ChevronLeft className="w-4 h-4" />
-        {backLabel}
-      </button>
-      {title && (
-        <>
-          <div className="w-px h-4 bg-slate-200" />
-          <BookOpen className="w-4 h-4 text-slate-300 shrink-0" />
-          <span className="text-xs font-bold text-slate-400 truncate">{title}</span>
-        </>
-      )}
-    </div>
-  );
-}
-
 interface LibraryPageProps {
   session: StudentSession;
   innerPage: string;
@@ -107,28 +69,17 @@ export default function LibraryPage({ session, innerPage, onNavigate }: LibraryP
 
       {/* ── Learning topic page ─────────────────────────────────────────── */}
       {LearningPage ? (
-        <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
-          {/* Fixed nav bar with back-to-library button */}
-          <PortalBar
-            onBack={() => onNavigate('library')}
-            backLabel="Library"
-            title={topicLabel(innerPage)}
-          />
-          {/* Offset the content below the fixed bar, override page's own pt */}
-          <div className="portal-content" style={{ paddingTop: '56px' }}>
-            <Suspense fallback={<Spinner />}>
-              <LearningPage onNavigate={onNavigate} />
-            </Suspense>
-          </div>
+        <div className="bg-dash-bg portal-content">
+          <Suspense fallback={<Spinner />}>
+            <LearningPage onNavigate={onNavigate} />
+          </Suspense>
         </div>
       ) : (
         /* ── Library hub ───────────────────────────────────────────────── */
-        <div className="min-h-screen">
-          <div className="portal-content" style={{ paddingTop: '0' }}>
-            <Suspense fallback={<Spinner />}>
-              <StudyLibraryPage onNavigate={onNavigate} />
-            </Suspense>
-          </div>
+        <div className="portal-content" style={{ paddingTop: '0' }}>
+          <Suspense fallback={<Spinner />}>
+            <StudyLibraryPage onNavigate={onNavigate} />
+          </Suspense>
         </div>
       )}
     </StudySessionProvider>

@@ -785,8 +785,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\TeacherDashboard.tsx": {
-    "mtime": 1783355189.7876875,
-    "ast_hash": "a2816ff857399a3b6b4f55ebbc2e9f3d",
+    "mtime": 1783364463.134344,
+    "ast_hash": "f4e696e57bf12d71b7e3b95a645c2fda",
     "semantic_hash": ""
   },
   "C:\\prospect\\src\\pages\\portal\\admin\\AdminAnnouncementsPage.tsx": {
@@ -925,8 +925,8 @@
     "semantic_hash": ""
   },
   "C:\\prospect\\filestructure.txt": {
-    "mtime": 1783355527.7497861,
-    "ast_hash": "10231866fabba90deb05097e5124f233",
+    "mtime": 1783365727.9251823,
+    "ast_hash": "e62b375c2dd4cec124750657226c272f",
     "semantic_hash": ""
   },
   "C:\\prospect\\index.html": {
@@ -1412,6 +1412,11 @@
   "C:\\prospect\\public\\logo.jpg": {
     "mtime": 1783354922.2081385,
     "ast_hash": "b0afa8f48eaa8bdf9df3e98a2471a5fb",
+    "semantic_hash": ""
+  },
+  "C:\\prospect\\src\\pages\\portal\\teacher\\RiskEnginePage.tsx": {
+    "mtime": 1783365380.4587831,
+    "ast_hash": "f38573d36787f6303e5ef212cd9cf434",
     "semantic_hash": ""
   }
 }

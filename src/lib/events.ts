@@ -112,13 +112,17 @@ async function deleteAttachment(storagePath: string): Promise<void> {
   await supabaseAdmin.storage.from('homework-attachments').remove([storagePath]);
 }
 
-// ── Fetch events for a school (teacher view — all events) ────
+// ── Fetch events for a school (teacher view) ──────────────────
+// Scoped to events the teacher created themselves, plus schoolwide
+// "everyone" events — a teacher never sees another teacher's
+// class/subject/grade-targeted events.
 
-export async function fetchSchoolEvents(school_id: number): Promise<SchoolEvent[]> {
+export async function fetchSchoolEvents(school_id: number, teacher_id: number): Promise<SchoolEvent[]> {
   const { data, error } = await supabaseAdmin
     .from('events')
     .select('*')
     .eq('school_id', school_id)
+    .or(`created_by_teacher_id.eq.${teacher_id},target_type.eq.all`)
     .order('event_date')
     .order('start_time', { nullsFirst: true });
 
@@ -127,8 +131,9 @@ export async function fetchSchoolEvents(school_id: number): Promise<SchoolEvent[
 }
 
 // ── Fetch events for a specific month (teacher view) ─────────
+// Same own-events + schoolwide-"all" scoping as fetchSchoolEvents.
 
-export async function fetchMonthEvents(school_id: number, year: number, month: number): Promise<SchoolEvent[]> {
+export async function fetchMonthEvents(school_id: number, teacher_id: number, year: number, month: number): Promise<SchoolEvent[]> {
   const from = `${year}-${String(month).padStart(2, '0')}-01`;
   const lastDay = new Date(year, month, 0).getDate();
   const to = `${year}-${String(month).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
@@ -139,6 +144,7 @@ export async function fetchMonthEvents(school_id: number, year: number, month: n
     .eq('school_id', school_id)
     .gte('event_date', from)
     .lte('event_date', to)
+    .or(`created_by_teacher_id.eq.${teacher_id},target_type.eq.all`)
     .order('event_date')
     .order('start_time', { nullsFirst: true });
 

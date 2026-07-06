@@ -11,6 +11,8 @@ export interface MarkSheet {
   title: string;
   scope: string | null;
   total: number;
+  weight: number;   // 0-100. 0 = record only, excluded from final mark.
+  term: number;      // 1-4
   event_id: number | null;
   created_at: string;
   // joined
@@ -39,6 +41,8 @@ export interface CreateMarkSheetInput {
   title: string;
   scope?: string;
   total: number;
+  weight?: number; // defaults to 0 (record only) if omitted
+  term?: number;   // defaults to 1 if omitted
 }
 
 export type MarkSheetResult =
@@ -58,6 +62,96 @@ export interface MarkSheetGroup {
   subject_label: string;
   grade: number;
   sheets: MarkSheet[];
+}
+
+// ── Weighted final mark computation ───────────────────────────
+// Given a set of sheets that share the same subject+grade+term, computes the
+// weighted final mark from sheets that have a non-zero weight and a recorded
+// mark. Sheets with weight 0 are "record only" and never contribute.
+// Returns null if weights (that have a mark) don't sum to exactly 100.
+
+export interface WeightedSheetMark {
+  weight: number;
+  mark: number | null;
+  total: number;
+}
+
+export interface FinalMarkResult {
+  finalMark: number | null;   // percentage 0-100, or null if not yet complete
+  weightUsed: number;         // sum of weights for sheets that ARE marked
+  weightTotal: number;        // sum of weights for all non-zero-weight sheets in the group
+  isComplete: boolean;        // true once weightTotal === 100 and every weighted sheet is marked
+}
+
+export function computeFinalMark(sheets: WeightedSheetMark[]): FinalMarkResult {
+  const weighted = sheets.filter(s => s.weight > 0);
+  const weightTotal = weighted.reduce((sum, s) => sum + s.weight, 0);
+  const marked = weighted.filter(s => s.mark !== null);
+  const weightUsed = marked.reduce((sum, s) => sum + s.weight, 0);
+
+  const isComplete = weightTotal === 100 && marked.length === weighted.length && weighted.length > 0;
+
+  if (!isComplete) {
+    return { finalMark: null, weightUsed, weightTotal, isComplete: false };
+  }
+
+  const finalMark = marked.reduce((sum, s) => sum + (s.mark! / s.total) * s.weight, 0);
+  return { finalMark: Math.round(finalMark * 10) / 10, weightUsed, weightTotal, isComplete: true };
+}
+
+// ── Fetch per-term weight completion for a teacher's sheets ───
+// For each subject+grade+term combination, reports how much weight has been
+// assigned (out of 100) and whether every weighted sheet is fully marked yet.
+// Used by the teacher Marks page to show "60% weight used" / "Final mark ready".
+
+export interface TermWeightStatus {
+  key: string; // `${subject_id}-${grade}-${term}`
+  subject_id: number;
+  grade: number;
+  term: number;
+  weightTotal: number;
+  isComplete: boolean; // weightTotal === 100 and every weighted sheet has at least one mark recorded
+}
+
+export async function fetchTeacherTermWeightStatus(
+  teacher_id: number,
+  school_id: number
+): Promise<TermWeightStatus[]> {
+  const { data: sheets } = await supabaseAdmin
+    .from('mark_sheets')
+    .select('id, subject_id, grade, term, weight')
+    .eq('teacher_id', teacher_id)
+    .eq('school_id', school_id)
+    .gt('weight', 0);
+
+  if (!sheets || sheets.length === 0) return [];
+
+  const sheetIds = sheets.map((s: any) => s.id as number);
+  const { data: marks } = await supabaseAdmin
+    .from('student_marks')
+    .select('sheet_id, mark')
+    .in('sheet_id', sheetIds)
+    .not('mark', 'is', null);
+
+  const markedSheetIds = new Set((marks ?? []).map((m: any) => m.sheet_id as number));
+
+  const groups = new Map<string, { subject_id: number; grade: number; term: number; weightTotal: number; allMarked: boolean }>();
+  for (const s of sheets as any[]) {
+    const key = `${s.subject_id}-${s.grade}-${s.term}`;
+    const g = groups.get(key) ?? { subject_id: s.subject_id, grade: s.grade, term: s.term, weightTotal: 0, allMarked: true };
+    g.weightTotal += s.weight;
+    if (!markedSheetIds.has(s.id)) g.allMarked = false;
+    groups.set(key, g);
+  }
+
+  return Array.from(groups.entries()).map(([key, g]) => ({
+    key,
+    subject_id: g.subject_id,
+    grade: g.grade,
+    term: g.term,
+    weightTotal: g.weightTotal,
+    isComplete: g.weightTotal === 100 && g.allMarked,
+  }));
 }
 
 // ── Fetch all mark sheets for a teacher, grouped ──────────────
@@ -113,12 +207,12 @@ export async function fetchTeacherMarkSheets(
 // ── Create mark sheet + auto-populate student_marks rows ──────
 
 export async function createMarkSheet(input: CreateMarkSheetInput): Promise<MarkSheetResult> {
-  const { school_id, teacher_id, subject_id, grade, title, scope, total } = input;
+  const { school_id, teacher_id, subject_id, grade, title, scope, total, weight = 0, term = 1 } = input;
 
   // Insert sheet
   const { data: sheet, error } = await supabaseAdmin
     .from('mark_sheets')
-    .insert({ school_id, teacher_id, subject_id, grade, title: title.trim(), scope: scope?.trim() || null, total })
+    .insert({ school_id, teacher_id, subject_id, grade, title: title.trim(), scope: scope?.trim() || null, total, weight, term })
     .select('*')
     .single();
 
@@ -253,6 +347,8 @@ export interface StudentResult {
   subject_label: string;
   grade: number;
   total: number;
+  weight: number;
+  term: number;
   mark: number | null;
   note: string | null;
   marked_at: string | null;
@@ -265,7 +361,7 @@ export async function fetchStudentResults(
 ): Promise<StudentResult[]> {
   const { data, error } = await supabaseAdmin
     .from('student_marks')
-    .select('mark, note, marked_at, mark_sheets(id, title, scope, total, grade, subject_id, created_at)')
+    .select('mark, note, marked_at, mark_sheets(id, title, scope, total, weight, term, grade, subject_id, created_at)')
     .eq('student_id', student_id)
     .eq('school_id', school_id);
 
@@ -290,6 +386,8 @@ export async function fetchStudentResults(
       subject_label: subjectMap.get(r.mark_sheets.subject_id) ?? '',
       grade: r.mark_sheets.grade ?? 0,
       total: r.mark_sheets.total ?? 0,
+      weight: r.mark_sheets.weight ?? 0,
+      term: r.mark_sheets.term ?? 1,
       mark: r.mark,
       note: r.note,
       marked_at: r.marked_at,

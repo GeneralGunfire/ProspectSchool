@@ -202,9 +202,14 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
+      {/* Ambient background glow — warm stone tones, matching the landing page's hero glow */}
+      <div className="pointer-events-none absolute -top-32 -right-24 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-60"
+        style={{ background: 'radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(37,99,235,0.14) 0%, rgba(37,99,235,0.05) 50%, transparent 80%)' }} />
+      <div className="pointer-events-none absolute top-1/3 -left-32 w-96 h-96 rounded-full blur-3xl opacity-50"
+        style={{ background: 'radial-gradient(50% 50% at 50% 50%, rgba(37,99,235,0.08) 0%, transparent 100%)' }} />
 
-      <div className="pt-4 pb-24 max-w-5xl mx-auto px-4 sm:px-6">
+      <div className="pt-4 pb-24 max-w-5xl mx-auto px-4 sm:px-6 relative">
 
         <AnimatePresence mode="wait">
 
@@ -219,24 +224,37 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
             >
               {/* Hero */}
               <div className="pt-6 mb-10">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-400 mb-4">Study Library</p>
-                <h1 className="font-black text-[#1C1917]" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.04em', lineHeight: 1.05 }}>
+                <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                  className="text-[10px] font-black uppercase tracking-[0.28em] text-stone-400 mb-4 flex items-center gap-2">
+                  <span className="w-4 h-px bg-stone-300" /> Study Library
+                </motion.p>
+                <motion.h1
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 }}
+                  className="font-black text-[#1e293b]"
+                  style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.04em', lineHeight: 1.05 }}
+                >
                   What are you<br /> studying?
-                </h1>
+                </motion.h1>
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }}
+                  className="text-[14px] text-stone-400 mt-3 max-w-sm leading-relaxed">
+                  Lessons, worked examples and quizzes for every topic — pick a subject to get started.
+                </motion.p>
               </div>
 
               {/* Search */}
-              <div className="relative mb-8 max-w-md">
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
+                className="relative mb-8 max-w-md">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search subjects…"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white border border-stone-200 rounded-xl pl-11 pr-4 py-3 text-[15px] text-stone-900 placeholder:text-stone-400 outline-none focus:border-[#1C1917] transition-colors shadow-sm"
+                  className="w-full bg-white border border-stone-200 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] text-stone-900 placeholder:text-stone-400 outline-none focus:border-[#1e293b] focus:ring-4 focus:ring-[#1e293b]/5 transition-all shadow-sm"
                   style={{ fontSize: '16px' }}
                 />
-              </div>
+              </motion.div>
 
               {filteredSubjects.length === 0 ? (
                 <div className="py-20 text-center">
@@ -247,50 +265,48 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                 const available = filteredSubjects.filter(s => subjectsWithContent.has(s.id));
                 const comingSoon = filteredSubjects.filter(s => !subjectsWithContent.has(s.id));
 
-                const SubjectCard = ({ subject }: { subject: typeof filteredSubjects[0] }) => {
+                const SubjectCard = ({ subject, index }: { subject: typeof filteredSubjects[0]; index: number }) => {
                   const hasContent = subjectsWithContent.has(subject.id);
                   const meta = SUBJECT_META[subject.id] ?? SUBJECT_META['default'];
                   const Icon = meta.Icon;
                   return (
                     <motion.button
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(index * 0.035, 0.3), duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                       onClick={() => { if (!hasContent) return; setSelectedSubject(subject.id); setStep('grade'); }}
                       disabled={!hasContent}
-                      whileHover={hasContent ? { y: -2 } : {}}
+                      whileHover={hasContent ? { y: -3 } : {}}
                       whileTap={hasContent ? { scale: 0.98 } : {}}
-                      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                      className={`relative flex flex-col items-start gap-4 p-5 rounded-2xl border text-left transition-all ${
+                      className={`card-premium relative flex flex-col items-start gap-4 p-5 rounded-2xl border text-left ${
                         hasContent
-                          ? 'bg-white border-stone-200 hover:border-[#1C1917] hover:shadow-md cursor-pointer group'
-                          : 'bg-white/50 border-stone-100 cursor-default'
+                          ? 'bg-white border-stone-200 hover:border-[#1e293b]/20 cursor-pointer group'
+                          : 'bg-stone-50/60 border-stone-100 cursor-default'
                       }`}
                     >
                       {/* Icon */}
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        hasContent ? 'bg-[#1C1917]' : 'bg-stone-100'
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                        hasContent ? 'bg-[#1e293b] group-hover:scale-105 group-hover:-rotate-3' : 'bg-stone-100'
                       }`}>
                         <Icon className={`w-5 h-5 ${hasContent ? 'text-white' : 'text-stone-300'}`} />
                       </div>
 
                       {/* Name */}
                       <div className="flex-1 min-w-0 w-full">
-                        <p className={`text-[15px] font-black leading-snug ${hasContent ? 'text-[#1C1917]' : 'text-stone-300'}`} style={{ letterSpacing: '-0.01em' }}>
+                        <p className={`text-[15px] font-black leading-snug ${hasContent ? 'text-[#1e293b]' : 'text-stone-300'}`} style={{ letterSpacing: '-0.01em' }}>
                           {subject.name}
                         </p>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between w-full">
-                        {hasContent ? (
-                          <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">
-                            Live
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-300">
+                      <div className="flex items-center justify-end w-full">
+                        {!hasContent && (
+                          <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-300 mr-auto">
                             <Lock className="w-2.5 h-2.5" /> Soon
                           </span>
                         )}
                         {hasContent && (
-                          <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1C1917] transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1e293b] group-hover:translate-x-0.5 transition-all" />
                         )}
                       </div>
                     </motion.button>
@@ -301,17 +317,21 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                   <div className="space-y-10">
                     {available.length > 0 && (
                       <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Available Now</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
+                          Available Now
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {available.map(s => <SubjectCard key={s.id} subject={s} />)}
+                          {available.map((s, i) => <SubjectCard key={s.id} subject={s} index={i} />)}
                         </div>
                       </section>
                     )}
                     {comingSoon.length > 0 && (
                       <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-300 mb-4">Coming Soon</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-300 mb-4 flex items-center gap-2">
+                          <Lock className="w-2.5 h-2.5" /> Coming Soon
+                        </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {comingSoon.map(s => <SubjectCard key={s.id} subject={s} />)}
+                          {comingSoon.map((s, i) => <SubjectCard key={s.id} subject={s} index={available.length + i} />)}
                         </div>
                       </section>
                     )}
@@ -334,45 +354,52 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-8"
+                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-8 group"
               >
-                <ChevronLeft className="w-3.5 h-3.5" /> All Subjects
+                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> All Subjects
               </button>
 
               {/* Subject hero */}
-              <div className="bg-[#1C1917] rounded-2xl p-6 mb-8 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+              <motion.div
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 mb-8 flex items-center gap-4 relative overflow-hidden"
+              >
+                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-20 pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative z-10">
                   <currentMeta.Icon className="w-6 h-6 text-white" />
                 </div>
-                <div>
+                <div className="relative z-10">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Selected subject</p>
                   <p className="text-xl font-black text-white" style={{ letterSpacing: '-0.02em' }}>{currentSubjectName}</p>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="mb-6">
-                <h2 className="text-2xl font-black text-[#1C1917]" style={{ letterSpacing: '-0.03em' }}>Select your grade</h2>
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
+                <h2 className="text-2xl font-black text-[#1e293b]" style={{ letterSpacing: '-0.03em' }}>Select your grade</h2>
                 <p className="text-[13px] text-stone-400 mt-1">Grade 10 fully available · Grades 11 & 12 coming soon</p>
-              </div>
+              </motion.div>
 
               <div className="grid grid-cols-3 gap-3">
-                {[10, 11, 12].map((grade) => {
+                {[10, 11, 12].map((grade, i) => {
                   const isAvailable = grade === 10;
                   return (
                     <motion.button
                       key={grade}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.08 + i * 0.05, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                       onClick={() => { if (!isAvailable) return; setSelectedGrade(grade); setSelectedTerm(1); setStep('content'); }}
                       disabled={!isAvailable}
-                      whileHover={isAvailable ? { y: -2 } : {}}
+                      whileHover={isAvailable ? { y: -3 } : {}}
                       whileTap={isAvailable ? { scale: 0.97 } : {}}
-                      transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                      className={`flex flex-col items-center justify-center gap-1.5 py-8 rounded-2xl border transition-all ${
+                      className={`card-premium flex flex-col items-center justify-center gap-1.5 py-8 rounded-2xl border ${
                         isAvailable
-                          ? 'bg-white border-stone-200 hover:border-[#1C1917] hover:shadow-md cursor-pointer group'
-                          : 'bg-white/40 border-stone-100 cursor-default'
+                          ? 'bg-white border-stone-200 hover:border-[#1e293b]/20 cursor-pointer group'
+                          : 'bg-stone-50/60 border-stone-100 cursor-default'
                       }`}
                     >
-                      <p className={`text-[32px] font-black leading-none ${isAvailable ? 'text-[#1C1917]' : 'text-stone-200'}`} style={{ letterSpacing: '-0.04em' }}>
+                      <p className={`text-[32px] font-black leading-none transition-colors ${isAvailable ? 'text-[#1e293b]' : 'text-stone-200'}`} style={{ letterSpacing: '-0.04em' }}>
                         {grade}
                       </p>
                       <p className={`text-[10px] font-black uppercase tracking-widest ${isAvailable ? 'text-stone-400' : 'text-stone-200'}`}>
@@ -398,9 +425,9 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors mb-8"
+                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors mb-8 group"
               >
-                <ChevronLeft className="w-3.5 h-3.5" /> Grade {selectedGrade}
+                <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Grade {selectedGrade}
               </button>
 
               {(() => {
@@ -412,8 +439,13 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                   return (
                     <div className="space-y-6">
                       {/* Hero header — dark card */}
-                      <div className="bg-[#1C1917] rounded-2xl p-6">
-                        <div className="flex items-start justify-between gap-4">
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                        className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 relative overflow-hidden"
+                      >
+                        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
+                          style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
+                        <div className="flex items-start justify-between gap-4 relative z-10">
                           <div>
                             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
                               Grade {selectedGrade} · Term {selectedTerm}
@@ -425,28 +457,30 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                               {topicNames.length} topic{topicNames.length !== 1 ? 's' : ''} · Lesson, worked example & quiz per topic
                             </p>
                           </div>
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/10`}>
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/10">
                             <currentMeta.Icon className="w-6 h-6 text-white" />
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
 
                       {/* Topic cards */}
                       <div className="space-y-2.5">
                         {topicNames.map((name, i) => (
                           <motion.button
                             key={i}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.05 + i * 0.045, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                             onClick={() => onNavigate(topicPages[i])}
                             whileHover={{ x: 4 }}
                             whileTap={{ scale: 0.98 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                            className="w-full flex items-center gap-4 px-5 py-5 bg-white border border-stone-200 rounded-2xl hover:border-[#1C1917] hover:shadow-md transition-all text-left group"
+                            className="card-premium w-full flex items-center gap-4 px-5 py-5 bg-white border border-stone-200 rounded-2xl hover:border-[#1e293b]/20 text-left group"
                           >
-                            <div className="w-10 h-10 rounded-xl bg-[#1C1917] flex items-center justify-center shrink-0">
+                            <div className="w-10 h-10 rounded-xl bg-[#1e293b] flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
                               <span className="text-[14px] font-black text-white">{i + 1}</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[15px] font-black text-[#1C1917] leading-snug" style={{ letterSpacing: '-0.01em' }}>{name}</p>
+                              <p className="text-[15px] font-black text-[#1e293b] leading-snug" style={{ letterSpacing: '-0.01em' }}>{name}</p>
                               <div className="flex items-center gap-1.5 mt-1">
                                 {['Lesson', 'Worked example', 'Practice'].map((tag, t) => (
                                   <span key={t} className="text-[10px] font-black uppercase tracking-[0.12em] text-stone-400">
@@ -455,18 +489,21 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                                 ))}
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1C1917] transition-colors shrink-0" />
+                            <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1e293b] group-hover:translate-x-0.5 transition-all shrink-0" />
                           </motion.button>
                         ))}
                       </div>
 
                       {/* Section quiz */}
                       {quizQuestions.length > 0 && (
-                        <QuizBlock
-                          storageKey={quizKey}
-                          questions={quizQuestions}
-                          shuffle
-                        />
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.05 + topicNames.length * 0.045 }}>
+                          <QuizBlock
+                            storageKey={quizKey}
+                            questions={quizQuestions}
+                            shuffle
+                          />
+                        </motion.div>
                       )}
                     </div>
                   );
@@ -474,27 +511,33 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
                 return (
                   <div className="space-y-4">
-                    <div className="bg-[#1C1917] rounded-2xl p-6">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
-                        {currentSubjectName} · Grade {selectedGrade}
-                      </p>
-                      <h2 className="text-2xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
-                        Coming soon
-                      </h2>
-                      <p className="text-[13px] text-stone-400 mt-2">
-                        Study materials for Grade {selectedGrade} are in development. Check back soon.
-                      </p>
-                    </div>
-                    <button
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                      className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 relative overflow-hidden">
+                      <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
+                        style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
+                      <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
+                          {currentSubjectName} · Grade {selectedGrade}
+                        </p>
+                        <h2 className="text-2xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
+                          Coming soon
+                        </h2>
+                        <p className="text-[13px] text-stone-400 mt-2">
+                          Study materials for Grade {selectedGrade} are in development. Check back soon.
+                        </p>
+                      </div>
+                    </motion.div>
+                    <motion.button
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}
                       onClick={() => setStep('subject')}
-                      className="w-full flex items-center justify-between px-5 py-4 bg-white border border-stone-200 rounded-2xl hover:border-[#1C1917] hover:shadow-md transition-all group text-left"
+                      className="card-premium w-full flex items-center justify-between px-5 py-4 bg-white border border-stone-200 rounded-2xl hover:border-[#1e293b]/20 transition-all group text-left"
                     >
                       <div>
                         <p className="text-[14px] font-black text-stone-900">Browse other subjects</p>
                         <p className="text-[11px] text-stone-400 mt-0.5 font-medium">See what's already available</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-700 transition-colors" />
-                    </button>
+                      <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-700 group-hover:translate-x-0.5 transition-all" />
+                    </motion.button>
                   </div>
                 );
               })()}

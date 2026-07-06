@@ -49,8 +49,8 @@ function shuffleArray<T>(arr: T[]): T[] {
 }
 
 const EASE = [0.23, 1, 0.32, 1] as const;
-const BG   = '#F5F0E8';
-const DARK = '#1C1917';
+const BG   = '#EEF2F7';
+const DARK = '#1e293b';
 const LABELS = ['A', 'B', 'C', 'D'];
 
 type Phase = 'idle' | 'active' | 'review';
@@ -82,8 +82,8 @@ function OptionRow({
 
   if (!revealed) {
     if (isSelected) {
-      containerCls += 'border-[#1C1917] bg-[#1C1917]';
-      labelCls += 'bg-white text-[#1C1917]';
+      containerCls += 'border-[#1e293b] bg-[#1e293b]';
+      labelCls += 'bg-white text-[#1e293b]';
       textCls += 'text-white font-bold';
     } else {
       containerCls += 'border-stone-200 bg-stone-50/40 hover:border-stone-300 hover:bg-white cursor-pointer';
@@ -368,7 +368,7 @@ export default function QuizBlock({
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-2.5">
               Question {state.current + 1}
             </p>
-            <p className="text-[16px] font-black text-[#1C1917] leading-snug">{q.q}</p>
+            <p className="text-[16px] font-black text-[#1e293b] leading-snug">{q.q}</p>
           </div>
 
           {/* Divider */}
@@ -402,7 +402,7 @@ export default function QuizBlock({
                 <div className={`mx-5 mb-5 rounded-xl px-4 py-3.5 border ${
                   sel === q.answer
                     ? 'bg-emerald-50 border-emerald-200/80'
-                    : 'bg-[#F5F0E8] border-stone-200/80'
+                    : 'bg-[#EEF2F7] border-stone-200/80'
                 }`}>
                   <p className={`text-[10px] font-black uppercase tracking-[0.18em] mb-1.5 ${
                     sel === q.answer ? 'text-emerald-600' : 'text-stone-400'

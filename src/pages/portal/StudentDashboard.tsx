@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
@@ -9,12 +9,13 @@ import StudentResourcesPage from './student/StudentResourcesPage';
 import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 import StudentPastPapersPage from './student/StudentPastPapersPage';
 import ApsCalculatorPage from './student/ApsCalculatorPage';
+import StudentTopicTestsPage from './student/StudentTopicTestsPage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -51,6 +52,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
     { id: 'pastpapers',    label: 'Past Papers',   icon: FileText,       mobileLabel: 'Papers' },
     { id: 'library',       label: 'Library',       icon: BookOpen },
+    { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
     { id: 'aps',           label: 'APS & Unis',    icon: GraduationCap,  mobileLabel: 'APS' },
     { id: 'future',        label: 'My Future',     icon: Sparkles,       mobileLabel: 'Future' },
   ];
@@ -69,20 +71,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     setActivePage(id);
     if (id === 'library') setInnerPage('library');
     setMenuOpen(false);
-  }
-
-  const inLearningPage = activePage === 'library' && innerPage.startsWith('learning-');
-
-  if (inLearningPage) {
-    return (
-      <Suspense fallback={
-        <div className="min-h-screen flex items-center justify-center bg-dash-bg">
-          <div className="w-6 h-6 border-2 border-brand-border border-t-accent rounded-full animate-spin" />
-        </div>
-      }>
-        <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
-      </Suspense>
-    );
   }
 
   return (
@@ -256,6 +244,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'aps'           && <ApsCalculatorPage session={session} />}
+          {activePage === 'topic-tests'   && <StudentTopicTestsPage session={session} />}
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
               <MyFuturePage session={session} onNavigate={p => {

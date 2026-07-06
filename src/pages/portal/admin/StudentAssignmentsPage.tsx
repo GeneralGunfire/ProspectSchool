@@ -1,0 +1,343 @@
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { X, ArrowRight, Check, AlertCircle, Trash2, Search, UserPlus, BookOpen } from 'lucide-react';
+import type { AdminSession } from '../../../lib/auth';
+import {
+  fetchSchoolAssignments, adminAssignTeacherToStudent, adminRemoveAssignment,
+  fetchSubjects, type AssignmentRow, type Subject,
+} from '../../../lib/students';
+import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
+
+interface StudentAssignmentsPageProps { session: AdminSession; }
+
+export default function StudentAssignmentsPage({ session }: StudentAssignmentsPageProps) {
+  const [rows, setRows] = useState<AssignmentRow[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+
+  const [showAssign, setShowAssign] = useState(false);
+  const [assignTeacherId, setAssignTeacherId] = useState<number | null>(null);
+  const [assignStudentId, setAssignStudentId] = useState<number | null>(null);
+  const [assignSubjectId, setAssignSubjectId] = useState<number | null>(null);
+  const [assignError, setAssignError] = useState<string | null>(null);
+  const [assignSubmitting, setAssignSubmitting] = useState(false);
+
+  const [confirmRemove, setConfirmRemove] = useState<AssignmentRow | null>(null);
+  const [removing, setRemoving] = useState(false);
+
+  useEffect(() => { load(); }, []);
+
+  const load = async () => {
+    setLoading(true);
+    if (session.school_id) {
+      const [assignments, schoolTeachers, allSubjects] = await Promise.all([
+        fetchSchoolAssignments(session.school_id),
+        fetchSchoolTeachers(session.school_id),
+        fetchSubjects(),
+      ]);
+      setRows(assignments);
+      setTeachers(schoolTeachers);
+      setSubjects(allSubjects);
+    }
+    setLoading(false);
+  };
+
+  // Group rows by student for a cleaner overview
+  const byStudent = useMemo(() => {
+    const map = new Map<number, AssignmentRow[]>();
+    for (const r of rows) {
+      if (!map.has(r.student_id)) map.set(r.student_id, []);
+      map.get(r.student_id)!.push(r);
+    }
+    return map;
+  }, [rows]);
+
+  const filteredStudentIds = useMemo(() => {
+    const ids = [...byStudent.keys()];
+    if (!search.trim()) return ids;
+    const q = search.toLowerCase();
+    return ids.filter((id) => {
+      const group = byStudent.get(id)!;
+      return group.some((r) =>
+        r.student_name.toLowerCase().includes(q) ||
+        r.student_surname.toLowerCase().includes(q) ||
+        r.student_code.toLowerCase().includes(q) ||
+        r.teacher_name.toLowerCase().includes(q) ||
+        r.teacher_surname.toLowerCase().includes(q) ||
+        r.subject_label.toLowerCase().includes(q)
+      );
+    });
+  }, [byStudent, search]);
+
+  const openAssign = () => {
+    setShowAssign(true);
+    setAssignTeacherId(null);
+    setAssignStudentId(null);
+    setAssignSubjectId(null);
+    setAssignError(null);
+  };
+
+  const closeAssign = () => setShowAssign(false);
+
+  // Students are derived from existing assignment rows (the school's known roster).
+  const knownStudents = useMemo(() => {
+    const map = new Map<number, { id: number; name: string; surname: string; code: string }>();
+    for (const r of rows) {
+      if (!map.has(r.student_id)) {
+        map.set(r.student_id, { id: r.student_id, name: r.student_name, surname: r.student_surname, code: r.student_code });
+      }
+    }
+    return [...map.values()].sort((a, b) => a.surname.localeCompare(b.surname));
+  }, [rows]);
+
+  const handleAssignSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assignTeacherId || !assignStudentId || !assignSubjectId) {
+      setAssignError('Please select a teacher, student and subject.');
+      return;
+    }
+    setAssignSubmitting(true);
+    setAssignError(null);
+    const result = await adminAssignTeacherToStudent(assignTeacherId, assignStudentId, assignSubjectId);
+    setAssignSubmitting(false);
+    if (!result.success) { setAssignError(result.error); return; }
+    await load();
+    closeAssign();
+  };
+
+  const handleRemove = async () => {
+    if (!confirmRemove) return;
+    setRemoving(true);
+    await adminRemoveAssignment(confirmRemove.assignment_id);
+    await load();
+    setConfirmRemove(null);
+    setRemoving(false);
+  };
+
+  return (
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <span className="eyebrow">Admin</span>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Student Assignments</h1>
+          <p className="text-sm text-stone-500 mt-1">Manage which teachers teach which students, and for which subjects.</p>
+        </div>
+        <motion.button onClick={openAssign} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
+          <UserPlus className="w-4 h-4" /> Assign Teacher
+        </motion.button>
+      </div>
+
+      {/* Search */}
+      {!loading && rows.length > 0 && (
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex-1 min-w-48 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by student, teacher or subject…"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+            />
+          </div>
+          <p className="text-xs font-bold text-stone-500">
+            {filteredStudentIds.length} of {byStudent.size} student{byStudent.size !== 1 ? 's' : ''}
+          </p>
+        </div>
+      )}
+
+      {/* List, grouped by student */}
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        </div>
+      ) : rows.length === 0 ? (
+        <div className="card-premium bg-white border border-brand-border rounded-3xl p-12 text-center">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+            <UserPlus className="w-5 h-5 text-stone-500" />
+          </div>
+          <p className="font-bold text-brand-dark mb-1">No assignments yet</p>
+          <p className="text-sm text-stone-500">Links appear once teachers add or assign students.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filteredStudentIds.map((studentId) => {
+            const group = byStudent.get(studentId)!;
+            const first = group[0];
+            return (
+              <div key={studentId} className="card-premium bg-white border border-brand-border rounded-2xl overflow-hidden">
+                <div className="px-5 py-3 border-b border-brand-border/60 flex items-center justify-between">
+                  <div>
+                    <p className="font-bold text-brand-dark">{first.student_surname}, {first.student_name}</p>
+                    <p className="text-xs text-stone-500 font-mono tracking-widest">{first.student_code} · Gr {first.student_grade}</p>
+                  </div>
+                  <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-stone-100 text-stone-600">
+                    {group.length} link{group.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+                <div className="divide-y divide-stone-50">
+                  {group.map((r) => (
+                    <div key={r.assignment_id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-stone-50 transition-colors">
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <span className="text-sm font-bold text-brand-dark">{r.teacher_surname}, {r.teacher_name}</span>
+                        <span className="text-[10px] font-mono text-stone-400 tracking-widest">{r.teacher_code}</span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
+                          <BookOpen className="w-2.5 h-2.5" />{r.subject_label}
+                        </span>
+                      </div>
+                      <button onClick={() => setConfirmRemove(r)}
+                        className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Assign modal */}
+      <AnimatePresence>
+        {showAssign && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={closeAssign} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
+                  <h2 className="text-lg font-black text-brand-dark">Assign Teacher to Student</h2>
+                  <button onClick={closeAssign} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="px-6 py-4">
+                  <form id="admin-assign-form" onSubmit={handleAssignSubmit} className="space-y-4">
+                    {assignError && (
+                      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                        <p className="text-red-700 text-sm">{assignError}</p>
+                      </motion.div>
+                    )}
+
+                    <div>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student</label>
+                      <select required value={assignStudentId ?? ''} onChange={(e) => setAssignStudentId(Number(e.target.value) || null)}
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
+                        <option value="">Select student</option>
+                        {knownStudents.map((s) => (
+                          <option key={s.id} value={s.id}>{s.surname}, {s.name} ({s.code})</option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-stone-500 mt-1.5">
+                        Only students already in the school (added by a teacher) appear here.
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher</label>
+                      <select required value={assignTeacherId ?? ''} onChange={(e) => setAssignTeacherId(Number(e.target.value) || null)}
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
+                        <option value="">Select teacher</option>
+                        {teachers.map((t) => (
+                          <option key={t.id} value={t.id}>{t.surname}, {t.name} ({t.teacher_code})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {subjects.map((s) => {
+                          const selected = assignSubjectId === s.id;
+                          return (
+                            <button key={s.id} type="button" onClick={() => setAssignSubjectId(s.id)}
+                              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
+                                selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
+                              }`}>
+                              <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
+                                {selected && <Check className="w-2.5 h-2.5" />}
+                              </div>
+                              {s.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
+                  <button type="button" onClick={closeAssign}
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    Cancel
+                  </button>
+                  <button type="submit" form="admin-assign-form" disabled={assignSubmitting}
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    {assignSubmitting
+                      ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
+                      : <>Assign <ArrowRight className="w-4 h-4" /></>
+                    }
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Remove confirm */}
+      <AnimatePresence>
+        {confirmRemove && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setConfirmRemove(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                  <Trash2 className="w-5 h-5 text-red-500" />
+                </div>
+                <h2 className="text-base font-black text-brand-dark mb-1">Remove this link?</h2>
+                <p className="text-sm text-stone-500 mb-6">
+                  <span className="font-bold text-brand-dark">{confirmRemove.teacher_surname}, {confirmRemove.teacher_name}</span> will
+                  no longer teach <span className="font-bold text-brand-dark">{confirmRemove.subject_label}</span> to{' '}
+                  <span className="font-bold text-brand-dark">{confirmRemove.student_surname}, {confirmRemove.student_name}</span>.
+                  The student's account and other links are unaffected.
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={() => setConfirmRemove(null)}
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleRemove} disabled={removing}
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    {removing
+                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      : 'Remove'
+                    }
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

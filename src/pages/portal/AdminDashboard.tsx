@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
 import AdminHomePage from './admin/AdminHomePage';
+import StudentAssignmentsPage from './admin/StudentAssignmentsPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -32,6 +33,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'home',          label: 'Home',          icon: Home },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'teachers',      label: 'Teachers',      icon: GraduationCap },
+    { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
   ];
 
   function setPage(id: ActivePage) {
@@ -182,6 +184,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'home'          && <AdminHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <AdminAnnouncementsPage session={session} />}
           {activePage === 'teachers'      && <TeachersPage session={session} />}
+          {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
         </div>
       </div>
     </div>

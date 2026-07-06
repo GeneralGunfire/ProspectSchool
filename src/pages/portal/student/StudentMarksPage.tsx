@@ -5,7 +5,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
 } from 'recharts';
-import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
+import { fetchStudentResults, computeFinalMark, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
@@ -590,6 +590,20 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             {Array.from(grouped.entries()).map(([subject, items], gi) => {
               const markedItems = items.filter(r => r.mark !== null);
 
+              // Weighted final mark per term (only shown once a term's weights sum to 100%)
+              const termGroups = new Map<number, StudentResult[]>();
+              for (const r of items) {
+                if (!termGroups.has(r.term)) termGroups.set(r.term, []);
+                termGroups.get(r.term)!.push(r);
+              }
+              const termFinals = Array.from(termGroups.entries())
+                .map(([term, termItems]) => ({
+                  term,
+                  ...computeFinalMark(termItems.map(r => ({ weight: r.weight, mark: r.mark, total: r.total }))),
+                }))
+                .filter(t => t.weightTotal > 0)
+                .sort((a, b) => a.term - b.term);
+
               const subjectAvg = markedItems.length > 0
                 ? markedItems.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / markedItems.length
                 : null;
@@ -779,6 +793,26 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                               </div>
                             ))}
                           </div>
+
+                          {/* Weighted final marks per term */}
+                          {termFinals.length > 0 && (
+                            <div className="px-5 pb-3 flex flex-wrap gap-2">
+                              {termFinals.map(t => (
+                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+                                  t.isComplete
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                    : 'bg-stone-50 text-stone-500 border-brand-border/60'
+                                }`}>
+                                  <span className="font-black">Term {t.term}</span>
+                                  <span className="opacity-50">·</span>
+                                  {t.isComplete
+                                    ? <span>Final: {t.finalMark}%</span>
+                                    : <span>{t.weightTotal}% weight used</span>
+                                  }
+                                </div>
+                              ))}
+                            </div>
+                          )}
 
                           {/* Achievement chips */}
                           {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (

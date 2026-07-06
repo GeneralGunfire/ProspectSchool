@@ -51,6 +51,14 @@ export type DeleteStudentResult =
   | { success: true }
   | { success: false; error: string };
 
+export type LookupStudentResult =
+  | { success: true; student: Student }
+  | { success: false; error: string };
+
+export type AssignStudentResult =
+  | { success: true }
+  | { success: false; error: string };
+
 // ── Fetch all subjects ────────────────────────────────────────
 
 export async function fetchSubjects(): Promise<Subject[]> {
@@ -293,6 +301,156 @@ export async function removeStudentFromTeacher(
     }
   }
 
+  return { success: true };
+}
+
+// ── Look up an existing student by code (for Assign Student) ──
+// Used when a teacher wants to link themselves to a student who was already
+// added to the school by another teacher, instead of re-creating the student.
+
+export async function lookupStudentByCode(
+  student_code: string,
+  school_id: number
+): Promise<LookupStudentResult> {
+  const { data: student, error } = await supabaseAdmin
+    .from('students')
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at, cohorts(id, name)')
+    .eq('school_id', school_id)
+    .eq('student_code', student_code.trim().toUpperCase())
+    .maybeSingle();
+
+  if (error || !student) {
+    return { success: false, error: `No student found with code "${student_code}" in this school.` };
+  }
+
+  return {
+    success: true,
+    student: { ...student, cohort: (student as any).cohorts ?? undefined },
+  };
+}
+
+// ── Assign an existing student to a teacher for given subjects ─
+// Adds teacher_students rows only — never touches the student's own record
+// (name, surname, grade, PIN, cohort). Safe to call even if some of the
+// requested subjects are already linked (those are simply skipped).
+
+export async function assignStudentToTeacher(
+  teacher_id: number,
+  student_id: number,
+  school_id: number,
+  subject_codes: string[]
+): Promise<AssignStudentResult> {
+  if (subject_codes.length === 0) {
+    return { success: false, error: 'Please select at least one subject.' };
+  }
+
+  // Confirm the student actually belongs to this school before linking.
+  const { data: student } = await supabaseAdmin
+    .from('students')
+    .select('id')
+    .eq('id', student_id)
+    .eq('school_id', school_id)
+    .maybeSingle();
+
+  if (!student) {
+    return { success: false, error: 'Student not found in this school.' };
+  }
+
+  const { data: subjects } = await supabaseAdmin
+    .from('subjects')
+    .select('id, code')
+    .in('code', subject_codes);
+
+  if (!subjects || subjects.length === 0) {
+    return { success: false, error: 'No matching subjects found.' };
+  }
+
+  // Skip subjects already linked to this teacher for this student.
+  const { data: existingLinks } = await supabaseAdmin
+    .from('teacher_students')
+    .select('subject_id')
+    .eq('teacher_id', teacher_id)
+    .eq('student_id', student_id);
+
+  const existingSubjectIds = new Set((existingLinks ?? []).map((l) => l.subject_id));
+  const newRows = subjects
+    .filter((s) => !existingSubjectIds.has(s.id))
+    .map((s) => ({ teacher_id, student_id, subject_id: s.id }));
+
+  if (newRows.length === 0) {
+    return { success: false, error: 'You already teach this student all selected subjects.' };
+  }
+
+  const { error } = await supabaseAdmin.from('teacher_students').insert(newRows);
+
+  if (error) {
+    return { success: false, error: 'Failed to assign student. Please try again.' };
+  }
+
+  return { success: true };
+}
+
+// ── Admin: view/manage all teacher-student-subject links in a school ──
+
+export interface AssignmentRow {
+  assignment_id: number;
+  teacher_id: number;
+  teacher_name: string;
+  teacher_surname: string;
+  teacher_code: string;
+  student_id: number;
+  student_name: string;
+  student_surname: string;
+  student_code: string;
+  student_grade: number;
+  subject_id: number;
+  subject_code: string;
+  subject_label: string;
+}
+
+export async function fetchSchoolAssignments(school_id: number): Promise<AssignmentRow[]> {
+  const { data, error } = await supabaseAdmin
+    .from('teacher_student_assignments')
+    .select('*')
+    .eq('school_id', school_id)
+    .order('student_surname');
+
+  if (error || !data) return [];
+  return data;
+}
+
+export type AdminAssignResult =
+  | { success: true }
+  | { success: false; error: string };
+
+// Admin links a teacher to a student for one subject. Idempotent — a repeat
+// call for an already-linked (teacher, student, subject) is a no-op success.
+export async function adminAssignTeacherToStudent(
+  teacher_id: number,
+  student_id: number,
+  subject_id: number
+): Promise<AdminAssignResult> {
+  const { error } = await supabaseAdmin
+    .from('teacher_students')
+    .upsert(
+      { teacher_id, student_id, subject_id },
+      { onConflict: 'teacher_id,student_id,subject_id', ignoreDuplicates: true }
+    );
+
+  if (error) return { success: false, error: 'Failed to link teacher to student.' };
+  return { success: true };
+}
+
+// Admin removes a single teacher-student-subject link. Does not delete the
+// student even if this was their last link — admin can do that from the
+// student's row explicitly if intended.
+export async function adminRemoveAssignment(assignment_id: number): Promise<AdminAssignResult> {
+  const { error } = await supabaseAdmin
+    .from('teacher_students')
+    .delete()
+    .eq('id', assignment_id);
+
+  if (error) return { success: false, error: 'Failed to remove link.' };
   return { success: true };
 }
 

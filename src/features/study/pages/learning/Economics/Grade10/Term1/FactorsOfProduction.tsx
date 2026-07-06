@@ -212,10 +212,10 @@ const SpeechBubble = ({ text, pos }: { text: string; pos: 'top' | 'bottom' }) =>
     initial={{ scale: 0, opacity: 0, y: pos === 'top' ? 10 : -10 }}
     animate={{ scale: 1, opacity: 1, y: 0 }}
     transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-    className={`absolute ${pos === 'top' ? '-top-12' : '-bottom-12'} left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#1C1917] text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg z-20`}
+    className={`absolute ${pos === 'top' ? '-top-12' : '-bottom-12'} left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#1e293b] text-white text-xs font-bold px-3 py-2 rounded-xl shadow-lg z-20`}
   >
     {text}
-    <div className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1C1917] rotate-45 ${pos === 'top' ? '-bottom-1' : '-top-1'}`} />
+    <div className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1e293b] rotate-45 ${pos === 'top' ? '-bottom-1' : '-top-1'}`} />
   </motion.div>
 )
 
@@ -240,7 +240,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
         </span>
         <div className="flex gap-1.5 items-center">
           {TOPIC.interactiveSteps.map((_, i) => (
-            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-[#1C1917] w-10' : i < current ? 'bg-[#1C1917] w-8' : 'bg-stone-200 w-6'}`} />
+            <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === current ? 'bg-[#1e293b] w-10' : i < current ? 'bg-[#1e293b] w-8' : 'bg-stone-200 w-6'}`} />
           ))}
         </div>
       </div>
@@ -256,10 +256,10 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1C1917] leading-tight">{step.title}</h3>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
             <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
           </div>
-          <div className="mx-4 mb-4 bg-[#F5F0E8] rounded-xl px-4 pt-4 pb-6">
+          <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
               {step.math.map((token, i) => {
@@ -271,7 +271,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
                     {bubble ? (
                       <button
                         onClick={() => setActiveBubble(isActive ? null : `${current}-${token}-${i}`)}
-                        className={`px-4 py-2.5 rounded-xl font-mono text-lg font-black transition-all ${isActive ? 'bg-[#1C1917] text-white scale-105 shadow-md' : 'bg-white text-stone-800 border border-stone-200 hover:border-stone-400 hover:bg-stone-50'}`}
+                        className={`px-4 py-2.5 rounded-xl font-mono text-lg font-black transition-all ${isActive ? 'bg-[#1e293b] text-white scale-105 shadow-md' : 'bg-white text-stone-800 border border-stone-200 hover:border-stone-400 hover:bg-stone-50'}`}
                       >
                         {token}
                       </button>
@@ -313,7 +313,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
         </button>
         <button
           onClick={() => { isLast ? onComplete() : setCurrent(c => c + 1); setActiveBubble(null) }}
-          className="flex items-center gap-2 px-6 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm"
+          className="flex items-center gap-2 px-6 py-2.5 bg-[#1e293b] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm"
         >
           {isLast ? 'Try a Worked Example' : 'Next'} <ChevronRight className="w-4 h-4" />
         </button>
@@ -332,7 +332,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
-      <div className="bg-[#1C1917] rounded-2xl p-5">
+      <div className="bg-[#1e293b] rounded-2xl p-5">
         <div className="flex items-start gap-3">
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
@@ -347,7 +347,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <button
             key={s.id}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
-            className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1C1917] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
             Step {s.id}
           </button>
@@ -363,7 +363,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
           <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
-          <div className="bg-[#F5F0E8] rounded-xl px-5 py-4 border border-stone-200/60">
+          <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
             <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
           </div>
           {!revealed ? (
@@ -371,7 +371,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
               Reveal explanation
             </button>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#F5F0E8] border border-stone-200/60 rounded-xl p-4">
+            <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
               <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
             </motion.div>
           )}
@@ -382,7 +382,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
         <button onClick={() => { setStepIdx(i => i - 1); setRevealed(false) }} disabled={stepIdx === 0} className="flex items-center gap-1.5 text-[13px] font-bold text-stone-400 disabled:opacity-20 hover:text-stone-900 transition-colors">
           <ChevronLeft className="w-4 h-4" /> Previous
         </button>
-        <button onClick={() => { isLast ? onComplete() : setStepIdx(i => i + 1); setRevealed(false) }} className="flex items-center gap-2 px-6 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm">
+        <button onClick={() => { isLast ? onComplete() : setStepIdx(i => i + 1); setRevealed(false) }} className="flex items-center gap-2 px-6 py-2.5 bg-[#1e293b] text-white rounded-xl hover:bg-stone-800 transition-colors font-black text-sm">
           {isLast ? 'Start Practice' : 'Next Step'} <ChevronRight className="w-4 h-4" />
         </button>
       </div>
@@ -431,7 +431,7 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
     if (!drawing.current) return
     const pos = getPos(e); const ctx = getCtx()!
     ctx.lineWidth = tool === 'pen' ? 2.5 : 22
-    ctx.strokeStyle = tool === 'pen' ? '#1C1917' : '#FAFAF9'
+    ctx.strokeStyle = tool === 'pen' ? '#1e293b' : '#FAFAF9'
     ctx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over'
     ctx.lineTo(pos.x, pos.y); ctx.stroke()
     ctx.beginPath(); ctx.moveTo(pos.x, pos.y)
@@ -465,13 +465,13 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
         className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col overflow-hidden border border-stone-200"
         style={{ height: '480px' }}
       >
-        <div className="flex items-center justify-between px-4 py-3 bg-[#1C1917]">
+        <div className="flex items-center justify-between px-4 py-3 bg-[#1e293b]">
           <div className="flex items-center gap-1.5">
             <span className="text-[10px] font-black uppercase tracking-[0.25em] text-stone-500 mr-2">Scratchpad</span>
-            <button onClick={() => setTool('pen')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'pen' ? 'bg-white text-[#1C1917] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
+            <button onClick={() => setTool('pen')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'pen' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
               <PenLine className="w-3.5 h-3.5" /> Pen
             </button>
-            <button onClick={() => setTool('eraser')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'eraser' ? 'bg-white text-[#1C1917] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
+            <button onClick={() => setTool('eraser')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all ${tool === 'eraser' ? 'bg-white text-[#1e293b] shadow-sm' : 'text-stone-400 hover:text-white hover:bg-white/10'}`}>
               <Eraser className="w-3.5 h-3.5" /> Eraser
             </button>
           </div>
@@ -493,7 +493,7 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
             onPointerLeave={onPointerUp}
           />
           <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
-            style={{ backgroundImage: 'radial-gradient(circle, #1C1917 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            style={{ backgroundImage: 'radial-gradient(circle, #1e293b 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
           {history.length === 0 && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <p className="text-xs text-stone-300 font-medium select-none">Draw your working here…</p>
@@ -543,7 +543,7 @@ const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onCo
           </span>
           <div className="flex gap-1">
             {questions.map((_, i) => (
-              <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i < idx ? 'w-5 bg-[#1C1917]' : i === idx ? 'w-8 bg-[#1C1917]' : 'w-5 bg-stone-200'}`} />
+              <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i < idx ? 'w-5 bg-[#1e293b]' : i === idx ? 'w-8 bg-[#1e293b]' : 'w-5 bg-stone-200'}`} />
             ))}
           </div>
         </div>
@@ -565,9 +565,9 @@ const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onCo
           className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden"
         >
           <div className="px-6 pt-6 pb-4">
-            <p className="font-black text-[#1C1917] text-[17px] leading-snug">{q.question}</p>
+            <p className="font-black text-[#1e293b] text-[17px] leading-snug">{q.question}</p>
             {q.math && (
-              <div className="mt-3 bg-[#F5F0E8] rounded-xl px-5 py-4 border border-stone-200/50">
+              <div className="mt-3 bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/50">
                 <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{q.math}</p>
               </div>
             )}
@@ -583,7 +583,7 @@ const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onCo
               let lbl = 'w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-black shrink-0 transition-all '
               let txt = 'text-[14px] font-medium leading-snug flex-1 '
               if (!confirmed) {
-                if (isSelected) { ctr += 'border-[#1C1917] bg-[#1C1917]'; lbl += 'bg-white text-[#1C1917]'; txt += 'text-white font-bold' }
+                if (isSelected) { ctr += 'border-[#1e293b] bg-[#1e293b]'; lbl += 'bg-white text-[#1e293b]'; txt += 'text-white font-bold' }
                 else { ctr += 'border-stone-200 bg-stone-50/30 hover:border-stone-300 hover:bg-white cursor-pointer'; lbl += 'bg-stone-200 text-stone-500'; txt += 'text-stone-700' }
               } else if (isCorrect) { ctr += 'border-emerald-300 bg-emerald-50'; lbl += 'bg-emerald-500 text-white'; txt += 'text-emerald-900 font-semibold' }
               else if (isSelected) { ctr += 'border-red-200 bg-red-50'; lbl += 'bg-red-400 text-white'; txt += 'text-red-800' }
@@ -611,7 +611,7 @@ const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onCo
           <AnimatePresence>
             {confirmed && (
               <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
-                className={`mx-6 mb-5 rounded-xl px-4 py-4 border ${selected === q.correctIndex ? 'bg-emerald-50 border-emerald-200' : 'bg-[#F5F0E8] border-stone-200'}`}>
+                className={`mx-6 mb-5 rounded-xl px-4 py-4 border ${selected === q.correctIndex ? 'bg-emerald-50 border-emerald-200' : 'bg-[#EEF2F7] border-stone-200'}`}>
                 <p className={`text-[10px] font-black uppercase tracking-[0.18em] mb-2 ${selected === q.correctIndex ? 'text-emerald-600' : 'text-stone-400'}`}>
                   {selected === q.correctIndex ? 'Correct!' : 'Explanation'}
                 </p>
@@ -626,10 +626,10 @@ const PracticeModule = ({ questions, onComplete }: { questions: Question[]; onCo
               {confirmed ? (selected === q.correctIndex ? 'Correct' : 'Incorrect') : 'Select an answer'}
             </span>
             {!confirmed
-              ? <button onClick={confirm} disabled={selected === null} className="px-5 py-2.5 bg-[#1C1917] text-white rounded-xl disabled:opacity-25 hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
+              ? <button onClick={confirm} disabled={selected === null} className="px-5 py-2.5 bg-[#1e293b] text-white rounded-xl disabled:opacity-25 hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
                   Check Answer
                 </button>
-              : <button onClick={handleNext} className="flex items-center gap-2 px-5 py-2.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
+              : <button onClick={handleNext} className="flex items-center gap-2 px-5 py-2.5 bg-[#1e293b] text-white rounded-xl hover:bg-stone-800 font-black text-sm shadow-sm transition-all">
                   {isLast ? 'See Results' : 'Next Question'} <ArrowRight className="w-3.5 h-3.5" />
                 </button>
             }
@@ -648,7 +648,7 @@ const FeedbackModule = ({ correct, total, onRetry, onPracticeMore, onContinue, h
   const mastered = correct / total >= 2 / 3
   return (
     <div className="max-w-sm mx-auto text-center space-y-8 pt-4">
-      <div className="bg-[#1C1917] rounded-3xl p-8 flex flex-col items-center">
+      <div className="bg-[#1e293b] rounded-3xl p-8 flex flex-col items-center">
         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${mastered ? 'bg-emerald-500' : 'bg-amber-400'}`}>
           {mastered ? <Award className="w-8 h-8 text-white" /> : <RotateCcw className="w-8 h-8 text-white" />}
         </div>
@@ -670,7 +670,7 @@ const FeedbackModule = ({ correct, total, onRetry, onPracticeMore, onContinue, h
             <NotebookPen className="w-4 h-4" /> Challenge Questions
           </button>
         )}
-        <button onClick={onContinue} className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-[#1C1917] text-white rounded-xl hover:bg-stone-800 font-black text-sm transition-all">
+        <button onClick={onContinue} className="w-full flex items-center justify-center gap-2 px-8 py-3.5 bg-[#1e293b] text-white rounded-xl hover:bg-stone-800 font-black text-sm transition-all">
           Continue <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -717,7 +717,7 @@ function FactorsOfProductionPage({ onNavigate }: { onNavigate: (page: any) => vo
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
+    <div className="min-h-screen bg-dash-bg">
       <main className="max-w-3xl mx-auto px-4 pt-24 pb-16">
         <div className="max-w-2xl mx-auto">
 
@@ -730,7 +730,7 @@ function FactorsOfProductionPage({ onNavigate }: { onNavigate: (page: any) => vo
               <ChevronLeft className="w-3.5 h-3.5" /> Library
             </button>
             <div className="flex items-center gap-2.5">
-              <h1 className="font-black text-[#1C1917] text-xl" style={{ letterSpacing: '-0.02em' }}>{TOPIC.title}</h1>
+              <h1 className="font-black text-[#1e293b] text-xl" style={{ letterSpacing: '-0.02em' }}>{TOPIC.title}</h1>
               {status === 'mastered' && <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700">Mastered</span>}
               {status === 'needs-practice' && <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700">Needs Practice</span>}
             </div>

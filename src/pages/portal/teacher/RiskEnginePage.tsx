@@ -76,8 +76,8 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
       const students = await fetchTeacherStudentProgress(session.teacher_id, session.school_id);
       if (cancelled) return;
 
-      // Fetch shared data once — events are school-wide, used to detect exam proximity per student.
-      const events = await fetchSchoolEvents(session.school_id);
+      // Fetch shared data once — used to detect exam proximity per student.
+      const events = await fetchSchoolEvents(session.school_id, session.teacher_id);
       if (cancelled) return;
 
       const todayStr = new Date().toISOString().split('T')[0];
