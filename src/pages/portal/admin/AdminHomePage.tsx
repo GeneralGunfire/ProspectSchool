@@ -66,7 +66,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
   }, [session.school_id]);
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full pb-20 md:pb-8">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full">
 
       {/* ── Page header ────────────────────────────────────────── */}
       <motion.div
@@ -74,11 +74,11 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         transition={{ duration: 0.4, ease }}
         className="mb-6 md:mb-8"
       >
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Dashboard</p>
-        <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+        <span className="eyebrow">Dashboard</span>
+        <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Welcome back, {session.name}.
         </h1>
-        <p className="text-sm text-stone-400 mt-1">{session.school_name}</p>
+        <p className="text-sm text-stone-500 mt-1">{session.school_name}</p>
       </motion.div>
 
       {/* ── 3 stat cards ───────────────────────────────────────── */}
@@ -108,13 +108,13 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
             key={card.label}
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: card.delay }}
-            className="bg-white border border-stone-200 rounded-2xl p-5 hover:border-stone-300 transition-colors"
+            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 hover:border-stone-300 transition-colors"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">{card.label}</p>
-            <p className={`font-black text-[#1C1917] ${card.isText ? 'text-lg leading-tight' : 'text-4xl'}`}>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">{card.label}</p>
+            <p className={`font-black text-brand-dark ${card.isText ? 'text-lg leading-tight' : 'text-4xl'}`}>
               {card.value}
             </p>
-            <p className="text-sm text-stone-400 mt-1">{card.sub}</p>
+            <p className="text-sm text-stone-500 mt-1">{card.sub}</p>
           </motion.div>
         ))}
       </div>
@@ -126,9 +126,9 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Quick Actions</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Quick Actions</p>
           <div className="space-y-2">
             {[
               {
@@ -163,16 +163,16 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease, delay: 0.16 + i * 0.04 }}
                   onClick={() => onNavigate(action.page)}
-                  className="w-full flex items-start gap-4 p-4 bg-white border border-stone-200 rounded-2xl hover:border-stone-400 transition-colors cursor-pointer text-left group"
+                  className="w-full flex items-start gap-4 p-4 card-premium bg-white border border-brand-border rounded-[24px] hover:border-stone-400 transition-colors cursor-pointer text-left group"
                 >
-                  <div className="w-9 h-9 bg-[#1C1917] text-white rounded-xl flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 bg-brand-dark text-white rounded-xl flex items-center justify-center shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-black text-stone-900">{action.title}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">{action.description}</p>
+                    <p className="text-xs text-stone-500 mt-0.5">{action.description}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-0.5 shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-0.5 shrink-0" />
                 </motion.button>
               );
             })}
@@ -183,24 +183,24 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.2 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Recent Announcements</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Announcements</p>
             <button onClick={() => onNavigate('announcements')}
-              className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+              className="text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
               View all <ChevronRight className="w-3 h-3" />
             </button>
           </div>
 
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
             </div>
           ) : announcements.length === 0 ? (
             <div className="flex items-center gap-2 py-4">
               <Megaphone className="w-8 h-8 text-stone-200" />
-              <p className="text-sm font-bold text-stone-300">No announcements yet.</p>
+              <p className="text-sm font-bold text-stone-400">No announcements yet.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -208,16 +208,16 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                 <motion.div key={a.id}
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                  className="flex items-start gap-3 py-2 border-b border-stone-100 last:border-0"
+                  className="flex items-start gap-3 py-2 border-b border-brand-border/60 last:border-0"
                 >
                   <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
                     <Megaphone className="w-3.5 h-3.5 text-amber-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-stone-900 truncate">{a.title}</p>
-                    {a.body && <p className="text-xs text-stone-400 truncate mt-0.5">{a.body}</p>}
+                    {a.body && <p className="text-xs text-stone-500 truncate mt-0.5">{a.body}</p>}
                   </div>
-                  <span className="text-[11px] text-stone-300 shrink-0">{timeAgo(a.created_at)}</span>
+                  <span className="text-[11px] text-stone-400 shrink-0">{timeAgo(a.created_at)}</span>
                 </motion.div>
               ))}
             </div>
@@ -226,7 +226,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
           {/* Post announcement CTA */}
           <button
             onClick={() => onNavigate('announcements')}
-            className="w-full mt-4 py-2.5 rounded-xl bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors"
+            className="w-full mt-4 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors"
           >
             Post New Announcement
           </button>

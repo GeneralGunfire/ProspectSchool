@@ -109,7 +109,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   });
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
 
       {/* Header */}
       <motion.div
@@ -118,11 +118,11 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
         className="mb-6"
       >
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Resources</p>
+        <span className="eyebrow">Resources</span>
         <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Class Resources
         </h1>
-        <p className="text-sm text-stone-400 mt-1">Study materials from your teachers.</p>
+        <p className="text-sm text-stone-500 mt-1">Study materials from your teachers.</p>
       </motion.div>
 
       {!loading && resources.length > 0 && (
@@ -135,7 +135,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
               transition={{ delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Suggested For You
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -147,20 +147,20 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                       key={r.id}
                       onClick={() => handleOpen(r)}
                       disabled={downloading === r.id}
-                      className="bg-white border border-stone-200 rounded-2xl p-4 text-left hover:border-stone-400 hover:shadow-sm transition-all group disabled:opacity-40"
+                      className="card-premium bg-white border border-brand-border rounded-[24px] p-4 text-left hover:border-stone-400 hover:shadow-sm transition-all group disabled:opacity-40"
                     >
                       <div className="flex items-start justify-between mb-3">
                         <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.badge}`}>
                           <Icon className="w-4 h-4" />
                         </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-300 group-hover:text-stone-600 transition-colors mt-0.5" />
+                        <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-600 transition-colors mt-0.5" />
                       </div>
                       <p className="font-black text-stone-900 text-sm leading-snug mb-1">{r.title}</p>
                       {r.subject_label && (
-                        <p className="text-[11px] text-stone-400">{r.subject_label}</p>
+                        <p className="text-[11px] text-stone-500">{r.subject_label}</p>
                       )}
                       {r.description && (
-                        <p className="text-[11px] text-stone-400 mt-0.5 line-clamp-1">{r.description}</p>
+                        <p className="text-[11px] text-stone-500 mt-0.5 line-clamp-1">{r.description}</p>
                       )}
                     </button>
                   );
@@ -177,7 +177,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
               transition={{ delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Recently Viewed
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1">
@@ -189,14 +189,14 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                       key={r.id}
                       onClick={() => handleOpen(r)}
                       disabled={downloading === r.id}
-                      className="shrink-0 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors flex items-center gap-2.5 min-w-[180px] max-w-[220px] disabled:opacity-40"
+                      className="shrink-0 bg-white border border-brand-border rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors flex items-center gap-2.5 min-w-[180px] max-w-[220px] disabled:opacity-40"
                     >
                       <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${meta.badge}`}>
                         <Icon className="w-3 h-3" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-stone-900 truncate">{r.title}</p>
-                        <p className="text-[10px] text-stone-400 truncate">{r.subject_label ?? meta.label}</p>
+                        <p className="text-[10px] text-stone-500 truncate">{r.subject_label ?? meta.label}</p>
                       </div>
                     </button>
                   );
@@ -214,16 +214,16 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
           >
             {/* Search bar */}
             <div className="relative">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="Search resources…"
-                className="w-full pl-10 pr-10 py-3 rounded-xl border border-stone-200 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-white"
+                className="w-full pl-10 pr-10 py-3 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-white"
               />
               {search && (
                 <button onClick={() => setSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2">
-                  <X className="w-3.5 h-3.5 text-stone-400" />
+                  <X className="w-3.5 h-3.5 text-stone-500" />
                 </button>
               )}
             </div>
@@ -237,7 +237,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                     onClick={() => setFilterSubject(s)}
                     className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-black transition-colors whitespace-nowrap ${
                       filterSubject === s
-                        ? 'bg-stone-900 text-white'
+                        ? 'bg-brand-dark text-white'
                         : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                     }`}
                   >
@@ -255,7 +255,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                   onClick={() => setFilterType(t)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-black transition-colors ${
                     filterType === t
-                      ? 'bg-stone-900 text-white'
+                      ? 'bg-brand-dark text-white'
                       : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                   }`}
                 >
@@ -265,7 +265,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
             </div>
 
             {/* Result count */}
-            <p className="text-xs font-bold text-stone-400">
+            <p className="text-xs font-bold text-stone-500">
               {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
               {filterSubject !== 'all' && ` · ${filterSubject}`}
             </p>
@@ -276,16 +276,16 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : resources.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-black text-stone-400 mb-1">No resources yet.</p>
-          <p className="text-xs text-stone-300">Your teachers haven't uploaded any materials yet.</p>
+          <p className="text-sm font-black text-stone-500 mb-1">No resources yet.</p>
+          <p className="text-xs text-stone-400">Your teachers haven't uploaded any materials yet.</p>
           <button
             onClick={() => onNavigate('library')}
-            className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white text-xs font-black rounded-xl hover:bg-stone-700 transition-colors"
+            className="mt-5 flex items-center gap-2 px-4 py-2.5 bg-brand-dark text-white text-xs font-black rounded-xl hover:bg-stone-700 transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5" />
             Open Library Instead
@@ -294,7 +294,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-stone-200 mb-3" />
-          <p className="text-sm font-black text-stone-400 mb-1">No results.</p>
+          <p className="text-sm font-black text-stone-500 mb-1">No results.</p>
           <button
             onClick={() => { setSearch(''); setFilterSubject('all'); setFilterType('all'); }}
             className="mt-2 text-xs font-black text-stone-500 hover:text-stone-800 transition-colors"
@@ -317,7 +317,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.15), duration: 0.18 }}
-                className="bg-white rounded-2xl border border-stone-200 px-5 py-4 hover:border-stone-300 transition-colors"
+                className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 hover:border-stone-300 transition-colors"
               >
                 <div className="flex items-start gap-4">
                   {/* Icon */}
@@ -338,19 +338,19 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                         {meta.label}
                       </span>
                       {wasViewed && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-50 text-stone-400 border border-stone-100">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-50 text-stone-500 border border-brand-border/60">
                           Viewed
                         </span>
                       )}
                     </div>
                     {r.description && (
-                      <p className="text-xs text-stone-400 mb-1 leading-relaxed">{r.description}</p>
+                      <p className="text-xs text-stone-500 mb-1 leading-relaxed">{r.description}</p>
                     )}
                     {r.resource_type === 'link' && r.link_url && (
                       <p className="text-xs text-violet-500 truncate">{r.link_url}</p>
                     )}
                     {r.resource_type === 'file' && r.file_name && (
-                      <p className="text-xs text-stone-400">{r.file_name}</p>
+                      <p className="text-xs text-stone-500">{r.file_name}</p>
                     )}
                     {isNote && r.note_content && (
                       <AnimatePresence initial={false}>
@@ -366,11 +366,11 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                             {r.note_content}
                           </motion.p>
                         ) : (
-                          <p key="collapsed" className="text-xs text-stone-400 mt-0.5 truncate">{r.note_content}</p>
+                          <p key="collapsed" className="text-xs text-stone-500 mt-0.5 truncate">{r.note_content}</p>
                         )}
                       </AnimatePresence>
                     )}
-                    <p className="text-[10px] text-stone-300 mt-1.5">{formatDate(r.created_at)}</p>
+                    <p className="text-[10px] text-stone-400 mt-1.5">{formatDate(r.created_at)}</p>
                   </div>
 
                   {/* Action */}
@@ -386,7 +386,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                       <button
                         onClick={() => handleOpen(r)}
                         disabled={downloading === r.id}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900 text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
                       >
                         <ExternalLink className="w-3 h-3" />
                         {downloading === r.id ? 'Opening…' : r.resource_type === 'file' ? 'Open' : 'Visit'}

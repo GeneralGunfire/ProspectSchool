@@ -25,7 +25,7 @@ interface MyFuturePageProps {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-400 mb-3">
+    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500 mb-3">
       {children}
     </p>
   );
@@ -57,7 +57,7 @@ function CtaCard({
   return (
     <button
       onClick={onClick}
-      className="w-full text-left bg-stone-900 rounded-2xl px-6 py-5 flex items-center gap-4 hover:bg-stone-800 transition-colors group"
+      className="w-full text-left card-premium-dark bg-brand-dark rounded-[24px] px-6 py-5 flex items-center gap-4 transition-colors group relative overflow-hidden border border-white/[0.06]"
     >
       <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
         <Icon className="w-5 h-5 text-white" />
@@ -196,7 +196,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="w-6 h-6 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
       </div>
     );
   }
@@ -205,7 +205,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   if (subView) {
     const SubSpinner = () => (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
       </div>
     );
     return (
@@ -221,7 +221,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           <div className="px-5 pt-5 pb-2">
             <button
               onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 hover:text-stone-900 transition-colors"
+              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 hover:text-stone-900 transition-colors"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> My Future
             </button>
@@ -240,7 +240,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto space-y-6 pb-16">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto space-y-6 pb-16">
 
       {/* ── Section 1: Profile Hero ─────────────────────────────────────────── */}
       <Section delay={0}>
@@ -274,19 +274,19 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
       {/* ── Goals section ── */}
       <Section delay={0.02}>
         {!editingGoals ? (
-          <div className="bg-white rounded-2xl border border-stone-200 p-5">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">My Goals</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Goals</p>
               <button
                 onClick={handleEditGoals}
-                className="text-[11px] font-black text-stone-400 hover:text-stone-900 transition-colors uppercase tracking-widest"
+                className="text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-widest"
               >
                 {goals.targetAps || goals.targetCareer ? 'Edit' : 'Set Goals'}
               </button>
             </div>
 
             {!goals.targetAps && !goals.targetCareer ? (
-              <p className="text-sm text-stone-400 mt-2">
+              <p className="text-sm text-stone-500 mt-2">
                 Set a target APS or career to get personalised recommendations across the portal.
               </p>
             ) : (
@@ -309,10 +309,10 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                   </div>
                 )}
                 {goals.targetCareer && (
-                  <div className="flex items-center gap-2 bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5">
+                  <div className="flex items-center gap-2 bg-stone-50 border border-brand-border rounded-xl px-4 py-2.5">
                     <Briefcase className="w-4 h-4 text-stone-500 shrink-0" />
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Target Career</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Target Career</p>
                       <p className="font-black text-stone-800 text-sm leading-tight">{goals.targetCareer}</p>
                     </div>
                   </div>
@@ -322,8 +322,8 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           </div>
         ) : (
           /* Edit mode */
-          <div className="bg-white rounded-2xl border border-stone-200 p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Set Your Goals</p>
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5">
+            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Set Your Goals</p>
 
             <div className="space-y-4">
               <div>
@@ -338,7 +338,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                     value={draftAps}
                     onChange={e => setDraftAps(e.target.value)}
                     placeholder="e.g. 35"
-                    className="w-24 text-center font-black text-lg rounded-xl border border-stone-200 py-2.5 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-stone-50"
+                    className="w-24 text-center font-black text-lg rounded-xl border border-brand-border py-2.5 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
                   />
                   <div className="flex gap-2">
                     {[28, 32, 36, 40].map(n => (
@@ -347,8 +347,8 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                         onClick={() => setDraftAps(String(n))}
                         className={`px-2.5 py-1.5 rounded-lg text-xs font-black transition-colors border ${
                           draftAps === String(n)
-                            ? 'bg-stone-900 text-white border-stone-900'
-                            : 'bg-stone-50 text-stone-500 border-stone-200 hover:border-stone-400'
+                            ? 'bg-brand-dark text-white border-brand-dark'
+                            : 'bg-stone-50 text-stone-500 border-brand-border hover:border-stone-400'
                         }`}
                       >
                         {n}
@@ -367,7 +367,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                   value={draftCareer}
                   onChange={e => setDraftCareer(e.target.value)}
                   placeholder="e.g. Civil Engineer, Teacher, Nurse"
-                  className="w-full rounded-xl border border-stone-200 px-4 py-2.5 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-stone-50"
+                  className="w-full rounded-xl border border-brand-border px-4 py-2.5 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
                 />
                 {/* Quick picks from quiz results if available */}
                 {quizResults && quizResults.topCareerMatches.length > 0 && (
@@ -376,7 +376,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                       <button
                         key={c.id}
                         onClick={() => setDraftCareer(c.title)}
-                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-stone-50 text-stone-500 border border-stone-200 hover:border-stone-400 transition-colors"
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-stone-50 text-stone-500 border border-brand-border hover:border-stone-400 transition-colors"
                       >
                         {c.title}
                       </button>
@@ -389,13 +389,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             <div className="flex gap-2 mt-5">
               <button
                 onClick={handleSaveGoals}
-                className="flex-1 py-2.5 rounded-xl bg-stone-900 text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
               >
                 Save Goals
               </button>
               <button
                 onClick={() => setEditingGoals(false)}
-                className="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-brand-border text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
               >
                 Cancel
               </button>
@@ -412,16 +412,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           {/* Career Quiz */}
           <button
             onClick={() => handleSubNavigate('quiz')}
-            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
                 <Sparkles className="w-4.5 h-4.5 text-stone-700" />
               </div>
-              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
             <p className="font-black text-stone-900 text-sm mb-0.5">Career Quiz</p>
-            <p className="text-xs text-stone-400 leading-snug">
+            <p className="text-xs text-stone-500 leading-snug">
               {quizResults
                 ? `${quizResults.topCodes[0]}+${quizResults.topCodes[1]} profile · ${quizResults.topCareerMatches[0]?.title ?? 'View matches'}`
                 : 'Discover careers that match your personality'}
@@ -431,16 +431,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           {/* Career Browser */}
           <button
             onClick={() => handleSubNavigate('careers')}
-            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
                 <Briefcase className="w-4.5 h-4.5 text-stone-700" />
               </div>
-              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
             <p className="font-black text-stone-900 text-sm mb-0.5">Career Browser</p>
-            <p className="text-xs text-stone-400 leading-snug">
+            <p className="text-xs text-stone-500 leading-snug">
               {quizResults
                 ? `${quizResults.topCareerMatches.length} career matches found`
                 : 'Browse 400+ SA careers with salary data'}
@@ -450,16 +450,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           {/* Bursary Finder */}
           <button
             onClick={() => handleSubNavigate('bursaries')}
-            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
                 <Award className="w-4.5 h-4.5 text-stone-700" />
               </div>
-              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
             <p className="font-black text-stone-900 text-sm mb-0.5">Bursary Finder</p>
-            <p className="text-xs text-stone-400 leading-snug">
+            <p className="text-xs text-stone-500 leading-snug">
               {savedBursaries.length > 0
                 ? `${savedBursaries.length} saved · Browse 245+ bursaries`
                 : 'Browse 245+ bursaries and save your favourites'}
@@ -469,16 +469,16 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           {/* APS Calculator */}
           <button
             onClick={() => handleSubNavigate('aps')}
-            className="bg-white border border-stone-200 rounded-2xl p-5 text-left hover:border-stone-400 transition-colors group"
+            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
                 <GraduationCap className="w-4.5 h-4.5 text-stone-700" />
               </div>
-              <ArrowRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors mt-1" />
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
             <p className="font-black text-stone-900 text-sm mb-0.5">APS Calculator</p>
-            <p className="text-xs text-stone-400 leading-snug">
+            <p className="text-xs text-stone-500 leading-snug">
               {apsData
                 ? `Your APS: ${apsData.aps} · ${qualifyingDegrees.length} programmes unlocked`
                 : 'Calculate your APS and see qualifying programmes'}
@@ -507,22 +507,22 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                  className="bg-white rounded-2xl border border-stone-200 px-5 py-4 flex items-center gap-4"
+                  className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4"
                 >
-                  <div className="shrink-0 bg-stone-900 text-white rounded-xl px-3 py-1.5 text-center min-w-16">
+                  <div className="shrink-0 bg-brand-dark text-white rounded-xl px-3 py-1.5 text-center min-w-16">
                     <p className="font-black text-sm leading-none">{career.compatibilityScore}%</p>
                     <p className="text-white/50 text-[9px] uppercase tracking-wider mt-0.5">match</p>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-black text-stone-900 text-sm leading-tight truncate">{career.title}</p>
-                    <p className="text-xs text-stone-400 mt-0.5 truncate">{career.category}</p>
+                    <p className="text-xs text-stone-500 mt-0.5 truncate">{career.category}</p>
                     <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
                       {career.educationPath}
                     </span>
                   </div>
                   <div className="text-right shrink-0">
                     <p className="text-sm font-semibold text-stone-600">{career.salaryRange}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">
+                    <p className="text-xs text-stone-500 mt-0.5">
                       {career.apsRequired ? `APS ${career.apsRequired}` : 'No APS required'}
                     </p>
                   </div>
@@ -551,12 +551,12 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         <Eyebrow>APS &amp; University Readiness</Eyebrow>
 
         {apsData ? (
-          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-5">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-5">
             <div className="flex items-end gap-3 mb-5">
               <span className="font-black text-stone-900 leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
                 {apsData.aps}
               </span>
-              <span className="text-stone-400 text-sm font-bold mb-1.5">APS Score</span>
+              <span className="text-stone-500 text-sm font-bold mb-1.5">APS Score</span>
             </div>
             {qualifyingDegrees.length > 0 && (
               <div className="mb-4">
@@ -583,7 +583,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
               </div>
             )}
             {qualifyingDegrees.length === 0 && closeDegrees.length === 0 && (
-              <p className="text-stone-400 text-sm">Keep improving your marks to unlock university programmes.</p>
+              <p className="text-stone-500 text-sm">Keep improving your marks to unlock university programmes.</p>
             )}
             <button
               onClick={() => handleSubNavigate('aps')}
@@ -607,13 +607,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         <Eyebrow>Study Progress</Eyebrow>
 
         {progress.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-6 text-center">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-6 text-center">
             <p className="text-stone-500 text-sm mb-4">
               You haven't started any lessons yet. Open the Library to begin.
             </p>
             <button
               onClick={() => onNavigate('library')}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-stone-900 text-white text-sm font-bold rounded-xl hover:bg-stone-800 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark text-white text-sm font-bold rounded-xl hover:bg-brand-dark/90 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               Open Library
@@ -627,13 +627,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                 { label: 'Mastered',       value: topicsMastered,     color: 'text-emerald-600' },
                 { label: 'Needs Practice', value: topicsNeedPractice, color: 'text-amber-600' },
               ].map(stat => (
-                <div key={stat.label} className="bg-white rounded-2xl border border-stone-200 px-4 py-4 text-center">
+                <div key={stat.label} className="card-premium bg-white rounded-[24px] border border-brand-border px-4 py-4 text-center">
                   <p className={`font-black text-2xl ${stat.color}`}>{stat.value}</p>
-                  <p className="text-xs text-stone-400 font-bold mt-0.5">{stat.label}</p>
+                  <p className="text-xs text-stone-500 font-bold mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
-            <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100">
+            <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100">
               {Object.entries(bySubject).map(([subject, topics]) => {
                 const total    = topics.length;
                 const mastered = topics.filter(t => t.mastery_level === 'mastered').length;
@@ -644,7 +644,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                       <p className="text-xs font-bold text-stone-700 truncate">{subject}</p>
                     </div>
                     <div className="flex-1 bg-stone-200 rounded-full h-1.5 overflow-hidden">
-                      <div className="h-full bg-stone-900 rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-brand-dark rounded-full transition-all duration-700" style={{ width: `${pct}%` }} />
                     </div>
                     <div className="w-20 text-right shrink-0">
                       <p className="text-xs text-stone-500 font-bold">{mastered} / {total} mastered</p>
@@ -662,13 +662,13 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
         <Eyebrow>Saved Bursaries</Eyebrow>
 
         {savedBursaries.length > 0 ? (
-          <div className="bg-white rounded-2xl border border-stone-200">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border">
             <div className="divide-y divide-stone-100">
               {savedBursaries.slice(0, 3).map(b => (
                 <div key={b.id} className="flex items-center gap-4 px-5 py-3.5">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-black text-stone-900 truncate">{b.name}</p>
-                    <p className="text-xs text-stone-400 truncate">{b.provider}</p>
+                    <p className="text-xs text-stone-500 truncate">{b.provider}</p>
                   </div>
                   <span className="shrink-0 text-[10px] font-bold px-2 py-1 rounded-full bg-stone-100 text-stone-600 uppercase tracking-wide">
                     {b.category}
@@ -676,7 +676,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                 </div>
               ))}
             </div>
-            <div className="px-5 py-3 border-t border-stone-100">
+            <div className="px-5 py-3 border-t border-brand-border/60">
               <button
                 onClick={() => handleSubNavigate('bursaries')}
                 className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors"
@@ -687,8 +687,8 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-5">
-            <p className="text-stone-400 text-sm">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-5">
+            <p className="text-stone-500 text-sm">
               No bursaries saved yet.{' '}
               <button
                 onClick={() => handleSubNavigate('bursaries')}
@@ -705,17 +705,17 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
       {/* ── Section 7: Academic Journey Milestones ───────────────────────────── */}
       <Section delay={0.34}>
         <Eyebrow>Academic Journey</Eyebrow>
-        <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+        <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
 
           {/* Learner status header */}
-          <div className={`px-5 py-4 border-b border-stone-100 flex items-center justify-between ${learnerStatus.bg}`}>
+          <div className={`px-5 py-4 border-b border-brand-border/60 flex items-center justify-between ${learnerStatus.bg}`}>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-0.5">Overall Status</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Overall Status</p>
               <p className={`font-black text-xl leading-none ${learnerStatus.color}`}>{learnerStatus.label}</p>
             </div>
             <div className={`rounded-xl px-4 py-2 text-center border ${learnerStatus.border} bg-white`}>
               <p className={`font-black text-2xl leading-none ${learnerStatus.color}`}>{learnerStatus.score}</p>
-              <p className="text-[10px] font-bold text-stone-400 mt-0.5">/ 100</p>
+              <p className="text-[10px] font-bold text-stone-500 mt-0.5">/ 100</p>
             </div>
           </div>
 
@@ -735,15 +735,15 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate ${m.achieved ? 'text-stone-900' : 'text-stone-400'}`}>
+                  <p className={`text-sm font-bold truncate ${m.achieved ? 'text-stone-900' : 'text-stone-500'}`}>
                     {m.label}
                   </p>
                   {m.achieved && m.detail && (
-                    <p className="text-[11px] text-stone-400 truncate">{m.detail}</p>
+                    <p className="text-[11px] text-stone-500 truncate">{m.detail}</p>
                   )}
                 </div>
                 {!m.achieved && (
-                  <span className="text-[10px] font-bold text-stone-300 shrink-0 uppercase tracking-widest">
+                  <span className="text-[10px] font-bold text-stone-400 shrink-0 uppercase tracking-widest">
                     Not yet
                   </span>
                 )}
@@ -752,9 +752,9 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
           </div>
 
           {/* Progress footer */}
-          <div className="px-5 py-3 bg-stone-50 border-t border-stone-100">
+          <div className="px-5 py-3 bg-stone-50 border-t border-brand-border/60">
             <div className="flex items-center justify-between mb-1.5">
-              <p className="text-[11px] font-bold text-stone-400">
+              <p className="text-[11px] font-bold text-stone-500">
                 {milestones.filter(m => m.achieved).length} of {milestones.length} milestones reached
               </p>
               <p className="text-[11px] font-black text-stone-600">
@@ -777,9 +777,9 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
       {growthTimeline.length > 0 && (
         <Section delay={0.35}>
           <Eyebrow>Academic Journey</Eyebrow>
-          <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+          <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
             <div className="px-5 pt-4 pb-2">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Your Story So Far</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Your Story So Far</p>
               <div className="relative">
                 {/* vertical spine */}
                 <div className="absolute left-1.75 top-2 bottom-2 w-px bg-stone-100" />
@@ -799,9 +799,9 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
                         <div className="flex-1 min-w-0 pb-1">
                           <div className="flex items-baseline justify-between gap-2">
                             <p className="text-xs font-black text-stone-900">{evt.label}</p>
-                            <p className="text-[10px] font-bold text-stone-300 shrink-0">{date}</p>
+                            <p className="text-[10px] font-bold text-stone-400 shrink-0">{date}</p>
                           </div>
-                          <p className="text-[11px] text-stone-400 mt-0.5">{evt.detail}</p>
+                          <p className="text-[11px] text-stone-500 mt-0.5">{evt.detail}</p>
                           {evt.delta !== undefined && (
                             <span className={`inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-full ${
                               evt.positive ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'

@@ -31,7 +31,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Homework: 'bg-blue-50 text-blue-600 border-blue-100',
   Urgent:   'bg-amber-50 text-amber-600 border-amber-100',
   Event:    'bg-violet-50 text-violet-600 border-violet-100',
-  General:  'bg-stone-100 text-stone-500 border-stone-200',
+  General:  'bg-stone-100 text-stone-500 border-brand-border',
 };
 
 interface StudentAnnouncementsPageProps {
@@ -104,7 +104,7 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
   const unreadCount = announcements.filter(a => !readIds.has(a.id)).length;
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
 
       {/* Header */}
       <motion.div
@@ -113,13 +113,11 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
         className="mb-6 flex items-start justify-between"
       >
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
-            Announcements
-          </p>
-          <h1 className="font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+          <span className="eyebrow">Announcements</span>
+          <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
             Announcements
           </h1>
-          <p className="text-sm text-stone-400 mt-1">
+          <p className="text-sm text-stone-500 mt-1">
             Messages from your school and teachers.
           </p>
         </div>
@@ -144,7 +142,7 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
               onClick={() => setFilterCategory(cat)}
               className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-black transition-colors whitespace-nowrap ${
                 filterCategory === cat
-                  ? 'bg-stone-900 text-white'
+                  ? 'bg-brand-dark text-white'
                   : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
               }`}
             >
@@ -157,17 +155,17 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : announcements.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Megaphone className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-black text-stone-400 mb-1">No announcements yet.</p>
-          <p className="text-xs text-stone-300">Your teachers and school admin will post updates here.</p>
+          <p className="text-sm font-black text-stone-500 mb-1">No announcements yet.</p>
+          <p className="text-xs text-stone-400">Your teachers and school admin will post updates here.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-sm font-black text-stone-400 mb-2">No {filterCategory} announcements.</p>
+          <p className="text-sm font-black text-stone-500 mb-2">No {filterCategory} announcements.</p>
           <button
             onClick={() => setFilterCategory('all')}
             className="text-xs font-black text-stone-500 hover:text-stone-800 transition-colors"
@@ -183,7 +181,7 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Pin className="w-3.5 h-3.5 text-amber-500" />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Pinned</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Pinned</p>
               </div>
               <div className="space-y-2">
                 {pinned.map((a, i) => (
@@ -204,7 +202,7 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
           {unpinned.length > 0 && (
             <div>
               {pinned.length > 0 && (
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Recent</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Recent</p>
               )}
               <div className="space-y-2">
                 {unpinned.map((a, i) => (
@@ -247,7 +245,7 @@ function AnnouncementCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.04, duration: 0.18 }}
       className={`bg-white rounded-2xl border transition-colors ${
-        a.pinned ? 'border-amber-200' : isRead ? 'border-stone-200' : 'border-stone-300'
+        a.pinned ? 'border-amber-200' : isRead ? 'border-brand-border' : 'border-stone-300'
       }`}
     >
       <button
@@ -279,11 +277,11 @@ function AnnouncementCard({
 
             {/* Body preview when collapsed */}
             {!isExpanded && a.body && (
-              <p className="text-xs text-stone-400 line-clamp-1 mb-1">{a.body}</p>
+              <p className="text-xs text-stone-500 line-clamp-1 mb-1">{a.body}</p>
             )}
 
             {/* Meta */}
-            <p className="text-[10px] text-stone-300">
+            <p className="text-[10px] text-stone-400">
               {a.author_name} {a.author_surname}
               {a.author_role === 'admin' && <span className="ml-1 text-violet-400 font-bold">(Admin)</span>}
               {' · '}{timeAgo(a.created_at)}
@@ -302,7 +300,7 @@ function AnnouncementCard({
             transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-0 border-t border-stone-100 mt-0">
+            <div className="px-5 pb-5 pt-0 border-t border-brand-border/60 mt-0">
               <p className="text-sm text-stone-600 leading-relaxed pt-4 whitespace-pre-line">{a.body}</p>
             </div>
           </motion.div>

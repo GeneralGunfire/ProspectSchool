@@ -152,7 +152,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
   const unpinned = announcements.filter(a => !a.pinned);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
+    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
 
       {/* Toast */}
       <AnimatePresence>
@@ -168,7 +168,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-1">Announcements</p>
+          <span className="eyebrow">Announcements</span>
           <h1 className="text-2xl font-black text-brand-dark tracking-tight">Announcements</h1>
         </div>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
@@ -182,12 +182,12 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
       {loading ? (
         <div className="flex items-center justify-center py-24">
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full" />
+            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full" />
         </div>
       ) : announcements.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <Megaphone className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-400">No announcements yet.</p>
+          <p className="text-sm font-bold text-stone-500">No announcements yet.</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -195,7 +195,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <Pin className="w-3.5 h-3.5 text-amber-500" />
-                <p className="text-xs font-black uppercase tracking-widest text-stone-400">Pinned</p>
+                <p className="text-xs font-black uppercase tracking-widest text-stone-500">Pinned</p>
               </div>
               <div className="space-y-2">
                 {pinned.map((a, i) => (
@@ -209,7 +209,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
           )}
           {unpinned.length > 0 && (
             <div>
-              {pinned.length > 0 && <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-3">Recent</p>}
+              {pinned.length > 0 && <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">Recent</p>}
               <div className="space-y-2">
                 {unpinned.map((a, i) => (
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
@@ -235,7 +235,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
               className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}>
 
-              <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+              <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                 <h2 className="text-base font-black text-brand-dark">Post Announcement</h2>
                 <button onClick={() => setModal(false)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
@@ -245,20 +245,20 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
               <div className="p-6 space-y-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Title *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
                   <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. School closes early on Friday"
-                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-brand-dark placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
                 </div>
 
                 {/* Body */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">
-                    Message <span className="normal-case font-bold text-stone-300">(optional)</span>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
+                    Message <span className="normal-case font-bold text-stone-400">(optional)</span>
                   </label>
                   <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
                     rows={3} placeholder="Additional details…"
-                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
+                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
                 </div>
 
                 {/* Audience */}
@@ -271,7 +271,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                 {/* Pin */}
                 <button onClick={() => setForm(f => ({ ...f, pinned: !f.pinned }))}
                   className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-sm font-black transition-all ${
-                    form.pinned ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-stone-50 border-stone-200 text-stone-500 hover:bg-stone-100'
+                    form.pinned ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-stone-50 border-brand-border text-stone-500 hover:bg-stone-100'
                   }`}>
                   <Pin className="w-4 h-4" />
                   {form.pinned ? 'Pinned — stays at top' : 'Pin this announcement'}
@@ -280,9 +280,9 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-stone-100 px-6 py-4 rounded-b-2xl flex gap-2">
+              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button onClick={() => setModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleCreate} disabled={saving}
                   className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                   {saving ? 'Posting…' : 'Post'}
@@ -308,7 +308,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
               <p className="text-sm text-stone-500 mb-5"><strong>"{deleteTarget.title}"</strong> will be permanently removed.</p>
               <div className="flex gap-2">
                 <button onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleDelete} disabled={deleting}
                   className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
@@ -344,7 +344,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
 
   return (
     <div>
-      <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Who sees this?</label>
+      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Who sees this?</label>
       <div className="grid grid-cols-2 gap-1.5 mb-3">
         {TARGET_OPTIONS.map(opt => {
           const Icon = opt.icon;
@@ -384,7 +384,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
       {form.target_type === 'subject' && (
         <div className="space-y-3">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1.5">Subject *</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Subject *</p>
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
               {subjects.map(s => (
                 <button key={s.id} onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
@@ -395,7 +395,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             </div>
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-1.5">Grade *</p>
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Grade *</p>
             <div className="flex flex-wrap gap-1.5">
               {GRADES.map(g => (
                 <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
@@ -409,7 +409,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
       )}
 
       {form.target_type === 'specific' && (
-        <div className="space-y-1 max-h-36 overflow-y-auto border border-stone-100 rounded-xl p-2">
+        <div className="space-y-1 max-h-36 overflow-y-auto border border-brand-border/60 rounded-xl p-2">
           {allStudents.map(s => {
             const active = form.target_student_ids.includes(s.id);
             return (
@@ -442,7 +442,7 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.04, duration: 0.18 }}
-      className={`bg-white rounded-2xl border px-5 py-4 ${a.pinned ? 'border-amber-200' : 'border-stone-200'}`}>
+      className={`bg-white rounded-2xl border px-5 py-4 ${a.pinned ? 'border-amber-200' : 'border-brand-border'}`}>
       <div className="flex items-start gap-3">
         {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />}
         <div className="flex-1 min-w-0">
@@ -452,14 +452,14 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
               <p className={`text-xs text-stone-500 mt-1 leading-relaxed ${!expanded ? 'line-clamp-2' : ''}`}>{a.body}</p>
               {a.body.length > 120 && (
                 <button onClick={() => setExpanded(e => !e)}
-                  className="text-[11px] font-black text-stone-400 hover:text-stone-600 mt-0.5 transition-colors">
+                  className="text-[11px] font-black text-stone-500 hover:text-stone-600 mt-0.5 transition-colors">
                   {expanded ? 'Show less' : 'Show more'}
                 </button>
               )}
             </>
           )}
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <p className="text-[10px] text-stone-300">
+            <p className="text-[10px] text-stone-400">
               {a.author_name} {a.author_surname}
               {a.author_role === 'admin' && <span className="ml-1 text-violet-400 font-bold">(Admin)</span>}
               {' · '}{timeAgo(a.created_at)}
@@ -486,12 +486,12 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <button onClick={onPin} disabled={toggling}
-            className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-300 hover:text-amber-500 hover:bg-amber-50'}`}
+            className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
             title={a.pinned ? 'Unpin' : 'Pin'}>
             {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
           </button>
           <button onClick={onDelete}
-            className="p-2 rounded-xl text-stone-300 hover:text-red-500 hover:bg-red-50 transition-colors">
+            className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
             <Trash2 className="w-4 h-4" />
           </button>
         </div>

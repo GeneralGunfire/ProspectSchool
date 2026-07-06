@@ -365,7 +365,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   // ── Render ────────────────────────────────────────────────
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 pb-24 md:pb-8">
+    <div className="max-w-5xl mx-auto px-4 py-6 sm:p-6 md:p-8">
 
       {/* ── Header ──────────────────────────────────────────── */}
       <motion.div
@@ -374,7 +374,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
         className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
       >
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Calendar</p>
+          <span className="eyebrow">Calendar</span>
           <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
             School Events
           </h1>
@@ -384,14 +384,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded-xl hover:bg-stone-800 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded-xl hover:bg-brand-dark/90 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Create Event
           </button>
 
           {/* Month nav */}
-          <div className="flex items-center bg-white border border-stone-200 rounded-xl overflow-hidden">
-            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-stone-200">
+          <div className="flex items-center bg-white border border-brand-border rounded-xl overflow-hidden">
+            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
               <ChevronLeft className="w-4 h-4 text-stone-600" />
             </button>
             <div className="relative overflow-hidden min-w-36 text-center px-1">
@@ -408,13 +408,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 </motion.span>
               </AnimatePresence>
             </div>
-            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-stone-200">
+            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-brand-border">
               <ChevronRight className="w-4 h-4 text-stone-600" />
             </button>
           </div>
 
           {/* Grid/List toggle */}
-          <div className="flex items-center bg-white border border-stone-200 rounded-xl p-0.5 gap-0.5">
+          <div className="flex items-center bg-white border border-brand-border rounded-xl p-0.5 gap-0.5">
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
@@ -447,12 +447,12 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               >
                 {loading ? (
                   <div className="flex items-center justify-center py-24">
-                    <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
                   </div>
                 ) : allSorted.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-24">
                     <Calendar className="w-8 h-8 text-stone-200 mb-3" />
-                    <p className="text-sm font-bold text-stone-300">No events this month.</p>
+                    <p className="text-sm font-bold text-stone-400">No events this month.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -463,7 +463,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.03, duration: 0.2 }}
                           onClick={() => openView(ev)}
-                          className="bg-white rounded-xl border border-stone-200 px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-stone-300 transition-colors"
+                          className="bg-white rounded-xl border border-brand-border px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-stone-300 transition-colors"
                         >
                           <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                           <div className="flex-1 min-w-0">
@@ -472,11 +472,11 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                               <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${TYPE_PILL[ev.event_type]}`}>
                                 {EVENT_LABELS[ev.event_type]}
                               </span>
-                              <span className="text-xs text-stone-400">{formatDate(ev.event_date)}</span>
-                              <span className="text-[11px] text-stone-400">{audienceSummary(ev)}</span>
+                              <span className="text-xs text-stone-500">{formatDate(ev.event_date)}</span>
+                              <span className="text-[11px] text-stone-500">{audienceSummary(ev)}</span>
                             </div>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-stone-300 shrink-0" />
+                          <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
                         </motion.div>
                       );
                     })}
@@ -489,11 +489,11 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
               >
-                <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
                   {/* Day headers */}
-                  <div className="grid grid-cols-7 border-b border-stone-100">
+                  <div className="grid grid-cols-7 border-b border-brand-border/60">
                     {DAYS.map(d => (
-                      <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-[0.15em] text-stone-400">
+                      <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-[0.15em] text-stone-500">
                         {d}
                       </div>
                     ))}
@@ -501,7 +501,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
                   {loading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
                     </div>
                   ) : (
                     <AnimatePresence mode="wait" initial={false}>
@@ -521,16 +521,16 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <div
                               key={day}
-                              className="border-b border-r border-stone-100 min-h-[90px] p-1.5 cursor-pointer transition-colors hover:bg-stone-50 group"
+                              className="border-b border-r border-brand-border/60 min-h-[90px] p-1.5 cursor-pointer transition-colors hover:bg-stone-50 group"
                               onClick={() => openCreate(dateStr)}
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                                  isToday ? 'bg-[#1C1917] text-white' : 'text-stone-400 group-hover:text-stone-700'
+                                  isToday ? 'bg-[#1C1917] text-white' : 'text-stone-500 group-hover:text-stone-700'
                                 }`}>
                                   {day}
                                 </span>
-                                <Plus className="w-3 h-3 text-stone-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <Plus className="w-3 h-3 text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                               </div>
                               <div className="space-y-0.5">
                                 {dayEvs.slice(0, 3).map(ev => {
@@ -547,7 +547,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                   );
                                 })}
                                 {dayEvs.length > 3 && (
-                                  <div className="text-[10px] font-bold text-stone-400 px-1.5">+{dayEvs.length - 3} more</div>
+                                  <div className="text-[10px] font-bold text-stone-500 px-1.5">+{dayEvs.length - 3} more</div>
                                 )}
                               </div>
                             </div>
@@ -569,19 +569,19 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.1 }}
-            className="bg-white rounded-2xl border border-stone-200 p-4"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming</p>
               <button
                 onClick={() => openCreate(todayStr)}
-                className="flex items-center gap-1 text-[11px] font-black bg-[#1C1917] text-white px-2.5 py-1 rounded-lg hover:bg-stone-800 transition-colors"
+                className="flex items-center gap-1 text-[11px] font-black bg-[#1C1917] text-white px-2.5 py-1 rounded-lg hover:bg-brand-dark/90 transition-colors"
               >
                 <Plus className="w-3 h-3" /> Create
               </button>
             </div>
             {upcoming.length === 0 ? (
-              <p className="text-sm font-bold text-stone-300">Nothing scheduled.</p>
+              <p className="text-sm font-bold text-stone-400">Nothing scheduled.</p>
             ) : (
               <div className="space-y-2">
                 {upcoming.map((ev, i) => {
@@ -591,15 +591,15 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, ease, delay: i * 0.04 }}
                       onClick={() => openView(ev)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-stone-100 hover:border-stone-200 transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-brand-border/60 hover:border-brand-border transition-colors text-left"
                     >
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-100'}`}>
                         <span className={`w-2 h-2 rounded-full ${c.dot}`} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
-                        <p className="text-[11px] text-stone-400">{formatDate(ev.event_date)}</p>
-                        <p className="text-[10px] text-stone-300">{audienceSummary(ev)}</p>
+                        <p className="text-[11px] text-stone-500">{formatDate(ev.event_date)}</p>
+                        <p className="text-[10px] text-stone-400">{audienceSummary(ev)}</p>
                       </div>
                       <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full shrink-0 ${TYPE_PILL[ev.event_type]}`}>
                         {EVENT_LABELS[ev.event_type]}
@@ -615,9 +615,9 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.15 }}
-            className="bg-white rounded-2xl border border-stone-200 p-4"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Legend</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Legend</p>
             <div className="space-y-2">
               {EVENT_TYPES.map(t => {
                 const c = EVENT_COLORS[t.value];
@@ -704,21 +704,21 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 {(!isHomework || viewTab === 'details') && (
                   <div className="space-y-3 text-sm pb-2">
                     <div className="flex items-center gap-2 text-stone-600">
-                      <Calendar className="w-4 h-4 text-stone-400 shrink-0" />
+                      <Calendar className="w-4 h-4 text-stone-500 shrink-0" />
                       <span className="font-bold">{formatDate(ev.event_date)}</span>
                     </div>
                     {(ev.start_time || ev.end_time) && (
                       <div className="flex items-center gap-2 text-stone-600">
-                        <Clock className="w-4 h-4 text-stone-400 shrink-0" />
+                        <Clock className="w-4 h-4 text-stone-500 shrink-0" />
                         <span>{formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-stone-600">
-                      <Users className="w-4 h-4 text-stone-400 shrink-0" />
+                      <Users className="w-4 h-4 text-stone-500 shrink-0" />
                       <span>{audienceSummary(ev)}</span>
                     </div>
                     {ev.description && (
-                      <p className="text-stone-500 leading-relaxed border-t border-stone-100 pt-3">{ev.description}</p>
+                      <p className="text-stone-500 leading-relaxed border-t border-brand-border/60 pt-3">{ev.description}</p>
                     )}
                     {ev.attachment_url && (
                       <button onClick={() => handleDownload(ev)}
@@ -734,12 +734,12 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   <div className="pb-2">
                     {trackerLoading ? (
                       <div className="flex items-center justify-center py-12">
-                        <div className="w-5 h-5 border-2 border-stone-200 border-t-[#1C1917] rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
                       </div>
                     ) : trackerRows.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <AlertCircle className="w-8 h-8 text-stone-200 mb-3" />
-                        <p className="text-sm font-bold text-stone-400">No students targeted by this event.</p>
+                        <p className="text-sm font-bold text-stone-500">No students targeted by this event.</p>
                       </div>
                     ) : (
                       <>
@@ -765,7 +765,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                               isAbsent      ? 'bg-amber-50 border-amber-200' :
                               vStatus === true  ? 'bg-emerald-50 border-emerald-200' :
                               vStatus === false ? 'bg-red-50 border-red-200' :
-                                                 'bg-stone-50 border-stone-200';
+                                                 'bg-stone-50 border-brand-border';
 
                             const avatarBg =
                               isAbsent          ? 'bg-amber-200' :
@@ -783,7 +783,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                               isAbsent          ? 'text-amber-700' :
                               vStatus === true  ? 'text-emerald-700' :
                               vStatus === false ? 'text-red-600' :
-                                                 'text-stone-400';
+                                                 'text-stone-500';
 
                             return (
                               <div key={row.student_id} className={`rounded-2xl p-3 border transition-colors ${cardBg}`}>
@@ -809,7 +809,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
                                   {row.self_reported
                                     ? <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-600 shrink-0">Self</span>
-                                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-stone-200 text-stone-400 shrink-0">No self-report</span>
+                                    : <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-stone-200 text-stone-500 shrink-0">No self-report</span>
                                   }
                                 </div>
 
@@ -822,7 +822,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     value={noteInputs[row.student_id] ?? ''}
                                     onChange={e => setNoteInputs(prev => ({ ...prev, [row.student_id]: e.target.value }))}
                                     placeholder="Note / reason (optional)"
-                                    className="w-full px-3 py-1.5 rounded-xl border border-stone-200 text-xs text-stone-700 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
+                                    className="w-full px-3 py-1.5 rounded-xl border border-brand-border text-xs text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
                                   />
                                 )}
 
@@ -858,7 +858,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleClearVerification(ev, row.student_id)}
                                       disabled={isVerifying}
-                                      className="px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-400 text-xs font-black hover:bg-stone-100 transition-colors disabled:opacity-40"
+                                      className="px-3 py-1.5 rounded-xl bg-white border border-brand-border text-stone-500 text-xs font-black hover:bg-stone-100 transition-colors disabled:opacity-40"
                                     >
                                       Undo
                                     </button>
@@ -875,7 +875,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               </div>
 
               {/* Footer — edit/delete */}
-              <div className="shrink-0 px-6 pb-4 pt-2 border-t border-stone-100 mt-2">
+              <div className="shrink-0 px-6 pb-4 pt-2 border-t border-brand-border/60 mt-2">
                 <div className="flex gap-2">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
@@ -906,7 +906,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             {saving ? 'Deleting…' : 'Yes, Delete'}
                           </button>
                           <button onClick={() => setDeleteConfirm(false)}
-                            className="flex-1 py-2 rounded-xl bg-white border border-stone-200 text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
+                            className="flex-1 py-2 rounded-xl bg-white border border-brand-border text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
                             Cancel
                           </button>
                         </div>
@@ -938,7 +938,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+            <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
               <h2 className="text-base font-black text-stone-900">
                 {modal === 'create' ? `New Event — ${formatDate(form.event_date)}` : 'Edit Event'}
               </h2>
@@ -950,7 +950,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <div className="p-6 space-y-5">
               {/* Event Type */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Type</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Type</label>
                 <div className="grid grid-cols-4 gap-1.5">
                   {EVENT_TYPES.map(t => {
                     const active = form.event_type === t.value;
@@ -971,25 +971,25 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Title *</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Title *</label>
                 <input
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="e.g. Chapter 4 homework"
-                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none transition-colors"
                 />
               </div>
 
               {/* Date */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
                   {form.event_type === 'homework' ? 'Due Date *' : 'Date *'}
                 </label>
                 <input
                   type="date"
                   value={form.event_date}
                   onChange={e => setForm(f => ({ ...f, event_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -997,21 +997,21 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               {form.event_type !== 'homework' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Start Time</label>
+                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Start Time</label>
                     <input
                       type="time"
                       value={form.start_time}
                       onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">End Time</label>
+                    <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">End Time</label>
                     <input
                       type="time"
                       value={form.end_time}
                       onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -1019,20 +1019,20 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Description */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Description</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Description</label>
                 <textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Additional details…"
-                  className="w-full px-3 py-2.5 rounded-xl border border-stone-200 focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none resize-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none resize-none transition-colors"
                 />
               </div>
 
               {/* Attachment — homework only */}
               {form.event_type === 'homework' && (
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Attachment</label>
+                  <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Attachment</label>
                   {modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment && !attachmentFile && (
                     <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 mb-2">
                       <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
@@ -1054,7 +1054,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   ) : (
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-stone-200 hover:border-stone-400 text-sm font-bold text-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-brand-border hover:border-stone-400 text-sm font-bold text-stone-500 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" />
                       {(modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment) ? 'Replace file' : 'Attach file (PDF, Word, Image)'}
@@ -1074,7 +1074,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Audience */}
               <div>
-                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Who sees this?</label>
+                <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Who sees this?</label>
                 <div className="grid grid-cols-2 gap-1.5 mb-3">
                   {([
                     { value: 'all',      label: 'Everyone',          icon: Users },
@@ -1127,7 +1127,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 {/* Class picker */}
                 {form.target_type === 'class' && (
                   <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
-                    {cohorts.length === 0 && <p className="text-xs text-stone-400">No classes found.</p>}
+                    {cohorts.length === 0 && <p className="text-xs text-stone-500">No classes found.</p>}
                     {cohorts.map(c => {
                       const active = form.target_cohort_ids.includes(c.id);
                       return (
@@ -1146,7 +1146,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 {form.target_type === 'subject' && (
                   <div className="space-y-3">
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1.5">Subject *</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1.5">Subject *</p>
                       <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
                         {subjects.map(s => {
                           const active = form.target_subject_ids.includes(s.id);
@@ -1162,7 +1162,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1.5">Grade *</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1.5">Grade *</p>
                       <div className="flex flex-wrap gap-1.5">
                         {GRADES.map(g => {
                           const active = form.target_grades.includes(g);
@@ -1177,14 +1177,14 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                         })}
                       </div>
                     </div>
-                    <p className="text-[10px] text-stone-400">Only students in the selected grade(s) who take the selected subject(s) will see this.</p>
+                    <p className="text-[10px] text-stone-500">Only students in the selected grade(s) who take the selected subject(s) will see this.</p>
                   </div>
                 )}
 
                 {/* Specific student picker */}
                 {form.target_type === 'specific' && (
-                  <div className="space-y-1 max-h-40 overflow-y-auto border border-stone-100 rounded-xl p-2">
-                    {allStudents.length === 0 && <p className="text-xs text-stone-400 p-2">No students found.</p>}
+                  <div className="space-y-1 max-h-40 overflow-y-auto border border-brand-border/60 rounded-xl p-2">
+                    {allStudents.length === 0 && <p className="text-xs text-stone-500 p-2">No students found.</p>}
                     {allStudents.map(s => {
                       const active = form.target_student_ids.includes(s.id);
                       return (
@@ -1206,9 +1206,9 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               {error && <p className="text-sm font-bold text-red-500">{error}</p>}
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-stone-100 px-6 py-4 rounded-b-2xl flex gap-2">
+            <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
               <button onClick={closeModal}
-                className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
+                className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}

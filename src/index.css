@@ -13,6 +13,12 @@
   --color-brand-border: #D6CFC4;
   --color-brand-eyebrow: #78716C;
 
+  /* ── Dashboard-only background ──
+     Same cream family as brand-bg but a shade deeper — the portal packs many
+     white/glass cards edge-to-edge, and at brand-bg's brightness the card
+     borders nearly disappear. Landing page keeps --color-brand-bg untouched. */
+  --color-dash-bg: #EBE3D3;
+
   /* ── Design system ── */
   --color-primary: #1e293b;
   --color-success: #10b981;

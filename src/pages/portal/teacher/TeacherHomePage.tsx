@@ -242,7 +242,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
       </div>
     );
   }
@@ -250,30 +250,32 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   const nextEvent = upcomingEvents[0] ?? null;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8 space-y-4">
+    <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 md:p-8 space-y-5 sm:space-y-6">
 
       {/* ── Header ───────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Overview</p>
-        <h1 className="font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
-          Welcome back, {session.name}.
+        <span className="eyebrow">Overview</span>
+        <h1 className="font-display font-black text-brand-dark text-2xl sm:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
+          Welcome back, <em className="font-serif-accent text-accent">{session.name}</em>.
         </h1>
-        <p className="text-sm text-stone-400 mt-0.5">{session.school_name}</p>
+        <p className="text-sm text-stone-500 mt-1.5">{session.school_name}</p>
       </motion.div>
 
       {/* ── 4 stat cards ─────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
         {/* Next Event — dark card */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="bg-brand-dark rounded-2xl p-4 flex flex-col justify-between min-h-30"
+          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 flex flex-col justify-between min-h-30 relative overflow-hidden border border-white/[0.06]"
         >
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none blur-2xl opacity-25"
+            style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Next Event</p>
           {nextEvent ? (
             <>
-              <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-700 text-stone-300'}`}>
+              <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-700 text-stone-400'}`}>
                 {nextEvent.event_type}
               </span>
               <div className="mt-1">
@@ -290,9 +292,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-30"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">My Students</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Students</p>
           <p className="font-black text-4xl text-brand-dark">{studentCount}</p>
           <button onClick={() => onNavigate('classes')}
             className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
@@ -304,9 +306,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-30"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Mark Sheets</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Mark Sheets</p>
           <p className="font-black text-4xl text-brand-dark">
             {recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)}
           </p>
@@ -320,9 +322,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="bg-white border border-stone-200 rounded-2xl p-4 flex flex-col justify-between min-h-30"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming Events</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
           <p className="font-black text-4xl text-brand-dark">{upcomingEvents.length}</p>
           <button onClick={() => onNavigate('calendar')}
             className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
@@ -336,12 +338,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.18 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Needs Attention</p>
-              <p className="text-[10px] text-stone-400 mt-0.5">Recommended interventions — click Assign to activate</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
+              <p className="text-[10px] text-stone-500 mt-0.5">Recommended interventions — click Assign to activate</p>
             </div>
             <span className="text-[11px] font-bold text-red-500">
               {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
@@ -376,7 +378,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
 
                     <button
                       onClick={() => dismiss(riskKey(s.studentId, s.subject))}
-                      className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-300 hover:text-stone-500 transition-colors"
+                      className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-400 hover:text-stone-500 transition-colors"
                       title="Dismiss"
                     >
                       <X className="w-3 h-3" />
@@ -391,9 +393,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                           isDone
                             ? 'bg-emerald-100 text-emerald-700 cursor-default'
                             : !rec
-                            ? 'bg-stone-100 text-stone-300 cursor-default'
-                            : isAssigning
                             ? 'bg-stone-100 text-stone-400 cursor-default'
+                            : isAssigning
+                            ? 'bg-stone-100 text-stone-500 cursor-default'
                             : 'bg-brand-dark text-white hover:bg-stone-700 active:scale-95'
                         }`}
                       >
@@ -412,7 +414,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                     {s.reason !== 'below_pass' && (
                       <button
                         onClick={() => onNavigate('library')}
-                        className="shrink-0 text-[10px] font-black text-stone-400 hover:text-stone-700 transition-colors"
+                        className="shrink-0 text-[10px] font-black text-stone-500 hover:text-stone-700 transition-colors"
                       >
                         View
                       </button>
@@ -422,7 +424,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   {/* Recommendation pill — shown once rec is loaded for below_pass */}
                   {s.reason === 'below_pass' && rec && !isDone && (
                     <div className="flex items-center gap-1.5 px-3 pb-2.5">
-                      <RecIcon className="w-3 h-3 text-stone-400 shrink-0" />
+                      <RecIcon className="w-3 h-3 text-stone-500 shrink-0" />
                       <p className="text-[10px] text-stone-500 truncate">
                         <span className="font-black">{TYPE_LABEL[rec.type] ?? rec.type}</span>
                         {' '}recommended
@@ -442,7 +444,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             })}
           </div>
           {atRisk.length > 6 && (
-            <p className="text-[11px] text-stone-400 text-center mt-3">
+            <p className="text-[11px] text-stone-500 text-center mt-3">
               +{atRisk.length - 6} more —{' '}
               <button onClick={() => onNavigate('library')} className="font-black text-stone-600 hover:text-stone-900">
                 View all
@@ -457,12 +459,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.20 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Interventions Requiring Follow-Up</p>
-              <p className="text-[10px] text-stone-400 mt-0.5">Stale or completed without an outcome recorded</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Interventions Requiring Follow-Up</p>
+              <p className="text-[10px] text-stone-500 mt-0.5">Stale or completed without an outcome recorded</p>
             </div>
             <span className="flex items-center gap-1 text-[11px] font-bold text-amber-500">
               <Clock className="w-3 h-3" /> {stale.filter(inv => !dismissed.has(inv.interventionId)).length}
@@ -491,7 +493,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 </div>
                 <button
                   onClick={() => dismiss(inv.interventionId)}
-                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-300 hover:text-stone-500 transition-colors"
+                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-400 hover:text-stone-500 transition-colors"
                   title="Dismiss"
                 >
                   <X className="w-3 h-3" />
@@ -517,12 +519,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.22 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">No Recent Assessments</p>
-              <p className="text-[10px] text-stone-400 mt-0.5">Subjects with no mark sheet in the last 30 days</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">No Recent Assessments</p>
+              <p className="text-[10px] text-stone-500 mt-0.5">Subjects with no mark sheet in the last 30 days</p>
             </div>
             <AlertTriangle className="w-4 h-4 text-orange-400" />
           </div>
@@ -540,7 +542,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 </div>
                 <button
                   onClick={() => dismiss(gapKey(gap.subjectId, gap.grade))}
-                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-400 hover:text-stone-600 transition-colors"
+                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-500 hover:text-stone-600 transition-colors"
                   title="Dismiss"
                 >
                   <X className="w-3 h-3" />
@@ -562,27 +564,27 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Academic Impact</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Academic Impact</p>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="bg-stone-50 rounded-xl p-3 text-center">
               <p className="text-xl font-black text-brand-dark">{impact.completedInterventions}</p>
-              <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">Completed</p>
+              <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">Completed</p>
             </div>
             <div className={`rounded-xl p-3 text-center ${impact.successRate >= 70 ? 'bg-emerald-50' : impact.successRate >= 50 ? 'bg-amber-50' : 'bg-stone-50'}`}>
               <p className={`text-xl font-black ${impact.successRate >= 70 ? 'text-emerald-700' : impact.successRate >= 50 ? 'text-amber-700' : 'text-stone-500'}`}>
                 {impact.successRate}%
               </p>
-              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.successRate >= 70 ? 'text-emerald-500' : impact.successRate >= 50 ? 'text-amber-500' : 'text-stone-400'}`}>
+              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.successRate >= 70 ? 'text-emerald-500' : impact.successRate >= 50 ? 'text-amber-500' : 'text-stone-500'}`}>
                 Success
               </p>
             </div>
             <div className={`rounded-xl p-3 text-center ${impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
-              <p className={`text-xl font-black ${impact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-400'}`}>
+              <p className={`text-xl font-black ${impact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-500'}`}>
                 {impact.avgImprovement > 0 ? `+${impact.avgImprovement}%` : '—'}
               </p>
-              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-400'}`}>
+              <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${impact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-500'}`}>
                 Avg Gain
               </p>
             </div>
@@ -597,7 +599,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             </div>
           )}
           {impact.activeInterventions > 0 && (
-            <p className="text-[11px] text-stone-400 mt-2 text-center">
+            <p className="text-[11px] text-stone-500 mt-2 text-center">
               {impact.activeInterventions} intervention{impact.activeInterventions !== 1 ? 's' : ''} currently active
             </p>
           )}
@@ -609,9 +611,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.26 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">What Works Best</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">What Works Best</p>
           <div className="space-y-2.5">
             {roiRows.map((row, i) => (
               <div key={row.type} className="flex items-center gap-3">
@@ -622,10 +624,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   <div className="flex items-center justify-between mb-0.5">
                     <p className="text-xs font-black text-stone-900">{row.label}</p>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className={`text-[10px] font-black ${row.successRate >= 70 ? 'text-emerald-600' : row.successRate >= 50 ? 'text-amber-600' : 'text-stone-400'}`}>
+                      <span className={`text-[10px] font-black ${row.successRate >= 70 ? 'text-emerald-600' : row.successRate >= 50 ? 'text-amber-600' : 'text-stone-500'}`}>
                         {row.successRate}%
                       </span>
-                      <span className={`text-[10px] font-black ${row.avgGain > 0 ? 'text-blue-600' : 'text-stone-300'}`}>
+                      <span className={`text-[10px] font-black ${row.avgGain > 0 ? 'text-blue-600' : 'text-stone-400'}`}>
                         {row.avgGain > 0 ? `+${row.avgGain}%` : '—'}
                       </span>
                     </div>
@@ -637,11 +639,11 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                     />
                   </div>
                 </div>
-                <p className="text-[10px] text-stone-300 shrink-0 w-12 text-right">n={row.total}</p>
+                <p className="text-[10px] text-stone-400 shrink-0 w-12 text-right">n={row.total}</p>
               </div>
             ))}
           </div>
-          <p className="text-[10px] text-stone-300 mt-3 text-center">Success rate · Avg mark gain · n = completed interventions with outcomes</p>
+          <p className="text-[10px] text-stone-400 mt-3 text-center">Success rate · Avg mark gain · n = completed interventions with outcomes</p>
         </motion.div>
       )}
 
@@ -650,22 +652,22 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.28 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Class Health</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Class Health</p>
           <div className="space-y-3">
             {classHealth.slice(0, 6).map((h, i) => {
-              const changeColor = h.recentChange === null ? 'text-stone-300'
+              const changeColor = h.recentChange === null ? 'text-stone-400'
                 : h.recentChange >= 2  ? 'text-emerald-500'
                 : h.recentChange <= -2 ? 'text-red-400'
-                : 'text-stone-400';
+                : 'text-stone-500';
               const avgColor = h.classAvg >= 70 ? 'text-emerald-600' : h.classAvg >= 50 ? 'text-amber-600' : 'text-red-500';
               return (
                 <div key={i} className="flex items-center gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-xs font-black text-stone-900">{h.subject}</p>
-                      <span className="text-[10px] font-bold text-stone-400">Gr {h.grade}</span>
+                      <span className="text-[10px] font-bold text-stone-500">Gr {h.grade}</span>
                       {h.atRiskCount > 0 && (
                         <span className="text-[10px] font-black text-red-500">{h.atRiskCount} at risk</span>
                       )}
@@ -697,9 +699,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.30 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Homework Completion</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Homework Completion</p>
           <div className="space-y-3">
             {homeworkStats.map(({ event, completionCount, totalStudents }, i) => {
               const pct = totalStudents > 0 ? Math.round((completionCount / totalStudents) * 100) : 0;
@@ -727,9 +729,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       <motion.div
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease, delay: 0.32 }}
-        className="bg-white border border-stone-200 rounded-2xl p-5"
+        className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
       >
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Quick Actions</p>
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Quick Actions</p>
         <div className="grid grid-cols-2 gap-2">
           {[
             { label: 'Add Student',       icon: Users,        page: 'classes',       color: 'text-blue-600' },
@@ -740,7 +742,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             <button
               key={page}
               onClick={() => onNavigate(page)}
-              className="flex items-center gap-2.5 px-3 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-stone-100 transition-colors text-left"
+              className="flex items-center gap-2.5 px-3 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-brand-border/60 transition-colors text-left"
             >
               <Icon className={`w-4 h-4 shrink-0 ${color}`} />
               <span className="text-[12px] font-black text-stone-700">{label}</span>
@@ -754,9 +756,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Upcoming Events</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Upcoming Events</p>
           <div className="space-y-2">
             {upcomingEvents.map((ev, i) => {
               const colors = EVENT_TYPE_COLORS[ev.event_type] ?? EVENT_TYPE_COLORS.other;
@@ -765,7 +767,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-stone-900 truncate">{ev.title}</p>
-                    <p className="text-[10px] text-stone-400">{formatDate(ev.event_date)}</p>
+                    <p className="text-[10px] text-stone-500">{formatDate(ev.event_date)}</p>
                   </div>
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${colors.pill}`}>
                     {ev.event_type}

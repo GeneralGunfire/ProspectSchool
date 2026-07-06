@@ -47,7 +47,7 @@ function computeResult(previousAvg: number, newAvg: number, latestMark: number):
 
 const RESULT_STYLE: Record<OutcomeResult, { icon: typeof TrendingUp; color: string; bg: string; label: string }> = {
   improved:  { icon: TrendingUp,   color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200', label: 'Improved' },
-  unchanged: { icon: Minus,        color: 'text-stone-500',   bg: 'bg-stone-50 border-stone-200',     label: 'Unchanged' },
+  unchanged: { icon: Minus,        color: 'text-stone-500',   bg: 'bg-stone-50 border-brand-border',     label: 'Unchanged' },
   declined:  { icon: TrendingDown, color: 'text-red-500',     bg: 'bg-red-50 border-red-200',         label: 'Declined' },
 };
 
@@ -128,12 +128,12 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
       >
         <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100 shrink-0">
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
             <div>
               <h2 className="text-base font-black text-brand-dark">Record Outcome</h2>
-              <p className="text-xs text-stone-400 mt-0.5">{target.studentLabel} · {target.subject}</p>
+              <p className="text-xs text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-400 transition-colors">
+            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -141,43 +141,43 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
           <div className="px-6 py-4 overflow-y-auto">
             {loading ? (
               <div className="flex justify-center py-8">
-                <div className="w-4 h-4 border-2 border-stone-200 border-t-stone-600 rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-brand-border border-t-stone-600 rounded-full animate-spin" />
               </div>
             ) : (
               <>
                 {noMarks && (
-                  <p className="text-xs text-stone-400 bg-stone-50 rounded-xl px-3 py-2.5 mb-4">
+                  <p className="text-xs text-stone-500 bg-stone-50 rounded-xl px-3 py-2.5 mb-4">
                     No recent marks for {target.subject} — enter values manually.
                   </p>
                 )}
 
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 mb-3">Subject Averages</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 mb-3">Subject Averages</p>
 
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1">
-                    <label className="block text-[10px] font-bold text-stone-400 mb-1">Previous Avg</label>
+                    <label className="block text-[10px] font-bold text-stone-500 mb-1">Previous Avg</label>
                     <div className="px-3 py-2 rounded-xl bg-stone-100 text-sm font-black text-stone-500">
                       {Math.round(target.previousAvg)}%
                     </div>
                   </div>
                   <div className="flex-1">
-                    <label className="block text-[10px] font-bold text-stone-400 mb-1">New Avg</label>
+                    <label className="block text-[10px] font-bold text-stone-500 mb-1">New Avg</label>
                     <input
                       type="number" min={0} max={100}
                       value={newAvg}
                       onChange={e => setNewAvg(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-stone-200 text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                      className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                     />
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <label className="block text-[10px] font-bold text-stone-400 mb-1">Latest Assessment Mark</label>
+                  <label className="block text-[10px] font-bold text-stone-500 mb-1">Latest Assessment Mark</label>
                   <input
                     type="number" min={0} max={100}
                     value={latestMark}
                     onChange={e => setLatestMark(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-stone-200 text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                 </div>
 

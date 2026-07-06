@@ -129,7 +129,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 pb-24 md:pb-8">
+    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
 
       {/* Toast */}
       <AnimatePresence>
@@ -147,8 +147,8 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-1">Past Papers</p>
-          <h1 className="text-2xl font-black text-stone-900 tracking-tight">Past Papers</h1>
+          <span className="eyebrow">Past Papers</span>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Past Papers</h1>
         </div>
         <motion.button
           whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
@@ -165,27 +165,27 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full"
+            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full"
           />
         </div>
       ) : papers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-400">No past papers yet.</p>
-          <p className="text-xs text-stone-300 mt-1">Upload papers — students can browse and download them.</p>
+          <p className="text-sm font-bold text-stone-500">No past papers yet.</p>
+          <p className="text-xs text-stone-400 mt-1">Upload papers — students can browse and download them.</p>
         </div>
       ) : (
         <div className="space-y-6">
           {Array.from(grouped.entries()).map(([subject, list]) => (
             <div key={subject}>
-              <p className="text-xs font-black uppercase tracking-widest text-stone-400 mb-3">{subject}</p>
+              <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">{subject}</p>
               <div className="space-y-2">
                 {list.map((p, i) => (
                   <motion.div
                     key={p.id}
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
-                    className="bg-white rounded-2xl border border-stone-200 px-5 py-4 flex items-center gap-4"
+                    className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4"
                   >
                     {/* Icon with memo dot */}
                     <div className="relative w-9 h-9 shrink-0">
@@ -221,7 +221,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                             Memo
                           </span>
                         )}
-                        <span className="text-[10px] text-stone-300">{p.file_name}</span>
+                        <span className="text-[10px] text-stone-400">{p.file_name}</span>
                       </div>
                     </div>
 
@@ -229,13 +229,13 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       <button
                         onClick={() => handleOpen(p)}
                         disabled={downloading === p.id}
-                        className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-400 hover:text-stone-700 disabled:opacity-40"
+                        className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-500 hover:text-stone-700 disabled:opacity-40"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(p)}
-                        className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-300 hover:text-red-500"
+                        className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -263,7 +263,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white border-b border-stone-100 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
+              <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                 <h2 className="text-base font-black text-stone-900">Upload Past Paper</h2>
                 <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
@@ -274,34 +274,34 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
 
                 {/* Title */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Title *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
                   <input
                     value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Mathematics P1 Final Exam"
-                    className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark"
+                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                   />
                 </div>
 
                 {/* Subject + Grade row */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Subject *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject *</label>
                     <select
                       value={form.subject_id}
                       onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     >
                       <option value="">Select…</option>
                       {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Grade *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade *</label>
                     <select
                       value={form.grade}
                       onChange={e => setForm(f => ({ ...f, grade: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     >
                       <option value="">Select…</option>
                       {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
@@ -312,32 +312,32 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 {/* Year + Term + Paper number row */}
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Year *</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Year *</label>
                     <select
                       value={form.year}
                       onChange={e => setForm(f => ({ ...f, year: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     >
                       {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Term</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Term</label>
                     <select
                       value={form.term}
                       onChange={e => setForm(f => ({ ...f, term: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     >
                       <option value="">Any</option>
                       {TERMS.map(t => <option key={t} value={t}>Term {t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">Paper #</label>
+                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Paper #</label>
                     <select
                       value={form.paper_number}
                       onChange={e => setForm(f => ({ ...f, paper_number: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-stone-200 text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/10 focus:border-brand-dark bg-white"
+                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     >
                       {[1, 2, 3].map(n => <option key={n} value={n}>Paper {n}</option>)}
                     </select>
@@ -346,9 +346,9 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
 
                 {/* Question paper file */}
                 <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-400 mb-2">File *</label>
+                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">File *</label>
                   {file ? (
-                    <div className="flex items-center gap-2 p-3 bg-stone-50 rounded-xl border border-stone-200">
+                    <div className="flex items-center gap-2 p-3 bg-stone-50 rounded-xl border border-brand-border">
                       <Paperclip className="w-4 h-4 text-stone-500 shrink-0" />
                       <span className="text-sm font-bold text-stone-700 flex-1 truncate">{file.name}</span>
                       <button
@@ -361,7 +361,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                   ) : (
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-stone-200 text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-brand-border text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" /> Attach PDF or image
                     </button>
@@ -377,9 +377,9 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
 
                 {/* Memo / Marking guide file (optional) */}
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-2">
+                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">
                     Memorandum / Marking Guide
-                    <span className="ml-2 text-stone-300 normal-case font-medium tracking-normal">(optional)</span>
+                    <span className="ml-2 text-stone-400 normal-case font-medium tracking-normal">(optional)</span>
                   </p>
                   {memoFile ? (
                     <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
@@ -397,7 +397,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     <button
                       type="button"
                       onClick={() => memoFileRef.current?.click()}
-                      className="w-full flex items-center gap-3 px-4 py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 border-2 border-dashed border-brand-border rounded-xl text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" />
                       Attach memo (PDF or Word)
@@ -415,10 +415,10 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-stone-100 px-6 py-4 rounded-b-2xl flex gap-2">
+              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button
                   onClick={closeModal}
-                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -454,13 +454,13 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               <p className="text-sm text-stone-500 mb-5">
                 <strong>{deleteTarget.title}</strong> will be permanently removed.
                 {deleteTarget.memo_url && (
-                  <span className="block mt-1 text-stone-400">The attached memo will also be deleted.</span>
+                  <span className="block mt-1 text-stone-500">The attached memo will also be deleted.</span>
                 )}
               </p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-stone-200 text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>

@@ -70,13 +70,13 @@ function SubjectRow({
   }, {});
 
   return (
-    <div className="flex items-center gap-2 py-2 border-b border-stone-100 last:border-0">
+    <div className="flex items-center gap-2 py-2 border-b border-brand-border/60 last:border-0">
       {/* Subject select */}
       <div className="relative flex-1 min-w-0">
         <select
           value={subject.code}
           onChange={e => onChange(index, { ...subject, code: e.target.value as SubjectCode })}
-          className="w-full appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-2 pr-7 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+          className="w-full appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-2 pr-7 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
         >
           {Object.entries(grouped).map(([group, items]) => (
             <optgroup key={group} label={group}>
@@ -86,7 +86,7 @@ function SubjectRow({
             </optgroup>
           ))}
         </select>
-        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
+        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-500 pointer-events-none" />
       </div>
 
       {/* Percentage input */}
@@ -101,9 +101,9 @@ function SubjectRow({
             onChange(index, { ...subject, percent: val });
           }}
           placeholder="0"
-          className="w-16 bg-stone-50 border border-stone-200 rounded-lg px-2 py-2 text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+          className="w-16 bg-stone-50 border border-brand-border rounded-lg px-2 py-2 text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
         />
-        <span className="text-stone-400 text-xs">%</span>
+        <span className="text-stone-500 text-xs">%</span>
       </div>
 
       {/* NQF level badge */}
@@ -114,7 +114,7 @@ function SubjectRow({
       {/* Remove */}
       <button
         onClick={() => onRemove(index)}
-        className="shrink-0 p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition"
+        className="shrink-0 p-1.5 rounded-lg text-stone-500 hover:text-red-500 hover:bg-red-50 transition"
         aria-label="Remove subject"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -141,7 +141,7 @@ function DegreeCard({
       className={`rounded-xl border transition-all duration-200 ${
         qualifies
           ? 'border-emerald-200 bg-emerald-50/40'
-          : 'border-stone-200 bg-white'
+          : 'border-brand-border bg-white'
       }`}
     >
       {/* Card header */}
@@ -153,7 +153,7 @@ function DegreeCard({
         <div className="mt-0.5 shrink-0">
           {qualifies
             ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-            : <XCircle className="w-5 h-5 text-stone-300" />
+            : <XCircle className="w-5 h-5 text-stone-400" />
           }
         </div>
 
@@ -165,7 +165,7 @@ function DegreeCard({
             }`}>
               {degree.shortName}
             </span>
-            <span className="text-[11px] text-stone-400">{degree.duration}</span>
+            <span className="text-[11px] text-stone-500">{degree.duration}</span>
           </div>
           <p className="mt-1 text-sm font-bold text-stone-900 leading-tight">{degree.degree}</p>
           <p className="text-xs text-stone-500 mt-0.5">{degree.faculty}</p>
@@ -173,18 +173,18 @@ function DegreeCard({
 
         {/* APS requirement */}
         <div className="shrink-0 text-right ml-2">
-          <div className={`text-lg font-black ${apsOk ? 'text-emerald-600' : 'text-stone-400'}`}>
+          <div className={`text-lg font-black ${apsOk ? 'text-emerald-600' : 'text-stone-500'}`}>
             {degree.minAPS}
           </div>
-          <div className="text-[10px] text-stone-400 font-medium">min APS</div>
+          <div className="text-[10px] text-stone-500 font-medium">min APS</div>
         </div>
 
-        <ChevronDown className={`shrink-0 w-4 h-4 text-stone-400 transition-transform duration-200 mt-1 ${expanded ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`shrink-0 w-4 h-4 text-stone-500 transition-transform duration-200 mt-1 ${expanded ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Expanded detail */}
       {expanded && (
-        <div className="px-4 pb-4 border-t border-stone-100 pt-3 space-y-3">
+        <div className="px-4 pb-4 border-t border-brand-border/60 pt-3 space-y-3">
           {/* APS check */}
           <div className="flex items-center gap-2">
             {apsOk
@@ -201,7 +201,7 @@ function DegreeCard({
           {/* Subject requirements */}
           {degree.subjectRequirements.length > 0 && (
             <div className="space-y-1.5">
-              <p className="text-[11px] font-bold uppercase tracking-wide text-stone-400">Subject Requirements</p>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-stone-500">Subject Requirements</p>
               {degree.subjectRequirements.map((req, i) => (
                 <div key={i} className="flex items-center gap-2">
                   {metRequirements[i]
@@ -222,7 +222,7 @@ function DegreeCard({
             </div>
           )}
 
-          <p className="text-[11px] text-stone-400">{degree.university} · {degree.faculty}</p>
+          <p className="text-[11px] text-stone-500">{degree.university} · {degree.faculty}</p>
         </div>
       )}
     </div>
@@ -382,7 +382,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
   const qualifyingCount = filteredDegrees.filter(m => m.match.qualifies).length;
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
       <div>
 
         {/* Header */}
@@ -392,13 +392,11 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
           className="mb-6 flex items-start justify-between gap-4"
         >
           <div>
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
-              APS & Universities
-            </p>
-            <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+            <span className="eyebrow">APS & Universities</span>
+            <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
               APS Calculator
             </h1>
-            <p className="text-sm text-stone-400 mt-1">
+            <p className="text-sm text-stone-500 mt-1">
               Enter your Grade 12 marks to see which programmes you qualify for.
             </p>
           </div>
@@ -409,14 +407,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   ? 'bg-emerald-50 border-emerald-200'
                   : 'bg-amber-50 border-amber-200'
               }`}>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-0.5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">
                   {aps >= apsGoal ? 'Goal Reached' : 'Goal'}
                 </p>
                 <p className={`font-black text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
                   {aps} / {apsGoal}
                 </p>
                 {aps < apsGoal && (
-                  <p className="text-[10px] text-stone-400 mt-0.5">{apsGoal - aps} to go</p>
+                  <p className="text-[10px] text-stone-500 mt-0.5">{apsGoal - aps} to go</p>
                 )}
               </div>
             </div>
@@ -427,11 +425,11 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
           {/* ── Left: Subject Input ── */}
           <div className="space-y-4">
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
-              <div className="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
+            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-brand-border/60 flex items-center justify-between">
                 <div>
                   <h2 className="text-sm font-bold text-stone-900">Your Subjects & Marks</h2>
-                  <p className="text-[11px] text-stone-400 mt-0.5">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
+                  <p className="text-[11px] text-stone-500 mt-0.5">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
                 </div>
                 {session && (
                   <button
@@ -468,7 +466,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
               <div className="px-5 pb-4">
                 <button
                   onClick={addSubject}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-stone-200 text-sm font-semibold text-stone-400 hover:border-stone-400 hover:text-stone-700 hover:bg-stone-50 transition"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-brand-border text-sm font-semibold text-stone-500 hover:border-stone-400 hover:text-stone-700 hover:bg-stone-50 transition"
                 >
                   <Plus className="w-4 h-4" />
                   Add Subject
@@ -481,11 +479,11 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
               aps >= 40 ? 'border-emerald-300 bg-emerald-50' :
               aps >= 30 ? 'border-blue-300 bg-blue-50' :
               aps >= 24 ? 'border-amber-300 bg-amber-50' :
-              'border-stone-200 bg-white'
+              'border-brand-border bg-white'
             }`}>
               <p className="text-xs font-bold uppercase tracking-widest text-stone-500 mb-1">Your APS Score</p>
               <div className={`text-6xl font-black tracking-tight ${apsColor(aps)}`}>{aps}</div>
-              <p className="text-xs text-stone-400 mt-2">
+              <p className="text-xs text-stone-500 mt-2">
                 {aps === 0 && 'Enter your marks above'}
                 {aps > 0 && aps < 24 && 'Diploma & Certificate programmes'}
                 {aps >= 24 && aps < 30 && 'Most university degrees accessible'}
@@ -496,9 +494,9 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* APS Goal progress bar */}
             {apsGoal > 0 && aps > 0 && (
-              <div className="bg-white rounded-2xl border border-stone-200 p-4">
+              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">APS Goal Progress</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">APS Goal Progress</p>
                   <span className={`text-xs font-black ${aps >= apsGoal ? 'text-emerald-600' : 'text-stone-600'}`}>
                     {aps} / {apsGoal}
                   </span>
@@ -512,7 +510,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   />
                 </div>
                 {aps < apsGoal && (
-                  <p className="text-[11px] text-stone-400 mt-1.5">
+                  <p className="text-[11px] text-stone-500 mt-1.5">
                     {apsGoal - aps} more point{apsGoal - aps !== 1 ? 's' : ''} to reach your goal
                   </p>
                 )}
@@ -524,19 +522,19 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* APS Roadmap — engine-powered, shown when marks loaded + goal set */}
             {apsRoadmap.length > 0 && apsGoal > aps && (
-              <div className="bg-white rounded-2xl border border-stone-200 p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">APS Roadmap</p>
-                <p className="text-xs text-stone-400 mb-3">
+              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">APS Roadmap</p>
+                <p className="text-xs text-stone-500 mb-3">
                   +{apsGoal - aps} needed · Prioritised by biggest gain
                 </p>
                 <div className="space-y-2">
                   {apsRoadmap.map((step, i) => (
-                    <div key={i} className="flex items-center gap-3 py-2 border-b border-stone-100 last:border-0">
+                    <div key={i} className="flex items-center gap-3 py-2 border-b border-brand-border/60 last:border-0">
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-stone-900 truncate">{step.subject}</p>
-                        <p className="text-[11px] text-stone-400">
+                        <p className="text-[11px] text-stone-500">
                           {step.currentPct}% → {step.targetPct}%
-                          <span className="ml-1 text-stone-300">
+                          <span className="ml-1 text-stone-400">
                             (L{step.currentLevel} → L{step.targetLevel})
                           </span>
                         </p>
@@ -551,8 +549,8 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             )}
 
             {/* NQF conversion guide */}
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4">
-              <p className="text-xs font-bold uppercase tracking-wide text-stone-400 mb-3 flex items-center gap-1.5">
+            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-stone-500 mb-3 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" />
                 NQF Conversion Guide
               </p>
@@ -571,11 +569,11 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                       {level}
                     </span>
                     <span className="font-semibold text-stone-700 w-16 shrink-0">{range}</span>
-                    <span className="text-stone-400">{label}</span>
+                    <span className="text-stone-500">{label}</span>
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] text-stone-400 border-t border-stone-100 pt-2">
+              <p className="mt-3 text-[10px] text-stone-500 border-t border-brand-border/60 pt-2">
                 Life Orientation is capped at level 1 (max 1 APS point) at most universities.
               </p>
             </div>
@@ -591,14 +589,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-black transition-all ${
                   showGoalPlanner
                     ? 'bg-brand-dark text-white'
-                    : 'bg-white border border-stone-200 text-stone-600 hover:border-stone-400'
+                    : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
                 }`}
               >
                 <Target className="w-4 h-4" />
                 {showGoalPlanner ? 'Hide Goal Planner' : 'Set a Target APS'}
               </button>
               {showGoalPlanner && targetAps > 0 && (
-                <span className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-400">
+                <span className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500">
                   Target: {targetAps} APS
                 </span>
               )}
@@ -612,10 +610,10 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                  className="bg-white rounded-2xl border border-stone-200 p-6"
+                  className="card-premium bg-white rounded-[24px] border border-brand-border p-6"
                 >
                   {/* Part 1 — Target APS input */}
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                     Target APS
                   </p>
                   <div className="flex items-center gap-3 flex-wrap mb-4">
@@ -630,7 +628,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                         setApsGoal(val);
                       }}
                       placeholder="—"
-                      className="rounded-xl border border-stone-200 w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+                      className="rounded-xl border border-brand-border w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                     />
                     <div className="flex items-center gap-2">
                       {[30, 35, 40].map(t => (
@@ -681,7 +679,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
                     return (
                       <div className="mb-6">
-                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2 flex items-center gap-1.5">
+                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2 flex items-center gap-1.5">
                           <TrendingUp className="w-3.5 h-3.5" />
                           How to Get There
                         </p>
@@ -693,13 +691,13 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                             All subjects are at maximum NQF level. Well done!
                           </p>
                         ) : (
-                          <div className="rounded-xl border border-stone-100 divide-y divide-stone-100 overflow-hidden">
+                          <div className="rounded-xl border border-brand-border/60 divide-y divide-stone-100 overflow-hidden">
                             {improvable.map(row => (
                               <div key={row.subject.code} className="flex items-center gap-3 px-4 py-3">
                                 <span className="text-sm font-bold text-stone-900 flex-1 min-w-0 truncate">
                                   {row.label}
                                 </span>
-                                <span className="text-xs text-stone-400 shrink-0">
+                                <span className="text-xs text-stone-500 shrink-0">
                                   {row.subject.percent}% → {row.threshold}%
                                 </span>
                                 <span className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black px-2.5 py-0.5 rounded-full shrink-0">
@@ -721,11 +719,11 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
                     return (
                       <div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                           Degrees You'll Unlock at APS {targetAps}
                         </p>
                         {unlocked.length === 0 ? (
-                          <p className="text-sm text-stone-400">No additional degrees unlock at this target.</p>
+                          <p className="text-sm text-stone-500">No additional degrees unlock at this target.</p>
                         ) : (
                           <div className="flex flex-wrap gap-2">
                             {shown.map(d => (
@@ -751,7 +749,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             </AnimatePresence>
 
             {/* Filters bar */}
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm px-4 py-3">
+            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm px-4 py-3">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
                   <Filter className="w-3.5 h-3.5" />
@@ -763,14 +761,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   <select
                     value={fieldFilter}
                     onChange={e => setFieldFilter(e.target.value as FieldOfStudy | 'All')}
-                    className="appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Fields</option>
                     {FIELDS_OF_STUDY.map(f => (
                       <option key={f} value={f}>{f}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-500 pointer-events-none" />
                 </div>
 
                 {/* University filter */}
@@ -778,14 +776,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   <select
                     value={uniFilter}
                     onChange={e => setUniFilter(e.target.value)}
-                    className="appearance-none bg-stone-50 border border-stone-200 rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-900/20 focus:border-stone-400 transition"
+                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Universities</option>
                     {UNIVERSITIES.map(u => (
                       <option key={u} value={u}>{u}</option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-stone-500 pointer-events-none" />
                 </div>
 
                 {/* Qualifying only toggle */}
@@ -794,7 +792,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
                     showOnlyQualifying
                       ? 'bg-emerald-600 text-white border-emerald-600'
-                      : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-400'
+                      : 'bg-stone-50 text-stone-600 border-brand-border hover:border-stone-400'
                   }`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
@@ -802,7 +800,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 </button>
 
                 {/* Count */}
-                <div className="ml-auto text-xs text-stone-400 shrink-0">
+                <div className="ml-auto text-xs text-stone-500 shrink-0">
                   <span className="font-bold text-emerald-600">{qualifyingCount}</span> qualifying
                   {' · '}
                   <span className="font-bold text-stone-700">{filteredDegrees.length}</span> shown
@@ -812,10 +810,10 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* Degree cards */}
             {filteredDegrees.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
+              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-12 text-center">
                 <GraduationCap className="w-10 h-10 text-stone-200 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-stone-500">No degrees match your filters</p>
-                <p className="text-xs text-stone-400 mt-1">Try adjusting the field or university filter</p>
+                <p className="text-xs text-stone-500 mt-1">Try adjusting the field or university filter</p>
               </div>
             ) : (
               <div className="space-y-2">

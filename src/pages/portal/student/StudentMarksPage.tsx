@@ -23,7 +23,7 @@ function pctNum(mark: number, total: number): number {
 }
 
 function gradeLabel(mark: number | null, total: number): { label: string; color: string; bg: string } {
-  if (mark === null) return { label: 'Pending', color: 'text-stone-400', bg: 'bg-stone-100' };
+  if (mark === null) return { label: 'Pending', color: 'text-stone-500', bg: 'bg-stone-100' };
   const p = (mark / total) * 100;
   if (p >= 80) return { label: 'Outstanding', color: 'text-emerald-700', bg: 'bg-emerald-50' };
   if (p >= 70) return { label: 'Merit',       color: 'text-blue-700',    bg: 'bg-blue-50' };
@@ -48,6 +48,45 @@ function formatDate(s: string) {
 
 function shortTitle(title: string): string {
   return title.length > 12 ? title.slice(0, 11) + '…' : title;
+}
+
+// Animated count-up — same recipe as StudentHomePage's Counter.
+function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let frame: number;
+    const start = performance.now();
+    const duration = 900;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{display}{suffix}</>;
+}
+
+// SVG progress ring — same recipe as StudentHomePage's Ring.
+function Ring({ pct, size = 64, stroke = 6 }: { pct: number; size?: number; stroke?: number }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke="var(--color-accent)" strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c * (1 - clamped / 100) }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+      />
+    </svg>
+  );
 }
 
 // ── Custom tooltip ────────────────────────────────────────────
@@ -77,7 +116,7 @@ function PerformanceZoneBar({ avg }: { avg: number }) {
   const clamped = Math.max(0, Math.min(100, avg));
   return (
     <div className="px-5 pt-4 pb-2">
-      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Zone</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Zone</p>
       <div className="relative h-3 rounded-full overflow-hidden flex">
         {ZONES.map(z => (
           <div key={z.from} style={{ width: `${z.to - z.from}%`, background: z.color }} />
@@ -89,7 +128,7 @@ function PerformanceZoneBar({ avg }: { avg: number }) {
       </div>
       <div className="flex justify-between mt-1">
         {[0, 40, 50, 70, 80, 100].map(v => (
-          <span key={v} className="text-[9px] font-bold text-stone-300">{v}</span>
+          <span key={v} className="text-[9px] font-bold text-stone-400">{v}</span>
         ))}
       </div>
     </div>
@@ -281,41 +320,47 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
       <div className="mb-7">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Results</p>
+        <span className="eyebrow">Results</span>
         <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>My Marks</h1>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
           <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full" />
+            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full" />
         </div>
       ) : results.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <ClipboardList className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-400">No results yet.</p>
-          <p className="text-xs text-stone-300 mt-1">Your marks will appear here once your teacher has recorded them.</p>
+          <p className="text-sm font-bold text-stone-500">No results yet.</p>
+          <p className="text-xs text-stone-400 mt-1">Your marks will appear here once your teacher has recorded them.</p>
         </div>
       ) : (
         <>
-          {/* Overall summary */}
+          {/* Overall summary — hero card with a real progress ring */}
           {overallAvg !== null && (
-            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-brand-dark text-white rounded-2xl p-5 mb-5 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                <TrendingUp className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs font-black uppercase tracking-widest text-white/50 mb-0.5">Overall Average</p>
-                <p className="text-2xl font-black tracking-tight">{overallAvg.toFixed(1)}%</p>
-              </div>
-              <div className="ml-auto text-right flex flex-col items-end gap-1.5">
-                <div className={`px-2.5 py-1 rounded-xl text-[11px] font-black border ${learnerStatus.bg} ${learnerStatus.color} ${learnerStatus.border}`}>
-                  {learnerStatus.score}/100 · {learnerStatus.label}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              className="card-premium-dark bg-brand-dark text-white rounded-[28px] p-6 mb-5 relative overflow-hidden border border-white/6">
+              <div className="absolute -top-20 -right-16 w-64 h-64 rounded-full pointer-events-none blur-3xl opacity-25"
+                style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+              <div className="relative z-10 flex items-center gap-5 flex-wrap">
+                <div className="relative shrink-0">
+                  <Ring pct={Math.round(overallAvg)} size={72} stroke={6} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-lg font-black leading-none"><Counter value={Math.round(overallAvg)} suffix="%" /></span>
+                  </div>
                 </div>
-                <p className="text-xs text-white/50 font-bold">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''}</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500 mb-1">Overall Average</p>
+                  <p className="text-xl font-black tracking-tight">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''} tracked</p>
+                </div>
+                <div className="ml-auto text-right flex flex-col items-end gap-1.5">
+                  <div className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${learnerStatus.bg} ${learnerStatus.color} ${learnerStatus.border}`}>
+                    {learnerStatus.score}/100 · {learnerStatus.label}
+                  </div>
+                </div>
               </div>
             </motion.div>
           )}
@@ -326,7 +371,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.05 }}
               className="mb-5"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Subject Risk</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Subject Risk</p>
               <div className="space-y-2">
                 {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
                   <div key={risk.subject} className={`rounded-2xl border p-4 ${
@@ -366,11 +411,11 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => onNavigate('pastpapers')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
                         Practice Papers
                       </button>
                       <button onClick={() => onNavigate('library')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-stone-200 text-stone-700 text-[11px] font-black hover:bg-stone-50 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-brand-border text-stone-700 text-[11px] font-black hover:bg-stone-50 transition-colors">
                         Open Library
                       </button>
                     </div>
@@ -412,23 +457,23 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             return (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl border border-stone-200 p-5 mb-5"
+                className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-5"
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Performance Journey</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Performance Journey</p>
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Early</p>
+                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Early</p>
                     <p className="font-black text-stone-700 text-xl">{startAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`font-black text-2xl ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                     {change >= 0 ? '↑' : '↓'}
                   </div>
                   <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">Recent</p>
+                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Recent</p>
                     <p className="font-black text-stone-900 text-xl">{currentAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`flex-1 text-center rounded-xl p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-400">Change</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500">Change</p>
                     <p className={`font-black text-xl ${change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                       {change >= 0 ? '+' : ''}{change.toFixed(1)}%
                     </p>
@@ -465,14 +510,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.15 }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Recommended Actions
               </p>
               <div className="space-y-3">
                 {actionItems.map((item, i) => (
-                  <div key={i} className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-                    <div className="px-5 pt-5 pb-4 border-b border-stone-100">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                  <div key={i} className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+                    <div className="px-5 pt-5 pb-4 border-b border-brand-border/60">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                         {item.headline}
                       </p>
                       {item.subject && item.avg !== undefined && (
@@ -489,7 +534,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                             <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
                               item.trend > 1  ? 'bg-emerald-50 text-emerald-600' :
                               item.trend < -1 ? 'bg-red-50 text-red-500' :
-                                                'bg-stone-100 text-stone-400'
+                                                'bg-stone-100 text-stone-500'
                             }`}>
                               {item.trend > 1 ? 'Improving' : item.trend < -1 ? 'Declining' : 'Stable'}
                             </span>
@@ -505,8 +550,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           onClick={() => onNavigate(action.page)}
                           className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
                             j === 0
-                              ? 'bg-stone-900 text-white hover:bg-stone-700'
-                              : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-stone-200'
+                              ? 'bg-brand-dark text-white hover:bg-stone-700'
+                              : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-brand-border'
                           }`}
                         >
                           {action.label}
@@ -525,7 +570,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             const best  = valid[0];
             const worst = valid[valid.length - 1];
             return best.subject !== worst.subject ? (
-              <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="grid grid-cols-2 gap-3 mb-6 sm:gap-4">
                 <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
                   <p className="font-black text-stone-900 text-sm leading-tight truncate">{best.subject}</p>
@@ -618,7 +663,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 <motion.div key={subject}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: gi * 0.05 }}
-                  className="bg-white rounded-2xl border border-stone-200 overflow-hidden"
+                  className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden"
                 >
                   {/* Panel header */}
                   <button
@@ -627,7 +672,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   >
                     {rank && rankedCount > 1 && (
                       <div className="shrink-0 flex flex-col items-center w-6">
-                        <span className="text-[9px] font-black text-stone-300 leading-none">#{rank}</span>
+                        <span className="text-[9px] font-black text-stone-400 leading-none">#{rank}</span>
                         <span className="text-[8px] font-bold text-stone-200 leading-none">of {rankedCount}</span>
                       </div>
                     )}
@@ -643,7 +688,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           );
                         })()}
                       </div>
-                      <p className="text-xs text-stone-400 mt-0.5">
+                      <p className="text-xs text-stone-500 mt-0.5">
                         {items.length} assessment{items.length !== 1 ? 's' : ''}
                         {gl && ` · ${gl.label}`}
                       </p>
@@ -656,18 +701,18 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       }`}>
                         {trendUp   && <TrendingUp  className="w-3.5 h-3.5 text-emerald-500 mb-0.5" />}
                         {trendDown && <TrendingDown className="w-3.5 h-3.5 text-red-400 mb-0.5" />}
-                        {trendFlat && <Minus        className="w-3.5 h-3.5 text-stone-400 mb-0.5" />}
+                        {trendFlat && <Minus        className="w-3.5 h-3.5 text-stone-500 mb-0.5" />}
                         <span className={`text-[10px] font-black leading-none ${
                           trendUp   ? 'text-emerald-600' :
                           trendDown ? 'text-red-500'     :
-                                      'text-stone-400'
+                                      'text-stone-500'
                         }`}>
                           {trend > 0 ? '+' : ''}{trend.toFixed(1)}%
                         </span>
                         <span className={`text-[8px] font-bold leading-none mt-0.5 ${
                           trendUp   ? 'text-emerald-400' :
                           trendDown ? 'text-red-300'     :
-                                      'text-stone-300'
+                                      'text-stone-400'
                         }`}>
                           {trendUp ? 'Improving' : trendDown ? 'Declining' : 'Steady'}
                         </span>
@@ -680,7 +725,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         </p>
                       </div>
                     )}
-                    <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-stone-500 shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {/* Expanded panel */}
@@ -693,7 +738,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="border-t border-stone-100">
+                        <div className="border-t border-brand-border/60">
 
                           {/* Subject Intelligence snapshot */}
                           <div className="px-5 pt-4 pb-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -729,7 +774,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                               },
                             ].map(stat => (
                               <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-2.5 text-center">
-                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">{stat.label}</p>
+                                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">{stat.label}</p>
                                 <p className="font-black text-stone-900 text-sm">{stat.value}</p>
                               </div>
                             ))}
@@ -739,8 +784,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (
                             <div className="px-5 pt-4 pb-3 flex flex-wrap gap-2">
                               {highestMark !== null && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5">
-                                  <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider">Best</span>
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                  <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Best</span>
                                   <span className="text-xs font-black text-stone-900">{highestMark}%</span>
                                 </div>
                               )}
@@ -752,8 +797,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 </div>
                               )}
                               {markedItems.length > 0 && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-stone-100 rounded-xl px-3 py-1.5">
-                                  <span className="text-[10px] font-black text-stone-400 uppercase tracking-wider">Completed</span>
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                  <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Completed</span>
                                   <span className="text-xs font-black text-stone-900">{markedItems.length}</span>
                                 </div>
                               )}
@@ -781,15 +826,15 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Performance zone bar */}
                           {subjectAvg !== null && (
-                            <div className="border-t border-stone-100">
+                            <div className="border-t border-brand-border/60">
                               <PerformanceZoneBar avg={subjectAvg} />
                             </div>
                           )}
 
                           {/* Chart */}
                           {chartData.length >= 2 && (
-                            <div className="px-5 pt-4 pb-2 border-t border-stone-100">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Performance</p>
+                            <div className="px-5 pt-4 pb-2 border-t border-brand-border/60">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Performance</p>
                               <ResponsiveContainer width="100%" height={140}>
                                 <BarChart data={chartData} barCategoryGap="30%" margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                                   <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }} axisLine={false} tickLine={false} />
@@ -810,8 +855,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Assessment type breakdown */}
                           {hasTypeBreakdown && (
-                            <div className="px-5 py-4 border-t border-stone-100">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">By Type</p>
+                            <div className="px-5 py-4 border-t border-brand-border/60">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">By Type</p>
                               <div className="flex flex-wrap gap-2">
                                 {typeBreakdown.map(({ type, avg, count }) => {
                                   const color = avg >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
@@ -850,8 +895,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                             if (counts.length === 0) return null;
                             const maxCount = Math.max(...counts.map(g => g.count));
                             return (
-                              <div className="px-5 py-4 border-t border-stone-100">
-                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Grade Distribution</p>
+                              <div className="px-5 py-4 border-t border-brand-border/60">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Grade Distribution</p>
                                 <div className="space-y-2">
                                   {counts.map(g => (
                                     <div key={g.label} className="flex items-center gap-3">
@@ -874,8 +919,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Focus Area card */}
                           {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
-                            <div className="mx-5 mb-4 bg-stone-50 rounded-2xl p-4 border border-stone-100">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Focus Area</p>
+                            <div className="mx-5 mb-4 bg-stone-50 rounded-2xl p-4 border border-brand-border/60">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Focus Area</p>
                               <p className="text-sm font-bold text-stone-900 mb-1">
                                 Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
                               </p>
@@ -929,8 +974,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                             if (insights.length === 0) return null;
 
                             return (
-                              <div className="px-5 py-4 border-t border-stone-100">
-                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Insights</p>
+                              <div className="px-5 py-4 border-t border-brand-border/60">
+                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Insights</p>
                                 <div className="space-y-2">
                                   {insights.map((text, i) => (
                                     <div key={i} className="flex items-start gap-2">
@@ -945,8 +990,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Three-scenario projection */}
                           {subjectAvg !== null && markedItems.length >= 2 && (
-                            <div className="px-5 py-4 border-t border-stone-100">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                            <div className="px-5 py-4 border-t border-brand-border/60">
+                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                                 What If Next Result Is...
                               </p>
                               <div className="grid grid-cols-3 gap-2">
@@ -954,8 +999,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                   const projected = projectedAvg(mark);
                                   const diff = projected - subjectAvg;
                                   return (
-                                    <div key={mark} className="bg-stone-50 rounded-xl p-3 text-center border border-stone-100">
-                                      <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{mark}%</p>
+                                    <div key={mark} className="bg-stone-50 rounded-xl p-3 text-center border border-brand-border/60">
+                                      <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-1">{mark}%</p>
                                       <p className="font-black text-stone-900 text-lg leading-none">{projected.toFixed(1)}%</p>
                                       <p className={`text-[10px] font-bold mt-1 ${diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                         {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
@@ -969,7 +1014,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Type filter pills */}
                           {typeBreakdown.length >= 2 && (
-                            <div className="px-5 pb-3 pt-1 border-t border-stone-100">
+                            <div className="px-5 pb-3 pt-1 border-t border-brand-border/60">
                               <div className="flex flex-wrap gap-1.5">
                                 {['All', ...typeBreakdown.map(t => t.type)].map(type => (
                                   <button
@@ -977,7 +1022,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                     onClick={() => setTypeFilter(prev => ({ ...prev, [subject]: type }))}
                                     className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors ${
                                       activeType === type
-                                        ? 'bg-stone-900 text-white'
+                                        ? 'bg-brand-dark text-white'
                                         : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                                     }`}
                                   >
@@ -989,8 +1034,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           )}
 
                           {/* Assessment timeline */}
-                          <div className="px-5 pb-5 pt-3 border-t border-stone-100">
-                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Results</p>
+                          <div className="px-5 pb-5 pt-3 border-t border-brand-border/60">
+                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Results</p>
                             <div className="relative">
                               <div className="absolute left-[7px] top-2 bottom-2 w-px bg-stone-200" />
                               <div className="space-y-4">
@@ -1017,14 +1062,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                             <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                               {r.sheet_scope && (
-                                                <span className="text-[10px] font-bold text-stone-400">{r.sheet_scope}</span>
+                                                <span className="text-[10px] font-bold text-stone-500">{r.sheet_scope}</span>
                                               )}
                                               {r.marked_at && (
-                                                <span className="text-[10px] text-stone-300">{formatDate(r.marked_at)}</span>
+                                                <span className="text-[10px] text-stone-400">{formatDate(r.marked_at)}</span>
                                               )}
                                             </div>
                                             {r.note && (
-                                              <p className="text-xs text-stone-400 mt-1 bg-stone-50 rounded-lg px-2 py-1">
+                                              <p className="text-xs text-stone-500 mt-1 bg-stone-50 rounded-lg px-2 py-1">
                                                 {r.note}
                                               </p>
                                             )}
@@ -1033,14 +1078,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                             {r.mark !== null ? (
                                               <>
                                                 <p className="text-base font-black text-stone-900 leading-none">
-                                                  {r.mark}<span className="text-xs font-bold text-stone-400">/{r.total}</span>
+                                                  {r.mark}<span className="text-xs font-bold text-stone-500">/{r.total}</span>
                                                 </p>
                                                 <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${g.bg} ${g.color}`}>
                                                   {p}%
                                                 </span>
                                               </>
                                             ) : (
-                                              <span className="text-xs font-bold text-stone-300">Pending</span>
+                                              <span className="text-xs font-bold text-stone-400">Pending</span>
                                             )}
                                           </div>
                                         </div>
@@ -1109,14 +1154,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   {/* Header */}
                   <div className="flex items-start justify-between mb-5">
                     <div className="flex-1 min-w-0 pr-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                         {r.subject_label} · {r.sheet_scope ?? 'Assessment'}
                       </p>
                       <h2 className="font-black text-stone-900 text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
                         {r.sheet_title}
                       </h2>
                       {r.marked_at && (
-                        <p className="text-xs text-stone-400 mt-1">{formatDate(r.marked_at)}</p>
+                        <p className="text-xs text-stone-500 mt-1">{formatDate(r.marked_at)}</p>
                       )}
                     </div>
                     <button
@@ -1142,8 +1187,8 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     </div>
                   ) : (
                     <div className="bg-stone-100 rounded-2xl p-5 mb-5 text-center">
-                      <p className="font-black text-stone-400 text-lg">Pending</p>
-                      <p className="text-xs text-stone-400 mt-1">Mark not yet recorded</p>
+                      <p className="font-black text-stone-500 text-lg">Pending</p>
+                      <p className="text-xs text-stone-500 mt-1">Mark not yet recorded</p>
                     </div>
                   )}
 
@@ -1158,7 +1203,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   {/* Leading trend mini chart */}
                   {leadingIn.length > 0 && (
                     <div className="bg-stone-50 rounded-2xl p-4 mb-5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                         Trend Leading In
                       </p>
                       <div className="flex items-end gap-2">
@@ -1172,7 +1217,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 background: barColor(xp),
                                 opacity: 0.6 + (i / leadingIn.length) * 0.4,
                               }} />
-                              <span className="text-[9px] text-stone-300 truncate w-full text-center">
+                              <span className="text-[9px] text-stone-400 truncate w-full text-center">
                                 {x.sheet_title.slice(0, 8)}
                               </span>
                             </div>
@@ -1181,7 +1226,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         {p !== null && (
                           <div className="flex-1 flex flex-col items-center gap-1">
                             <span className="text-[10px] font-black text-stone-900">{p}%</span>
-                            <div className="w-full rounded-t-sm border-2 border-stone-900" style={{
+                            <div className="w-full rounded-t-sm border-2 border-brand-dark" style={{
                               height: `${Math.max(8, p * 0.5)}px`,
                               background: barColor(p),
                             }} />

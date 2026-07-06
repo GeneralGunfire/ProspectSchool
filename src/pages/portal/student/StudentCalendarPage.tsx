@@ -287,7 +287,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
   }[];
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
 
       {/* ── Header ──────────────────────────────────────────── */}
       <motion.div
@@ -296,7 +296,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
       >
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Calendar</p>
+          <span className="eyebrow">Calendar</span>
           <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
             My Schedule
           </h1>
@@ -306,14 +306,14 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           {/* Today button */}
           <button
             onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); setSelectedDay(todayStr); }}
-            className="px-3 py-1.5 text-xs font-black text-stone-600 bg-white border border-stone-200 rounded-xl hover:border-stone-400 transition-colors"
+            className="px-3 py-1.5 text-xs font-black text-stone-600 bg-white border border-brand-border rounded-xl hover:border-stone-400 transition-colors"
           >
             Today
           </button>
 
           {/* Month nav */}
-          <div className="flex items-center bg-white border border-stone-200 rounded-xl overflow-hidden">
-            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-stone-200">
+          <div className="flex items-center bg-white border border-brand-border rounded-xl overflow-hidden">
+            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
               <ChevronLeft className="w-4 h-4 text-stone-600" />
             </button>
             <div className="relative overflow-hidden min-w-36 text-center px-1">
@@ -330,13 +330,13 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 </motion.span>
               </AnimatePresence>
             </div>
-            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-stone-200">
+            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-brand-border">
               <ChevronRight className="w-4 h-4 text-stone-600" />
             </button>
           </div>
 
           {/* Grid/List toggle */}
-          <div className="flex items-center bg-white border border-stone-200 rounded-xl p-0.5 gap-0.5">
+          <div className="flex items-center bg-white border border-brand-border rounded-xl p-0.5 gap-0.5">
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
@@ -362,10 +362,10 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-brand-dark rounded-2xl p-5 mb-4"
+          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 mb-4 relative overflow-hidden border border-white/[0.06]"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             {[
               { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-blue-400' },
               { label: 'Assessments', value: thisWeekAssessments.length, color: 'text-emerald-400' },
@@ -400,7 +400,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             const days = daysUntil(ev!.event_date);
             const urgencyColor = days <= 3 ? 'border-red-200 bg-red-50'
                                : days <= 7 ? 'border-amber-200 bg-amber-50'
-                               :             'border-stone-200 bg-white';
+                               :             'border-brand-border bg-white';
             const daysColor    = days <= 3 ? 'text-red-600'
                                : days <= 7 ? 'text-amber-600'
                                :             'text-stone-900';
@@ -410,17 +410,17 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 transition={{ delay: 0.05 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
                 className={`rounded-2xl border p-4 ${urgencyColor}`}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                   {ev!.event_type === 'exam' ? 'Next Exam' : 'Next Assessment'}
                 </p>
                 <p className="font-black text-stone-900 text-sm leading-tight mb-2">{ev!.title}</p>
                 <div className="flex items-end gap-1.5">
                   <span className={`font-black text-3xl leading-none ${daysColor}`}>{days}</span>
-                  <span className="text-sm font-bold text-stone-400 mb-0.5">
+                  <span className="text-sm font-bold text-stone-500 mb-0.5">
                     {days === 1 ? 'day' : 'days'} remaining
                   </span>
                 </div>
-                <p className="text-xs text-stone-400 mt-1">{formatDayFull(ev!.event_date)}</p>
+                <p className="text-xs text-stone-500 mt-1">{formatDayFull(ev!.event_date)}</p>
               </motion.div>
             );
           })}
@@ -432,9 +432,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Priority Deadlines</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Priority Deadlines</p>
           <div className="space-y-2">
             {priorityDeadlines.map((ev) => {
               const days = daysUntil(ev.event_date);
@@ -442,14 +442,14 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                             : days === 1 ? { dot: 'bg-red-400',   label: 'Tomorrow',     text: 'text-red-500' }
                             : days <= 3  ? { dot: 'bg-amber-500', label: `${days} days`, text: 'text-amber-600' }
                             : days <= 7  ? { dot: 'bg-blue-400',  label: `${days} days`, text: 'text-blue-600' }
-                            :              { dot: 'bg-stone-300',  label: `${days} days`, text: 'text-stone-400' };
+                            :              { dot: 'bg-stone-300',  label: `${days} days`, text: 'text-stone-500' };
               const typeLabel = EVENT_LABELS[ev.event_type];
               return (
                 <div key={ev.id} className="flex items-center gap-3 py-1.5">
                   <span className={`w-2 h-2 rounded-full shrink-0 ${urgency.dot}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
-                    <p className="text-[11px] text-stone-400">{typeLabel}</p>
+                    <p className="text-[11px] text-stone-500">{typeLabel}</p>
                   </div>
                   <span className={`text-[11px] font-black shrink-0 ${urgency.text}`}>{urgency.label}</span>
                 </div>
@@ -483,9 +483,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.14, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-stone-50 border border-stone-200 rounded-2xl p-4 mb-4"
+          className="bg-stone-50 border border-brand-border rounded-2xl p-4 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Suggested Study Time</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">Suggested Study Time</p>
           <p className="text-sm font-bold text-stone-700">
             <span className="text-stone-900 font-black">{lightestDayLabel}</span> is your lightest day this week — good time to study ahead.
             {goals.targetCareer && (
@@ -500,9 +500,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">
             {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical Revision' : 'Recommended Revision'}
           </p>
           <div className="space-y-3">
@@ -510,7 +510,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               <div key={i} className={`rounded-xl p-3 ${
                 s.urgency === 'critical' ? 'bg-red-50 border border-red-200' :
                 s.urgency === 'high'     ? 'bg-amber-50 border border-amber-200' :
-                                           'bg-stone-50 border border-stone-200'
+                                           'bg-stone-50 border border-brand-border'
               }`}>
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div className="flex-1 min-w-0">
@@ -532,13 +532,13 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => onNavigate('library')}
-                      className="px-3 py-1.5 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
+                      className="px-3 py-1.5 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
                     >
                       Library
                     </button>
                     <button
                       onClick={() => onNavigate('pastpapers')}
-                      className="px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 text-[11px] font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                      className="px-3 py-1.5 rounded-xl bg-stone-100 text-stone-700 text-[11px] font-black hover:bg-stone-200 transition-colors border border-brand-border"
                     >
                       Papers
                     </button>
@@ -555,9 +555,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-white rounded-2xl border border-stone-200 p-4 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-4 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Your Goals</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Your Goals</p>
           <div className="flex flex-wrap gap-2">
             {goals.targetAps && (
               <div className="flex items-center gap-2 bg-violet-50 rounded-xl px-3 py-2 border border-violet-100">
@@ -566,8 +566,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               </div>
             )}
             {goals.targetCareer && (
-              <div className="flex items-center gap-2 bg-stone-50 rounded-xl px-3 py-2 border border-stone-200">
-                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Career</span>
+              <div className="flex items-center gap-2 bg-stone-50 rounded-xl px-3 py-2 border border-brand-border">
+                <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Career</span>
                 <span className="font-black text-stone-700 text-sm">{goals.targetCareer}</span>
               </div>
             )}
@@ -591,18 +591,18 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               >
                 {loading ? (
                   <div className="flex items-center justify-center py-24">
-                    <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
                   </div>
                 ) : allSorted.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-24">
                     <Calendar className="w-8 h-8 text-stone-200 mb-3" />
-                    <p className="text-sm font-bold text-stone-300">No events this month.</p>
+                    <p className="text-sm font-bold text-stone-400">No events this month.</p>
                   </div>
                 ) : (
                   <div>
                     {Object.entries(grouped).map(([dateStr, dayEvs]) => (
                       <div key={dateStr}>
-                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2 mt-4 first:mt-0">
+                        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2 mt-4 first:mt-0">
                           {formatDate(dateStr)}
                         </p>
                         {dayEvs.map((ev, i) => {
@@ -616,11 +616,11 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                               initial={{ opacity: 0, y: 8 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.03, duration: 0.2 }}
-                              className={`bg-white rounded-xl border border-stone-200 px-4 py-3 flex items-center gap-3 mb-2 hover:border-stone-300 transition-colors ${done ? 'opacity-60' : ''}`}
+                              className={`bg-white rounded-xl border border-brand-border px-4 py-3 flex items-center gap-3 mb-2 hover:border-stone-300 transition-colors ${done ? 'opacity-60' : ''}`}
                             >
                               <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                               <div className="flex-1 min-w-0">
-                                <p className={`text-sm font-bold truncate ${done ? 'line-through text-stone-400' : 'text-stone-900'}`}>
+                                <p className={`text-sm font-bold truncate ${done ? 'line-through text-stone-500' : 'text-stone-900'}`}>
                                   {ev.title}
                                 </p>
                                 <div className="flex items-center gap-2 mt-0.5">
@@ -628,7 +628,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                     {EVENT_LABELS[ev.event_type]}
                                   </span>
                                   {ev.start_time && (
-                                    <span className="text-[11px] text-stone-400 flex items-center gap-1">
+                                    <span className="text-[11px] text-stone-500 flex items-center gap-1">
                                       <Clock className="w-3 h-3" />
                                       {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
                                     </span>
@@ -646,7 +646,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                 >
                                   {done
                                     ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                    : <Circle className="w-5 h-5 text-stone-300" />
+                                    : <Circle className="w-5 h-5 text-stone-400" />
                                   }
                                 </button>
                               )}
@@ -668,11 +668,11 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
                   {/* Day headers */}
-                  <div className="grid grid-cols-7 border-b border-stone-100">
+                  <div className="grid grid-cols-7 border-b border-brand-border/60">
                     {DAYS.map(d => (
-                      <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-[0.15em] text-stone-400 border-b border-stone-100">
+                      <div key={d} className="py-2.5 text-center text-[11px] font-black uppercase tracking-[0.15em] text-stone-500 border-b border-brand-border/60">
                         {d}
                       </div>
                     ))}
@@ -680,7 +680,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
 
                   {loading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
                     </div>
                   ) : (
                     <AnimatePresence mode="wait" initial={false}>
@@ -694,7 +694,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                       >
                         {cells.map((day, idx) => {
                           if (!day) return (
-                            <div key={`empty-${idx}`} className="border-r border-b border-stone-100 min-h-[90px]" />
+                            <div key={`empty-${idx}`} className="border-r border-b border-brand-border/60 min-h-[90px]" />
                           );
                           const dateStr    = toDateStr(year, month, day);
                           const dayEvs     = eventsOnDay(day);
@@ -705,7 +705,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                             <div
                               key={day}
                               onClick={() => handleDayClick(day)}
-                              className={`border-r border-b border-stone-100 last:border-r-0 min-h-[90px] p-2 cursor-pointer relative transition-colors hover:bg-stone-50 ${
+                              className={`border-r border-b border-brand-border/60 last:border-r-0 min-h-[90px] p-2 cursor-pointer relative transition-colors hover:bg-stone-50 ${
                                 isSelected ? 'bg-stone-50 ring-2 ring-inset ring-brand-dark' : ''
                               }`}
                             >
@@ -715,7 +715,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                     ? 'bg-brand-dark text-white'
                                     : isSelected
                                     ? 'text-brand-dark'
-                                    : 'text-stone-400'
+                                    : 'text-stone-500'
                                 }`}>
                                   {day}
                                 </span>
@@ -732,7 +732,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                   );
                                 })}
                                 {dayEvs.length > 2 && (
-                                  <div className="text-[10px] font-bold text-stone-400 px-1.5">+{dayEvs.length - 2} more</div>
+                                  <div className="text-[10px] font-bold text-stone-500 px-1.5">+{dayEvs.length - 2} more</div>
                                 )}
                               </div>
                             </div>
@@ -759,24 +759,24 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease }}
-                className="bg-white rounded-2xl border border-stone-200 overflow-hidden"
+                className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden"
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border/60">
                   <div>
                     <p className="text-xs font-black text-brand-dark">{formatDayFull(selectedDay)}</p>
-                    <p className="text-[10px] text-stone-400 font-bold mt-0.5">
+                    <p className="text-[10px] text-stone-500 font-bold mt-0.5">
                       {dayEvents.length === 0 ? 'No events' : `${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}`}
                     </p>
                   </div>
                   <button onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
                     className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
-                    <X className="w-3.5 h-3.5 text-stone-400" />
+                    <X className="w-3.5 h-3.5 text-stone-500" />
                   </button>
                 </div>
 
                 {dayEvents.length === 0 ? (
                   <div className="px-4 py-6 text-center">
-                    <p className="text-sm font-bold text-stone-300">Nothing on this day.</p>
+                    <p className="text-sm font-bold text-stone-400">Nothing on this day.</p>
                   </div>
                 ) : (
                   <div className="divide-y divide-stone-100">
@@ -802,11 +802,11 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                   {EVENT_LABELS[ev.event_type]}
                                 </span>
                               </div>
-                              <p className={`text-sm font-bold truncate ${done ? 'line-through text-stone-400' : 'text-stone-900'}`}>
+                              <p className={`text-sm font-bold truncate ${done ? 'line-through text-stone-500' : 'text-stone-900'}`}>
                                 {ev.title}
                               </p>
                               {ev.start_time && (
-                                <p className="text-[11px] text-stone-400 mt-0.5 flex items-center gap-1">
+                                <p className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
                                 </p>
@@ -821,7 +821,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                               >
                                 {done
                                   ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                  : <Circle className="w-5 h-5 text-stone-300" />
+                                  : <Circle className="w-5 h-5 text-stone-400" />
                                 }
                               </button>
                             )}
@@ -848,7 +848,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                     </button>
                                   )}
                                   {!ev.description && !ev.attachment_url && (
-                                    <p className="text-xs text-stone-400 italic">No additional details.</p>
+                                    <p className="text-xs text-stone-500 italic">No additional details.</p>
                                   )}
                                 </div>
                               </motion.div>
@@ -867,17 +867,17 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease }}
-                className="bg-white rounded-2xl border border-stone-200 p-4"
+                className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Upcoming Events</p>
+                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
                   <button onClick={() => setViewMode('list')}
-                    className="text-[11px] font-black text-stone-400 hover:text-stone-600 transition-colors">
+                    className="text-[11px] font-black text-stone-500 hover:text-stone-600 transition-colors">
                     View all
                   </button>
                 </div>
                 {upcoming.length === 0 ? (
-                  <p className="text-sm text-stone-300 font-bold">Nothing scheduled.</p>
+                  <p className="text-sm text-stone-400 font-bold">Nothing scheduled.</p>
                 ) : (
                   <div className="space-y-2">
                     {upcoming.map((ev, i) => {
@@ -890,7 +890,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                           transition={{ duration: 0.4, ease, delay: i * 0.04 }}
                           className="flex items-center gap-2"
                         >
-                          <div className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-xl border border-stone-100 hover:border-stone-200 transition-colors cursor-pointer ${done ? 'opacity-50' : ''}`}
+                          <div className={`flex-1 flex items-center gap-3 px-3 py-2.5 rounded-xl border border-brand-border/60 hover:border-brand-border transition-colors cursor-pointer ${done ? 'opacity-50' : ''}`}
                             onClick={() => {
                               const evYear  = parseInt(ev.event_date.split('-')[0]);
                               const evMonth = parseInt(ev.event_date.split('-')[1]);
@@ -903,8 +903,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                               <span className={`w-2 h-2 rounded-full ${c.dot}`} />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-bold text-stone-900 truncate ${done ? 'line-through text-stone-400' : ''}`}>{ev.title}</p>
-                              <p className="text-[11px] text-stone-400">{formatDate(ev.event_date)}</p>
+                              <p className={`text-sm font-bold text-stone-900 truncate ${done ? 'line-through text-stone-500' : ''}`}>{ev.title}</p>
+                              <p className="text-[11px] text-stone-500">{formatDate(ev.event_date)}</p>
                             </div>
                             <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full shrink-0 ${TYPE_PILL[ev.event_type]}`}>
                               {EVENT_LABELS[ev.event_type]}
@@ -919,7 +919,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                             >
                               {done
                                 ? <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                : <Circle className="w-4 h-4 text-stone-300" />
+                                : <Circle className="w-4 h-4 text-stone-400" />
                               }
                             </button>
                           )}
@@ -936,9 +936,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.15 }}
-            className="bg-white rounded-2xl border border-stone-200 p-4"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Legend</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Legend</p>
             <div className="space-y-2">
               {(['homework','assessment','exam','other'] as const).map(type => {
                 const c = EVENT_COLORS[type];
@@ -947,7 +947,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                     <span className={`w-2.5 h-2.5 rounded-full ${c.dot}`} />
                     <span className="text-xs font-bold text-stone-600">{EVENT_LABELS[type]}</span>
                     {type === 'homework' && (
-                      <span className="text-[10px] text-stone-300 font-bold ml-auto">tap to mark done</span>
+                      <span className="text-[10px] text-stone-400 font-bold ml-auto">tap to mark done</span>
                     )}
                   </div>
                 );
@@ -959,11 +959,11 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.2 }}
-            className="bg-white rounded-2xl border border-stone-200 p-4"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Sync Calendar</p>
-            <p className="text-xs text-stone-400 mb-3">Connect your school calendar to Google Calendar or Apple Calendar.</p>
-            <button className="w-full text-sm font-bold text-stone-700 border border-stone-200 rounded-lg py-2 hover:border-stone-400 transition-colors">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">Sync Calendar</p>
+            <p className="text-xs text-stone-500 mb-3">Connect your school calendar to Google Calendar or Apple Calendar.</p>
+            <button className="w-full text-sm font-bold text-stone-700 border border-brand-border rounded-lg py-2 hover:border-stone-400 transition-colors">
               Connect Google Calendar
             </button>
           </motion.div>

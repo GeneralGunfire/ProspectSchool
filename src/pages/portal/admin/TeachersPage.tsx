@@ -115,15 +115,15 @@ export default function TeachersPage({ session }: TeachersPageProps) {
   };
 
   return (
-    <div className="p-5 md:p-8 max-w-7xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Admin</p>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Teachers</h1>
+          <span className="eyebrow">Admin</span>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Teachers</h1>
         </div>
         <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-slate-900 text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-slate-800 transition-colors">
+          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
           <Plus className="w-4 h-4" /> Add Teacher
         </motion.button>
       </div>
@@ -131,65 +131,65 @@ export default function TeachersPage({ session }: TeachersPageProps) {
       {/* List */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : teachers.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-5 h-5 text-slate-400" />
+        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+            <Plus className="w-5 h-5 text-stone-500" />
           </div>
-          <p className="font-bold text-slate-900 mb-1">No teachers yet</p>
-          <p className="text-sm text-slate-400 mb-6">Add your first teacher to get started.</p>
+          <p className="font-bold text-brand-dark mb-1">No teachers yet</p>
+          <p className="text-sm text-stone-500 mb-6">Add your first teacher to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-slate-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
             Add Teacher <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+        <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Teacher</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Code</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Role</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Last Login</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-slate-400">Status</th>
+              <tr className="border-b border-brand-border/60">
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Teacher</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Role</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Last Login</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody>
               {teachers.map((t, i) => (
-                <tr key={t.id} className={`border-b border-slate-50 transition-colors ${!t.is_active ? 'opacity-50' : 'hover:bg-slate-50'} ${i === teachers.length - 1 ? 'border-0' : ''}`}>
+                <tr key={t.id} className={`border-b border-stone-50 transition-colors ${!t.is_active ? 'opacity-50' : 'hover:bg-stone-50'} ${i === teachers.length - 1 ? 'border-0' : ''}`}>
                   <td className="px-5 py-3.5">
-                    <p className="font-bold text-slate-900">{t.surname}, {t.name}</p>
+                    <p className="font-bold text-brand-dark">{t.surname}, {t.name}</p>
                   </td>
-                  <td className="px-5 py-3.5 font-mono text-slate-500 text-xs tracking-widest">{t.teacher_code}</td>
+                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{t.teacher_code}</td>
                   <td className="px-5 py-3.5">
                     {t.role === 'school_admin' ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-900 text-white text-xs font-bold rounded-lg">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-dark text-white text-xs font-bold rounded-lg">
                         <ShieldCheck className="w-2.5 h-2.5" /> Admin
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
                         Teacher
                       </span>
                     )}
                   </td>
-                  <td className="px-5 py-3.5 text-slate-400 text-xs">{formatDate(t.last_login_at)}</td>
+                  <td className="px-5 py-3.5 text-stone-500 text-xs">{formatDate(t.last_login_at)}</td>
                   <td className="px-5 py-3.5">
-                    <span className={`inline-block px-2 py-0.5 text-xs font-black rounded-lg ${t.is_active ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
+                    <span className={`inline-block px-2 py-0.5 text-xs font-black rounded-lg ${t.is_active ? 'bg-green-50 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
                       {t.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1 justify-end">
                       <button onClick={() => openEdit(t)}
-                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors">
+                        className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button onClick={() => handleToggle(t)} disabled={togglingId === t.id}
-                        className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors disabled:opacity-40">
+                        className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-40">
                         {t.is_active
                           ? <ToggleRight className="w-4 h-4 text-green-600" />
                           : <ToggleLeft className="w-4 h-4" />
@@ -217,11 +217,11 @@ export default function TeachersPage({ session }: TeachersPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-slate-100">
-                  <h2 className="text-lg font-black text-slate-900">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
+                  <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Teacher' : 'Edit Teacher'}
                   </h2>
-                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors">
+                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -239,53 +239,53 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                     {/* Name + Surname */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Name</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
                         <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Jane" />
                       </div>
                       <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Surname</label>
+                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
                         <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Smith" />
                       </div>
                     </div>
 
                     {/* Teacher Code — locked in edit */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">Teacher Code</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher Code</label>
                       <input required type="text" value={form.teacher_code}
                         onChange={(e) => modalMode === 'add' && set('teacher_code', e.target.value.toUpperCase())}
                         readOnly={modalMode === 'edit'}
-                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 ${
-                          modalMode === 'edit' ? 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed' : 'bg-slate-50 border-slate-200 text-slate-900'
+                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
+                          modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
                         }`}
                         placeholder="e.g. TCH-0002" autoCapitalize="characters" />
                     </div>
 
                     {/* PIN */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-1.5">
-                        PIN {modalMode === 'edit' && <span className="normal-case font-medium text-slate-300">(leave blank to keep current)</span>}
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">
+                        PIN {modalMode === 'edit' && <span className="normal-case font-medium text-stone-400">(leave blank to keep current)</span>}
                       </label>
                       <input type="password" inputMode="numeric" maxLength={10}
                         required={modalMode === 'add'}
                         value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-slate-900 focus:ring-2 focus:ring-slate-900/10 transition-all tracking-widest"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                         placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
                     </div>
 
                     {/* Role */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Role</label>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Role</label>
                       <div className="grid grid-cols-2 gap-2">
                         {(['teacher', 'school_admin'] as const).map((r) => (
                           <button key={r} type="button" onClick={() => set('role', r)}
                             className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold border transition-all ${
-                              form.role === r ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'
+                              form.role === r ? 'bg-brand-dark text-white border-brand-dark' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
                             }`}>
-                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${form.role === r ? 'bg-white/20' : 'border border-slate-300'}`}>
+                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${form.role === r ? 'bg-white/20' : 'border border-stone-300'}`}>
                               {form.role === r && <Check className="w-2.5 h-2.5" />}
                             </div>
                             {r === 'teacher' ? 'Teacher' : 'School Admin'}
@@ -296,13 +296,13 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                   </form>
                 </div>
 
-                <div className="flex gap-3 px-6 py-4 border-t border-slate-100">
+                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
                   <button type="button" onClick={closeForm}
-                    className="flex-1 py-2.5 text-sm font-bold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="teacher-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>{modalMode === 'add' ? 'Add Teacher' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>

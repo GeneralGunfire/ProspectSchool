@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
   CalendarDays, ClipboardList, Megaphone, CheckCircle2, Circle,
-  ChevronRight, BookOpen, TrendingUp, Lightbulb, Activity,
+  ChevronRight, BookOpen, TrendingUp, Activity,
 } from 'lucide-react';
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
 import {
@@ -49,6 +49,47 @@ function gradeLabel(mark: number, total: number) {
   if (p >= 50) return { label: 'Moderate',    color: 'text-amber-600' };
   if (p >= 40) return { label: 'Elementary',  color: 'text-orange-600' };
   return               { label: 'Not Achieved', color: 'text-red-600' };
+}
+
+// Animated count-up — real values only, no fabricated numbers, just a
+// premium reveal instead of the digit appearing flat/instant.
+function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let frame: number;
+    const start = performance.now();
+    const duration = 900;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{display}{suffix}</>;
+}
+
+// SVG progress ring — same recipe as the landing page's dashboard preview,
+// ported here so the real dashboard shares the same premium visual language.
+function Ring({ pct, size = 64, stroke = 6, trackColor = 'rgba(255,255,255,0.12)' }: { pct: number; size?: number; stroke?: number; trackColor?: string }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke="var(--color-accent)" strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c * (1 - clamped / 100) }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+      />
+    </svg>
+  );
 }
 
 function subjectIcon(label: string) {
@@ -177,7 +218,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
       </div>
     );
   }
@@ -263,47 +304,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   );
   const isStruggling = avgMark !== null && avgMark < 60;
   const lowestSubjectName = lowestSubject && subjectProgress.length > 1 ? lowestSubject.label : null;
-
-  // Insights
-  const insights: { text: string; navigateTo?: string }[] = [];
-  if (lowestSubjectName && subjectProgress.length > 1) {
-    insights.push({ text: `${lowestSubjectName} is your lowest subject at ${lowestSubject!.pct}%. Open the library to catch up.`, navigateTo: 'library' });
-  }
-  if (hasExamSoon) {
-    const exam = upcomingEvents.find(e => e.event_type === 'exam' || e.event_type === 'assessment')!;
-    insights.push({ text: `${exam.title} is ${daysUntil(exam.event_date).toLowerCase()}. Practice papers are available.`, navigateTo: 'pastpapers' });
-  }
-  if (hwCompletionPct === 100 && totalHomework > 0) {
-    insights.push({ text: `All homework complete this week. You're on track — keep it up.` });
-  }
-  if (topicsMastered > 0) {
-    insights.push({ text: `You've mastered ${topicsMastered} topic${topicsMastered !== 1 ? 's' : ''} in the library. ${totalTopics - topicsMastered > 0 ? `${totalTopics - topicsMastered} still to go.` : 'Well done!'}` });
-  }
-  if (allMarks.length > 0 && avgMark !== null && avgMark >= 70) {
-    insights.push({ text: `Your average of ${avgMark}% is solid. Stay consistent and review ${lowestSubjectName ?? 'your subjects'} regularly.` });
-  }
-
-  if (goals.targetAps && apsScore !== null) {
-    const gap = goals.targetAps - apsScore;
-    if (gap > 0) {
-      insights.push({
-        text: `You are ${gap} APS point${gap !== 1 ? 's' : ''} from your target of ${goals.targetAps}.`,
-        navigateTo: 'aps',
-      });
-    } else {
-      insights.push({
-        text: `APS goal of ${goals.targetAps} reached. Update your target in My Future.`,
-        navigateTo: 'future',
-      });
-    }
-  }
-
-  if (goals.targetCareer) {
-    insights.push({
-      text: `Your career goal is ${goals.targetCareer}. Check your matches and bursaries in My Future.`,
-      navigateTo: 'future',
-    });
-  }
 
   // Recent activity
   type ActivityItem =
@@ -460,7 +460,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   // ── Homework group renderer ───────────────────────────────────────────────
   function HomeworkGroup({ label, items, urgency }: { label: string; items: SchoolEvent[]; urgency: 'high' | 'mid' | 'low' }) {
     if (items.length === 0) return null;
-    const labelColor = urgency === 'high' ? 'text-red-500' : urgency === 'mid' ? 'text-amber-600' : 'text-stone-400';
+    const labelColor = urgency === 'high' ? 'text-red-500' : urgency === 'mid' ? 'text-amber-600' : 'text-stone-500';
     const dotColor   = urgency === 'high' ? 'bg-red-400'   : urgency === 'mid' ? 'bg-amber-400'  : 'bg-stone-300';
     return (
       <div className="mb-3 last:mb-0">
@@ -478,13 +478,13 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   className="shrink-0 disabled:opacity-40 transition-colors">
                   {done
                     ? <CheckCircle2 className="w-4.5 h-4.5 text-emerald-500" />
-                    : <Circle className="w-4.5 h-4.5 text-stone-300 hover:text-stone-500" />}
+                    : <Circle className="w-4.5 h-4.5 text-stone-400 hover:text-stone-500" />}
                 </button>
-                <p className={`flex-1 text-sm font-bold truncate ${done ? 'line-through text-stone-400' : 'text-stone-900'}`}>
+                <p className={`flex-1 text-sm font-bold truncate ${done ? 'line-through text-stone-500' : 'text-stone-900'}`}>
                   {ev.title}
                 </p>
                 {ev.description && (
-                  <span className="text-[11px] text-stone-400 truncate max-w-30 hidden sm:block">{ev.description}</span>
+                  <span className="text-[11px] text-stone-500 truncate max-w-30 hidden sm:block">{ev.description}</span>
                 )}
               </div>
             );
@@ -495,37 +495,36 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-6xl w-full mx-auto pb-24 md:pb-8">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto pb-10 space-y-5 sm:space-y-6">
 
       {/* ── Page header ─────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease }}
-        className="mb-6 md:mb-8 flex items-start justify-between"
+        className="flex items-start justify-between gap-4"
       >
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Dashboard</p>
-          <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
+        <div className="min-w-0">
+          <span className="eyebrow">Dashboard</span>
+          <h1 className="font-display font-black text-brand-dark text-2xl sm:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
             {(() => {
               const h = new Date().getHours();
-              if (h < 12) return `Good morning, ${session.name}.`;
-              if (h < 17) return `Good afternoon, ${session.name}.`;
-              return `Good evening, ${session.name}.`;
+              const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+              return <>{greeting}, <em className="font-serif-accent text-accent">{session.name}</em>.</>;
             })()}
           </h1>
-          <p className="text-sm text-stone-400 mt-1">
+          <p className="text-sm text-stone-500 mt-1.5">
             {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
           </p>
         </div>
         {apsScore !== null && (
-          <div className="shrink-0 bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 text-center hidden sm:block">
-            <p className="text-[10px] font-black uppercase tracking-widest text-violet-400 mb-0.5">APS</p>
-            <p className="font-black text-violet-700 text-2xl leading-none">{apsScore}</p>
+          <div className="shrink-0 card-premium bg-white border border-brand-border rounded-[24px] px-4 py-3 text-center hidden sm:block">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">APS</p>
+            <p className="font-black text-accent text-2xl leading-none">{apsScore}</p>
           </div>
         )}
         {goals.targetCareer && !apsScore && (
-          <div className="shrink-0 bg-stone-100 border border-stone-200 rounded-2xl px-4 py-3 text-center hidden sm:block">
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Goal</p>
-            <p className="font-black text-stone-800 text-sm leading-tight max-w-[120px] truncate">{goals.targetCareer}</p>
+          <div className="shrink-0 card-premium bg-white border border-brand-border rounded-[24px] px-4 py-3 text-center hidden sm:block">
+            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">Goal</p>
+            <p className="font-black text-brand-dark text-sm leading-tight max-w-[120px] truncate">{goals.targetCareer}</p>
           </div>
         )}
       </motion.div>
@@ -534,8 +533,11 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       <motion.div
         initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-        className="bg-brand-dark rounded-3xl p-6 md:p-8 mb-5 relative overflow-hidden"
+        className="card-premium-dark bg-brand-dark rounded-[28px] p-6 md:p-8 relative overflow-hidden border border-white/[0.06]"
       >
+        {/* Soft gold glow, top-right — same recipe as the landing hero glow */}
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none blur-3xl opacity-30"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(245,240,232,0.07) 0%, transparent 65%)' }} />
 
@@ -550,7 +552,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   focusItem.type === 'urgent' ? 'bg-red-500/20 text-red-300'
                   : focusItem.type === 'soon'   ? 'bg-amber-500/20 text-amber-300'
                   : focusItem.type === 'exam'   ? 'bg-violet-500/20 text-violet-300'
-                  :                               'bg-stone-700 text-stone-400'
+                  :                               'bg-stone-700 text-stone-500'
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${
                     focusItem.type === 'urgent' ? 'bg-red-400'
@@ -582,7 +584,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   );
                   if (!matchingSubject) return null;
                   return (
-                    <p className="text-stone-400 text-sm mt-1">
+                    <p className="text-stone-500 text-sm mt-1">
                       {matchingSubject.label} average:{' '}
                       <span className={
                         matchingSubject.pct >= 70 ? 'text-emerald-400 font-bold' :
@@ -613,141 +615,187 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   style={{ letterSpacing: '-0.02em' }}>
                   You're all caught up.
                 </h2>
-                <p className="text-stone-400 text-sm">No urgent tasks. Use this time to study ahead.</p>
+                <p className="text-stone-500 text-sm">No urgent tasks. Use this time to study ahead.</p>
               </>
             )}
           </div>
 
           {/* CTA buttons */}
-          <div className="flex flex-col gap-2 shrink-0 md:min-w-40">
+          <div className="flex flex-col gap-2.5 shrink-0 md:min-w-40 relative z-10">
             {focusItem ? (
               <>
                 {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
                   <button onClick={() => onNavigate('calendar')}
-                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
                     <CalendarDays className="w-4 h-4" />
                     View Calendar
+                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 )}
                 {focusItem.type === 'exam' && (
                   <button onClick={() => onNavigate('pastpapers')}
-                    className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                    className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
                     <BookOpen className="w-4 h-4" />
                     Practice Papers
+                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 )}
                 <button onClick={() => onNavigate('library')}
-                  className="flex items-center justify-center gap-2 bg-white/10 text-white font-bold text-sm px-5 py-3 rounded-xl hover:bg-white/20 transition-colors border border-white/10">
+                  className="group flex items-center justify-center gap-2 bg-white/10 text-white font-bold text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:bg-white/20 hover:border-accent/40 transition-all duration-300 border border-white/10">
                   <BookOpen className="w-4 h-4" />
                   Open Library
+                  <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
               </>
             ) : (
               <button onClick={() => onNavigate('library')}
-                className="flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-xl hover:bg-stone-100 transition-colors">
+                className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
                 <BookOpen className="w-4 h-4" />
                 Start Studying
+                <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
+            )}
+
+            {/* Homework completion ring — real data, quiet footer element */}
+            {totalHomework > 0 && (
+              <div className="flex items-center gap-3 mt-1 pt-3 border-t border-white/[0.08]">
+                <div className="relative shrink-0">
+                  <Ring pct={hwCompletionPct} size={40} stroke={4} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-white leading-none"><Counter value={hwCompletionPct} />%</span>
+                  </div>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-500 leading-none">Homework</p>
+                  <p className="text-[11px] font-bold text-stone-400 mt-1">{completions.size}/{totalHomework} done</p>
+                </div>
+              </div>
             )}
           </div>
         </div>
       </motion.div>
 
       {/* ── Stat cards row ───────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        {/* Upcoming Event */}
+        {/* Upcoming Event — dark, matches hero */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="bg-brand-dark rounded-2xl p-5 flex flex-col justify-between min-h-[130px]"
+          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 flex flex-col justify-between min-h-[150px] relative overflow-hidden border border-white/[0.06]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Upcoming Event</p>
+          <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full pointer-events-none blur-2xl opacity-20"
+            style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+          <p className="relative text-[10px] font-black uppercase tracking-[0.18em] text-stone-500 mb-2">Upcoming Event</p>
           {upcomingEvents[0] ? (() => {
             const ev = upcomingEvents[0];
             const typeColors: Record<string, string> = {
               homework: 'bg-blue-500/20 text-blue-300',
               assessment: 'bg-emerald-500/20 text-emerald-300',
               exam: 'bg-red-500/20 text-red-300',
-              other: 'bg-stone-500/20 text-stone-400',
+              other: 'bg-stone-500/20 text-stone-500',
             };
             return (
               <>
-                <span className={`self-start text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${typeColors[ev.event_type] ?? typeColors.other}`}>
+                <span className={`relative self-start text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${typeColors[ev.event_type] ?? typeColors.other}`}>
                   {EVENT_LABELS[ev.event_type]}
                 </span>
-                <div>
+                <div className="relative">
                   <p className="font-black text-white text-base leading-tight mt-2 mb-1">{ev.title}</p>
                   <p className="text-stone-500 text-xs">{formatDate(ev.event_date)}</p>
                 </div>
                 <button onClick={() => onNavigate('calendar')}
-                  className="self-start mt-2 text-[11px] font-black text-white/50 hover:text-white transition-colors border border-stone-700 rounded-lg px-2.5 py-1">
+                  className="relative self-start mt-2 text-[11px] font-black text-white/60 hover:text-accent transition-colors border border-white/10 hover:border-accent/40 rounded-lg px-2.5 py-1">
                   View in Calendar
                 </button>
               </>
             );
           })() : (
-            <p className="text-stone-600 text-sm font-bold mt-auto">No upcoming events</p>
+            <p className="relative text-stone-600 text-sm font-bold mt-auto">No upcoming events</p>
           )}
         </motion.div>
 
-        {/* Pending Homework */}
+        {/* Pending Homework — ring instead of flat number */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Pending Homework</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Pending Homework</p>
           {pendingHomework.length === 0 ? (
             <div>
-              <p className="font-black text-4xl text-brand-dark">0</p>
+              <p className="font-black text-4xl text-brand-dark"><Counter value={0} /></p>
               <p className="text-emerald-600 font-bold text-xs mt-1">All caught up</p>
             </div>
           ) : (
-            <div>
-              <p className="font-black text-4xl text-brand-dark">{pendingHomework.length}</p>
-              {hwToday.length > 0
-                ? <p className="text-red-500 font-bold text-xs mt-1">{hwToday.length} due today</p>
-                : <p className="text-stone-400 text-sm mt-0.5">tasks remaining</p>
-              }
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0">
+                <Ring pct={hwCompletionPct} size={52} stroke={5} trackColor="rgba(28,25,23,0.08)" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="font-black text-lg text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
+                </div>
+              </div>
+              <div className="min-w-0">
+                {hwToday.length > 0
+                  ? <p className="text-red-500 font-black text-xs">{hwToday.length} due today</p>
+                  : <p className="text-stone-500 text-xs font-bold">tasks remaining</p>
+                }
+              </div>
             </div>
           )}
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
             View Homework
           </button>
         </motion.div>
 
-        {/* Average Mark */}
+        {/* Average Mark — sparkline trend from real recent marks */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Average Mark</p>
+          <div className="flex items-start justify-between">
+            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Average Mark</p>
+            {recentSorted.length >= 2 && (
+              <div className="flex items-end gap-0.5 h-6">
+                {recentSorted.slice(0, 6).reverse().map((m, i) => {
+                  const p = Math.round((m.mark! / m.total) * 100);
+                  return (
+                    <motion.div key={i}
+                      className={`w-1 rounded-full ${p >= 70 ? 'bg-emerald-400' : p >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                      initial={{ height: 0 }} animate={{ height: `${Math.max(15, p)}%` }}
+                      transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ maxHeight: '100%' }}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </div>
           {avgMark !== null ? (
             <div>
-              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}>{avgMark}%</p>
+              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}><Counter value={avgMark} suffix="%" /></p>
               {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
-                <p className="text-[11px] text-stone-400 mt-1 leading-snug">
+                <p className="text-[11px] text-stone-500 mt-1 leading-snug">
                   Best: <span className="text-stone-600 font-bold">{highestSubject.label.split(' ')[0]}</span>
                   {' · '}
                   Weakest: <span className="text-stone-600 font-bold">{lowestSubject.label.split(' ')[0]}</span>
                 </p>
               ) : (
-                <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${avgStatus?.colorClass ?? 'text-stone-400'}`}>
+                <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${avgStatus?.colorClass ?? 'text-stone-500'}`}>
                   {avgStatus?.label} · {allMarks.length} assessment{allMarks.length !== 1 ? 's' : ''}
                 </p>
               )}
               {apsScore !== null && (
-                <p className="text-[10px] text-violet-600 font-bold mt-0.5">APS {apsScore}</p>
+                <p className="text-[10px] text-accent font-bold mt-0.5">APS {apsScore}</p>
               )}
             </div>
           ) : (
-            <p className="text-stone-400 font-bold text-sm mt-auto">No marks yet</p>
+            <p className="text-stone-500 font-bold text-sm mt-auto">No marks yet</p>
           )}
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
             View Marks
           </button>
         </motion.div>
@@ -756,36 +804,36 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="bg-white border border-stone-200 rounded-2xl p-5 flex flex-col justify-between min-h-[130px] hover:border-stone-300 transition-colors"
+          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Announcements</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Announcements</p>
           {announcements.length === 0 ? (
-            <p className="text-stone-400 font-bold text-sm mt-auto">No announcements</p>
+            <p className="text-stone-500 font-bold text-sm mt-auto">No announcements</p>
           ) : (
             <div>
-              <p className="font-black text-4xl text-brand-dark">{announcements.length}</p>
-              <p className="text-stone-400 text-sm mt-0.5 truncate">{announcements[0]?.title}</p>
+              <p className="font-black text-4xl text-brand-dark"><Counter value={announcements.length} /></p>
+              <p className="text-stone-500 text-sm mt-0.5 truncate">{announcements[0]?.title}</p>
             </div>
           )}
           <button onClick={() => onNavigate('announcements')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-800 transition-colors mt-2">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
             View All
           </button>
         </motion.div>
       </div>
 
       {/* ── Academic Health + Calendar — two-col ────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Academic Health */}
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.2 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
           <div className="flex items-center gap-2 mb-5">
-            <Activity className="w-3.5 h-3.5 text-stone-400" />
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Academic Health</p>
+            <Activity className="w-3.5 h-3.5 text-stone-500" />
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Health</p>
           </div>
 
           <div className="space-y-4">
@@ -797,7 +845,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   {hwCompletionPct}%
                 </span>
               </div>
-              <p className="text-[11px] text-stone-400 mb-1">{completions.size} of {totalHomework} tasks done</p>
+              <p className="text-[11px] text-stone-500 mb-1">{completions.size} of {totalHomework} tasks done</p>
               <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
             </div>
 
@@ -808,7 +856,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   <span className="text-sm font-bold text-stone-700">Average Mark</span>
                   <span className={`text-sm font-black ${avgStatus?.colorClass ?? 'text-stone-700'}`}>{avgMark}%</span>
                 </div>
-                <p className="text-[11px] text-stone-400 mb-1">{avgStatus?.label} · {allMarks.length} assessments</p>
+                <p className="text-[11px] text-stone-500 mb-1">{avgStatus?.label} · {allMarks.length} assessments</p>
                 <HealthBar pct={avgMark} color={avgMark >= 70 ? 'bg-emerald-500' : avgMark >= 50 ? 'bg-amber-400' : 'bg-red-400'} />
               </div>
             )}
@@ -820,7 +868,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   <span className="text-sm font-bold text-stone-700">Library Progress</span>
                   <span className="text-sm font-black text-stone-700">{topicsStarted}/{studyProgress.length}</span>
                 </div>
-                <p className="text-[11px] text-stone-400 mb-1">{topicsMastered} mastered · {topicsStarted - topicsMastered} in progress</p>
+                <p className="text-[11px] text-stone-500 mb-1">{topicsMastered} mastered · {topicsStarted - topicsMastered} in progress</p>
                 <HealthBar pct={libraryPct} color="bg-brand-dark" />
               </div>
             )}
@@ -833,7 +881,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   {upcomingAssessmentCount}
                 </span>
               </div>
-              <p className="text-[11px] text-stone-400">
+              <p className="text-[11px] text-stone-500">
                 {upcomingAssessmentCount === 0
                   ? 'No assessments or exams scheduled'
                   : upcomingAssessmentCount >= 3
@@ -849,19 +897,19 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   <span className="text-sm font-bold text-stone-700">APS Score</span>
                   <span className="text-sm font-black text-stone-700">{apsScore}</span>
                 </div>
-                <p className="text-[11px] text-stone-400 mb-1">
+                <p className="text-[11px] text-stone-500 mb-1">
                   {apsScore >= 35 ? 'Strong — qualifies for most programmes'
                    : apsScore >= 28 ? 'Good — qualifies for many programmes'
                    : apsScore >= 20 ? 'Building — keep improving marks'
                    : 'Getting started — every mark counts'}
                 </p>
-                <HealthBar pct={Math.min(100, Math.round((apsScore / 42) * 100))} color="bg-violet-500" />
+                <HealthBar pct={Math.min(100, Math.round((apsScore / 42) * 100))} color="bg-accent" />
               </div>
             )}
           </div>
 
           <button onClick={() => onNavigate('marks')}
-            className="mt-5 text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+            className="mt-5 text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
             View detailed marks <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
@@ -870,12 +918,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Calendar Overview</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Calendar Overview</p>
             <button onClick={() => onNavigate('calendar')}
-              className="text-xs text-stone-400 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
+              className="text-xs text-stone-500 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
               Full Calendar <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -884,7 +932,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <div className="grid grid-cols-7 gap-1 mb-4">
             {weekDays.map(day => (
               <div key={day.dateStr} className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black uppercase tracking-wide text-stone-400">{day.label}</span>
+                <span className="text-[10px] font-black uppercase tracking-wide text-stone-500">{day.label}</span>
                 <span className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full transition-colors ${
                   day.isToday ? 'bg-brand-dark text-white' : 'text-stone-500'
                 }`}>{day.num}</span>
@@ -896,7 +944,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             {upcomingEvents.length === 0 ? (
               <div className="flex items-center gap-2 py-3">
                 <CalendarDays className="w-8 h-8 text-stone-200" />
-                <p className="text-sm font-bold text-stone-300">No upcoming events</p>
+                <p className="text-sm font-bold text-stone-400">No upcoming events</p>
               </div>
             ) : (
               upcomingEvents.map((ev, i) => {
@@ -917,7 +965,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                     <span className={`text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 ${typeStyle[ev.event_type]}`}>
                       {EVENT_LABELS[ev.event_type]}
                     </span>
-                    <span className="text-xs text-stone-400 shrink-0">{daysUntil(ev.event_date)}</span>
+                    <span className="text-xs text-stone-500 shrink-0">{daysUntil(ev.event_date)}</span>
                   </motion.div>
                 );
               })
@@ -927,18 +975,18 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       </div>
 
       {/* ── Homework + Subject Progress — two-col ────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Homework grouped */}
         {pendingHomework.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.28 }}
-            className="bg-white rounded-2xl border border-stone-200 p-5"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Pending Homework</p>
-              <span className="text-[11px] font-bold text-stone-400">{completions.size} done</span>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Pending Homework</p>
+              <span className="text-[11px] font-bold text-stone-500">{completions.size} done</span>
             </div>
 
             {/* Progress bar */}
@@ -962,12 +1010,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.32 }}
-            className="bg-white rounded-2xl border border-stone-200 p-5"
+            className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
           >
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Subject Breakdown</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Subject Breakdown</p>
               <button onClick={() => onNavigate('marks')}
-                className="text-xs text-stone-400 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+                className="text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
                 All Marks <ChevronRight className="w-3 h-3" />
               </button>
             </div>
@@ -982,7 +1030,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       <span className="text-sm font-bold text-stone-800">{s.label}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-stone-400">{s.count} assessed</span>
+                      <span className="text-[11px] text-stone-500">{s.count} assessed</span>
                       <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
                         {s.pct}%
                       </span>
@@ -1008,9 +1056,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.33 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">
             Academic Story
           </p>
 
@@ -1019,14 +1067,14 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             {academicStory.previousAvg !== null && academicStory.change !== null ? (
               <>
                 <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Earlier</p>
+                  <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Earlier</p>
                   <p className="font-black text-stone-500 text-2xl leading-none">{academicStory.previousAvg}%</p>
                 </div>
                 <div className={`font-black text-2xl pb-1 ${academicStory.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                   {academicStory.change >= 0 ? '↑' : '↓'}
                 </div>
                 <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Now</p>
+                  <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Now</p>
                   <p className={`font-black text-2xl leading-none ${
                     academicStory.overallAvg >= 70 ? 'text-emerald-600' :
                     academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
@@ -1040,7 +1088,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
               </>
             ) : (
               <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-0.5">Average</p>
+                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Average</p>
                 <p className={`font-black text-2xl leading-none ${
                   academicStory.overallAvg >= 70 ? 'text-emerald-600' :
                   academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
@@ -1075,7 +1123,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 </p>
               </div>
             )}
-            <p className="text-[11px] text-stone-400 pt-1">
+            <p className="text-[11px] text-stone-500 pt-1">
               Based on {academicStory.totalAssessments} assessment{academicStory.totalAssessments !== 1 ? 's' : ''}
             </p>
           </div>
@@ -1087,15 +1135,15 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.335 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
           {/* Header with impact stats */}
           <div className="flex items-start justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Academic Coaching</p>
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Coaching</p>
             {interventionImpact.totalCompleted > 0 && (
               <div className="text-right">
                 <p className="text-[11px] font-black text-stone-700">{interventionImpact.totalCompleted} completed</p>
-                <p className="text-[10px] font-bold text-stone-400">{interventionImpact.successRate}% success rate</p>
+                <p className="text-[10px] font-bold text-stone-500">{interventionImpact.successRate}% success rate</p>
                 {interventionImpact.avgImprovement > 0 && (
                   <p className="text-[10px] font-bold text-emerald-500">avg +{interventionImpact.avgImprovement}%</p>
                 )}
@@ -1105,20 +1153,20 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
 
           {/* Impact analytics row — shown once enough data exists */}
           {interventionImpact.totalCompleted >= 2 && (
-            <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2.5 mb-5">
               <div className="bg-stone-50 rounded-xl p-2.5 text-center">
                 <p className="text-base font-black text-stone-900">{interventionImpact.totalCompleted}</p>
-                <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-0.5">Completed</p>
+                <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">Completed</p>
               </div>
               <div className="bg-emerald-50 rounded-xl p-2.5 text-center">
                 <p className="text-base font-black text-emerald-700">{interventionImpact.successRate}%</p>
                 <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5">Success</p>
               </div>
               <div className={`rounded-xl p-2.5 text-center ${interventionImpact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
-                <p className={`text-base font-black ${interventionImpact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-400'}`}>
+                <p className={`text-base font-black ${interventionImpact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-500'}`}>
                   {interventionImpact.avgImprovement > 0 ? `+${interventionImpact.avgImprovement}%` : '—'}
                 </p>
-                <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${interventionImpact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-400'}`}>Avg Gain</p>
+                <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${interventionImpact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-500'}`}>Avg Gain</p>
               </div>
             </div>
           )}
@@ -1147,7 +1195,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                     ? 'bg-red-50 border-red-200'
                     : inv.reason === 'high_risk' || inv.reason === 'declining_trend'
                     ? 'bg-amber-50 border-amber-200'
-                    : 'bg-stone-50 border-stone-200'
+                    : 'bg-stone-50 border-brand-border'
                 }`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <div className="flex-1 min-w-0">
@@ -1172,7 +1220,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       </div>
                       <p className="text-xs text-stone-500">{inv.description}</p>
                       {inv.rationale && (
-                        <p className="text-[10px] text-stone-400 mt-1 italic">{inv.rationale}</p>
+                        <p className="text-[10px] text-stone-500 mt-1 italic">{inv.rationale}</p>
                       )}
 
                       {/* Checklist — only shown once the student has started, so
@@ -1197,8 +1245,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                               >
                                 {done
                                   ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                                  : <Circle className="w-3.5 h-3.5 text-stone-300 shrink-0 mt-0.5 group-hover:text-stone-400" />}
-                                <span className={`text-[11px] ${done ? 'text-stone-400 line-through' : 'text-stone-600'}`}>
+                                  : <Circle className="w-3.5 h-3.5 text-stone-400 shrink-0 mt-0.5 group-hover:text-stone-500" />}
+                                <span className={`text-[11px] ${done ? 'text-stone-500 line-through' : 'text-stone-600'}`}>
                                   {step}
                                 </span>
                               </button>
@@ -1218,7 +1266,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                         );
                         onNavigate(inv.page);
                       }}
-                      className="flex-1 py-2 rounded-xl bg-stone-900 text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
+                      className="flex-1 py-2 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
                     >
                       {isStarted ? 'Continue' : 'Start'}
                     </button>
@@ -1246,15 +1294,15 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Improvement History</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Improvement History</p>
           <div className="space-y-2">
             {interventionOutcomes.slice(-6).reverse().map(o => (
               <div key={o.interventionId} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
                 o.result === 'improved' ? 'bg-emerald-50 border-emerald-100' :
                 o.result === 'declined' ? 'bg-red-50 border-red-100' :
-                'bg-stone-50 border-stone-100'
+                'bg-stone-50 border-brand-border/60'
               }`}>
                 <span className={`text-base shrink-0 ${
                   o.result === 'improved' ? '' : o.result === 'declined' ? '' : ''
@@ -1263,13 +1311,13 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-black text-stone-900">{o.subject}</p>
-                  <p className="text-[10px] text-stone-400">
+                  <p className="text-[10px] text-stone-500">
                     {o.previousAvg}% → {o.newAvg}%
                   </p>
                 </div>
                 <span className={`text-xs font-black shrink-0 ${
                   o.result === 'improved' ? 'text-emerald-600' :
-                  o.result === 'declined' ? 'text-red-500' : 'text-stone-400'
+                  o.result === 'declined' ? 'text-red-500' : 'text-stone-500'
                 }`}>
                   {o.improvement > 0 ? `+${o.improvement}%` : `${o.improvement}%`}
                 </span>
@@ -1284,40 +1332,40 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">This Week</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             {[
               {
                 label: 'Homework Done',
                 value: completions.size,
-                color: completions.size > 0 ? 'text-emerald-600' : 'text-stone-400',
+                color: completions.size > 0 ? 'text-emerald-600' : 'text-stone-500',
               },
               {
                 label: 'Topics Studied',
                 value: thisWeekStarted,
-                color: thisWeekStarted > 0 ? 'text-blue-600' : 'text-stone-400',
+                color: thisWeekStarted > 0 ? 'text-blue-600' : 'text-stone-500',
               },
               {
                 label: 'Topics Mastered',
                 value: thisWeekMastered,
-                color: thisWeekMastered > 0 ? 'text-violet-600' : 'text-stone-400',
+                color: thisWeekMastered > 0 ? 'text-accent' : 'text-stone-500',
               },
               {
                 label: 'Mark Trend',
                 value: markTrend !== null
                   ? `${markTrend >= 0 ? '+' : ''}${markTrend.toFixed(1)}%`
                   : '—',
-                color: markTrend === null ? 'text-stone-400'
+                color: markTrend === null ? 'text-stone-500'
                      : markTrend >= 0 ? 'text-emerald-600'
                      : 'text-red-500',
               },
             ].map(stat => (
               <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-3 text-center">
                 <p className={`font-black text-xl leading-none ${stat.color}`}>{stat.value}</p>
-                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">{stat.label}</p>
+                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -1339,9 +1387,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         <motion.div
           initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.36 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
+          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">Recommended Actions</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Recommended Actions</p>
           <div className="space-y-2">
             {dedupedQueue.map((item, i) => (
               <button
@@ -1356,68 +1404,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 }`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-stone-900 truncate">{item.label}</p>
-                  <p className="text-xs text-stone-400 truncate">{item.sublabel}</p>
+                  <p className="text-xs text-stone-500 truncate">{item.sublabel}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-600 transition-colors shrink-0" />
+                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors shrink-0" />
               </button>
             ))}
           </div>
-        </motion.div>
-      )}
-
-      {/* ── Smart Alerts ─────────────────────────────────────────── */}
-      {insights.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.38 }}
-          className="bg-white rounded-2xl border border-stone-200 p-5 mb-4"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Lightbulb className="w-3.5 h-3.5 text-stone-400" />
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Smart Alerts</p>
-          </div>
-
-          {/* Primary insight */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease }}
-            className="bg-stone-50 rounded-xl p-4 mb-3"
-          >
-            <p className="text-sm font-bold text-stone-800 leading-relaxed">
-              {insights[0].text}
-            </p>
-            {insights[0].navigateTo && (
-              <button
-                onClick={() => onNavigate(insights[0].navigateTo!)}
-                className="mt-2 inline-flex items-center gap-1 text-[11px] font-black text-stone-900 bg-stone-100 hover:bg-stone-200 transition-colors px-2.5 py-1.5 rounded-lg uppercase tracking-widest"
-              >
-                Take action <ChevronRight className="w-3 h-3" />
-              </button>
-            )}
-          </motion.div>
-
-          {/* Secondary insights */}
-          {insights.length > 1 && (
-            <div className="space-y-2 pt-1">
-              {insights.slice(1, 4).map((ins, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, ease, delay: i * 0.04 }}
-                  className="flex items-start gap-2.5">
-                  <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0 mt-[7px]" />
-                  <p className="text-sm text-stone-500 leading-relaxed flex-1">
-                    {ins.text}
-                    {ins.navigateTo && (
-                      <button onClick={() => onNavigate(ins.navigateTo!)}
-                        className="ml-2 text-[11px] font-black text-stone-400 hover:text-stone-700 transition-colors underline underline-offset-2">
-                        Go
-                      </button>
-                    )}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          )}
         </motion.div>
       )}
 
@@ -1425,12 +1417,12 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease, delay: 0.4 }}
-        className="bg-white rounded-2xl border border-stone-200 p-5"
+        className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
       >
         <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Recent Activity</p>
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Activity</p>
           <button onClick={() => onNavigate('marks')}
-            className="text-xs text-stone-400 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
+            className="text-xs text-stone-500 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
             View Marks <ChevronRight className="w-3 h-3" />
           </button>
         </div>
@@ -1438,7 +1430,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         {activity.length === 0 ? (
           <div className="flex items-center gap-2 py-3">
             <TrendingUp className="w-8 h-8 text-stone-200" />
-            <p className="text-sm font-bold text-stone-300">No recent activity</p>
+            <p className="text-sm font-bold text-stone-400">No recent activity</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -1462,14 +1454,14 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       <p className="text-sm font-bold text-stone-900 truncate">
                         {item.data.subject_label}: {item.data.mark}/{item.data.total}
                       </p>
-                      <p className="text-xs text-stone-400">
+                      <p className="text-xs text-stone-500">
                         {Math.round((item.data.mark! / item.data.total) * 100)}% · {gradeLabel(item.data.mark!, item.data.total).label}
                       </p>
                     </>
                   ) : (
                     <>
                       <p className="text-sm font-bold text-stone-900 truncate">{item.data.title}</p>
-                      <p className="text-xs text-stone-400">{timeAgo(item.ts)}</p>
+                      <p className="text-xs text-stone-500">{timeAgo(item.ts)}</p>
                     </>
                   )}
                 </div>
@@ -1479,7 +1471,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         )}
 
         {/* Contextual quick actions */}
-        <div className="mt-4 pt-4 border-t border-stone-100 flex flex-wrap gap-2">
+        <div className="mt-4 pt-4 border-t border-brand-border/60 flex flex-wrap gap-2">
           {isStruggling ? (
             <>
               <button onClick={() => onNavigate('marks')}

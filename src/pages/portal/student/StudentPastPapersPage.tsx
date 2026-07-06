@@ -241,7 +241,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     if (t.includes('exam') || t.includes('final')) return { label: 'Exam', color: 'bg-red-50 text-red-600 border-red-100' };
     if (t.includes('test') || t.includes('assessment')) return { label: 'Test', color: 'bg-amber-50 text-amber-600 border-amber-100' };
     if (t.includes('trial') || t.includes('prelim')) return { label: 'Trial', color: 'bg-violet-50 text-violet-600 border-violet-100' };
-    return { label: 'Paper', color: 'bg-stone-100 text-stone-500 border-stone-200' };
+    return { label: 'Paper', color: 'bg-stone-100 text-stone-500 border-brand-border' };
   }
 
   // ── Practice Mode ──────────────────────────────────────────────
@@ -260,7 +260,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
           <div className="flex items-center gap-3">
             <button
               onClick={exitPractice}
-              className="flex items-center gap-1.5 text-stone-400 hover:text-white transition-colors text-[11px] font-black uppercase tracking-widest"
+              className="flex items-center gap-1.5 text-stone-500 hover:text-white transition-colors text-[11px] font-black uppercase tracking-widest"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Exit
             </button>
@@ -286,7 +286,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
         {/* Timer progress bar */}
         {phase === 'active' && (
-          <div className="h-1 bg-stone-800 shrink-0">
+          <div className="h-1 bg-brand-dark/90 shrink-0">
             <div
               className={`h-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-emerald-500'}`}
               style={{ width: `${100 - progressPct}%` }}
@@ -302,16 +302,16 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               animate={{ opacity: 1, y: 0 }}
               className="max-w-sm w-full"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Practice Mode</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Practice Mode</p>
               <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
                 {paper.title}
               </h2>
               {paper.subject_label && (
-                <p className="text-stone-400 text-sm mb-6">{paper.subject_label} · {paper.year}</p>
+                <p className="text-stone-500 text-sm mb-6">{paper.subject_label} · {paper.year}</p>
               )}
 
-              <div className="bg-white rounded-2xl border border-stone-200 p-5 mb-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                   Set Timer
                 </p>
                 <div className="flex gap-2 flex-wrap mb-3">
@@ -321,15 +321,15 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       onClick={() => setSetupDuration(mins)}
                       className={`px-3 py-2 rounded-xl text-xs font-black transition-colors border ${
                         setupDuration === mins
-                          ? 'bg-stone-900 text-white border-stone-900'
-                          : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-400'
+                          ? 'bg-brand-dark text-white border-brand-dark'
+                          : 'bg-stone-50 text-stone-600 border-brand-border hover:border-stone-400'
                       }`}
                     >
                       {mins >= 60 ? `${mins / 60}h${mins % 60 ? ` ${mins % 60}m` : ''}` : `${mins}m`}
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-stone-400">
+                <p className="text-xs text-stone-500">
                   The paper will open in a new tab. Come back here to track time and self-mark.
                 </p>
               </div>
@@ -342,7 +342,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               </button>
               <button
                 onClick={exitPractice}
-                className="w-full py-3 rounded-xl text-stone-400 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+                className="w-full py-3 rounded-xl text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
               >
                 Cancel
               </button>
@@ -361,7 +361,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               <div className={`text-7xl font-black tabular-nums mb-2 ${isUrgent ? 'text-red-500' : 'text-brand-dark'}`}>
                 {formatTimer(remaining)}
               </div>
-              <p className="text-stone-400 text-sm mb-8">
+              <p className="text-stone-500 text-sm mb-8">
                 {isUrgent ? 'Wrap up — time is running out.' : 'Paper is open in another tab. Work through it, then come back.'}
               </p>
 
@@ -392,7 +392,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
                 <button
                   onClick={() => setPractice(prev => prev ? { ...prev, phase: 'complete' } : null)}
-                  className="w-full py-3 rounded-xl border border-stone-200 text-stone-500 text-sm font-black hover:border-stone-400 transition-colors"
+                  className="w-full py-3 rounded-xl border border-brand-border text-stone-500 text-sm font-black hover:border-stone-400 transition-colors"
                 >
                   Done — Self Mark Now
                 </button>
@@ -411,16 +411,16 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
             >
               {practice.selfScore === null ? (
                 <>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Self Mark</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Self Mark</p>
                   <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
                     How did you do?
                   </h2>
-                  <p className="text-sm text-stone-400 mb-6">
+                  <p className="text-sm text-stone-500 mb-6">
                     Enter your score to track your performance.
                   </p>
 
-                  <div className="bg-white rounded-2xl border border-stone-200 p-5 mb-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Your Score</p>
+                  <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4">
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Your Score</p>
                     <div className="flex items-center gap-3 mb-4">
                       <input
                         type="number"
@@ -429,9 +429,9 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         value={setupScore}
                         onChange={e => setSetupScore(e.target.value)}
                         placeholder="0"
-                        className="w-24 text-center font-black text-2xl rounded-xl border border-stone-200 py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10"
+                        className="w-24 text-center font-black text-2xl rounded-xl border border-brand-border py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10"
                       />
-                      <span className="text-stone-400 font-bold text-lg">
+                      <span className="text-stone-500 font-bold text-lg">
                         / {paper.total ?? 150}
                       </span>
                       {setupScore && (
@@ -472,7 +472,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
                   <button
                     onClick={exitPractice}
-                    className="w-full py-3 rounded-xl text-stone-400 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+                    className="w-full py-3 rounded-xl text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
                   >
                     Skip — Exit Practice
                   </button>
@@ -495,7 +495,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     <p className="text-stone-600 font-bold text-sm">
                       {practice.selfScore} / {paper.total ?? 150} marks
                     </p>
-                    <p className="text-stone-400 text-xs mt-1">
+                    <p className="text-stone-500 text-xs mt-1">
                       Completed in {formatTimer(elapsed)}
                     </p>
                   </div>
@@ -520,7 +520,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     )}
                     <button
                       onClick={exitPractice}
-                      className="w-full py-3 rounded-xl bg-stone-900 text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                      className="w-full py-3 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
                     >
                       Back to Past Papers
                     </button>
@@ -535,7 +535,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   }
 
   return (
-    <div className="p-5 md:p-8 max-w-5xl w-full mx-auto">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
 
       {/* Header */}
       <motion.div
@@ -543,11 +543,11 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
         transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
         className="mb-6"
       >
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Past Papers</p>
+        <span className="eyebrow">Past Papers</span>
         <h1 className="font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
           Past Papers
         </h1>
-        <p className="text-sm text-stone-400 mt-1">Exam papers uploaded by your school.</p>
+        <p className="text-sm text-stone-500 mt-1">Exam papers uploaded by your school.</p>
       </motion.div>
 
       {!loading && papers.length > 0 && (
@@ -559,14 +559,14 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               transition={{ delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Recommended For You
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {recommended.map(p => {
                   const diff = difficultyLabel(p);
                   return (
-                    <div key={p.id} className="bg-white border border-stone-200 rounded-2xl p-4 hover:border-stone-400 hover:shadow-sm transition-all">
+                    <div key={p.id} className="card-premium bg-white border border-brand-border rounded-[24px] p-4 hover:border-stone-400 hover:shadow-sm transition-all">
                       <div className="flex items-start justify-between mb-3">
                         <div className="w-8 h-8 rounded-xl bg-stone-100 flex items-center justify-center">
                           <FileText className="w-4 h-4 text-stone-600" />
@@ -596,7 +596,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             selfScore: null,
                             memoOpened: false,
                           })}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
                         >
                           <Timer className="w-3.5 h-3.5" />
                           Practice
@@ -624,7 +624,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               transition={{ delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Recently Opened
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1">
@@ -633,14 +633,14 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     key={p.id}
                     onClick={() => handleOpen(p)}
                     disabled={downloading === p.id}
-                    className="shrink-0 bg-white border border-stone-200 rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors min-w-40 max-w-50 disabled:opacity-40"
+                    className="shrink-0 bg-white border border-brand-border rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors min-w-40 max-w-50 disabled:opacity-40"
                   >
                     <div className="flex items-center gap-1.5 mb-1">
-                      <FileText className="w-3 h-3 text-stone-400 shrink-0" />
+                      <FileText className="w-3 h-3 text-stone-500 shrink-0" />
                       {p.memo_url && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />}
                     </div>
                     <p className="text-xs font-bold text-stone-900 truncate">{p.title}</p>
-                    <p className="text-[10px] text-stone-400 truncate">{p.subject_label ?? `Grade ${p.grade}`} · {p.year}</p>
+                    <p className="text-[10px] text-stone-500 truncate">{p.subject_label ?? `Grade ${p.grade}`} · {p.year}</p>
                   </button>
                 ))}
               </div>
@@ -654,15 +654,15 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Practice History
               </p>
-              <div className="bg-white rounded-2xl border border-stone-200 divide-y divide-stone-100 overflow-hidden">
+              <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
                 {practiceHistory.slice(0, 5).map((r, i) => (
                   <div key={i} className="flex items-center gap-4 px-4 py-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-stone-900 truncate">{r.paperTitle}</p>
-                      <p className="text-[11px] text-stone-400">
+                      <p className="text-[11px] text-stone-500">
                         {r.subject ?? 'Past Paper'} · {new Date(r.completedAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}
                       </p>
                     </div>
@@ -675,7 +675,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         {r.pct}%
                       </span>
                     ) : (
-                      <span className="text-[11px] text-stone-300 font-bold">No score</span>
+                      <span className="text-[11px] text-stone-400 font-bold">No score</span>
                     )}
                   </div>
                 ))}
@@ -691,16 +691,16 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
           >
             <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-300 pointer-events-none" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search by title or subject…"
-                  className="w-full pl-10 pr-9 py-3 rounded-xl border border-stone-200 text-sm font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-stone-900/10 bg-white"
+                  className="w-full pl-10 pr-9 py-3 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-white"
                 />
                 {search && (
                   <button onClick={() => setSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2">
-                    <X className="w-3.5 h-3.5 text-stone-400" />
+                    <X className="w-3.5 h-3.5 text-stone-500" />
                   </button>
                 )}
               </div>
@@ -709,7 +709,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors border whitespace-nowrap ${
                   isFilterOpen
                     ? 'bg-brand-dark text-white border-brand-dark'
-                    : 'bg-white text-stone-700 border-stone-200 hover:border-stone-400'
+                    : 'bg-white text-stone-700 border-brand-border hover:border-stone-400'
                 }`}
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -734,10 +734,10 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   transition={{ ease: 'easeOut', duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="bg-white rounded-2xl border border-stone-200 p-5 space-y-5">
+                  <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 space-y-5">
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Subject</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Subject</p>
                       <div className="flex flex-wrap gap-2">
                         {subjects.filter(s => papers.some(p => p.subject_id === s.id)).map(s => (
                           <button key={s.id}
@@ -745,7 +745,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
                               filterSubject === String(s.id)
                                 ? 'bg-brand-dark text-white border-brand-dark'
-                                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                                : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
                             }`}
                           >{s.label}</button>
                         ))}
@@ -753,7 +753,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Grade</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Grade</p>
                       <div className="flex flex-wrap gap-2">
                         {GRADES.filter(g => papers.some(p => p.grade === g)).map(g => (
                           <button key={g}
@@ -761,7 +761,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
                               filterGrade === String(g)
                                 ? 'bg-brand-dark text-white border-brand-dark'
-                                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                                : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
                             }`}
                           >Grade {g}</button>
                         ))}
@@ -769,7 +769,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Year</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Year</p>
                       <div className="flex flex-wrap gap-2">
                         {yearOptions.map(y => (
                           <button key={y}
@@ -777,7 +777,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
                               filterYear === String(y)
                                 ? 'bg-brand-dark text-white border-brand-dark'
-                                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                                : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
                             }`}
                           >{y}</button>
                         ))}
@@ -785,7 +785,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">Term</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Term</p>
                       <div className="flex flex-wrap gap-2">
                         {TERMS.filter(t => papers.some(p => p.term === t)).map(t => (
                           <button key={t}
@@ -793,7 +793,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
                               filterTerm === String(t)
                                 ? 'bg-brand-dark text-white border-brand-dark'
-                                : 'bg-white text-stone-600 border-stone-200 hover:border-stone-400'
+                                : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
                             }`}
                           >Term {t}</button>
                         ))}
@@ -801,9 +801,9 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     {activeFilterCount > 0 && (
-                      <div className="flex justify-end pt-1 border-t border-stone-100">
+                      <div className="flex justify-end pt-1 border-t border-brand-border/60">
                         <button onClick={clearFilters}
-                          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors">
+                          className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-stone-500 hover:text-stone-700 transition-colors">
                           <X className="w-3.5 h-3.5" />
                           Clear {activeFilterCount} filter{activeFilterCount !== 1 ? 's' : ''}
                         </button>
@@ -815,12 +815,12 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
             </AnimatePresence>
 
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold text-stone-400">
+              <p className="text-xs font-bold text-stone-500">
                 {filtered.length} paper{filtered.length !== 1 ? 's' : ''}
               </p>
               {hasFilters && (
                 <button onClick={clearFilters}
-                  className="text-xs font-black text-stone-400 hover:text-stone-700 transition-colors">
+                  className="text-xs font-black text-stone-500 hover:text-stone-700 transition-colors">
                   Clear all
                 </button>
               )}
@@ -832,18 +832,18 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       {/* ── Paper list ── */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-stone-200 border-t-stone-700 rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : papers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-black text-stone-400 mb-1">No past papers yet.</p>
-          <p className="text-xs text-stone-300">Papers uploaded by your teachers will appear here.</p>
+          <p className="text-sm font-black text-stone-500 mb-1">No past papers yet.</p>
+          <p className="text-xs text-stone-400">Papers uploaded by your teachers will appear here.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Search className="w-8 h-8 text-stone-200 mb-3" />
-          <p className="text-sm font-black text-stone-400 mb-1">No papers match your filters.</p>
+          <p className="text-sm font-black text-stone-500 mb-1">No papers match your filters.</p>
           <button onClick={clearFilters}
             className="mt-2 text-xs font-black text-stone-500 hover:text-stone-800 transition-colors">
             Clear filters
@@ -860,7 +860,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.12), duration: 0.18 }}
-                className="bg-white rounded-2xl border border-stone-200 px-5 py-4 flex items-center gap-4 hover:border-stone-300 transition-colors"
+                className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4 hover:border-stone-300 transition-colors"
               >
                 {/* Icon with memo dot */}
                 <div className="relative w-9 h-9 shrink-0">
@@ -877,7 +877,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   <div className="flex items-center gap-2 mb-0.5">
                     <p className="text-sm font-bold text-stone-900 truncate">{p.title}</p>
                     {wasOpened && (
-                      <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-stone-50 text-stone-400 border border-stone-100">
+                      <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-stone-50 text-stone-500 border border-brand-border/60">
                         Opened
                       </span>
                     )}
@@ -911,7 +911,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       selfScore: null,
                       memoOpened: false,
                     })}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-stone-200"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
                   >
                     <Timer className="w-3.5 h-3.5" />
                     Practice
@@ -921,7 +921,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   <button
                     onClick={() => handleOpen(p)}
                     disabled={downloading === p.id}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-800 transition-colors disabled:opacity-40"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     {downloading === p.id ? 'Opening…' : 'Open'}
