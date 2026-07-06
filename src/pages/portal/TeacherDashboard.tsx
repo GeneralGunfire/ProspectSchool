@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import ClassesPage from './teacher/ClassesPage';
 import CalendarPage from './teacher/CalendarPage';
@@ -10,9 +10,10 @@ import ResourcesPage from './teacher/ResourcesPage';
 import PastPapersPage from './teacher/PastPapersPage';
 import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
+import RiskEnginePage from './teacher/RiskEnginePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -41,6 +42,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
     { id: 'past-papers',   label: 'Past Papers',   icon: FileText },
     { id: 'library',       label: 'Progress',      icon: BookOpen },
+    { id: 'risk',          label: 'At-Risk',       icon: AlertTriangle },
   ];
 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
@@ -218,6 +220,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'resources'     && <ResourcesPage session={session} />}
           {activePage === 'past-papers'   && <PastPapersPage session={session} />}
           {activePage === 'library'       && <StudentProgressPage session={session} />}
+          {activePage === 'risk'          && <RiskEnginePage session={session} />}
         </div>
       </div>
     </div>

@@ -339,6 +339,7 @@
                 |-- PastPapersPage.tsx
                 |-- RecordOutcomeModal.tsx
                 |-- ResourcesPage.tsx
+                |-- RiskEnginePage.tsx
                 |-- StudentProgressPage.tsx
                 |-- TeacherHomePage.tsx
             |-- TeacherDashboard.tsx
