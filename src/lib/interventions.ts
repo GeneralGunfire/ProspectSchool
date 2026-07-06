@@ -3,6 +3,7 @@
 // Stored in Supabase — visible to teachers and queryable school-wide.
 
 import { supabaseAdmin } from './supabase';
+import { createNotification } from './notifications';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -28,6 +29,7 @@ export interface Intervention {
   expiresAt:     string;
   status:        InterventionStatus;
   previousAvg:   number;
+  checklistProgress?: boolean[];   // per-step completion against the type's template checklist
 }
 
 export interface Outcome {
@@ -82,6 +84,7 @@ function rowToIntervention(r: any): Intervention {
     expiresAt:    r.expires_at,
     status:       r.status       as InterventionStatus,
     previousAvg:  Number(r.previous_avg),
+    checklistProgress: Array.isArray(r.checklist_progress) ? r.checklist_progress : undefined,
   };
 }
 
@@ -238,6 +241,16 @@ export async function createIntervention(
     };
   }
 
+  // Fire-and-forget: only on a genuinely new intervention, never on the dedup
+  // early-return above (so campaigns/re-syncs don't spam the student).
+  createNotification(
+    schoolId,
+    'student',
+    studentId,
+    `New coaching task: ${subject}`,
+    description,
+  );
+
   return rowToIntervention(data);
 }
 
@@ -252,13 +265,54 @@ export async function startIntervention(studentId: number, interventionId: strin
     .eq('status', 'recommended');
 }
 
+// Persists per-step checklist ticks against the intervention row directly —
+// checklist_progress is a pre-existing JSONB column on `interventions` that no
+// prior code wrote to; reused here rather than adding a new table/migration.
+export async function updateChecklistProgress(
+  studentId:      number,
+  interventionId: string,
+  progress:       boolean[],
+): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('interventions')
+    .update({ checklist_progress: progress })
+    .eq('id', interventionId)
+    .eq('student_id', studentId);
+
+  if (error) console.error('[interventions] updateChecklistProgress error:', error.message);
+}
+
 export async function completeIntervention(studentId: number, interventionId: string): Promise<void> {
-  await supabaseAdmin
+  // .select() here serves two purposes: it tells us whether the update actually
+  // matched a row (guards against duplicate notifications on repeat clicks,
+  // since a second call won't match the status filter), and it hands back the
+  // context needed to notify the teacher.
+  const { data } = await supabaseAdmin
     .from('interventions')
     .update({ status: 'completed', completed_at: new Date().toISOString() })
     .eq('id', interventionId)
     .eq('student_id', studentId)
-    .in('status', ['recommended', 'started']);
+    .in('status', ['recommended', 'started'])
+    .select('teacher_id, subject, school_id')
+    .single();
+
+  const teacherId = (data as any)?.teacher_id as number | null | undefined;
+  if (data && teacherId) {
+    const { data: student } = await supabaseAdmin
+      .from('students')
+      .select('name, surname')
+      .eq('id', studentId)
+      .single();
+    const studentLabel = student ? `${(student as any).surname}, ${(student as any).name}` : 'A student';
+
+    createNotification(
+      (data as any).school_id,
+      'teacher',
+      teacherId,
+      `Intervention completed — ${(data as any).subject}`,
+      `${studentLabel} marked their ${(data as any).subject} coaching task as done.`,
+    );
+  }
 }
 
 // ── Record outcome ────────────────────────────────────────────────────────────
@@ -287,6 +341,17 @@ export async function recordOutcome(
     .single();
   const teacherId = (inv as any)?.teacher_id ?? null;
 
+  // recordOutcome is called both by the automatic marks-sync and by manual
+  // teacher edits, and it upserts — so this can run repeatedly for the same
+  // intervention. Only notify the first time an outcome is actually recorded.
+  const { data: existingOutcome } = await supabaseAdmin
+    .from('outcomes')
+    .select('intervention_id')
+    .eq('intervention_id', interventionId)
+    .limit(1)
+    .maybeSingle();
+  const isFirstOutcome = !existingOutcome;
+
   const row = {
     intervention_id: interventionId,
     student_id:      studentId,
@@ -305,6 +370,17 @@ export async function recordOutcome(
   await supabaseAdmin
     .from('outcomes')
     .upsert(row, { onConflict: 'intervention_id' });
+
+  if (isFirstOutcome && teacherId) {
+    const sign = improvement >= 0 ? '+' : '';
+    createNotification(
+      schoolId,
+      'teacher',
+      teacherId,
+      `Outcome recorded: ${subject} ${sign}${improvement}%`,
+      `Result: ${result} — ${Math.round(previousAvg)}% → ${Math.round(newAvg)}%`,
+    );
+  }
 
   return {
     interventionId,

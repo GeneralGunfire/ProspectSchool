@@ -5,7 +5,7 @@ export const Footer = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand-bg border-t border-brand-border pt-16 pb-10 px-5">
+    <footer className="border-t border-brand-border pt-16 pb-10 px-5">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
 

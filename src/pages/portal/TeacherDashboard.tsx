@@ -8,6 +8,7 @@ import StudentProgressPage from './teacher/StudentProgressPage';
 import ResourcesPage from './teacher/ResourcesPage';
 import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
+import NotificationBell from '../../shared/components/NotificationBell';
 
 type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'announcements';
 
@@ -48,11 +49,14 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
       <aside className="hidden md:flex w-52 shrink-0 h-full bg-white border-r border-stone-100 flex-col">
 
         {/* Logo */}
-        <div className="flex items-center gap-2 px-4 h-14 border-b border-stone-100 shrink-0">
-          <div className="w-6 h-6 rounded-md bg-brand-dark flex items-center justify-center">
-            <span className="text-white font-black text-[10px]">P</span>
+        <div className="flex items-center justify-between gap-2 px-4 h-14 border-b border-stone-100 shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md bg-brand-dark flex items-center justify-center">
+              <span className="text-white font-black text-[10px]">P</span>
+            </div>
+            <span className="text-sm font-black text-brand-dark tracking-tight">Prospect</span>
           </div>
-          <span className="text-sm font-black text-brand-dark tracking-tight">Prospect</span>
+          <NotificationBell userType="teacher" userId={session.teacher_id} />
         </div>
 
         {/* Nav items */}
@@ -109,6 +113,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
             <span className="text-sm font-black text-brand-dark tracking-tight">Prospect</span>
           </div>
           <div className="flex items-center gap-2">
+            <NotificationBell userType="teacher" userId={session.teacher_id} />
             <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center">
               <span className="text-stone-600 font-black text-[10px]">{initials}</span>
             </div>

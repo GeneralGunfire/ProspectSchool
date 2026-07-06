@@ -1,24 +1,21 @@
-import { FadeIn } from './Animations';
+import { FadeIn, CountUp } from './Animations';
 import { Compass, TrendingUp, Award } from './icons';
 
 const features = [
   {
     icon: Compass,
     heading: 'Career Quiz',
-    body: '48 questions. RIASEC scoring. Instant career matches with compatibility percentages.',
-    dark: true,
+    body: 'RIASEC scoring with instant career matches.',
   },
   {
     icon: TrendingUp,
     heading: 'My Future Dashboard',
-    body: 'APS score, career matches, study progress, and saved bursaries — all unified.',
-    dark: false,
+    body: 'APS, career matches, and progress — unified.',
   },
   {
     icon: Award,
     heading: 'Bursary Finder',
-    body: '245+ bursaries searchable by field, income, and province. Bookmark what matters.',
-    dark: false,
+    body: '245+ bursaries, searchable and bookmarkable.',
   },
 ];
 
@@ -26,7 +23,7 @@ const pills = ['RIASEC Quiz', 'Match Score %', 'Salary Ranges', 'TVET Pathways',
 
 export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="bg-white py-24 px-5">
+    <section className="py-24 px-5">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
 
         {/* Left — sticky text */}
@@ -37,7 +34,7 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
               Know exactly where you're going.
             </h2>
             <p className="mt-5 text-stone-500 text-[15px] leading-relaxed max-w-[40ch] font-medium">
-              Prospect combines your personality profile, APS score, and subject choices to build a personalised career roadmap.
+              Your personality, APS score, and subjects — combined into one career roadmap.
             </p>
             <div className="flex flex-wrap gap-2 mt-7">
               {pills.map(pill => (
@@ -55,28 +52,48 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
           </FadeIn>
         </div>
 
-        {/* Right — feature cards */}
-        <div className="space-y-4">
-          {features.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <FadeIn key={f.heading} delay={i * 0.1}>
-                <div className={`rounded-2xl p-7 transition-all duration-300 ${
-                  f.dark
-                    ? 'bg-brand-dark hover:shadow-xl shadow-stone-900/10'
-                    : 'bg-brand-bg border border-brand-border hover:shadow-sm'
-                }`}>
-                  <Icon className={`w-6 h-6 ${f.dark ? 'text-amber-400' : 'text-brand-dark opacity-70'}`} />
-                  <h4 className={`font-black text-[17px] mt-4 tracking-tight ${f.dark ? 'text-white' : 'text-brand-dark'}`}>
-                    {f.heading}
-                  </h4>
-                  <p className={`text-[14px] mt-2 leading-relaxed font-medium ${f.dark ? 'text-stone-400' : 'text-brand-eyebrow'}`}>
-                    {f.body}
-                  </p>
-                </div>
-              </FadeIn>
-            );
-          })}
+        {/* Right — stat panel + compact feature list */}
+        <div>
+          <FadeIn delay={0.08} direction="left">
+            <div className="relative rounded-3xl bg-brand-dark px-8 py-10 flex items-center overflow-hidden aspect-16/10 shadow-lg shadow-stone-900/10">
+              <div className="relative z-10 max-w-[45%]">
+                <p className="text-white font-mono font-black text-[clamp(2.5rem,5.5vw,4rem)] leading-none tracking-tight">
+                  <CountUp value={400} suffix="+" />
+                </p>
+                <p className="text-stone-400 font-black uppercase tracking-[0.16em] text-[11px] mt-3">
+                  SA careers mapped to your profile
+                </p>
+              </div>
+              <img
+                src="/images/stat-map-graphic.jpg"
+                alt=""
+                aria-hidden
+                loading="lazy"
+                decoding="async"
+                className="absolute -right-4 top-1/2 -translate-y-1/2 h-[130%] w-auto object-contain opacity-90"
+              />
+              <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-linear-to-r from-brand-dark via-brand-dark/80 to-transparent" />
+            </div>
+          </FadeIn>
+
+          <div className="mt-5 divide-y divide-brand-border">
+            {features.map((f, i) => {
+              const Icon = f.icon;
+              return (
+                <FadeIn key={f.heading} delay={0.14 + i * 0.08}>
+                  <div className="group flex items-start gap-4 py-4">
+                    <div className="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-accent">
+                      <Icon className="w-4.5 h-4.5 text-accent transition-colors duration-300 group-hover:text-brand-dark" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-[15px] tracking-tight text-brand-dark">{f.heading}</h4>
+                      <p className="text-[13px] mt-1 leading-relaxed font-medium text-stone-500">{f.body}</p>
+                    </div>
+                  </div>
+                </FadeIn>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

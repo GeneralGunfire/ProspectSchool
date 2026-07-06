@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -39,6 +39,34 @@
   --color-subject-accounting: #f97316;
   --color-subject-business: #06b6d4;
   --color-subject-default: #64748b;
+
+  /*
+   * ── shadcn/ui semantic tokens ──
+   * These map to the HSL custom properties already defined under :root below.
+   * Tailwind v4 only generates utility classes (bg-primary, text-accent-foreground,
+   * etc.) from --color-* tokens declared in this @theme block — the :root HSL
+   * variables alone were never actually reachable by any Tailwind class, so any
+   * shadcn component using the default/secondary/destructive button variants,
+   * ring-ring, border-input, bg-muted, etc. was rendering with missing/invisible
+   * styling. This block wires the existing values in (same colors, no redesign).
+   */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
 
   /* ── Shadows ── */
   --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
@@ -140,14 +168,21 @@
   }
 }
 
-/* ── Landing page utilities ── */
+/* ── Landing page utilities ──
+   Pill badge (not a plain label) — matches the small bordered "INTRODUCTION" /
+   "SERVICE" capsule labels used across both reference designs. inline-flex so
+   the border wraps just the text rather than stretching full-width. */
 .eyebrow {
-  font-size: 11px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   color: var(--color-brand-eyebrow);
-  display: block;
+  padding: 0.4rem 0.95rem;
+  border: 1px solid var(--color-brand-border);
+  border-radius: 999px;
   margin-bottom: 1.5rem;
 }
 
@@ -360,6 +395,115 @@ html {
 .stagger-3 { animation-delay: 0.15s; }
 .stagger-4 { animation-delay: 0.20s; }
 .stagger-5 { animation-delay: 0.25s; }
+
+/* Slow ambient drift for hero background blobs */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(4%, -5%) scale(1.1); }
+}
+.animate-drift { animation: drift 20s ease-in-out infinite; }
+.animate-drift-slow { animation: drift 26s ease-in-out infinite reverse; }
+
+/* ─── Cinematic hero ─── */
+
+/* Editorial serif italic accent inside a heavy sans headline.
+   Weight must be 400 — the global h1 rule is 900 and Instrument Serif
+   has no black weight, so it would faux-bold into mush. */
+.font-serif-accent {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Two star layers pulsing out of phase = cheap parallax twinkle.
+   Opacity-only, GPU-friendly, safe on mobile. */
+@keyframes twinkle-a { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.35; } }
+@keyframes twinkle-b { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.95; } }
+.animate-twinkle-a { animation: twinkle-a 5s ease-in-out infinite; }
+.animate-twinkle-b { animation: twinkle-b 7s ease-in-out infinite; }
+
+/* Light beams breathing behind the headline */
+@keyframes beam-pulse {
+  0%, 100% { opacity: 0.55; transform: scaleY(1); }
+  50%      { opacity: 0.9;  transform: scaleY(1.07); }
+}
+.animate-beam { animation: beam-pulse 8s ease-in-out infinite; transform-origin: bottom center; }
+
+/* ─── Premium card system ───
+   One shared recipe (radius, layered shadow, hover lift+rotate) so every
+   card on the site reads as part of the same design system rather than
+   each section reinventing its own hover treatment. */
+.card-premium {
+  border-radius: 28px;
+  box-shadow:
+    0 1px 2px rgba(28,25,23,0.04),
+    0 8px 24px -8px rgba(28,25,23,0.10),
+    0 24px 48px -16px rgba(28,25,23,0.08);
+  transition: transform 0.45s cubic-bezier(0.23,1,0.32,1), box-shadow 0.45s ease, border-color 0.45s ease;
+}
+.card-premium:hover {
+  transform: translateY(-6px) rotate(-0.4deg);
+  box-shadow:
+    0 1px 2px rgba(28,25,23,0.05),
+    0 16px 32px -8px rgba(28,25,23,0.16),
+    0 40px 64px -16px rgba(28,25,23,0.14);
+}
+/* Dark-surface cards need lighter-toned shadows or they just look flat */
+.card-premium-dark {
+  border-radius: 28px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.2),
+    0 12px 32px -10px rgba(0,0,0,0.45),
+    0 32px 64px -20px rgba(0,0,0,0.35);
+  transition: transform 0.45s cubic-bezier(0.23,1,0.32,1), box-shadow 0.45s ease;
+}
+.card-premium-dark:hover {
+  transform: translateY(-6px) rotate(0.4deg);
+  box-shadow:
+    0 1px 2px rgba(0,0,0,0.25),
+    0 20px 40px -10px rgba(0,0,0,0.55),
+    0 48px 80px -20px rgba(0,0,0,0.4);
+}
+
+/* Soft glass surface — used on floating dashboard-preview cards */
+.glass-panel {
+  background: rgba(255,255,255,0.62);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.55);
+}
+.glass-panel-dark {
+  background: rgba(28,25,23,0.55);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Barely-visible grid — background texture, never a foreground element */
+.bg-grid-faint {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-brand-dark) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-brand-dark) 5%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Slow ambient rotation for background glow blobs — distinct from `drift`
+   (translate) so blobs feel less mechanically identical when combined. */
+@keyframes glow-rotate {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(8deg) scale(1.08); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.animate-glow-rotate { animation: glow-rotate 24s ease-in-out infinite; }
+
+/* Gentle float for dashboard-preview cards — each card gets its own
+   animation-delay/duration in JSX so the stack doesn't move in lockstep. */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-14px); }
+}
+.animate-float { animation: float-y 6s ease-in-out infinite; }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { ErrorBoundary } from './shared/components/ErrorBoundary';
 
 // ── New landing page (from Stitch/AI Studio export) ──────────────────────────
 const NewLandingPage = lazy(() => import('./features/landing/new/LandingPage'));
@@ -293,7 +294,9 @@ export default function App() {
       case 'home':
         return (
           <PageTransition pageKey="home">
-            <NewLandingPage onNavigate={setPage} />
+            <ErrorBoundary>
+              <NewLandingPage onNavigate={setPage} />
+            </ErrorBoundary>
           </PageTransition>
         );
     }

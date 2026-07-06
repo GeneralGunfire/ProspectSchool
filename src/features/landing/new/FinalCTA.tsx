@@ -1,11 +1,17 @@
-import { FadeIn } from './Animations';
+import { FadeIn, useSpotlight, SpotlightGlow } from './Animations';
 import { ArrowRight } from './icons';
 
 export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
+  const { ref, onMouseMove } = useSpotlight<HTMLDivElement>();
   return (
-    <section className="bg-brand-bg pb-24 px-5">
+    <section className="pb-24 px-5">
       <FadeIn>
-        <div className="max-w-5xl mx-auto bg-brand-dark rounded-3xl px-8 md:px-16 py-16 flex flex-col lg:flex-row items-center justify-between gap-10">
+        <div
+          ref={ref}
+          onMouseMove={onMouseMove}
+          className="group/spot card-premium-dark relative overflow-hidden max-w-5xl mx-auto bg-brand-dark px-8 md:px-16 py-16 flex flex-col lg:flex-row items-center justify-between gap-10"
+        >
+          <SpotlightGlow tone="white" />
 
           <div className="max-w-md text-center lg:text-left">
             <span className="text-stone-600 text-[9px] font-black uppercase tracking-[0.2em]">Get Started Today</span>

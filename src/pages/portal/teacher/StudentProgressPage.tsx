@@ -32,6 +32,7 @@ import {
   getInterventions, getOutcomes, computeInterventionImpact,
   type Intervention, type Outcome,
 } from '../../../lib/interventions';
+import RecordOutcomeModal, { type OutcomeTarget } from './RecordOutcomeModal';
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -265,6 +266,12 @@ export default function StudentProgressPage({ session }: StudentProgressPageProp
           setLastContacts(prev => new Map(prev).set(selected.student_id, updated[0].createdAt));
         }
       }}
+      onOutcomeRecorded={(outcome) => {
+        setOutcomes(prev => {
+          const withoutThis = (prev ?? []).filter(o => o.interventionId !== outcome.interventionId);
+          return [outcome, ...withoutThis];
+        });
+      }}
     />;
   }
 
@@ -454,12 +461,13 @@ interface ProfileProps {
   onBack: () => void;
   onTabChange: (tab: ProfileTab) => void;
   onContactsChange: (updated: ParentContact[]) => void;
+  onOutcomeRecorded: (outcome: Outcome) => void;
 }
 
 function StudentProfile({
   student, session, activeTab, marks, events, completions, announcements,
   interventions, outcomes, classHealth, contacts,
-  onBack, onTabChange, onContactsChange,
+  onBack, onTabChange, onContactsChange, onOutcomeRecorded,
 }: ProfileProps) {
   // ── Comparison strip data ──────────────────────────────────────
   // Build per-subject avg for this student from marks data (available after Marks tab visited)
@@ -614,7 +622,16 @@ function StudentProfile({
           {activeTab === 'marks'         && <MarksTab marks={marks} />}
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
           {activeTab === 'announcements' && <AnnouncementsTab announcements={announcements} />}
-          {activeTab === 'interventions' && <InterventionsTab interventions={interventions} outcomes={outcomes} />}
+          {activeTab === 'interventions' && (
+            <InterventionsTab
+              interventions={interventions}
+              outcomes={outcomes}
+              session={session}
+              studentId={student.student_id}
+              studentLabel={`${student.student_surname}, ${student.student_name}`}
+              onOutcomeRecorded={onOutcomeRecorded}
+            />
+          )}
           {activeTab === 'contacts'      && (
             <ContactsTab
               contacts={contacts}
@@ -831,11 +848,17 @@ function AnnouncementsTab({ announcements }: { announcements: Announcement[] | n
 // ── Tab: Interventions ────────────────────────────────────────
 
 function InterventionsTab({
-  interventions, outcomes,
+  interventions, outcomes, session, studentId, studentLabel, onOutcomeRecorded,
 }: {
   interventions: Intervention[] | null;
   outcomes: Outcome[] | null;
+  session: TeacherSession;
+  studentId: number;
+  studentLabel: string;
+  onOutcomeRecorded: (outcome: Outcome) => void;
 }) {
+  const [outcomeTarget, setOutcomeTarget] = useState<OutcomeTarget | null>(null);
+
   if (interventions === null || outcomes === null) return <LoadingSpinner />;
 
   const completed = interventions.filter(i => i.status === 'completed');
@@ -1009,7 +1032,20 @@ function InterventionsTab({
                   )}
 
                   {!outcome && (
-                    <p className="text-[10px] text-stone-300 mt-2">No outcome data yet — awaiting new assessment</p>
+                    <button
+                      onClick={() => setOutcomeTarget({
+                        interventionId: inv.id,
+                        studentId,
+                        subject:        inv.subject,
+                        subjectId:      inv.subjectId ?? null,
+                        type:           inv.type,
+                        previousAvg:    inv.previousAvg,
+                        studentLabel,
+                      })}
+                      className="text-[10px] font-black text-blue-500 hover:text-blue-700 mt-2 transition-colors"
+                    >
+                      Record Outcome →
+                    </button>
                   )}
 
                   <p className="text-[10px] text-stone-300 mt-2">
@@ -1025,6 +1061,15 @@ function InterventionsTab({
             })}
           </div>
         </div>
+      )}
+
+      {outcomeTarget && (
+        <RecordOutcomeModal
+          session={session}
+          target={outcomeTarget}
+          onClose={() => setOutcomeTarget(null)}
+          onRecorded={onOutcomeRecorded}
+        />
       )}
 
     </div>

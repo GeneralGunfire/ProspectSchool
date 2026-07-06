@@ -18,9 +18,10 @@ import { computeStudentInsights } from '../../../lib/studentInsights';
 import {
   getActiveInterventions, getCompletedInterventions, getOutcomes,
   syncInterventionsFromRisk, syncOutcomesFromMarks,
-  startIntervention, completeIntervention,
-  type Intervention, type Outcome,
+  startIntervention, completeIntervention, updateChecklistProgress,
+  type Intervention, type Outcome, type InterventionType,
 } from '../../../lib/interventions';
+import { fetchInterventionTemplate, type InterventionTemplate } from '../../../lib/interventionTemplates';
 import type { StudentSession } from '../../../lib/auth';
 
 function timeAgo(iso: string): string {
@@ -85,6 +86,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const [completedInterventions, setCompletedInterventions] = useState<Intervention[]>([]);
   const [interventionOutcomes, setInterventionOutcomes]     = useState<Outcome[]>([]);
   const [activeInterventions, setActiveInterventions]       = useState<Intervention[]>([]);
+  const [templates, setTemplates] = useState<Map<InterventionType, InterventionTemplate>>(new Map());
 
   useEffect(() => {
     async function load() {
@@ -142,6 +144,16 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         setCompletedInterventions(completed);
         setInterventionOutcomes(outcomeRows);
         setActiveInterventions(active);
+
+        // Load each distinct type's checklist template once, non-blocking.
+        const types = [...new Set(active.map(i => i.type))];
+        Promise.all(types.map(t => fetchInterventionTemplate(session.school_id, t))).then(results => {
+          setTemplates(prev => {
+            const next = new Map(prev);
+            results.forEach((tpl, i) => { if (tpl) next.set(types[i], tpl); });
+            return next;
+          });
+        });
       });
     }
     load();
@@ -1161,6 +1173,38 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       <p className="text-xs text-stone-500">{inv.description}</p>
                       {inv.rationale && (
                         <p className="text-[10px] text-stone-400 mt-1 italic">{inv.rationale}</p>
+                      )}
+
+                      {/* Checklist — only shown once the student has started, so
+                          the card stays compact until they've committed to it */}
+                      {isStarted && templates.get(inv.type) && (
+                        <div className="mt-2.5 space-y-1.5">
+                          {templates.get(inv.type)!.checklist.map((step, stepIdx) => {
+                            const progress = inv.checklistProgress ?? templates.get(inv.type)!.checklist.map(() => false);
+                            const done = progress[stepIdx] ?? false;
+                            return (
+                              <button
+                                key={stepIdx}
+                                onClick={async () => {
+                                  const next = [...progress];
+                                  next[stepIdx] = !done;
+                                  setActiveInterventions(prev =>
+                                    prev.map(i => i.id === inv.id ? { ...i, checklistProgress: next } : i)
+                                  );
+                                  await updateChecklistProgress(session.student_id, inv.id, next);
+                                }}
+                                className="flex items-start gap-2 text-left w-full group"
+                              >
+                                {done
+                                  ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                                  : <Circle className="w-3.5 h-3.5 text-stone-300 shrink-0 mt-0.5 group-hover:text-stone-400" />}
+                                <span className={`text-[11px] ${done ? 'text-stone-400 line-through' : 'text-stone-600'}`}>
+                                  {step}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
                       )}
                     </div>
                   </div>

@@ -1,4 +1,4 @@
-import { FadeIn } from './Animations';
+import { FadeIn, useSpotlight, SpotlightGlow } from './Animations';
 import { Calculator, Atom, FlaskConical, BookOpen, Briefcase, TrendingUp, Monitor, Pencil } from './icons';
 
 const subjects = [
@@ -12,9 +12,29 @@ const subjects = [
   { name: 'EGD',                icon: Pencil,       topics: 1 },
 ];
 
+const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]; onNavigate: (p: string) => void }) => {
+  const Icon = subject.icon;
+  const { ref, onMouseMove } = useSpotlight<HTMLButtonElement>();
+  return (
+    <button
+      ref={ref}
+      onMouseMove={onMouseMove}
+      onClick={() => onNavigate('library')}
+      className="group group/spot card-premium relative overflow-hidden w-full bg-white border border-brand-border p-6 text-left hover:border-accent/50 active:scale-[0.98] cursor-pointer"
+    >
+      <SpotlightGlow tone="accent" />
+      <div className="w-9 h-9 rounded-lg bg-linear-to-br from-stone-700 to-brand-dark shadow-inner shadow-black/30 flex items-center justify-center mb-4 transition-transform group-hover:scale-105">
+        <Icon className="text-white w-4 h-4" />
+      </div>
+      <h4 className="text-brand-dark font-black text-[13px] leading-snug tracking-tight">{subject.name}</h4>
+      <p className="text-stone-400 text-[10px] mt-1 font-black uppercase tracking-widest">{subject.topics} topics</p>
+    </button>
+  );
+};
+
 export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="bg-brand-bg py-24 px-5">
+    <section className="py-20 px-5">
       <div className="max-w-6xl mx-auto">
 
         <FadeIn className="text-center mb-12">
@@ -28,23 +48,11 @@ export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }
         </FadeIn>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-          {subjects.map((subject, i) => {
-            const Icon = subject.icon;
-            return (
-              <FadeIn key={subject.name} delay={i * 0.04}>
-                <button
-                  onClick={() => onNavigate('library')}
-                  className="w-full bg-white rounded-2xl border border-brand-border p-6 text-left transition-all duration-200 hover:shadow-md hover:border-stone-300 active:scale-[0.98] cursor-pointer group"
-                >
-                  <div className="w-9 h-9 bg-brand-dark rounded-lg flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                    <Icon className="text-white w-4 h-4" />
-                  </div>
-                  <h4 className="text-brand-dark font-black text-[13px] leading-snug tracking-tight">{subject.name}</h4>
-                  <p className="text-stone-400 text-[10px] mt-1 font-black uppercase tracking-widest">{subject.topics} topics</p>
-                </button>
-              </FadeIn>
-            );
-          })}
+          {subjects.map((subject, i) => (
+            <FadeIn key={subject.name} delay={i * 0.04}>
+              <SubjectCard subject={subject} onNavigate={onNavigate} />
+            </FadeIn>
+          ))}
         </div>
 
         <FadeIn delay={0.35} className="text-center mt-10">

@@ -41,11 +41,6 @@ export interface AtRiskStudent {
   detail:       string;
 }
 
-export interface TeacherInterventionBreakdown {
-  status:   string;
-  count:    number;
-}
-
 export interface SubjectOutcomeRow {
   subject:      string;
   type:         InterventionType;
@@ -243,7 +238,7 @@ export async function fetchAtRiskStudents(
     : { data: [] };
 
   // Build per-student per-subject averages
-  type SubAvg = { subject: string; avg: number; subjectId: number };
+  type SubAvg = { subject: string; subjectId: number; sum: number; count: number };
   const studentSubjectAvgs = new Map<number, SubAvg[]>();
 
   for (const m of (marks ?? [])) {
@@ -258,9 +253,10 @@ export async function fetchAtRiskStudents(
 
     const existing = studentSubjectAvgs.get(sid)!.find(s => s.subjectId === ms.subject_id);
     if (existing) {
-      existing.avg = (existing.avg + pct) / 2; // running avg (simplified)
+      existing.sum += pct;
+      existing.count += 1;
     } else {
-      studentSubjectAvgs.get(sid)!.push({ subject: subjectLabel, subjectId: ms.subject_id, avg: pct });
+      studentSubjectAvgs.get(sid)!.push({ subject: subjectLabel, subjectId: ms.subject_id, sum: pct, count: 1 });
     }
   }
 
@@ -281,16 +277,17 @@ export async function fetchAtRiskStudents(
 
     // Below pass
     for (const sa of subjectAvgs) {
-      if (sa.avg < 50) {
+      const avg = sa.sum / sa.count;
+      if (avg < 50) {
         atRisk.push({
           studentId: sid,
           name:      student.name,
           surname:   student.surname,
           grade:     student.grade,
           subject:   sa.subject,
-          avg:       Math.round(sa.avg),
+          avg:       Math.round(avg),
           reason:    'below_pass',
-          detail:    `${sa.subject} average ${Math.round(sa.avg)}%`,
+          detail:    `${sa.subject} average ${Math.round(avg)}%`,
         });
       }
     }
@@ -321,27 +318,6 @@ export async function fetchAtRiskStudents(
     })
     .sort((a, b) => a.avg - b.avg)
     .slice(0, 10);
-}
-
-// ── 4. Intervention status breakdown ─────────────────────────────────────────
-
-export async function fetchTeacherInterventionBreakdown(
-  teacherId: number,
-): Promise<TeacherInterventionBreakdown[]> {
-  const { data } = await supabaseAdmin
-    .from('interventions')
-    .select('status')
-    .eq('teacher_id', teacherId);
-
-  if (!data) return [];
-
-  const counts: Record<string, number> = {};
-  for (const row of data) {
-    const s = (row as any).status as string;
-    counts[s] = (counts[s] ?? 0) + 1;
-  }
-
-  return Object.entries(counts).map(([status, count]) => ({ status, count }));
 }
 
 // ── 5. Outcome effectiveness by subject + type ────────────────────────────────
@@ -890,11 +866,13 @@ export interface StaleIntervention {
   studentName:    string;
   studentSurname: string;
   subject:        string;
-  type:           string;
+  subjectId:      number | null;
+  type:           InterventionType;
   typeLabel:      string;
   status:         string;
   startedAt:      string | null;
   completedAt:    string | null;
+  previousAvg:    number;
   staleDays:      number;
   reason:         'stale_active' | 'awaiting_outcome';
 }
@@ -917,7 +895,7 @@ export async function fetchStaleInterventions(
   // Get active/completed interventions for this teacher
   const { data: invRows } = await supabaseAdmin
     .from('interventions')
-    .select('id, student_id, subject, type, status, started_at, completed_at, created_at')
+    .select('id, student_id, subject, subject_id, type, status, started_at, completed_at, created_at, previous_avg')
     .eq('teacher_id', teacherId)
     .eq('school_id', schoolId)
     .in('status', ['started', 'completed'])
@@ -970,11 +948,13 @@ export async function fetchStaleInterventions(
           studentName:    student.name,
           studentSurname: student.surname,
           subject:        (inv as any).subject as string,
-          type:           (inv as any).type as string,
+          subjectId:      (inv as any).subject_id ?? null,
+          type:           (inv as any).type as InterventionType,
           typeLabel:      INTERVENTION_TYPE_LABELS_MAP[(inv as any).type] ?? (inv as any).type,
           status,
           startedAt,
           completedAt:    null,
+          previousAvg:    Number((inv as any).previous_avg ?? 0),
           staleDays,
           reason:         'stale_active',
         });
@@ -991,11 +971,13 @@ export async function fetchStaleInterventions(
           studentName:    student.name,
           studentSurname: student.surname,
           subject:        (inv as any).subject as string,
-          type:           (inv as any).type as string,
+          subjectId:      (inv as any).subject_id ?? null,
+          type:           (inv as any).type as InterventionType,
           typeLabel:      INTERVENTION_TYPE_LABELS_MAP[(inv as any).type] ?? (inv as any).type,
           status,
           startedAt:      (inv as any).started_at ?? null,
           completedAt:    completedAt,
+          previousAvg:    Number((inv as any).previous_avg ?? 0),
           staleDays,
           reason:         'awaiting_outcome',
         });
@@ -1104,7 +1086,7 @@ export async function fetchStudentTiers(
   // Get teacher's students
   const { data: links } = await supabaseAdmin
     .from('teacher_students')
-    .select('student_id, subject_id, students(id, name, surname, grade, cohort_id)')
+    .select('student_id, subject_id, students(id, name, surname, grade, cohort_id, cohorts(name))')
     .eq('teacher_id', teacherId);
 
   if (!links || links.length === 0) return [];
@@ -1163,7 +1145,7 @@ export async function fetchStudentTiers(
       name:         student.name as string,
       surname:      student.surname as string,
       grade:        student.grade as number,
-      cohort:       null,   // cohort_id not carried in this join — omit for now
+      cohort:       (student.cohorts as any)?.name ?? null,
       avg,
       tier:         computeLearnerTier(avg),
       subjectCount,

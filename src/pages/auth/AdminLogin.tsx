@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, AlertCircle, Eye, EyeOff, School, BadgeCheck } from 'lucide-react';
 import { adminLogin } from '../../lib/auth';
 
 const REMEMBER_KEY = 'prospect_admin_remember';
@@ -37,143 +37,142 @@ export default function AdminLogin({ onNavigate }: { onNavigate: (page: string) 
   };
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#F5F0E8' }}>
-
-      {/* Left — dark branding panel */}
+    <div className="relative min-h-screen flex items-center justify-center px-5 py-12 overflow-hidden">
+      {/* Full-bleed photo — the SA flag, fitting for the "for schools/official"
+          admin login. It's a sparse image (mostly sky), so it's positioned to
+          keep the flag itself in frame rather than centering on empty sky. */}
+      <img
+        src="/images/sa-flag.jpg"
+        alt=""
+        aria-hidden
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: '30% 70%' }}
+      />
       <div
-        className="hidden lg:flex flex-col justify-between w-110 shrink-0 px-10 py-10"
-        style={{ background: '#1C1917' }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-            <span className="text-white font-black text-sm">P</span>
+        aria-hidden
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(160deg, rgba(28,25,23,0.8) 0%, rgba(28,25,23,0.6) 45%, rgba(28,25,23,0.88) 100%)' }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-64"
+        style={{ background: 'linear-gradient(to bottom, color-mix(in srgb, var(--color-accent) 25%, transparent), transparent)' }}
+      />
+
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-6 sm:px-10 h-16 z-20">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center">
+            <span className="text-accent-foreground font-black text-xs">P</span>
           </div>
-          <span className="text-white font-black text-base tracking-tight">Prospect</span>
+          <span className="text-white font-black text-sm tracking-tight">Prospect</span>
         </div>
-
-        <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">For Schools</p>
-          <h2
-            className="text-white font-black leading-[1.08] mb-6"
-            style={{ fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)', letterSpacing: '-0.03em' }}
-          >
-            One platform. Zero cost.
-          </h2>
-          <p className="text-stone-400 text-[15px] leading-relaxed max-w-[30ch]">
-            Manage your school's teachers, students, and announcements from the admin dashboard.
-          </p>
-        </div>
-
-        <p className="text-stone-600 text-xs font-bold uppercase tracking-widest">Free · Always</p>
+        <button
+          onClick={() => onNavigate('portal')}
+          className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-white/60 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Portal
+        </button>
       </div>
 
-      {/* Right — form */}
-      <div className="flex-1 flex flex-col">
+      {/* Floating glass card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+        className="relative z-10 w-full max-w-sm rounded-3xl border border-white/15 bg-black/25 backdrop-blur-2xl shadow-2xl shadow-black/40 px-7 py-8 sm:px-9 sm:py-10"
+      >
+        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-200/80 mb-3">For Schools</p>
+        <h1 className="font-black text-white text-2xl leading-tight" style={{ letterSpacing: '-0.03em' }}>
+          Sign in to your account
+        </h1>
+        <p className="text-white/50 text-[13px] mt-2">Enter your school and administrator credentials.</p>
 
-        <div className="flex items-center px-6 sm:px-10 h-16 border-b border-stone-200/60" style={{ background: '#F5F0E8' }}>
-          <button
-            onClick={() => onNavigate('portal')}
-            className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Portal
-          </button>
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4 mt-7">
 
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-            className="w-full max-w-sm"
-          >
-            <div className="mb-8">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-3">Admin Login</p>
-              <h1 className="font-black text-[#1C1917] text-2xl" style={{ letterSpacing: '-0.03em' }}>
-                Sign in to your account
-              </h1>
-              <p className="text-stone-500 text-sm mt-1.5">Enter your school and administrator credentials.</p>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex gap-3 p-3.5 bg-red-500/15 border border-red-400/30 rounded-xl"
+            >
+              <AlertCircle className="w-4 h-4 text-red-300 shrink-0 mt-0.5" />
+              <p className="text-red-100 text-[13px] leading-snug">{error}</p>
+            </motion.div>
+          )}
+
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-2">School Code</label>
+            <div className="relative">
+              <input
+                type="text" required
+                value={formData.schoolCode}
+                onChange={e => setFormData({ ...formData, schoolCode: e.target.value.toUpperCase() })}
+                className="w-full px-4 py-3 pr-11 bg-white/8 border border-white/20 rounded-xl text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition-all tracking-widest"
+                placeholder="e.g. GHS001"
+                autoCapitalize="characters" autoCorrect="off"
+              />
+              <School className="w-4 h-4 text-white/30 absolute right-3.5 top-1/2 -translate-y-1/2" />
             </div>
+          </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-2">Admin Code</label>
+            <div className="relative">
+              <input
+                type="text" required
+                value={formData.adminCode}
+                onChange={e => setFormData({ ...formData, adminCode: e.target.value.toUpperCase() })}
+                className="w-full px-4 py-3 pr-11 bg-white/8 border border-white/20 rounded-xl text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition-all tracking-widest"
+                placeholder="e.g. ADM-001"
+                autoCapitalize="characters" autoCorrect="off"
+              />
+              <BadgeCheck className="w-4 h-4 text-white/30 absolute right-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+          </div>
 
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl"
-                >
-                  <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                  <p className="text-red-700 text-sm leading-snug">{error}</p>
-                </motion.div>
-              )}
-
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">School Code</label>
-                <input
-                  type="text" required
-                  value={formData.schoolCode}
-                  onChange={e => setFormData({ ...formData, schoolCode: e.target.value.toUpperCase() })}
-                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
-                  placeholder="e.g. GHS001"
-                  autoCapitalize="characters" autoCorrect="off"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">Admin Code</label>
-                <input
-                  type="text" required
-                  value={formData.adminCode}
-                  onChange={e => setFormData({ ...formData, adminCode: e.target.value.toUpperCase() })}
-                  className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
-                  placeholder="e.g. ADM-001"
-                  autoCapitalize="characters" autoCorrect="off"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-2">PIN</label>
-                <div className="relative">
-                  <input
-                    type={showPin ? 'text' : 'password'} required
-                    inputMode="numeric" maxLength={10}
-                    value={formData.pin}
-                    onChange={e => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
-                    className="w-full px-4 py-3 pr-11 bg-white border border-stone-200 rounded-xl text-sm font-bold text-[#1C1917] placeholder:text-stone-300 focus:outline-none focus:border-[#1C1917] focus:ring-2 focus:ring-stone-900/10 transition-all tracking-widest"
-                    placeholder="10-digit PIN"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPin(s => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 transition-colors"
-                  >
-                    {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-                <p className="text-[11px] text-stone-400 mt-1.5">Assigned by your platform administrator</p>
-              </div>
-
-              <label className="flex items-center gap-2.5 cursor-pointer select-none">
-                <input
-                  type="checkbox" checked={rememberMe}
-                  onChange={e => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-stone-300 accent-stone-900 cursor-pointer"
-                />
-                <span className="text-[11px] font-bold text-stone-500">Remember school &amp; admin code</span>
-              </label>
-
-              <motion.button
-                type="submit" disabled={loading}
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#1C1917] text-white font-black py-3.5 rounded-xl hover:bg-stone-800 transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2"
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-2">PIN</label>
+            <div className="relative">
+              <input
+                type={showPin ? 'text' : 'password'} required
+                inputMode="numeric" maxLength={10}
+                value={formData.pin}
+                onChange={e => setFormData({ ...formData, pin: e.target.value.replace(/\D/g, '') })}
+                className="w-full px-4 py-3 pr-11 bg-white/8 border border-white/20 rounded-xl text-sm font-bold text-white placeholder:text-white/30 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition-all tracking-widest"
+                placeholder="10-digit PIN"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPin(s => !s)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
               >
-                {loading ? 'Signing in…' : 'Sign In'}
-                {!loading && <ArrowRight className="w-4 h-4" />}
-              </motion.button>
-            </form>
-          </motion.div>
-        </div>
-      </div>
+                {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            <p className="text-[11px] text-white/35 mt-1.5">Assigned by your platform administrator</p>
+          </div>
+
+          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox" checked={rememberMe}
+              onChange={e => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-white/30 accent-accent cursor-pointer"
+            />
+            <span className="text-[11px] font-bold text-white/50">Remember school &amp; admin code</span>
+          </label>
+
+          <motion.button
+            type="submit" disabled={loading}
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            className="w-full text-accent-foreground font-black py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 mt-2 shadow-lg shadow-black/30"
+            style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 100%, white 15%), var(--color-accent))' }}
+          >
+            {loading ? 'Signing in…' : 'Sign In'}
+            {!loading && <ArrowRight className="w-4 h-4" />}
+          </motion.button>
+        </form>
+      </motion.div>
     </div>
   );
 }

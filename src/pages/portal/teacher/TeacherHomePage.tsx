@@ -10,14 +10,16 @@ import { fetchSchoolEvents, fetchHomeworkCompletionCount, type SchoolEvent } fro
 import { fetchTeacherStudents } from '../../../lib/students';
 import { fetchTeacherMarkSheets, type MarkSheetGroup } from '../../../lib/marks';
 import {
-  fetchTeacherImpactSummary, fetchTeacherClassHealth, fetchAtRiskStudents,
-  fetchTeacherInterventionROI, fetchStaleInterventions, fetchAssessmentGaps,
+  fetchTeacherImpactSummary, fetchTeacherClassHealth,
+  fetchTeacherInterventionROI,
   type TeacherImpactSummary, type TeacherSubjectHealth, type AtRiskStudent,
   type InterventionROIRow, type StaleIntervention, type AssessmentGap,
 } from '../../../lib/teacherAnalytics';
 import { fetchBestInterventionType } from '../../../lib/teacherAnalytics';
 import { createIntervention } from '../../../lib/interventions';
+import { syncTeacherActions, dismissAction, riskKey, gapKey } from '../../../lib/actionCenter';
 import type { TeacherSession } from '../../../lib/auth';
+import { X } from 'lucide-react';
 
 function formatDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', {
@@ -81,6 +83,20 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   const [gaps,           setGaps]           = useState<AssessmentGap[]>([]);
   const [loading,        setLoading]        = useState(true);
 
+  // Durable dismiss state — maps the same dedup key syncTeacherActions uses
+  // (risk:studentId:subject / the intervention id itself / gap:subjectId:grade)
+  // to the persisted teacher_actions row id, so a card can be dismissed once
+  // and stays dismissed on the next visit instead of re-triaging every time.
+  const [actionIdByKey, setActionIdByKey] = useState<Map<string, number>>(new Map());
+  const [dismissed,     setDismissed]     = useState<Set<string>>(new Set());
+
+  function dismiss(key: string) {
+    const id = actionIdByKey.get(key);
+    if (id === undefined) return; // sync hasn't landed yet — rare, just no-op
+    setDismissed(prev => new Set(prev).add(key));
+    dismissAction(id);
+  }
+
   // Assign state per student (key = `${studentId}_${subject}`)
   const [recs,       setRecs]       = useState<Record<string, AtRiskRec>>({});
   const [assigning,  setAssigning]  = useState<Record<string, boolean>>({});
@@ -119,21 +135,30 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       setRecentSheets(sheetsResult.slice(0, 3));
       setLoading(false);
 
-      // Non-blocking analytics
+      // Non-blocking analytics. syncTeacherActions wraps fetchAtRiskStudents /
+      // fetchStaleInterventions / fetchAssessmentGaps and additionally persists
+      // + dedupes them into teacher_actions so a dismissed card doesn't
+      // resurface on the next visit while the underlying condition persists.
       Promise.all([
         fetchTeacherImpactSummary(session.teacher_id),
         fetchTeacherClassHealth(session.teacher_id, session.school_id),
-        fetchAtRiskStudents(session.teacher_id, session.school_id),
         fetchTeacherInterventionROI(session.teacher_id),
-        fetchStaleInterventions(session.teacher_id, session.school_id),
-        fetchAssessmentGaps(session.teacher_id, session.school_id),
-      ]).then(([imp, health, risk, roi, staleInvs, assessGaps]) => {
+        syncTeacherActions(session.teacher_id, session.school_id),
+      ]).then(([imp, health, roi, actionData]) => {
         setImpact(imp);
         setClassHealth(health);
-        setAtRisk(risk);
         setRoiRows(roi);
-        setStale(staleInvs);
-        setGaps(assessGaps);
+        setAtRisk(actionData.atRisk);
+        setStale(actionData.stale);
+        setGaps(actionData.gaps);
+
+        const keyMap = new Map<string, number>();
+        for (const a of actionData.actions) {
+          if (a.interventionId) keyMap.set(a.interventionId, a.id);
+        }
+        setActionIdByKey(keyMap);
+
+        const risk = actionData.atRisk;
 
         // Pre-load recommendations for at-risk students (non-blocking)
         risk.forEach(s => {
@@ -307,7 +332,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       </div>
 
       {/* ── Students Requiring Attention (with Assign) ───────────── */}
-      {atRisk.length > 0 && (
+      {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.18 }}
@@ -318,10 +343,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400">Needs Attention</p>
               <p className="text-[10px] text-stone-400 mt-0.5">Recommended interventions — click Assign to activate</p>
             </div>
-            <span className="text-[11px] font-bold text-red-500">{atRisk.length} student{atRisk.length !== 1 ? 's' : ''}</span>
+            <span className="text-[11px] font-bold text-red-500">
+              {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
+            </span>
           </div>
           <div className="space-y-2">
-            {atRisk.slice(0, 6).map((s, i) => {
+            {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).slice(0, 6).map((s, i) => {
               const key = `${s.studentId}_${s.subject}`;
               const rec = recs[key];
               const isAssigning = assigning[key];
@@ -346,6 +373,14 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                       <p className="text-xs font-black text-stone-900">{s.surname}, {s.name}</p>
                       <p className="text-[10px] text-stone-500 truncate">{s.detail}</p>
                     </div>
+
+                    <button
+                      onClick={() => dismiss(riskKey(s.studentId, s.subject))}
+                      className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-300 hover:text-stone-500 transition-colors"
+                      title="Dismiss"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
 
                     {/* Assign button — only for below_pass with a rec loaded */}
                     {s.reason === 'below_pass' && (
@@ -418,7 +453,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       )}
 
       {/* ── Intervention Follow-Up Queue ──────────────────────────── */}
-      {stale.length > 0 && (
+      {stale.filter(inv => !dismissed.has(inv.interventionId)).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.20 }}
@@ -430,11 +465,11 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               <p className="text-[10px] text-stone-400 mt-0.5">Stale or completed without an outcome recorded</p>
             </div>
             <span className="flex items-center gap-1 text-[11px] font-bold text-amber-500">
-              <Clock className="w-3 h-3" /> {stale.length}
+              <Clock className="w-3 h-3" /> {stale.filter(inv => !dismissed.has(inv.interventionId)).length}
             </span>
           </div>
           <div className="space-y-2">
-            {stale.map((inv, i) => (
+            {stale.filter(inv => !dismissed.has(inv.interventionId)).map((inv, i) => (
               <div key={i} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
                 inv.reason === 'awaiting_outcome'
                   ? 'bg-blue-50 border-blue-100'
@@ -455,6 +490,13 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   </p>
                 </div>
                 <button
+                  onClick={() => dismiss(inv.interventionId)}
+                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-300 hover:text-stone-500 transition-colors"
+                  title="Dismiss"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+                <button
                   onClick={() => onNavigate('library')}
                   className={`shrink-0 text-[10px] font-black transition-colors ${
                     inv.reason === 'awaiting_outcome'
@@ -471,7 +513,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       )}
 
       {/* ── Assessment Gap Detector ───────────────────────────────── */}
-      {gaps.length > 0 && (
+      {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.22 }}
@@ -485,7 +527,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             <AlertTriangle className="w-4 h-4 text-orange-400" />
           </div>
           <div className="space-y-2">
-            {gaps.slice(0, 5).map((gap, i) => (
+            {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).slice(0, 5).map((gap, i) => (
               <div key={i} className="flex items-center gap-3 rounded-xl px-3 py-2.5 bg-orange-50 border border-orange-100">
                 <div className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
                   <ClipboardList className="w-3.5 h-3.5 text-white" />
@@ -496,6 +538,13 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                     Last assessed {gap.daysSinceLast}d ago · {gap.sheetCount} sheet{gap.sheetCount !== 1 ? 's' : ''} total
                   </p>
                 </div>
+                <button
+                  onClick={() => dismiss(gapKey(gap.subjectId, gap.grade))}
+                  className="shrink-0 p-1 rounded-lg hover:bg-black/5 text-stone-400 hover:text-stone-600 transition-colors"
+                  title="Dismiss"
+                >
+                  <X className="w-3 h-3" />
+                </button>
                 <button
                   onClick={() => onNavigate('marks')}
                   className="shrink-0 text-[10px] font-black text-orange-500 hover:text-orange-700 transition-colors"

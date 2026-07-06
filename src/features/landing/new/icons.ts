@@ -1,4 +1,5 @@
 // Landing page icon barrel — re-exports from lucide-react
+export type { LucideIcon } from 'lucide-react';
 export {
   GraduationCap,
   BookOpen,
@@ -22,4 +23,11 @@ export {
   FolderOpen,
   CalendarDays,
   Users,
+  Menu,
+  X,
+  HardHat,
+  HeartPulse,
+  Wrench,
+  Bell,
+  Sparkles,
 } from 'lucide-react';
