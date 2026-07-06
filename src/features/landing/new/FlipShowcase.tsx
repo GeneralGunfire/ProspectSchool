@@ -16,10 +16,9 @@ export const FlipShowcase = () => {
   const { ref, onMouseMove, onMouseLeave } = useParallax<HTMLDivElement>();
 
   useEffect(() => {
-    if (reduced) return;
     const t = setTimeout(() => setShowClean(v => !v), SWITCH_MS);
     return () => clearTimeout(t);
-  }, [showClean, reduced]);
+  }, [showClean]);
 
   return (
     <div
