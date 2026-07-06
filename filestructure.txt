@@ -66,6 +66,7 @@
         |-- teacher.webp
     |-- logo-icon.svg
     |-- logo-mark.svg
+    |-- logo.jpg
     |-- logo.svg
     |-- robots.txt
     |-- sitemap.xml
