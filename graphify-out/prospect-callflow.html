@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>prospect — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 1800 nodes, 3079 edges, 140 communities. Commit: 24b3909</p>
+<p class="subtitle">Generated from graphify knowledge graph: 1800 nodes, 3079 edges, 140 communities. Commit: cf03b88</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -1173,23 +1173,31 @@ flowchart LR
         new_careerpaths_careerpaths_ac873c92("CareerPaths()<br/><small>landing/new/CareerPaths.tsx</small>")
     end
     subgraph community_19_landing_new_ChaosCollage_tsx_60fb9a3e["landing/new/ChaosCollage.tsx"]
-        src_features_landing_new_chaoscollage_tsx_4545b5e6("ChaosCollage.tsx")
         new_chaoscollage_chaoscollage_3c265f38("ChaosCollage()<br/><small>landing/new/ChaosCollage.tsx</small>")
+        src_features_landing_new_chaoscollage_tsx_4545b5e6("ChaosCollage.tsx")
     end
     subgraph community_19_landing_new_DashboardPreview_tsx_6f9e99ff["landing/new/DashboardPreview.tsx"]
-        src_features_landing_new_dashboardpreview_tsx_d5b6b807("DashboardPreview.tsx")
         new_dashboardpreview_dashboardpreview_147e7095("DashboardPreview()<br/><small>landing/new/DashboardPreview.tsx</small>")
+        src_features_landing_new_dashboardpreview_tsx_d5b6b807("DashboardPreview.tsx")
     end
     subgraph community_19_landing_new_FinalCTA_tsx_f3853ba3["landing/new/FinalCTA.tsx"]
         src_features_landing_new_finalcta_tsx_d59bb040("FinalCTA.tsx")
         new_finalcta_finalcta_a43ecc3b("FinalCTA()<br/><small>landing/new/FinalCTA.tsx</small>")
     end
-    src_features_landing_new_flipshowcase_tsx_df989e29("FlipShowcase.tsx")
+    subgraph community_19_landing_new_FlipShowcase_tsx_82c75708["landing/new/FlipShowcase.tsx"]
+        src_features_landing_new_flipshowcase_tsx_df989e29("FlipShowcase.tsx")
+        new_flipshowcase_flipshowcase_024eaab6("FlipShowcase()<br/><small>landing/new/FlipShowcase.tsx</small>")
+    end
     src_features_landing_new_footer_tsx_093847cb("Footer.tsx")
     src_features_landing_new_hero_tsx_ca0ed6c5("Hero.tsx")
     src_features_landing_new_landingpage_tsx_9e28c81b("LandingPage.tsx")
-    src_features_landing_new_pricing_tsx_dc5baf66("Pricing.tsx")
     src_features_landing_new_icons_ts_a7d7aee4("icons.ts")
+    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| new_chaoscollage_chaoscollage_3c265f38
+    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| new_dashboardpreview_dashboardpreview_147e7095
+    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| src_features_landing_new_chaoscollage_tsx_4545b5e6
+    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| src_features_landing_new_dashboardpreview_tsx_d5b6b807
+    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| src_features_landing_new_hero_tsx_ca0ed6c5
+    new_flipshowcase_flipshowcase_024eaab6 -->|imports| src_features_landing_new_hero_tsx_ca0ed6c5
     src_features_landing_new_audiencesection_tsx_45c4dc3f -->|imports| new_animations_fadein_4cb49eb3
     src_features_landing_new_audiencesection_tsx_45c4dc3f -->|imports| src_features_landing_new_animations_tsx_2c38089d
     src_features_landing_new_audiencesection_tsx_45c4dc3f -->|imports| src_features_landing_new_icons_ts_a7d7aee4
@@ -1199,39 +1207,33 @@ flowchart LR
     src_features_landing_new_careerpaths_tsx_d33e100b -->|imports| src_features_landing_new_landingpage_tsx_9e28c81b
     new_careerpaths_careerpaths_ac873c92 -->|imports| src_features_landing_new_landingpage_tsx_9e28c81b
     src_features_landing_new_chaoscollage_tsx_4545b5e6 -->|imports| src_features_landing_new_icons_ts_a7d7aee4
-    src_features_landing_new_chaoscollage_tsx_4545b5e6 -->|imports| src_features_landing_new_flipshowcase_tsx_df989e29
-    new_chaoscollage_chaoscollage_3c265f38 -->|imports| src_features_landing_new_flipshowcase_tsx_df989e29
     src_features_landing_new_dashboardpreview_tsx_d5b6b807 -->|imports| src_features_landing_new_icons_ts_a7d7aee4
-    src_features_landing_new_dashboardpreview_tsx_d5b6b807 -->|imports| src_features_landing_new_flipshowcase_tsx_df989e29
-    new_dashboardpreview_dashboardpreview_147e7095 -->|imports| src_features_landing_new_flipshowcase_tsx_df989e29
     src_features_landing_new_finalcta_tsx_d59bb040 -->|imports| new_animations_fadein_4cb49eb3
     src_features_landing_new_finalcta_tsx_d59bb040 -->|imports| src_features_landing_new_animations_tsx_2c38089d
     src_features_landing_new_finalcta_tsx_d59bb040 -->|imports| src_features_landing_new_icons_ts_a7d7aee4
     src_features_landing_new_finalcta_tsx_d59bb040 -->|imports| src_features_landing_new_landingpage_tsx_9e28c81b
     new_finalcta_finalcta_a43ecc3b -->|imports| src_features_landing_new_landingpage_tsx_9e28c81b
-    src_features_landing_new_flipshowcase_tsx_df989e29 -->|imports| src_features_landing_new_hero_tsx_ca0ed6c5
     src_features_landing_new_footer_tsx_093847cb -->|imports| new_animations_fadein_4cb49eb3
     src_features_landing_new_footer_tsx_093847cb -->|imports| src_features_landing_new_animations_tsx_2c38089d
     src_features_landing_new_footer_tsx_093847cb -->|imports| src_features_landing_new_icons_ts_a7d7aee4
-    src_features_landing_new_footer_tsx_093847cb -->|imports| src_features_landing_new_landingpage_tsx_9e28c81b
-    %% Omitted for readability: 43 nodes, 8 edges
+    %% Omitted for readability: 43 nodes, 5 edges
     class new_animations_fadein_4cb49eb3 ui;
     class src_features_landing_new_animations_tsx_2c38089d ui;
     class src_features_landing_new_audiencesection_tsx_45c4dc3f ui;
     class new_audiencesection_audiencesection_fde30600 ui;
     class src_features_landing_new_careerpaths_tsx_d33e100b ui;
     class new_careerpaths_careerpaths_ac873c92 ui;
-    class src_features_landing_new_chaoscollage_tsx_4545b5e6 ui;
     class new_chaoscollage_chaoscollage_3c265f38 ui;
-    class src_features_landing_new_dashboardpreview_tsx_d5b6b807 ui;
+    class src_features_landing_new_chaoscollage_tsx_4545b5e6 ui;
     class new_dashboardpreview_dashboardpreview_147e7095 ui;
+    class src_features_landing_new_dashboardpreview_tsx_d5b6b807 ui;
     class src_features_landing_new_finalcta_tsx_d59bb040 ui;
     class new_finalcta_finalcta_a43ecc3b ui;
     class src_features_landing_new_flipshowcase_tsx_df989e29 ui;
+    class new_flipshowcase_flipshowcase_024eaab6 ui;
     class src_features_landing_new_footer_tsx_093847cb ui;
     class src_features_landing_new_hero_tsx_ca0ed6c5 ui;
     class src_features_landing_new_landingpage_tsx_9e28c81b ui;
-    class src_features_landing_new_pricing_tsx_dc5baf66 ui;
     class src_features_landing_new_icons_ts_a7d7aee4 module;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -1256,158 +1258,14 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>AudienceSection.tsx</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Animations.tsx</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small><br>+1 more</td>
-  <td>Module file in landing/new/AudienceSection.tsx.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>cards</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>cards node in landing/new/AudienceSection.tsx.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>AudienceCardProps</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>AudienceCardProps node in landing/new/AudienceSection.tsx.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>AudienceCard()</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>AudienceCard() node in landing/new/AudienceSection.tsx.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>AudienceSection()</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
-  <td>AudienceSection() node in landing/new/AudienceSection.tsx.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>CareerPaths.tsx</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
-  <td>Module file in landing/new/CareerPaths.tsx.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>paths</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>paths node in landing/new/CareerPaths.tsx.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>PathCard()</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>PathCard() node in landing/new/CareerPaths.tsx.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>CareerPaths()</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
-  <td>CareerPaths() node in landing/new/CareerPaths.tsx.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>ChaosCollage.tsx</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small></td>
-  <td>Module file in landing/new/ChaosCollage.tsx.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>scraps</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>scraps node in landing/new/ChaosCollage.tsx.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>ChaosCollage()</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
-  <td>ChaosCollage() node in landing/new/ChaosCollage.tsx.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>DashboardPreview.tsx</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small></td>
-  <td>Module file in landing/new/DashboardPreview.tsx.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>Ring()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Ring() node in landing/new/DashboardPreview.tsx.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>Float()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Float() node in landing/new/DashboardPreview.tsx.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>DashboardPreview()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
-  <td>DashboardPreview() node in landing/new/DashboardPreview.tsx.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>FinalCTA.tsx</code><br><small style="color:var(--muted)">landing/new/FinalCTA.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>Animations.tsx</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small><br>+1 more</td>
-  <td>Module file in landing/new/FinalCTA.tsx.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>FinalCTA()</code><br><small style="color:var(--muted)">landing/new/FinalCTA.tsx</small></td>
-  <td><span class="tag tag-hook">UI</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
-  <td>FinalCTA() node in landing/new/FinalCTA.tsx.</td>
-</tr>
-<tr>
-  <td>19</td>
   <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
-  <td><code>ChaosCollage()</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small><br><code>ChaosCollage.tsx</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small><br><code>DashboardPreview()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small><br>+1 more</td>
-  <td><code>Hero.tsx</code><br><small style="color:var(--muted)">landing/new/Hero.tsx</small></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ChaosCollage()</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small><br><code>ChaosCollage.tsx</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small><br><code>DashboardPreview()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small><br>+2 more</td>
   <td>Module file in landing/new/FlipShowcase.tsx.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>2</td>
   <td><code>EASE</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
@@ -1415,12 +1273,156 @@ flowchart LR
   <td>EASE node in landing/new/FlipShowcase.tsx.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>3</td>
   <td><code>FlipShowcase()</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
   <td><span class="tag tag-hook">UI</span></td>
   <td>External entry / no inbound edge</td>
   <td><code>Hero.tsx</code><br><small style="color:var(--muted)">landing/new/Hero.tsx</small></td>
   <td>FlipShowcase() node in landing/new/FlipShowcase.tsx.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>AudienceSection.tsx</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Animations.tsx</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small><br>+1 more</td>
+  <td>Module file in landing/new/AudienceSection.tsx.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>cards</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>cards node in landing/new/AudienceSection.tsx.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>AudienceCardProps</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AudienceCardProps node in landing/new/AudienceSection.tsx.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>AudienceCard()</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>AudienceCard() node in landing/new/AudienceSection.tsx.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>AudienceSection()</code><br><small style="color:var(--muted)">landing/new/AudienceSection.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
+  <td>AudienceSection() node in landing/new/AudienceSection.tsx.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>CareerPaths.tsx</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
+  <td>Module file in landing/new/CareerPaths.tsx.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>paths</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>paths node in landing/new/CareerPaths.tsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>PathCard()</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PathCard() node in landing/new/CareerPaths.tsx.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>CareerPaths()</code><br><small style="color:var(--muted)">landing/new/CareerPaths.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
+  <td>CareerPaths() node in landing/new/CareerPaths.tsx.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>ChaosCollage.tsx</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
+  <td><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small></td>
+  <td>Module file in landing/new/ChaosCollage.tsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>scraps</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scraps node in landing/new/ChaosCollage.tsx.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>ChaosCollage()</code><br><small style="color:var(--muted)">landing/new/ChaosCollage.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>ChaosCollage() node in landing/new/ChaosCollage.tsx.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>DashboardPreview.tsx</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
+  <td><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small></td>
+  <td>Module file in landing/new/DashboardPreview.tsx.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Ring()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Ring() node in landing/new/DashboardPreview.tsx.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Float()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Float() node in landing/new/DashboardPreview.tsx.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>DashboardPreview()</code><br><small style="color:var(--muted)">landing/new/DashboardPreview.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>FlipShowcase.tsx</code><br><small style="color:var(--muted)">landing/new/FlipShowcase.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>DashboardPreview() node in landing/new/DashboardPreview.tsx.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>FinalCTA.tsx</code><br><small style="color:var(--muted)">landing/new/FinalCTA.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>Animations.tsx</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>FadeIn()</code><br><small style="color:var(--muted)">landing/new/Animations.tsx</small><br><code>icons.ts</code><br><small style="color:var(--muted)">landing/new/icons.ts</small><br>+1 more</td>
+  <td>Module file in landing/new/FinalCTA.tsx.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>FinalCTA()</code><br><small style="color:var(--muted)">landing/new/FinalCTA.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>LandingPage.tsx</code><br><small style="color:var(--muted)">landing/new/LandingPage.tsx</small></td>
+  <td>FinalCTA() node in landing/new/FinalCTA.tsx.</td>
 </tr>
 <tr>
   <td>22</td>
@@ -5030,7 +5032,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>prospect — Architecture Documentation</p>
-  <p>Generated: 2026-07-06 14:37 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-07-06 15:44 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

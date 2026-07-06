@@ -4,168 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "label": "AudienceSection.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/AudienceSection.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_audiencesection_tsx",
-      "community": 19,
-      "norm_label": "audiencesection.tsx"
-    },
-    {
-      "label": "cards",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/AudienceSection.tsx",
-      "source_location": "L4",
-      "id": "new_audiencesection_cards",
-      "community": 19,
-      "norm_label": "cards"
-    },
-    {
-      "label": "AudienceCardProps",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/AudienceSection.tsx",
-      "source_location": "L34",
-      "id": "new_audiencesection_audiencecardprops",
-      "community": 19,
-      "norm_label": "audiencecardprops"
-    },
-    {
-      "label": "AudienceCard()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/AudienceSection.tsx",
-      "source_location": "L40",
-      "id": "new_audiencesection_audiencecard",
-      "community": 19,
-      "norm_label": "audiencecard()"
-    },
-    {
-      "label": "AudienceSection()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/AudienceSection.tsx",
-      "source_location": "L87",
-      "id": "new_audiencesection_audiencesection",
-      "community": 19,
-      "norm_label": "audiencesection()"
-    },
-    {
-      "label": "CareerPaths.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/CareerPaths.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_careerpaths_tsx",
-      "community": 19,
-      "norm_label": "careerpaths.tsx"
-    },
-    {
-      "label": "paths",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/CareerPaths.tsx",
-      "source_location": "L3",
-      "id": "new_careerpaths_paths",
-      "community": 19,
-      "norm_label": "paths"
-    },
-    {
-      "label": "PathCard()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/CareerPaths.tsx",
-      "source_location": "L26",
-      "id": "new_careerpaths_pathcard",
-      "community": 19,
-      "norm_label": "pathcard()"
-    },
-    {
-      "label": "CareerPaths()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/CareerPaths.tsx",
-      "source_location": "L52",
-      "id": "new_careerpaths_careerpaths",
-      "community": 19,
-      "norm_label": "careerpaths()"
-    },
-    {
-      "label": "ChaosCollage.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/ChaosCollage.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_chaoscollage_tsx",
-      "community": 19,
-      "norm_label": "chaoscollage.tsx"
-    },
-    {
-      "label": "scraps",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/ChaosCollage.tsx",
-      "source_location": "L12",
-      "id": "new_chaoscollage_scraps",
-      "community": 19,
-      "norm_label": "scraps"
-    },
-    {
-      "label": "ChaosCollage()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/ChaosCollage.tsx",
-      "source_location": "L204",
-      "id": "new_chaoscollage_chaoscollage",
-      "community": 19,
-      "norm_label": "chaoscollage()"
-    },
-    {
-      "label": "DashboardPreview.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/DashboardPreview.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_dashboardpreview_tsx",
-      "community": 19,
-      "norm_label": "dashboardpreview.tsx"
-    },
-    {
-      "label": "Ring()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/DashboardPreview.tsx",
-      "source_location": "L17",
-      "id": "new_dashboardpreview_ring",
-      "community": 19,
-      "norm_label": "ring()"
-    },
-    {
-      "label": "Float()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/DashboardPreview.tsx",
-      "source_location": "L38",
-      "id": "new_dashboardpreview_float",
-      "community": 19,
-      "norm_label": "float()"
-    },
-    {
-      "label": "DashboardPreview()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/DashboardPreview.tsx",
-      "source_location": "L53",
-      "id": "new_dashboardpreview_dashboardpreview",
-      "community": 19,
-      "norm_label": "dashboardpreview()"
-    },
-    {
-      "label": "FinalCTA.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/FinalCTA.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_finalcta_tsx",
-      "community": 19,
-      "norm_label": "finalcta.tsx"
-    },
-    {
-      "label": "FinalCTA()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/FinalCTA.tsx",
-      "source_location": "L4",
-      "id": "new_finalcta_finalcta",
-      "community": 19,
-      "norm_label": "finalcta()"
-    },
-    {
       "label": "FlipShowcase.tsx",
       "file_type": "code",
       "source_file": "src/features/landing/new/FlipShowcase.tsx",
@@ -191,321 +29,6 @@
       "id": "new_flipshowcase_flipshowcase",
       "community": 19,
       "norm_label": "flipshowcase()"
-    },
-    {
-      "label": "Footer.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Footer.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_footer_tsx",
-      "community": 19,
-      "norm_label": "footer.tsx"
-    },
-    {
-      "label": "Footer()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Footer.tsx",
-      "source_location": "L4",
-      "id": "new_footer_footer",
-      "community": 19,
-      "norm_label": "footer()"
-    },
-    {
-      "label": "Hero.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Hero.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_hero_tsx",
-      "community": 19,
-      "norm_label": "hero.tsx"
-    },
-    {
-      "label": "Hero()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Hero.tsx",
-      "source_location": "L4",
-      "id": "new_hero_hero",
-      "community": 19,
-      "norm_label": "hero()"
-    },
-    {
-      "label": "HowItWorks.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/HowItWorks.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_howitworks_tsx",
-      "community": 19,
-      "norm_label": "howitworks.tsx"
-    },
-    {
-      "label": "steps",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/HowItWorks.tsx",
-      "source_location": "L3",
-      "id": "new_howitworks_steps",
-      "community": 19,
-      "norm_label": "steps"
-    },
-    {
-      "label": "HowItWorks()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/HowItWorks.tsx",
-      "source_location": "L21",
-      "id": "new_howitworks_howitworks",
-      "community": 19,
-      "norm_label": "howitworks()"
-    },
-    {
-      "label": "LandingPage.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/LandingPage.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_landingpage_tsx",
-      "community": 19,
-      "norm_label": "landingpage.tsx"
-    },
-    {
-      "label": "Page",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/LandingPage.tsx",
-      "source_location": "L16",
-      "id": "new_landingpage_page",
-      "community": 19,
-      "norm_label": "page"
-    },
-    {
-      "label": "LandingPageProps",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/LandingPage.tsx",
-      "source_location": "L18",
-      "id": "new_landingpage_landingpageprops",
-      "community": 19,
-      "norm_label": "landingpageprops"
-    },
-    {
-      "label": "LandingPage()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/LandingPage.tsx",
-      "source_location": "L32",
-      "id": "new_landingpage_landingpage",
-      "community": 19,
-      "norm_label": "landingpage()"
-    },
-    {
-      "label": "Navbar.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Navbar.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_navbar_tsx",
-      "community": 19,
-      "norm_label": "navbar.tsx"
-    },
-    {
-      "label": "LINKS",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Navbar.tsx",
-      "source_location": "L4",
-      "id": "new_navbar_links",
-      "community": 19,
-      "norm_label": "links"
-    },
-    {
-      "label": "Navbar()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Navbar.tsx",
-      "source_location": "L10",
-      "id": "new_navbar_navbar",
-      "community": 19,
-      "norm_label": "navbar()"
-    },
-    {
-      "label": "Pricing.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Pricing.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_pricing_tsx",
-      "community": 19,
-      "norm_label": "pricing.tsx"
-    },
-    {
-      "label": "features",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Pricing.tsx",
-      "source_location": "L4",
-      "id": "new_pricing_features",
-      "community": 19,
-      "norm_label": "features"
-    },
-    {
-      "label": "Pricing()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/Pricing.tsx",
-      "source_location": "L13",
-      "id": "new_pricing_pricing",
-      "community": 19,
-      "norm_label": "pricing()"
-    },
-    {
-      "label": "QuoteSection.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/QuoteSection.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_quotesection_tsx",
-      "community": 19,
-      "norm_label": "quotesection.tsx"
-    },
-    {
-      "label": "QuoteSection()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/QuoteSection.tsx",
-      "source_location": "L4",
-      "id": "new_quotesection_quotesection",
-      "community": 19,
-      "norm_label": "quotesection()"
-    },
-    {
-      "label": "StatsBar.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StatsBar.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_statsbar_tsx",
-      "community": 19,
-      "norm_label": "statsbar.tsx"
-    },
-    {
-      "label": "stats",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StatsBar.tsx",
-      "source_location": "L3",
-      "id": "new_statsbar_stats",
-      "community": 19,
-      "norm_label": "stats"
-    },
-    {
-      "label": "StatsBar()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StatsBar.tsx",
-      "source_location": "L11",
-      "id": "new_statsbar_statsbar",
-      "community": 19,
-      "norm_label": "statsbar()"
-    },
-    {
-      "label": "StudentDeepDive.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_studentdeepdive_tsx",
-      "community": 19,
-      "norm_label": "studentdeepdive.tsx"
-    },
-    {
-      "label": "features",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
-      "source_location": "L4",
-      "id": "new_studentdeepdive_features",
-      "community": 19,
-      "norm_label": "features"
-    },
-    {
-      "label": "pills",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
-      "source_location": "L22",
-      "id": "new_studentdeepdive_pills",
-      "community": 19,
-      "norm_label": "pills"
-    },
-    {
-      "label": "StudentDeepDive()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
-      "source_location": "L24",
-      "id": "new_studentdeepdive_studentdeepdive",
-      "community": 19,
-      "norm_label": "studentdeepdive()"
-    },
-    {
-      "label": "StudyLibrary.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudyLibrary.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_studylibrary_tsx",
-      "community": 19,
-      "norm_label": "studylibrary.tsx"
-    },
-    {
-      "label": "subjects",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudyLibrary.tsx",
-      "source_location": "L4",
-      "id": "new_studylibrary_subjects",
-      "community": 19,
-      "norm_label": "subjects"
-    },
-    {
-      "label": "SubjectCard()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudyLibrary.tsx",
-      "source_location": "L15",
-      "id": "new_studylibrary_subjectcard",
-      "community": 19,
-      "norm_label": "subjectcard()"
-    },
-    {
-      "label": "StudyLibrary()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/StudyLibrary.tsx",
-      "source_location": "L35",
-      "id": "new_studylibrary_studylibrary",
-      "community": 19,
-      "norm_label": "studylibrary()"
-    },
-    {
-      "label": "TeacherTools.tsx",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/TeacherTools.tsx",
-      "source_location": "L1",
-      "id": "src_features_landing_new_teachertools_tsx",
-      "community": 19,
-      "norm_label": "teachertools.tsx"
-    },
-    {
-      "label": "features",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/TeacherTools.tsx",
-      "source_location": "L4",
-      "id": "new_teachertools_features",
-      "community": 19,
-      "norm_label": "features"
-    },
-    {
-      "label": "FeatureCard()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/TeacherTools.tsx",
-      "source_location": "L11",
-      "id": "new_teachertools_featurecard",
-      "community": 19,
-      "norm_label": "featurecard()"
-    },
-    {
-      "label": "TeacherTools()",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/TeacherTools.tsx",
-      "source_location": "L28",
-      "id": "new_teachertools_teachertools",
-      "community": 19,
-      "norm_label": "teachertools()"
-    },
-    {
-      "label": "icons.ts",
-      "file_type": "code",
-      "source_file": "src/features/landing/new/icons.ts",
-      "source_location": "L1",
-      "id": "src_features_landing_new_icons_ts",
-      "community": 19,
-      "norm_label": "icons.ts"
     },
     {
       "label": "AdminLogin.tsx",
@@ -562,42 +85,6 @@
       "norm_label": "teacherlogin()"
     },
     {
-      "label": "AdminDashboard.tsx",
-      "file_type": "code",
-      "source_file": "src/pages/portal/AdminDashboard.tsx",
-      "source_location": "L1",
-      "id": "src_pages_portal_admindashboard_tsx",
-      "community": 14,
-      "norm_label": "admindashboard.tsx"
-    },
-    {
-      "label": "ActivePage",
-      "file_type": "code",
-      "source_file": "src/pages/portal/AdminDashboard.tsx",
-      "source_location": "L9",
-      "id": "portal_admindashboard_activepage",
-      "community": 14,
-      "norm_label": "activepage"
-    },
-    {
-      "label": "AdminDashboardProps",
-      "file_type": "code",
-      "source_file": "src/pages/portal/AdminDashboard.tsx",
-      "source_location": "L11",
-      "id": "portal_admindashboard_admindashboardprops",
-      "community": 14,
-      "norm_label": "admindashboardprops"
-    },
-    {
-      "label": "AdminDashboard()",
-      "file_type": "code",
-      "source_file": "src/pages/portal/AdminDashboard.tsx",
-      "source_location": "L15",
-      "id": "portal_admindashboard_admindashboard",
-      "community": 14,
-      "norm_label": "admindashboard()"
-    },
-    {
       "label": "PortalEntry.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalEntry.tsx",
@@ -637,235 +124,748 @@
       "label": "PortalEntry()",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalEntry.tsx",
-      "source_location": "L55",
+      "source_location": "L56",
       "id": "portal_portalentry_portalentry",
       "community": 96,
       "norm_label": "portalentry()"
+    },
+    {
+      "label": "AudienceSection.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/AudienceSection.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "audiencesection.tsx",
+      "id": "src_features_landing_new_audiencesection_tsx"
+    },
+    {
+      "label": "cards",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/AudienceSection.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "cards",
+      "id": "new_audiencesection_cards"
+    },
+    {
+      "label": "AudienceCardProps",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/AudienceSection.tsx",
+      "source_location": "L34",
+      "community": 19,
+      "norm_label": "audiencecardprops",
+      "id": "new_audiencesection_audiencecardprops"
+    },
+    {
+      "label": "AudienceCard()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/AudienceSection.tsx",
+      "source_location": "L40",
+      "community": 19,
+      "norm_label": "audiencecard()",
+      "id": "new_audiencesection_audiencecard"
+    },
+    {
+      "label": "AudienceSection()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/AudienceSection.tsx",
+      "source_location": "L87",
+      "community": 19,
+      "norm_label": "audiencesection()",
+      "id": "new_audiencesection_audiencesection"
+    },
+    {
+      "label": "CareerPaths.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/CareerPaths.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "careerpaths.tsx",
+      "id": "src_features_landing_new_careerpaths_tsx"
+    },
+    {
+      "label": "paths",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/CareerPaths.tsx",
+      "source_location": "L3",
+      "community": 19,
+      "norm_label": "paths",
+      "id": "new_careerpaths_paths"
+    },
+    {
+      "label": "PathCard()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/CareerPaths.tsx",
+      "source_location": "L26",
+      "community": 19,
+      "norm_label": "pathcard()",
+      "id": "new_careerpaths_pathcard"
+    },
+    {
+      "label": "CareerPaths()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/CareerPaths.tsx",
+      "source_location": "L52",
+      "community": 19,
+      "norm_label": "careerpaths()",
+      "id": "new_careerpaths_careerpaths"
+    },
+    {
+      "label": "ChaosCollage.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/ChaosCollage.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "chaoscollage.tsx",
+      "id": "src_features_landing_new_chaoscollage_tsx"
+    },
+    {
+      "label": "scraps",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/ChaosCollage.tsx",
+      "source_location": "L12",
+      "community": 19,
+      "norm_label": "scraps",
+      "id": "new_chaoscollage_scraps"
+    },
+    {
+      "label": "ChaosCollage()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/ChaosCollage.tsx",
+      "source_location": "L204",
+      "community": 19,
+      "norm_label": "chaoscollage()",
+      "id": "new_chaoscollage_chaoscollage"
+    },
+    {
+      "label": "DashboardPreview.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/DashboardPreview.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "dashboardpreview.tsx",
+      "id": "src_features_landing_new_dashboardpreview_tsx"
+    },
+    {
+      "label": "Ring()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/DashboardPreview.tsx",
+      "source_location": "L17",
+      "community": 19,
+      "norm_label": "ring()",
+      "id": "new_dashboardpreview_ring"
+    },
+    {
+      "label": "Float()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/DashboardPreview.tsx",
+      "source_location": "L38",
+      "community": 19,
+      "norm_label": "float()",
+      "id": "new_dashboardpreview_float"
+    },
+    {
+      "label": "DashboardPreview()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/DashboardPreview.tsx",
+      "source_location": "L53",
+      "community": 19,
+      "norm_label": "dashboardpreview()",
+      "id": "new_dashboardpreview_dashboardpreview"
+    },
+    {
+      "label": "FinalCTA.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/FinalCTA.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "finalcta.tsx",
+      "id": "src_features_landing_new_finalcta_tsx"
+    },
+    {
+      "label": "FinalCTA()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/FinalCTA.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "finalcta()",
+      "id": "new_finalcta_finalcta"
+    },
+    {
+      "label": "Footer.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Footer.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "footer.tsx",
+      "id": "src_features_landing_new_footer_tsx"
+    },
+    {
+      "label": "Footer()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Footer.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "footer()",
+      "id": "new_footer_footer"
+    },
+    {
+      "label": "Hero.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Hero.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "hero.tsx",
+      "id": "src_features_landing_new_hero_tsx"
+    },
+    {
+      "label": "Hero()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Hero.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "hero()",
+      "id": "new_hero_hero"
+    },
+    {
+      "label": "HowItWorks.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/HowItWorks.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "howitworks.tsx",
+      "id": "src_features_landing_new_howitworks_tsx"
+    },
+    {
+      "label": "steps",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/HowItWorks.tsx",
+      "source_location": "L3",
+      "community": 19,
+      "norm_label": "steps",
+      "id": "new_howitworks_steps"
+    },
+    {
+      "label": "HowItWorks()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/HowItWorks.tsx",
+      "source_location": "L21",
+      "community": 19,
+      "norm_label": "howitworks()",
+      "id": "new_howitworks_howitworks"
+    },
+    {
+      "label": "LandingPage.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/LandingPage.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "landingpage.tsx",
+      "id": "src_features_landing_new_landingpage_tsx"
+    },
+    {
+      "label": "Page",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/LandingPage.tsx",
+      "source_location": "L16",
+      "community": 19,
+      "norm_label": "page",
+      "id": "new_landingpage_page"
+    },
+    {
+      "label": "LandingPageProps",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/LandingPage.tsx",
+      "source_location": "L18",
+      "community": 19,
+      "norm_label": "landingpageprops",
+      "id": "new_landingpage_landingpageprops"
+    },
+    {
+      "label": "LandingPage()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/LandingPage.tsx",
+      "source_location": "L32",
+      "community": 19,
+      "norm_label": "landingpage()",
+      "id": "new_landingpage_landingpage"
+    },
+    {
+      "label": "Navbar.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Navbar.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "navbar.tsx",
+      "id": "src_features_landing_new_navbar_tsx"
+    },
+    {
+      "label": "LINKS",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Navbar.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "links",
+      "id": "new_navbar_links"
+    },
+    {
+      "label": "Navbar()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Navbar.tsx",
+      "source_location": "L10",
+      "community": 19,
+      "norm_label": "navbar()",
+      "id": "new_navbar_navbar"
+    },
+    {
+      "label": "Pricing.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Pricing.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "pricing.tsx",
+      "id": "src_features_landing_new_pricing_tsx"
+    },
+    {
+      "label": "features",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Pricing.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "features",
+      "id": "new_pricing_features"
+    },
+    {
+      "label": "Pricing()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/Pricing.tsx",
+      "source_location": "L13",
+      "community": 19,
+      "norm_label": "pricing()",
+      "id": "new_pricing_pricing"
+    },
+    {
+      "label": "QuoteSection.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/QuoteSection.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "quotesection.tsx",
+      "id": "src_features_landing_new_quotesection_tsx"
+    },
+    {
+      "label": "QuoteSection()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/QuoteSection.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "quotesection()",
+      "id": "new_quotesection_quotesection"
+    },
+    {
+      "label": "StatsBar.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StatsBar.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "statsbar.tsx",
+      "id": "src_features_landing_new_statsbar_tsx"
+    },
+    {
+      "label": "stats",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StatsBar.tsx",
+      "source_location": "L3",
+      "community": 19,
+      "norm_label": "stats",
+      "id": "new_statsbar_stats"
+    },
+    {
+      "label": "StatsBar()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StatsBar.tsx",
+      "source_location": "L11",
+      "community": 19,
+      "norm_label": "statsbar()",
+      "id": "new_statsbar_statsbar"
+    },
+    {
+      "label": "StudentDeepDive.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "studentdeepdive.tsx",
+      "id": "src_features_landing_new_studentdeepdive_tsx"
+    },
+    {
+      "label": "features",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "features",
+      "id": "new_studentdeepdive_features"
+    },
+    {
+      "label": "pills",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
+      "source_location": "L22",
+      "community": 19,
+      "norm_label": "pills",
+      "id": "new_studentdeepdive_pills"
+    },
+    {
+      "label": "StudentDeepDive()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudentDeepDive.tsx",
+      "source_location": "L24",
+      "community": 19,
+      "norm_label": "studentdeepdive()",
+      "id": "new_studentdeepdive_studentdeepdive"
+    },
+    {
+      "label": "StudyLibrary.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudyLibrary.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "studylibrary.tsx",
+      "id": "src_features_landing_new_studylibrary_tsx"
+    },
+    {
+      "label": "subjects",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudyLibrary.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "subjects",
+      "id": "new_studylibrary_subjects"
+    },
+    {
+      "label": "SubjectCard()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudyLibrary.tsx",
+      "source_location": "L15",
+      "community": 19,
+      "norm_label": "subjectcard()",
+      "id": "new_studylibrary_subjectcard"
+    },
+    {
+      "label": "StudyLibrary()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/StudyLibrary.tsx",
+      "source_location": "L35",
+      "community": 19,
+      "norm_label": "studylibrary()",
+      "id": "new_studylibrary_studylibrary"
+    },
+    {
+      "label": "TeacherTools.tsx",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/TeacherTools.tsx",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "teachertools.tsx",
+      "id": "src_features_landing_new_teachertools_tsx"
+    },
+    {
+      "label": "features",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/TeacherTools.tsx",
+      "source_location": "L4",
+      "community": 19,
+      "norm_label": "features",
+      "id": "new_teachertools_features"
+    },
+    {
+      "label": "FeatureCard()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/TeacherTools.tsx",
+      "source_location": "L11",
+      "community": 19,
+      "norm_label": "featurecard()",
+      "id": "new_teachertools_featurecard"
+    },
+    {
+      "label": "TeacherTools()",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/TeacherTools.tsx",
+      "source_location": "L28",
+      "community": 19,
+      "norm_label": "teachertools()",
+      "id": "new_teachertools_teachertools"
+    },
+    {
+      "label": "icons.ts",
+      "file_type": "code",
+      "source_file": "src/features/landing/new/icons.ts",
+      "source_location": "L1",
+      "community": 19,
+      "norm_label": "icons.ts",
+      "id": "src_features_landing_new_icons_ts"
+    },
+    {
+      "label": "AdminDashboard.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/portal/AdminDashboard.tsx",
+      "source_location": "L1",
+      "community": 14,
+      "norm_label": "admindashboard.tsx",
+      "id": "src_pages_portal_admindashboard_tsx"
+    },
+    {
+      "label": "ActivePage",
+      "file_type": "code",
+      "source_file": "src/pages/portal/AdminDashboard.tsx",
+      "source_location": "L9",
+      "community": 14,
+      "norm_label": "activepage",
+      "id": "portal_admindashboard_activepage"
+    },
+    {
+      "label": "AdminDashboardProps",
+      "file_type": "code",
+      "source_file": "src/pages/portal/AdminDashboard.tsx",
+      "source_location": "L11",
+      "community": 14,
+      "norm_label": "admindashboardprops",
+      "id": "portal_admindashboard_admindashboardprops"
+    },
+    {
+      "label": "AdminDashboard()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/AdminDashboard.tsx",
+      "source_location": "L15",
+      "community": 14,
+      "norm_label": "admindashboard()",
+      "id": "portal_admindashboard_admindashboard"
     },
     {
       "label": "PortalSidePanel.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L1",
-      "id": "src_pages_portal_portalsidepanel_tsx",
       "community": 137,
-      "norm_label": "portalsidepanel.tsx"
+      "norm_label": "portalsidepanel.tsx",
+      "id": "src_pages_portal_portalsidepanel_tsx"
     },
     {
       "label": "Props",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L3",
-      "id": "portal_portalsidepanel_props",
       "community": 137,
-      "norm_label": "props"
+      "norm_label": "props",
+      "id": "portal_portalsidepanel_props"
     },
     {
       "label": "LaptopMockup()",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L11",
-      "id": "portal_portalsidepanel_laptopmockup",
       "community": 137,
-      "norm_label": "laptopmockup()"
+      "norm_label": "laptopmockup()",
+      "id": "portal_portalsidepanel_laptopmockup"
     },
     {
       "label": "DashboardScreen()",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L62",
-      "id": "portal_portalsidepanel_dashboardscreen",
       "community": 137,
-      "norm_label": "dashboardscreen()"
+      "norm_label": "dashboardscreen()",
+      "id": "portal_portalsidepanel_dashboardscreen"
     },
     {
       "label": "PortalSidePanel()",
       "file_type": "code",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L204",
-      "id": "portal_portalsidepanel_portalsidepanel",
       "community": 137,
-      "norm_label": "portalsidepanel()"
+      "norm_label": "portalsidepanel()",
+      "id": "portal_portalsidepanel_portalsidepanel"
     },
     {
       "label": "StudentDashboard.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L1",
-      "id": "src_pages_portal_studentdashboard_tsx",
       "community": 68,
-      "norm_label": "studentdashboard.tsx"
+      "norm_label": "studentdashboard.tsx",
+      "id": "src_pages_portal_studentdashboard_tsx"
     },
     {
       "label": "LibraryPage",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L14",
-      "id": "portal_studentdashboard_librarypage",
       "community": 68,
-      "norm_label": "librarypage"
+      "norm_label": "librarypage",
+      "id": "portal_studentdashboard_librarypage"
     },
     {
       "label": "MyFuturePage",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L15",
-      "id": "portal_studentdashboard_myfuturepage",
       "community": 68,
-      "norm_label": "myfuturepage"
+      "norm_label": "myfuturepage",
+      "id": "portal_studentdashboard_myfuturepage"
     },
     {
       "label": "ActivePage",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L17",
-      "id": "portal_studentdashboard_activepage",
       "community": 68,
-      "norm_label": "activepage"
+      "norm_label": "activepage",
+      "id": "portal_studentdashboard_activepage"
     },
     {
       "label": "StudentDashboardProps",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L19",
-      "id": "portal_studentdashboard_studentdashboardprops",
       "community": 68,
-      "norm_label": "studentdashboardprops"
+      "norm_label": "studentdashboardprops",
+      "id": "portal_studentdashboard_studentdashboardprops"
     },
     {
       "label": "Spinner()",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L23",
-      "id": "portal_studentdashboard_spinner",
       "community": 68,
-      "norm_label": "spinner()"
+      "norm_label": "spinner()",
+      "id": "portal_studentdashboard_spinner"
     },
     {
       "label": "StudentDashboard()",
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L29",
-      "id": "portal_studentdashboard_studentdashboard",
       "community": 68,
-      "norm_label": "studentdashboard()"
+      "norm_label": "studentdashboard()",
+      "id": "portal_studentdashboard_studentdashboard"
     },
     {
       "label": "TeacherDashboard.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L1",
-      "id": "src_pages_portal_teacherdashboard_tsx",
       "community": 5,
-      "norm_label": "teacherdashboard.tsx"
+      "norm_label": "teacherdashboard.tsx",
+      "id": "src_pages_portal_teacherdashboard_tsx"
     },
     {
       "label": "ActivePage",
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L15",
-      "id": "portal_teacherdashboard_activepage",
       "community": 5,
-      "norm_label": "activepage"
+      "norm_label": "activepage",
+      "id": "portal_teacherdashboard_activepage"
     },
     {
       "label": "TeacherDashboardProps",
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L17",
-      "id": "portal_teacherdashboard_teacherdashboardprops",
       "community": 5,
-      "norm_label": "teacherdashboardprops"
+      "norm_label": "teacherdashboardprops",
+      "id": "portal_teacherdashboard_teacherdashboardprops"
     },
     {
       "label": "TeacherDashboard()",
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L21",
-      "id": "portal_teacherdashboard_teacherdashboard",
       "community": 5,
-      "norm_label": "teacherdashboard()"
+      "norm_label": "teacherdashboard()",
+      "id": "portal_teacherdashboard_teacherdashboard"
     },
     {
       "label": "PastPapersPage.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L1",
-      "id": "src_pages_portal_teacher_pastpaperspage_tsx",
       "community": 11,
-      "norm_label": "pastpaperspage.tsx"
+      "norm_label": "pastpaperspage.tsx",
+      "id": "src_pages_portal_teacher_pastpaperspage_tsx"
     },
     {
       "label": "GRADES",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L13",
-      "id": "teacher_pastpaperspage_grades",
       "community": 11,
-      "norm_label": "grades"
+      "norm_label": "grades",
+      "id": "teacher_pastpaperspage_grades"
     },
     {
       "label": "TERMS",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L14",
-      "id": "teacher_pastpaperspage_terms",
       "community": 11,
-      "norm_label": "terms"
+      "norm_label": "terms",
+      "id": "teacher_pastpaperspage_terms"
     },
     {
       "label": "CURRENT_YEAR",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L15",
-      "id": "teacher_pastpaperspage_current_year",
       "community": 11,
-      "norm_label": "current_year"
+      "norm_label": "current_year",
+      "id": "teacher_pastpaperspage_current_year"
     },
     {
       "label": "YEARS",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L16",
-      "id": "teacher_pastpaperspage_years",
       "community": 11,
-      "norm_label": "years"
+      "norm_label": "years",
+      "id": "teacher_pastpaperspage_years"
     },
     {
       "label": "formatDate()",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L18",
-      "id": "teacher_pastpaperspage_formatdate",
       "community": 11,
-      "norm_label": "formatdate()"
+      "norm_label": "formatdate()",
+      "id": "teacher_pastpaperspage_formatdate"
     },
     {
       "label": "PastPapersPageProps",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L22",
-      "id": "teacher_pastpaperspage_pastpaperspageprops",
       "community": 69,
-      "norm_label": "pastpaperspageprops"
+      "norm_label": "pastpaperspageprops",
+      "id": "teacher_pastpaperspage_pastpaperspageprops"
     },
     {
       "label": "emptyForm",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L24",
-      "id": "teacher_pastpaperspage_emptyform",
       "community": 11,
-      "norm_label": "emptyform"
+      "norm_label": "emptyform",
+      "id": "teacher_pastpaperspage_emptyform"
     },
     {
       "label": "PastPapersPage()",
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L33",
-      "id": "teacher_pastpaperspage_pastpaperspage",
       "community": 11,
-      "norm_label": "pastpaperspage()"
+      "norm_label": "pastpaperspage()",
+      "id": "teacher_pastpaperspage_pastpaperspage"
     },
     {
       "label": "App.tsx",
@@ -16209,6 +16209,228 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "new_chaoscollage_chaoscollage"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "new_dashboardpreview_dashboardpreview"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "new_flipshowcase_ease"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "new_flipshowcase_flipshowcase"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "src_features_landing_new_chaoscollage_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/FlipShowcase.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_flipshowcase_tsx",
+      "target": "src_features_landing_new_dashboardpreview_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/Hero.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_hero_tsx",
+      "target": "src_features_landing_new_flipshowcase_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/features/landing/new/Hero.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_features_landing_new_hero_tsx",
+      "target": "new_flipshowcase_flipshowcase"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/AdminLogin.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_adminlogin_tsx",
+      "target": "auth_adminlogin_adminlogin"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/AdminLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_adminlogin_tsx",
+      "target": "lib_auth_adminlogin"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/AdminLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_adminlogin_tsx",
+      "target": "src_lib_auth_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/StudentLogin.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_studentlogin_tsx",
+      "target": "auth_studentlogin_studentlogin"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/StudentLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_studentlogin_tsx",
+      "target": "lib_auth_studentlogin"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/StudentLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_studentlogin_tsx",
+      "target": "src_lib_auth_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/TeacherLogin.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_teacherlogin_tsx",
+      "target": "auth_teacherlogin_teacherlogin"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/TeacherLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_teacherlogin_tsx",
+      "target": "lib_auth_teacherlogin"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/auth/TeacherLogin.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_auth_teacherlogin_tsx",
+      "target": "src_lib_auth_ts"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PortalEntry.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_portalentry_tsx",
+      "target": "portal_portalentry_page"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PortalEntry.tsx",
+      "source_location": "L39",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_portalentry_tsx",
+      "target": "portal_portalentry_portalentry"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PortalEntry.tsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_portalentry_tsx",
+      "target": "portal_portalentry_rolebutton"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PortalEntry.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_portalentry_tsx",
+      "target": "portal_portalentry_roles"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/features/landing/new/AudienceSection.tsx",
       "source_location": "L1",
       "weight": 1.0,
@@ -16222,9 +16444,9 @@
       "source_file": "src/features/landing/new/AudienceSection.tsx",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_audiencesection_tsx",
-      "target": "new_audiencesection_audiencecard",
-      "confidence_score": 1.0
+      "target": "new_audiencesection_audiencecard"
     },
     {
       "relation": "contains",
@@ -16232,9 +16454,9 @@
       "source_file": "src/features/landing/new/AudienceSection.tsx",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_audiencesection_tsx",
-      "target": "new_audiencesection_audiencecardprops",
-      "confidence_score": 1.0
+      "target": "new_audiencesection_audiencecardprops"
     },
     {
       "relation": "contains",
@@ -16307,9 +16529,9 @@
       "source_file": "src/features/landing/new/CareerPaths.tsx",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_careerpaths_tsx",
-      "target": "new_animations_fadein",
-      "confidence_score": 1.0
+      "target": "new_animations_fadein"
     },
     {
       "relation": "contains",
@@ -16317,9 +16539,9 @@
       "source_file": "src/features/landing/new/CareerPaths.tsx",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_careerpaths_tsx",
-      "target": "new_careerpaths_careerpaths",
-      "confidence_score": 1.0
+      "target": "new_careerpaths_careerpaths"
     },
     {
       "relation": "contains",
@@ -16327,9 +16549,9 @@
       "source_file": "src/features/landing/new/CareerPaths.tsx",
       "source_location": "L26",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_careerpaths_tsx",
-      "target": "new_careerpaths_pathcard",
-      "confidence_score": 1.0
+      "target": "new_careerpaths_pathcard"
     },
     {
       "relation": "contains",
@@ -16337,9 +16559,9 @@
       "source_file": "src/features/landing/new/CareerPaths.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_careerpaths_tsx",
-      "target": "new_careerpaths_paths",
-      "confidence_score": 1.0
+      "target": "new_careerpaths_paths"
     },
     {
       "relation": "imports_from",
@@ -16348,9 +16570,9 @@
       "source_file": "src/features/landing/new/LandingPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_landingpage_tsx",
-      "target": "src_features_landing_new_careerpaths_tsx",
-      "confidence_score": 1.0
+      "target": "src_features_landing_new_careerpaths_tsx"
     },
     {
       "relation": "imports",
@@ -16359,9 +16581,9 @@
       "source_file": "src/features/landing/new/LandingPage.tsx",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_landingpage_tsx",
-      "target": "new_careerpaths_careerpaths",
-      "confidence_score": 1.0
+      "target": "new_careerpaths_careerpaths"
     },
     {
       "relation": "contains",
@@ -16369,9 +16591,9 @@
       "source_file": "src/features/landing/new/ChaosCollage.tsx",
       "source_location": "L204",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_chaoscollage_tsx",
-      "target": "new_chaoscollage_chaoscollage",
-      "confidence_score": 1.0
+      "target": "new_chaoscollage_chaoscollage"
     },
     {
       "relation": "contains",
@@ -16379,9 +16601,9 @@
       "source_file": "src/features/landing/new/ChaosCollage.tsx",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_chaoscollage_tsx",
-      "target": "new_chaoscollage_scraps",
-      "confidence_score": 1.0
+      "target": "new_chaoscollage_scraps"
     },
     {
       "relation": "imports_from",
@@ -16390,31 +16612,9 @@
       "source_file": "src/features/landing/new/ChaosCollage.tsx",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_chaoscollage_tsx",
-      "target": "src_features_landing_new_icons_ts",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "src_features_landing_new_chaoscollage_tsx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "new_chaoscollage_chaoscollage",
-      "confidence_score": 1.0
+      "target": "src_features_landing_new_icons_ts"
     },
     {
       "relation": "contains",
@@ -16422,9 +16622,9 @@
       "source_file": "src/features/landing/new/DashboardPreview.tsx",
       "source_location": "L53",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_dashboardpreview_tsx",
-      "target": "new_dashboardpreview_dashboardpreview",
-      "confidence_score": 1.0
+      "target": "new_dashboardpreview_dashboardpreview"
     },
     {
       "relation": "contains",
@@ -16432,9 +16632,9 @@
       "source_file": "src/features/landing/new/DashboardPreview.tsx",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_dashboardpreview_tsx",
-      "target": "new_dashboardpreview_float",
-      "confidence_score": 1.0
+      "target": "new_dashboardpreview_float"
     },
     {
       "relation": "contains",
@@ -16442,9 +16642,9 @@
       "source_file": "src/features/landing/new/DashboardPreview.tsx",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_dashboardpreview_tsx",
-      "target": "new_dashboardpreview_ring",
-      "confidence_score": 1.0
+      "target": "new_dashboardpreview_ring"
     },
     {
       "relation": "imports_from",
@@ -16453,31 +16653,9 @@
       "source_file": "src/features/landing/new/DashboardPreview.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_dashboardpreview_tsx",
-      "target": "src_features_landing_new_icons_ts",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "src_features_landing_new_dashboardpreview_tsx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "new_dashboardpreview_dashboardpreview",
-      "confidence_score": 1.0
+      "target": "src_features_landing_new_icons_ts"
     },
     {
       "relation": "imports",
@@ -16543,48 +16721,6 @@
       "confidence_score": 1.0,
       "source": "src_features_landing_new_landingpage_tsx",
       "target": "new_finalcta_finalcta"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "new_flipshowcase_ease",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/FlipShowcase.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "source": "src_features_landing_new_flipshowcase_tsx",
-      "target": "new_flipshowcase_flipshowcase",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/Hero.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "src_features_landing_new_hero_tsx",
-      "target": "src_features_landing_new_flipshowcase_tsx",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/features/landing/new/Hero.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "src_features_landing_new_hero_tsx",
-      "target": "new_flipshowcase_flipshowcase",
-      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -16723,9 +16859,9 @@
       "source_file": "src/features/landing/new/HowItWorks.tsx",
       "source_location": "L1",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_howitworks_tsx",
-      "target": "new_animations_fadein",
-      "confidence_score": 1.0
+      "target": "new_animations_fadein"
     },
     {
       "relation": "contains",
@@ -16733,9 +16869,9 @@
       "source_file": "src/features/landing/new/HowItWorks.tsx",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_howitworks_tsx",
-      "target": "new_howitworks_howitworks",
-      "confidence_score": 1.0
+      "target": "new_howitworks_howitworks"
     },
     {
       "relation": "contains",
@@ -16743,9 +16879,9 @@
       "source_file": "src/features/landing/new/HowItWorks.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_howitworks_tsx",
-      "target": "new_howitworks_steps",
-      "confidence_score": 1.0
+      "target": "new_howitworks_steps"
     },
     {
       "relation": "imports_from",
@@ -16754,9 +16890,9 @@
       "source_file": "src/features/landing/new/LandingPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_landingpage_tsx",
-      "target": "src_features_landing_new_howitworks_tsx",
-      "confidence_score": 1.0
+      "target": "src_features_landing_new_howitworks_tsx"
     },
     {
       "relation": "imports",
@@ -16765,9 +16901,9 @@
       "source_file": "src/features/landing/new/LandingPage.tsx",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_landingpage_tsx",
-      "target": "new_howitworks_howitworks",
-      "confidence_score": 1.0
+      "target": "new_howitworks_howitworks"
     },
     {
       "relation": "contains",
@@ -16959,9 +17095,9 @@
       "source_file": "src/features/landing/new/Navbar.tsx",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_navbar_tsx",
-      "target": "new_navbar_links",
-      "confidence_score": 1.0
+      "target": "new_navbar_links"
     },
     {
       "relation": "contains",
@@ -16980,9 +17116,9 @@
       "source_file": "src/features/landing/new/Navbar.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_navbar_tsx",
-      "target": "src_features_landing_new_icons_ts",
-      "confidence_score": 1.0
+      "target": "src_features_landing_new_icons_ts"
     },
     {
       "relation": "imports",
@@ -17212,9 +17348,9 @@
       "source_file": "src/features/landing/new/StudyLibrary.tsx",
       "source_location": "L15",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_studylibrary_tsx",
-      "target": "new_studylibrary_subjectcard",
-      "confidence_score": 1.0
+      "target": "new_studylibrary_subjectcard"
     },
     {
       "relation": "contains",
@@ -17265,9 +17401,9 @@
       "source_file": "src/features/landing/new/TeacherTools.tsx",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_features_landing_new_teachertools_tsx",
-      "target": "new_teachertools_featurecard",
-      "confidence_score": 1.0
+      "target": "new_teachertools_featurecard"
     },
     {
       "relation": "contains",
@@ -17310,102 +17446,6 @@
       "confidence_score": 1.0,
       "source": "src_features_landing_new_teachertools_tsx",
       "target": "src_features_landing_new_icons_ts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/AdminLogin.tsx",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_adminlogin_tsx",
-      "target": "auth_adminlogin_adminlogin"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/AdminLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_adminlogin_tsx",
-      "target": "lib_auth_adminlogin"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/AdminLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_adminlogin_tsx",
-      "target": "src_lib_auth_ts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/StudentLogin.tsx",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_studentlogin_tsx",
-      "target": "auth_studentlogin_studentlogin"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/StudentLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_studentlogin_tsx",
-      "target": "lib_auth_studentlogin"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/StudentLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_studentlogin_tsx",
-      "target": "src_lib_auth_ts"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/TeacherLogin.tsx",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_teacherlogin_tsx",
-      "target": "auth_teacherlogin_teacherlogin"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/TeacherLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_teacherlogin_tsx",
-      "target": "lib_auth_teacherlogin"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/auth/TeacherLogin.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_auth_teacherlogin_tsx",
-      "target": "src_lib_auth_ts"
     },
     {
       "relation": "imports",
@@ -17517,52 +17557,12 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PortalEntry.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_portalentry_tsx",
-      "target": "portal_portalentry_page"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PortalEntry.tsx",
-      "source_location": "L39",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_portalentry_tsx",
-      "target": "portal_portalentry_portalentry"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PortalEntry.tsx",
-      "source_location": "L30",
-      "weight": 1.0,
-      "source": "src_pages_portal_portalentry_tsx",
-      "target": "portal_portalentry_rolebutton",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PortalEntry.tsx",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_portalentry_tsx",
-      "target": "portal_portalentry_roles"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L62",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_portalsidepanel_tsx",
-      "target": "portal_portalsidepanel_dashboardscreen",
-      "confidence_score": 1.0
+      "target": "portal_portalsidepanel_dashboardscreen"
     },
     {
       "relation": "contains",
@@ -17570,9 +17570,9 @@
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L11",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_portalsidepanel_tsx",
-      "target": "portal_portalsidepanel_laptopmockup",
-      "confidence_score": 1.0
+      "target": "portal_portalsidepanel_laptopmockup"
     },
     {
       "relation": "contains",
@@ -17580,9 +17580,9 @@
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L204",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_portalsidepanel_tsx",
-      "target": "portal_portalsidepanel_portalsidepanel",
-      "confidence_score": 1.0
+      "target": "portal_portalsidepanel_portalsidepanel"
     },
     {
       "relation": "contains",
@@ -17590,9 +17590,9 @@
       "source_file": "src/pages/portal/PortalSidePanel.tsx",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_portalsidepanel_tsx",
-      "target": "portal_portalsidepanel_props",
-      "confidence_score": 1.0
+      "target": "portal_portalsidepanel_props"
     },
     {
       "relation": "imports",
@@ -48424,5 +48424,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "24b39099b93260e0e3c74e8fc0291c14cc841e4c"
+  "built_at_commit": "cf03b88370235c0326823dc5082f9991e41f34b9"
 }

@@ -1,7 +1,7 @@
 # Graph Report - prospect  (2026-07-06)
 
 ## Corpus Check
-- 243 files · ~1,081,520 words
+- 243 files · ~1,081,716 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `24b39099`
+- Built from commit: `cf03b883`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -605,7 +605,7 @@ Cohesion: 0.70
 Nodes (4): FAIL(), INFO(), PASS(), run()
 
 ## Knowledge Gaps
-- **726 isolated node(s):** `cards`, `AudienceCardProps`, `paths`, `scraps`, `EASE` (+721 more)
+- **726 isolated node(s):** `EASE`, `Page`, `roles`, `cards`, `AudienceCardProps` (+721 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **29 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -613,12 +613,12 @@ Nodes (4): FAIL(), INFO(), PASS(), run()
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `supabaseAdmin` connect `Community 12` to `Community 130`, `Community 131`, `Community 5`, `Community 134`, `Community 8`, `Community 9`, `Community 59`, `Community 11`, `Community 108`, `Community 13`, `Community 45`, `Community 109`, `Community 80`, `Community 16`, `Community 20`, `Community 27`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
+  _High betweenness centrality (0.077) - this node is a cross-community bridge._
 - **Why does `bursaries` connect `Community 136` to `Community 17`, `Community 134`, `Community 49`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+  _High betweenness centrality (0.045) - this node is a cross-community bridge._
 - **Why does `cn()` connect `Community 47` to `Community 16`, `Community 135`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **What connects `cards`, `AudienceCardProps`, `paths` to the rest of the system?**
+- **What connects `EASE`, `Page`, `roles` to the rest of the system?**
   _726 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.03508771929824561 - nodes in this community are weakly interconnected._

@@ -83,7 +83,7 @@ export const StudentDeepDive = ({ onNavigate }: { onNavigate: (p: string) => voi
                 <FadeIn key={f.heading} delay={0.14 + i * 0.08}>
                   <div className="group flex items-start gap-4 py-4">
                     <div className="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center shrink-0 transition-colors duration-300 group-hover:bg-accent">
-                      <Icon className="w-4.5 h-4.5 text-accent transition-colors duration-300 group-hover:text-brand-dark" />
+                      <Icon className="w-4.5 h-4.5 text-white transition-colors duration-300 group-hover:text-brand-dark" />
                     </div>
                     <div>
                       <h4 className="font-black text-[15px] tracking-tight text-brand-dark">{f.heading}</h4>
