@@ -37,7 +37,7 @@ export const AuthCard = ({ children }: { children: React.ReactNode }) => (
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
-      className="w-full max-w-md rounded-3xl px-6 py-12 sm:px-8 sm:py-16"
+      className="w-full max-w-md rounded-3xl px-5 py-8 sm:px-8 sm:py-16"
       style={{
         background: 'color-mix(in srgb, white 65%, transparent)',
         backdropFilter: 'blur(20px) saturate(160%)',

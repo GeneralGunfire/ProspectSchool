@@ -10,56 +10,39 @@ interface PinInputProps {
   onToggleVisible: () => void;
 }
 
-// Ten individual digit boxes standing in for a single 10-digit PIN string —
-// every school-issued PIN in this app is exactly 10 digits (enforced in
-// src/lib/auth.ts's `/^\d{10}$/` check), so a fixed-length segmented input
-// is a real fit here, not just decoration.
+// A single real <input> drives everything — typing, paste, and browser/
+// password-manager autofill all land here via autoComplete="one-time-code".
+// The ten boxes underneath are pure display, re-rendered from that input's
+// value; clicking any box just focuses the real input, positioning the
+// caret to match. A visually segmented *group of separate inputs* (the
+// previous approach) is what mobile Safari/Chrome autofill can't reliably
+// fill — the OS has no way to know a single saved code should be split
+// across many fields, so autofill would only ever land in the first box.
 export const PinInput = ({ value, onChange, visible, onToggleVisible }: PinInputProps) => {
-  const refs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
   const digits = value.padEnd(LENGTH, ' ').split('').slice(0, LENGTH);
 
-  const setDigit = (index: number, char: string) => {
-    const next = digits.slice();
-    next[index] = char;
-    onChange(next.join('').replace(/\s/g, ''));
+  const handleChange = (raw: string) => {
+    onChange(raw.replace(/\D/g, '').slice(0, LENGTH));
   };
 
-  const handleChange = (index: number, raw: string) => {
-    const digit = raw.replace(/\D/g, '').slice(-1);
-    if (!digit) { setDigit(index, ''); return; }
-    setDigit(index, digit);
-    if (index < LENGTH - 1) refs.current[index + 1]?.focus();
-  };
-
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !digits[index].trim() && index > 0) {
-      refs.current[index - 1]?.focus();
-    }
-    if (e.key === 'ArrowLeft' && index > 0) refs.current[index - 1]?.focus();
-    if (e.key === 'ArrowRight' && index < LENGTH - 1) refs.current[index + 1]?.focus();
-  };
-
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, LENGTH);
-    if (pasted) onChange(pasted);
-  };
-
-  // Password managers and browser autofill only ever write into the first
-  // input of a segmented group like this — autoComplete="one-time-code" on
-  // that box is what tells them a full multi-digit code belongs there, and
-  // handleChange below already splits any autofilled value across the rest
-  // of the boxes exactly like a manual paste does.
-  const handleAutofill = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, LENGTH);
-    if (digits.length > 1) { onChange(digits); return; }
-    handleChange(0, e.target.value);
+  const focusAt = (index: number) => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.focus();
+    // Defer the selection range set until after focus has landed — some
+    // mobile browsers reset the caret to the end on focus, so setting the
+    // range synchronously would get overwritten.
+    requestAnimationFrame(() => {
+      const pos = Math.min(index, value.length);
+      el.setSelectionRange(pos, pos);
+    });
   };
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-brand-eyebrow">PIN</label>
+      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
+        <label htmlFor="pin-input" className="block text-[10px] sm:text-[11px] font-black uppercase tracking-[0.18em] text-brand-eyebrow">PIN</label>
         <button
           type="button"
           onClick={onToggleVisible}
@@ -69,22 +52,38 @@ export const PinInput = ({ value, onChange, visible, onToggleVisible }: PinInput
           {visible ? 'Hide' : 'Show'}
         </button>
       </div>
-      <div className="grid grid-cols-5 sm:grid-cols-10 gap-1.5" onPaste={handlePaste}>
-        {digits.map((digit, i) => (
-          <input
-            key={i}
-            ref={el => { refs.current[i] = el; }}
-            type={visible ? 'text' : 'password'}
-            inputMode="numeric"
-            maxLength={i === 0 ? LENGTH : 1}
-            value={digit.trim()}
-            onChange={e => (i === 0 ? handleAutofill(e) : handleChange(i, e.target.value))}
-            onKeyDown={e => handleKeyDown(i, e)}
-            autoComplete={i === 0 ? 'one-time-code' : 'off'}
-            name={i === 0 ? 'pin' : undefined}
-            className="w-full aspect-square text-center bg-white/70 border border-brand-border rounded-lg text-[15px] font-black text-brand-dark focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/15 focus:bg-white transition-all"
-          />
-        ))}
+
+      <div className="relative">
+        {/* Real input — receives all typing, paste, and autofill. Kept
+            visually on top (not display:none) so iOS/Android autofill
+            heuristics, which can skip hidden/off-screen inputs, still
+            recognize it as a fillable field; it's just made transparent
+            with the caret hidden so only the boxes below show visibly. */}
+        <input
+          id="pin-input"
+          ref={inputRef}
+          type="text"
+          inputMode="numeric"
+          maxLength={LENGTH}
+          value={value}
+          onChange={e => handleChange(e.target.value)}
+          autoComplete="one-time-code"
+          name="pin"
+          className="absolute inset-0 w-full h-full opacity-0 caret-transparent text-transparent selection:bg-transparent"
+        />
+
+        {/* Display boxes — purely visual, mirror the real input's value */}
+        <div className="grid grid-cols-5 sm:grid-cols-10 gap-1 sm:gap-1.5 pointer-events-none">
+          {digits.map((digit, i) => (
+            <div
+              key={i}
+              onClick={() => focusAt(i)}
+              className="aspect-square flex items-center justify-center bg-white/70 border border-brand-border rounded-md sm:rounded-lg text-[13px] sm:text-[15px] font-black text-brand-dark pointer-events-auto cursor-text"
+            >
+              {digit.trim() ? (visible ? digit : '•') : ''}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

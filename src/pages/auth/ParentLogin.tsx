@@ -43,7 +43,7 @@ export default function ParentLogin({ onNavigate }: { onNavigate: (page: string)
     <AuthShell>
       <AuthNavbar onNavigate={onNavigate} />
       <AuthCard>
-        <h1 className="font-black text-brand-dark text-[clamp(1.6rem,5vw,2.25rem)] leading-tight mb-7" style={{ letterSpacing: '-0.03em' }}>
+        <h1 className="font-black text-brand-dark text-[clamp(1.4rem,5.5vw,2.25rem)] leading-tight mb-6 sm:mb-7" style={{ letterSpacing: '-0.03em' }}>
           Welcome back.
         </h1>
 
