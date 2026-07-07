@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import { fetchTeacherHomerooms } from '../../lib/homeroom';
 import ClassesPage from './teacher/ClassesPage';
@@ -15,9 +15,10 @@ import RiskEnginePage from './teacher/RiskEnginePage';
 import TopicTestsPage from './teacher/TopicTestsPage';
 import HomeroomPage from './teacher/HomeroomPage';
 import BehaviourPage from './teacher/BehaviourPage';
+import TimetablePage from './teacher/TimetablePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -45,6 +46,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'classes',       label: 'Classes',       icon: Users },
     ...(isHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
     { id: 'behaviour',     label: 'Behaviour',     icon: Award },
+    { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
     { id: 'marks',         label: 'Marks',         icon: ClipboardList },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
@@ -228,6 +230,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'classes'       && <ClassesPage session={session} />}
           {activePage === 'homeroom'      && <HomeroomPage session={session} />}
           {activePage === 'behaviour'     && <BehaviourPage session={session} />}
+          {activePage === 'timetable'     && <TimetablePage session={session} />}
           {activePage === 'calendar'      && <CalendarPage session={session} />}
           {activePage === 'marks'         && <MarksPage session={session} />}
           {activePage === 'resources'     && <ResourcesPage session={session} />}

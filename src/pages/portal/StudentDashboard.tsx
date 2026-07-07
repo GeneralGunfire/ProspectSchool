@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck, School, Award } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
 import StudentHomePage from './student/StudentHomePage';
@@ -13,12 +13,13 @@ import ApsCalculatorPage from './student/ApsCalculatorPage';
 import StudentTopicTestsPage from './student/StudentTopicTestsPage';
 import StudentHomeroomPage from './student/StudentHomeroomPage';
 import StudentBehaviourPage from './student/StudentBehaviourPage';
+import StudentTimetablePage from './student/StudentTimetablePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -56,6 +57,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'announcements', label: 'Announcements', icon: Megaphone,      mobileLabel: 'News' },
     ...(hasHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
     { id: 'behaviour',     label: 'Behaviour',     icon: Award,          mobileLabel: 'Behaviour' },
+    { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
     { id: 'marks',         label: 'My Marks',      icon: ClipboardList,  mobileLabel: 'Marks' },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
@@ -252,6 +254,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
           {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
           {activePage === 'behaviour'     && <StudentBehaviourPage session={session} />}
+          {activePage === 'timetable'     && <StudentTimetablePage session={session} />}
           {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}

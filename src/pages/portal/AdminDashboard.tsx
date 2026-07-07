@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
@@ -9,8 +9,9 @@ import StudentAssignmentsPage from './admin/StudentAssignmentsPage';
 import ClassesAdminPage from './admin/ClassesAdminPage';
 import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
 import ParentsAdminPage from './admin/ParentsAdminPage';
+import TimetableAdminPage from './admin/TimetableAdminPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -39,6 +40,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'students',      label: 'Students',      icon: Users },
     { id: 'parents',       label: 'Parents',       icon: Heart },
     { id: 'classes',       label: 'Classes',       icon: School },
+    { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
   ];
 
@@ -197,6 +199,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'classes'       && <ClassesAdminPage session={session} />}
           {activePage === 'students'      && <StudentsDirectoryPage session={session} />}
           {activePage === 'parents'       && <ParentsAdminPage session={session} />}
+          {activePage === 'timetable'     && <TimetableAdminPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
         </div>
       </div>

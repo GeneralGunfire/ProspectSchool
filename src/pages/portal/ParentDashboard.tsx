@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, Megaphone, Award, ClipboardCheck, Menu, X, ChevronDown } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, Megaphone, Award, ClipboardCheck, Menu, X, ChevronDown, CalendarClock } from 'lucide-react';
 import { getParentSession, parentLogout, type ParentSession } from '../../lib/auth';
 import { fetchParentChildren, type ParentChild } from '../../lib/parents';
 import ParentHomePage from './parent/ParentHomePage';
@@ -9,8 +9,9 @@ import ParentBehaviourPage from './parent/ParentBehaviourPage';
 import ParentMarksPage from './parent/ParentMarksPage';
 import ParentHomeworkPage from './parent/ParentHomeworkPage';
 import ParentAnnouncementsPage from './parent/ParentAnnouncementsPage';
+import ParentTimetablePage from './parent/ParentTimetablePage';
 
-type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements';
+type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements' | 'timetable';
 
 interface ParentDashboardProps {
   onNavigate: (page: string) => void;
@@ -24,6 +25,7 @@ const navItems: { id: ActivePage; label: string; icon: any }[] = [
   { id: 'behaviour',     label: 'Behaviour',     icon: Award },
   { id: 'marks',         label: 'Marks',         icon: ClipboardList },
   { id: 'homework',      label: 'Homework',      icon: ClipboardCheck },
+  { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
 ];
 
 export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
@@ -277,6 +279,7 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
               {activePage === 'behaviour'     && <ParentBehaviourPage child={activeChild} />}
               {activePage === 'marks'         && <ParentMarksPage session={session} child={activeChild} />}
               {activePage === 'homework'      && <ParentHomeworkPage session={session} child={activeChild} />}
+              {activePage === 'timetable'     && <ParentTimetablePage session={session} child={activeChild} />}
               {activePage === 'announcements' && <ParentAnnouncementsPage session={session} child={activeChild} />}
             </>
           )}
