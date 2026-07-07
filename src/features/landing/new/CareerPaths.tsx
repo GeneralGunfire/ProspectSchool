@@ -52,19 +52,19 @@ const PathCard = ({ path, onNavigate }: { path: typeof paths[number]; onNavigate
 
 export const CareerPaths = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="py-24 px-5">
+    <section className="py-16 lg:py-24 px-5">
       <div className="max-w-6xl mx-auto">
-        <FadeIn className="text-center mb-12">
+        <FadeIn className="text-center mb-10 lg:mb-12">
           <span className="eyebrow">REAL CAREERS, REAL PEOPLE</span>
-          <h2 className="text-brand-dark text-[clamp(2rem,4vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
+          <h2 className="text-brand-dark text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Every path has a place to start.
           </h2>
-          <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
+          <p className="mt-4 text-brand-eyebrow text-[14px] sm:text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
             Engineering, healthcare, education, trades — explore the careers South Africa needs, with real salary and demand data behind every one.
           </p>
         </FadeIn>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
           {paths.map((path, i) => (
             <FadeIn key={path.title} delay={i * 0.07}>
               <PathCard path={path} onNavigate={onNavigate} />

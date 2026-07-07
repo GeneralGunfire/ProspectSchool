@@ -10,16 +10,16 @@ export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
           ref={ref}
           onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
-          className="group/spot card-premium-dark relative overflow-hidden max-w-5xl mx-auto bg-brand-dark px-8 md:px-16 py-16 flex flex-col lg:flex-row items-center justify-between gap-10"
+          className="group/spot card-premium-dark relative overflow-hidden max-w-5xl mx-auto bg-brand-dark px-6 py-10 sm:px-8 md:px-16 sm:py-16 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-10"
         >
           <SpotlightGlow tone="white" />
 
           <div className="max-w-md text-center lg:text-left">
             <span className="text-slate-500 text-[9px] font-black uppercase tracking-[0.2em]">Get Started Today</span>
-            <h2 className="text-white font-black text-[clamp(1.9rem,4vw,2.75rem)] tracking-tight mt-4 leading-[1.1]">
+            <h2 className="text-white font-black text-[clamp(1.6rem,5.5vw,2.75rem)] tracking-tight mt-4 leading-[1.15] sm:leading-[1.1]">
               Ready to shape your future?
             </h2>
-            <p className="mt-5 text-slate-400 text-[15px] leading-relaxed font-medium max-w-[38ch]">
+            <p className="mt-5 text-slate-400 text-[14px] sm:text-[15px] leading-relaxed font-medium max-w-[38ch]">
               Join South African students using Prospect to discover careers, find bursaries, and ace matric.
             </p>
           </div>

@@ -1,12 +1,10 @@
 import { PremiumBackground } from '../../../shared/components/PremiumBackground';
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
-import { StatsBar } from './StatsBar';
-import { AudienceSection } from './AudienceSection';
+import { LearnerFeatureCards } from './LearnerFeatureCards';
+import { RoleDestinations } from './RoleDestinations';
 import { CareerPaths } from './CareerPaths';
-import { StudentDeepDive } from './StudentDeepDive';
 import { StudyLibrary } from './StudyLibrary';
-import { TeacherTools } from './TeacherTools';
 import { QuoteSection } from './QuoteSection';
 import { Pricing } from './Pricing';
 import { FinalCTA } from './FinalCTA';
@@ -34,19 +32,17 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       <PremiumBackground />
       <Navbar onNavigate={onNavigate} />
       <Hero onNavigate={onNavigate} />
-      <StatsBar />
 
-      <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 35%, #F8FAFC 100%)' }}>
-        <AudienceSection onNavigate={onNavigate} />
+      <div style={{ background: 'linear-gradient(180deg, #EDF3FA 0%, #F5F9FC 35%, #F8FBFD 100%)' }}>
+        <LearnerFeatureCards onNavigate={onNavigate} />
         <CareerPaths onNavigate={onNavigate} />
-        <StudentDeepDive onNavigate={onNavigate} />
         <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
-        <div className="cv-auto"><TeacherTools onNavigate={onNavigate} /></div>
+        <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>
       </div>
 
       <QuoteSection />
 
-      <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 40%, #FAF9F6 100%)' }}>
+      <div style={{ background: 'linear-gradient(180deg, #EDF3FA 0%, #F5F9FC 40%, #F5F9FC 100%)' }}>
         <div className="cv-auto"><Pricing onNavigate={onNavigate} /></div>
         <div className="cv-auto"><FinalCTA onNavigate={onNavigate} /></div>
         <div className="cv-auto"><Footer onNavigate={onNavigate} /></div>

@@ -35,15 +35,15 @@ const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]
 
 export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="py-20 px-5">
+    <section className="py-14 lg:py-20 px-5">
       <div className="max-w-6xl mx-auto">
 
         <FadeIn className="text-center mb-12">
           <span className="eyebrow">SCHOOL ASSIST</span>
-          <h2 className="text-brand-dark text-[clamp(1.9rem,3.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
+          <h2 className="text-brand-dark text-[clamp(1.65rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Study smarter, not harder.
           </h2>
-          <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
+          <p className="mt-4 text-brand-eyebrow text-[14px] sm:text-[15px] leading-relaxed max-w-[48ch] mx-auto font-medium">
             Curriculum-aligned lessons for Grade 10–12. Interactive steps, worked examples, practice questions, and instant feedback.
           </p>
         </FadeIn>

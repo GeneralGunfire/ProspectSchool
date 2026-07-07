@@ -38,4 +38,6 @@ export {
   AlertTriangle,
   FileText,
   Paperclip,
+  ClipboardCheck,
+  CalendarClock,
 } from 'lucide-react';

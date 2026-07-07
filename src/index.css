@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -7,11 +7,20 @@
   --font-instrument: "Instrument Sans", sans-serif;
   --font-mono-jetbrains: "JetBrains Mono", monospace;
 
-  /* ── Landing page brand tokens ── */
-  --color-brand-bg: #FAFAFA;
-  --color-brand-dark: #0F172A;
-  --color-brand-border: #E2E8F0;
-  --color-brand-eyebrow: #64748B;
+  /* ── Landing page font pairing (blue redesign) ── */
+  --font-brand-heading: "Fraunces", Georgia, serif;
+  --font-brand-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Landing page brand tokens ──
+     Blue palette: near-white bg, deep slate-blue dark surface, cool blue
+     accent. Scoped to the landing page only — nothing outside
+     src/features/landing/new/* and its shared helpers reads these. */
+  --color-brand-bg: #F0F5FA;
+  --color-brand-dark: #0B1D33;
+  --color-brand-border: #D7E3EF;
+  --color-brand-eyebrow: #5B7A99;
+  --color-brand-slate: #6E8CAA;
+  --color-brand-pale: #C7DCEE;
 
   /* ── Dashboard-only background ──
      Same cream family as brand-bg but a shade deeper — the portal packs many
