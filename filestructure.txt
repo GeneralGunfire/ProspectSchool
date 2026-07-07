@@ -6,6 +6,7 @@
 |-- .github
 |-- .gitignore
 |-- .planning
+    |-- NEXT_SESSION_PROMPT_topic_tests_content.md
     |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
     |-- project.json
@@ -362,11 +363,13 @@
             |-- toast.tsx
         |-- hooks
             |-- usePillVisible.ts
+|-- student-portal-features.md
 |-- supabase
     |-- migrations
         |-- 20260529000001_student_tasks.sql
         |-- 20260603000001_action_center_notifications_templates.sql
         |-- 20260705000001_parent_contacts.sql
+|-- teacher-portal-features.md
 |-- test-01-home.png
 |-- test-02-dashboard.png
 |-- test-03-my-future-empty.png

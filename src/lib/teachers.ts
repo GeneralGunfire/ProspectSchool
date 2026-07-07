@@ -32,6 +32,10 @@ export type UpdateTeacherResult =
   | { success: true }
   | { success: false; error: string };
 
+export type DeleteTeacherResult =
+  | { success: true }
+  | { success: false; error: string };
+
 // ── Fetch all teachers for a school ──────────────────────────
 
 export async function fetchSchoolTeachers(school_id: number): Promise<Teacher[]> {
@@ -132,5 +136,39 @@ export async function setTeacherActive(
     .eq('school_id', school_id);
 
   if (error) return { success: false, error: 'Failed to update teacher status.' };
+  return { success: true };
+}
+
+// ── Delete teacher ────────────────────────────────────────────
+// Blocked while the teacher still has students assigned (teacher_students),
+// so admins reassign students before removing the account. All other content
+// the teacher created (marks, resources, past papers, announcements, events,
+// topic tests, interventions, parent contact logs) is preserved — the
+// teacher_id column on those tables is nullable with ON DELETE SET NULL,
+// so it just becomes unattributed rather than being deleted or blocking.
+
+export async function deleteTeacher(
+  teacher_id: number,
+  school_id: number
+): Promise<DeleteTeacherResult> {
+  const { count } = await supabaseAdmin
+    .from('teacher_students')
+    .select('id', { count: 'exact', head: true })
+    .eq('teacher_id', teacher_id);
+
+  if (count && count > 0) {
+    return {
+      success: false,
+      error: `This teacher still has ${count} student${count === 1 ? '' : 's'} assigned. Reassign or remove them first.`,
+    };
+  }
+
+  const { error } = await supabaseAdmin
+    .from('teachers')
+    .delete()
+    .eq('id', teacher_id)
+    .eq('school_id', school_id);
+
+  if (error) return { success: false, error: 'Failed to delete teacher.' };
   return { success: true };
 }
