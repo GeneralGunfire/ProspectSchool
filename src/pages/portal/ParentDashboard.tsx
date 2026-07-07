@@ -1,86 +1,100 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck, School, Award } from 'lucide-react';
-import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
-import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
-import StudentHomePage from './student/StudentHomePage';
-import StudentCalendarPage from './student/StudentCalendarPage';
-import StudentMarksPage from './student/StudentMarksPage';
-import StudentResourcesPage from './student/StudentResourcesPage';
-import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
-import StudentPastPapersPage from './student/StudentPastPapersPage';
-import ApsCalculatorPage from './student/ApsCalculatorPage';
-import StudentTopicTestsPage from './student/StudentTopicTestsPage';
-import StudentHomeroomPage from './student/StudentHomeroomPage';
-import StudentBehaviourPage from './student/StudentBehaviourPage';
-import NotificationBell from '../../shared/components/NotificationBell';
+import { LogOut, Home, CalendarDays, ClipboardList, Megaphone, Award, ClipboardCheck, Menu, X, ChevronDown } from 'lucide-react';
+import { getParentSession, parentLogout, type ParentSession } from '../../lib/auth';
+import { fetchParentChildren, type ParentChild } from '../../lib/parents';
+import ParentHomePage from './parent/ParentHomePage';
+import ParentAttendancePage from './parent/ParentAttendancePage';
+import ParentBehaviourPage from './parent/ParentBehaviourPage';
+import ParentMarksPage from './parent/ParentMarksPage';
+import ParentHomeworkPage from './parent/ParentHomeworkPage';
+import ParentAnnouncementsPage from './parent/ParentAnnouncementsPage';
 
-const LibraryPage  = lazy(() => import('./student/LibraryPage'));
-const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
+type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements';
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour';
-
-interface StudentDashboardProps {
+interface ParentDashboardProps {
   onNavigate: (page: string) => void;
 }
 
-const Spinner = () => (
-  <div className="flex items-center justify-center py-24">
-    <div className="w-5 h-5 border-2 border-brand-border border-t-accent rounded-full animate-spin" />
-  </div>
-);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const navItems: { id: ActivePage; label: string; icon: any }[] = [
+  { id: 'home',          label: 'Home',          icon: Home },
+  { id: 'announcements', label: 'Announcements', icon: Megaphone },
+  { id: 'attendance',    label: 'Attendance',    icon: CalendarDays },
+  { id: 'behaviour',     label: 'Behaviour',     icon: Award },
+  { id: 'marks',         label: 'Marks',         icon: ClipboardList },
+  { id: 'homework',      label: 'Homework',      icon: ClipboardCheck },
+];
 
-export default function StudentDashboard({ onNavigate }: StudentDashboardProps) {
-  const [session, setSession] = useState<StudentSession | null>(null);
+export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
+  const [session, setSession] = useState<ParentSession | null>(null);
+  const [children, setChildren] = useState<ParentChild[]>([]);
+  const [activeChild, setActiveChild] = useState<ParentChild | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>('home');
-  const [innerPage, setInnerPage] = useState<string>('library');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [hasHomeroom, setHasHomeroom] = useState(false);
+  const [childPickerOpen, setChildPickerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const s = getStudentSession();
-    if (!s) { onNavigate('student-login'); return; }
+    const s = getParentSession();
+    if (!s) { onNavigate('parent-login'); return; }
     setSession(s);
-    if (s.cohort_id) {
-      fetchCohortHomeroomTeacher(s.cohort_id).then((t) => setHasHomeroom(!!t));
-    }
+    fetchParentChildren(s.parent_id).then((kids) => {
+      setChildren(kids);
+      setActiveChild(kids[0] ?? null);
+      setLoading(false);
+    });
   }, []);
 
-  if (!session) return null;
+  if (!session || loading) return null;
 
   const initials = `${session.name[0]}${session.surname[0]}`.toUpperCase();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const navItems: { id: ActivePage; label: string; icon: any; mobileLabel?: string }[] = [
-    { id: 'home',          label: 'Home',          icon: Home },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone,      mobileLabel: 'News' },
-    ...(hasHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
-    { id: 'behaviour',     label: 'Behaviour',     icon: Award,          mobileLabel: 'Behaviour' },
-    { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
-    { id: 'marks',         label: 'My Marks',      icon: ClipboardList,  mobileLabel: 'Marks' },
-    { id: 'resources',     label: 'Resources',     icon: FolderOpen },
-    { id: 'pastpapers',    label: 'Past Papers',   icon: FileText,       mobileLabel: 'Papers' },
-    { id: 'library',       label: 'Library',       icon: BookOpen },
-    { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
-    { id: 'aps',           label: 'APS & Unis',    icon: GraduationCap,  mobileLabel: 'APS' },
-    { id: 'future',        label: 'My Future',     icon: Sparkles,       mobileLabel: 'Future' },
-  ];
-
-  function handleLibraryNavigate(page: string) {
-    if (page === 'student-dashboard' || page === 'library') {
-      setInnerPage('library');
-    } else if (page.startsWith('learning-')) {
-      setInnerPage(page);
-    } else {
-      onNavigate(page);
-    }
-  }
-
   function setPage(id: ActivePage) {
     setActivePage(id);
-    if (id === 'library') setInnerPage('library');
     setMenuOpen(false);
   }
+
+  const ChildSwitcher = ({ compact }: { compact?: boolean }) => (
+    <div className="relative">
+      <button
+        onClick={() => setChildPickerOpen((o) => !o)}
+        className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-2xl bg-brand-bg border border-brand-border text-left ${compact ? '' : ''}`}
+      >
+        <div className="min-w-0">
+          <p className="text-[9px] font-black uppercase tracking-widest text-stone-400">Viewing</p>
+          <p className="text-[13px] font-black text-brand-dark truncate">
+            {activeChild ? `${activeChild.name} ${activeChild.surname}` : 'No child linked'}
+          </p>
+        </div>
+        {children.length > 1 && <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />}
+      </button>
+      <AnimatePresence>
+        {childPickerOpen && children.length > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-0 right-0 mt-1.5 bg-white border border-brand-border rounded-2xl shadow-lg z-20 overflow-hidden"
+          >
+            {children.map((c) => (
+              <button
+                key={c.student_id}
+                onClick={() => { setActiveChild(c); setChildPickerOpen(false); }}
+                className={`w-full text-left px-3.5 py-2.5 text-[13px] font-bold transition-colors ${
+                  activeChild?.student_id === c.student_id ? 'bg-brand-dark text-white' : 'text-stone-600 hover:bg-brand-bg'
+                }`}
+              >
+                {c.name} {c.surname}
+                <span className="block text-[10px] font-medium opacity-70">
+                  Gr {c.grade}{c.cohort_name ? ` · ${c.cohort_name}` : ''}
+                </span>
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 
   return (
     <div className="flex h-screen bg-dash-bg overflow-hidden">
@@ -89,12 +103,16 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       <aside className="hidden md:flex w-56 shrink-0 h-full bg-white border-r border-brand-border flex-col">
 
         {/* Logo */}
-        <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
+        <div className="flex items-center gap-2 px-4 h-16 border-b border-brand-border shrink-0">
           <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
             <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
             <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
           </button>
-          <NotificationBell userType="student" userId={session.student_id} />
+        </div>
+
+        {/* Child switcher */}
+        <div className="px-3 pt-3">
+          <ChildSwitcher />
         </div>
 
         {/* Nav */}
@@ -126,13 +144,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[12px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-              <p className="text-[10px] text-stone-500 truncate">
-                Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-              </p>
+              <p className="text-[10px] text-stone-500 truncate">Parent</p>
             </div>
           </div>
           <button
-            onClick={() => { studentLogout(); onNavigate('portal'); }}
+            onClick={() => { parentLogout(); onNavigate('portal'); }}
             className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-full text-[13px] font-bold text-red-500 hover:bg-red-50 transition-all"
           >
             <LogOut className="w-4 h-4 shrink-0" />
@@ -160,12 +176,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <NotificationBell userType="student" userId={session.student_id} />
             <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
               <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
             </div>
             <button
-              onClick={() => { studentLogout(); onNavigate('portal'); }}
+              onClick={() => { parentLogout(); onNavigate('portal'); }}
               className="text-[11px] font-black text-stone-500 hover:text-red-500 transition-colors px-1"
             >
               <LogOut className="w-4 h-4" />
@@ -173,7 +188,12 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </div>
         </div>
 
-        {/* ── Mobile nav drawer — slides in from the left, mirrors desktop sidebar ── */}
+        {/* Mobile child switcher */}
+        <div className="md:hidden px-4 py-3 bg-white border-b border-brand-border shrink-0">
+          <ChildSwitcher compact />
+        </div>
+
+        {/* ── Mobile nav drawer ── */}
         <AnimatePresence>
           {menuOpen && (
             <>
@@ -188,7 +208,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
                 className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[82vw] bg-white border-r border-brand-border flex flex-col"
               >
-                {/* Logo + close */}
                 <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
                   <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
                     <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
@@ -199,7 +218,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   </button>
                 </div>
 
-                {/* Nav — same list as desktop sidebar, single column */}
                 <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
                   {navItems.map(({ id, label, icon: Icon }) => {
                     const active = activePage === id;
@@ -220,7 +238,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   })}
                 </nav>
 
-                {/* Profile + logout */}
                 <div className="border-t border-brand-border p-3 space-y-1 shrink-0" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
                   <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-2xl bg-brand-bg">
                     <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shrink-0">
@@ -228,13 +245,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[12px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-                      <p className="text-[10px] text-stone-500 truncate">
-                        Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-                      </p>
+                      <p className="text-[10px] text-stone-500 truncate">Parent</p>
                     </div>
                   </div>
                   <button
-                    onClick={() => { studentLogout(); onNavigate('portal'); }}
+                    onClick={() => { parentLogout(); onNavigate('portal'); }}
                     className="w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-full text-[13px] font-bold text-red-500 hover:bg-red-50 transition-all"
                   >
                     <LogOut className="w-4 h-4 shrink-0" />
@@ -248,29 +263,22 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
         {/* Page content — scrollable */}
         <div className="flex-1 overflow-y-auto">
-          {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
-          {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
-          {activePage === 'behaviour'     && <StudentBehaviourPage session={session} />}
-          {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'aps'           && <ApsCalculatorPage session={session} />}
-          {activePage === 'topic-tests'   && <StudentTopicTestsPage session={session} />}
-          {activePage === 'future'        && (
-            <Suspense fallback={<Spinner />}>
-              <MyFuturePage session={session} onNavigate={p => {
-                if (p === 'bursaries') { onNavigate('bursaries'); return; }
-                if (p === 'quiz')      { onNavigate('quiz');      return; }
-                setPage(p as ActivePage);
-              }} />
-            </Suspense>
-          )}
-          {activePage === 'library'       && (
-            <Suspense fallback={<Spinner />}>
-              <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
-            </Suspense>
+          {!activeChild ? (
+            <div className="px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+              <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+                <p className="font-bold text-brand-dark mb-1">No children linked yet</p>
+                <p className="text-sm text-stone-500">Ask your school admin to link your account to your child's profile.</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {activePage === 'home'          && <ParentHomePage session={session} child={activeChild} onNavigate={p => setPage(p as ActivePage)} />}
+              {activePage === 'attendance'    && <ParentAttendancePage child={activeChild} />}
+              {activePage === 'behaviour'     && <ParentBehaviourPage child={activeChild} />}
+              {activePage === 'marks'         && <ParentMarksPage session={session} child={activeChild} />}
+              {activePage === 'homework'      && <ParentHomeworkPage session={session} child={activeChild} />}
+              {activePage === 'announcements' && <ParentAnnouncementsPage session={session} child={activeChild} />}
+            </>
           )}
         </div>
 

@@ -2,7 +2,6 @@ import { PremiumBackground } from '../../../shared/components/PremiumBackground'
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
 import { StatsBar } from './StatsBar';
-import { HowItWorks } from './HowItWorks';
 import { AudienceSection } from './AudienceSection';
 import { CareerPaths } from './CareerPaths';
 import { StudentDeepDive } from './StudentDeepDive';
@@ -35,7 +34,6 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       <PremiumBackground />
       <Navbar onNavigate={onNavigate} />
       <Hero onNavigate={onNavigate} />
-      <HowItWorks />
       <StatsBar />
 
       <div style={{ background: 'linear-gradient(180deg, #F1F5F9 0%, #FAF9F6 35%, #F8FAFC 100%)' }}>

@@ -1,36 +1,52 @@
 import { useState, useEffect, useCallback } from 'react';
-import { motion } from 'motion/react';
-import { Check, Clock, X as XIcon, FileText, ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Check, Clock, X as XIcon, Thermometer, ChevronLeft, ChevronRight, CalendarDays, CalendarOff, AlertCircle } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchTeacherHomerooms, fetchCohortRoster, fetchAttendanceForDate, markAttendance, markAttendanceBulk,
-  fetchAttendanceSummary,
+  markNonSchoolDay, fetchAttendanceSummary,
   type CohortWithHomeroom, type HomeroomStudent, type AttendanceRecord, type AttendanceStatus, type AttendanceSummary,
 } from '../../../lib/homeroom';
 
 interface HomeroomPageProps { session: TeacherSession; }
 
-const STATUS_CONFIG: Record<AttendanceStatus, { label: string; icon: typeof Check; activeClass: string }> = {
-  present: { label: 'Present', icon: Check,   activeClass: 'bg-green-600 text-white border-green-600' },
-  late:    { label: 'Late',    icon: Clock,   activeClass: 'bg-amber-500 text-white border-amber-500' },
-  absent:  { label: 'Absent',  icon: XIcon,   activeClass: 'bg-red-600 text-white border-red-600' },
-  excused: { label: 'Excused', icon: FileText, activeClass: 'bg-stone-500 text-white border-stone-500' },
+// Per-student marking buttons — non_school_day is deliberately excluded here,
+// it's a whole-day action (see the "Not a School Day" button) not a per-student one.
+type MarkableStatus = Exclude<AttendanceStatus, 'non_school_day'>;
+
+const STATUS_CONFIG: Record<MarkableStatus, { label: string; icon: typeof Check; activeClass: string; dotClass: string }> = {
+  present: { label: 'Present', icon: Check,       activeClass: 'bg-green-600 text-white border-green-600', dotClass: 'bg-green-600' },
+  late:    { label: 'Late',    icon: Clock,        activeClass: 'bg-amber-500 text-white border-amber-500', dotClass: 'bg-amber-500' },
+  absent:  { label: 'Absent',  icon: XIcon,        activeClass: 'bg-red-600 text-white border-red-600',     dotClass: 'bg-red-600' },
+  excused: { label: 'Sick',    icon: Thermometer,  activeClass: 'bg-sky-500 text-white border-sky-500',     dotClass: 'bg-sky-500' },
 };
+const STATUS_ORDER: MarkableStatus[] = ['present', 'late', 'absent', 'excused'];
+
+// All date math here stays in local time end-to-end — never round-trip
+// through toISOString() (UTC), which silently shifts the date by a day in
+// any timezone ahead of UTC (e.g. SAST/UTC+2) and made the date arrows
+// jump by 2 days per click instead of 1.
+function toLocalISO(d: Date): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 function todayISO(): string {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalISO(new Date());
 }
 
 function addDays(iso: string, delta: number): string {
   const d = new Date(iso + 'T00:00:00');
   d.setDate(d.getDate() + delta);
-  return d.toISOString().slice(0, 10);
+  return toLocalISO(d);
 }
 
 function monthStartISO(): string {
   const d = new Date();
   d.setDate(1);
-  return d.toISOString().slice(0, 10);
+  return toLocalISO(d);
 }
 
 function attendancePercent(s: AttendanceSummary): number | null {
@@ -48,6 +64,9 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<number | null>(null);
   const [markingAll, setMarkingAll] = useState(false);
+  const [markingHoliday, setMarkingHoliday] = useState(false);
+  const [confirmHoliday, setConfirmHoliday] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -77,9 +96,15 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
     setSummary(new Map(summaryRows.map((r) => [r.student_id, r])));
   };
 
-  const handleMark = async (student_id: number, status: AttendanceStatus) => {
+  const handleMark = async (student_id: number, status: MarkableStatus) => {
     setSavingId(student_id);
-    await markAttendance(student_id, date, status, session.teacher_id);
+    setSaveError(null);
+    const result = await markAttendance(student_id, date, status, session.teacher_id);
+    if (!result.success) {
+      setSaveError(result.error);
+      setSavingId(null);
+      return;
+    }
     setAttendance((prev) => {
       const next = new Map(prev);
       next.set(student_id, { student_id, date, status, note: null });
@@ -91,8 +116,14 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
 
   const handleMarkAllPresent = async () => {
     setMarkingAll(true);
+    setSaveError(null);
     const ids = roster.map((s) => s.id);
-    await markAttendanceBulk(ids, date, 'present', session.teacher_id);
+    const result = await markAttendanceBulk(ids, date, 'present', session.teacher_id);
+    if (!result.success) {
+      setSaveError(result.error);
+      setMarkingAll(false);
+      return;
+    }
     setAttendance(() => {
       const next = new Map<number, AttendanceRecord>();
       for (const id of ids) next.set(id, { student_id: id, date, status: 'present', note: null });
@@ -100,6 +131,26 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
     });
     await refreshSummary();
     setMarkingAll(false);
+  };
+
+  const handleMarkNonSchoolDay = async () => {
+    setMarkingHoliday(true);
+    setSaveError(null);
+    const ids = roster.map((s) => s.id);
+    const result = await markNonSchoolDay(ids, date, session.teacher_id);
+    if (!result.success) {
+      setSaveError(result.error);
+      setMarkingHoliday(false);
+      return;
+    }
+    setAttendance(() => {
+      const next = new Map<number, AttendanceRecord>();
+      for (const id of ids) next.set(id, { student_id: id, date, status: 'non_school_day', note: null });
+      return next;
+    });
+    await refreshSummary();
+    setMarkingHoliday(false);
+    setConfirmHoliday(false);
   };
 
   const isToday = date === todayISO();
@@ -117,7 +168,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
 
   if (!cohort) {
     return (
-      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full">
+      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
         <span className="eyebrow">Homeroom</span>
         <h1 className="text-2xl font-black text-brand-dark tracking-tight mb-4">Homeroom</h1>
         <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
@@ -129,14 +180,17 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   }
 
   const presentCount = [...attendance.values()].filter((a) => a.status === 'present').length;
+  const isNonSchoolDay = roster.length > 0 && roster.every((s) => attendance.get(s.id)?.status === 'non_school_day');
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full">
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div>
           <span className="eyebrow">Homeroom</span>
           <h1 className="text-2xl font-black text-brand-dark tracking-tight">{cohort.name}</h1>
-          <p className="text-sm text-stone-500 mt-1">{roster.length} students &middot; {presentCount} marked present</p>
+          <p className="text-sm text-stone-500 mt-1">
+            {roster.length} students {isNonSchoolDay ? '· Not a school day' : `· ${presentCount} marked present`}
+          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -161,8 +215,38 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
         </div>
       </div>
 
+      {saveError && (
+        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+          <p className="text-sm font-bold text-red-700">{saveError}</p>
+        </div>
+      )}
+
+      {/* Legend — explains what each icon in the grid means */}
       {roster.length > 0 && (
-        <div className="flex justify-end mb-3">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4 px-1">
+          {STATUS_ORDER.map((status) => {
+            const { label, dotClass } = STATUS_CONFIG[status];
+            return (
+              <div key={status} className="flex items-center gap-1.5">
+                <span className={`w-2.5 h-2.5 rounded-full ${dotClass}`} />
+                <span className="text-xs font-bold text-stone-500">{label}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {roster.length > 0 && (
+        <div className="flex justify-end gap-2 mb-3 flex-wrap">
+          <motion.button
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            onClick={() => setConfirmHoliday(true)} disabled={markingHoliday}
+            className="flex items-center gap-2 text-xs font-black text-stone-600 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+          >
+            <CalendarOff className="w-3.5 h-3.5" />
+            Not a School Day
+          </motion.button>
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={handleMarkAllPresent} disabled={markingAll}
@@ -174,6 +258,15 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
             }
             Mark All Present
           </motion.button>
+        </div>
+      )}
+
+      {isNonSchoolDay && (
+        <div className="flex items-center gap-2.5 mb-3 px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl">
+          <CalendarOff className="w-4 h-4 text-stone-500 shrink-0" />
+          <p className="text-sm font-bold text-stone-600">
+            {displayDate} is marked as not a school day. It won't count toward attendance percentages.
+          </p>
         </div>
       )}
 
@@ -215,7 +308,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5">
-                        {(Object.keys(STATUS_CONFIG) as AttendanceStatus[]).map((status) => {
+                        {STATUS_ORDER.map((status) => {
                           const { label, icon: Icon, activeClass } = STATUS_CONFIG[status];
                           const active = record?.status === status;
                           return (
@@ -225,11 +318,13 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                               onClick={() => handleMark(s.id, status)}
                               disabled={savingId === s.id}
                               title={label}
-                              className={`p-2 rounded-lg border transition-all disabled:opacity-50 ${
+                              aria-label={label}
+                              className={`flex items-center gap-1.5 px-2.5 py-2 rounded-lg border transition-all disabled:opacity-50 ${
                                 active ? activeClass : 'bg-stone-50 border-brand-border text-stone-400 hover:border-stone-300'
                               }`}
                             >
-                              <Icon className="w-3.5 h-3.5" />
+                              <Icon className="w-3.5 h-3.5 shrink-0" />
+                              <span className="hidden xl:inline text-[11px] font-black whitespace-nowrap">{label}</span>
                             </motion.button>
                           );
                         })}
@@ -242,6 +337,45 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
           </table>
         )}
       </div>
+
+      {/* Confirm "Not a School Day" — overwrites the whole class's attendance for the date */}
+      <AnimatePresence>
+        {confirmHoliday && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setConfirmHoliday(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+                <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center mb-4">
+                  <AlertCircle className="w-5 h-5 text-stone-500" />
+                </div>
+                <h2 className="text-base font-black text-brand-dark mb-1">Mark {displayDate} as not a school day?</h2>
+                <p className="text-sm text-stone-500 mb-6">
+                  This replaces any attendance already marked for the whole class on this date, for example a public holiday or school closure. It won't count toward anyone's attendance percentage.
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={() => setConfirmHoliday(false)}
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    Cancel
+                  </button>
+                  <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    {markingHoliday
+                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      : 'Confirm'
+                    }
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

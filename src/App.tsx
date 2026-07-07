@@ -53,9 +53,11 @@ const StudyLibraryPage = lazy(() => import('./features/study/pages/StudyLibraryP
 const TeacherLogin = lazy(() => import('./pages/auth/TeacherLogin'));
 const StudentLogin = lazy(() => import('./pages/auth/StudentLogin'));
 const AdminLogin = lazy(() => import('./pages/auth/AdminLogin'));
+const ParentLogin = lazy(() => import('./pages/auth/ParentLogin'));
 const TeacherDashboard = lazy(() => import('./pages/portal/TeacherDashboard'));
 const StudentDashboard = lazy(() => import('./pages/portal/StudentDashboard'));
 const AdminDashboard = lazy(() => import('./pages/portal/AdminDashboard'));
+const ParentDashboard = lazy(() => import('./pages/portal/ParentDashboard'));
 const PortalEntry = lazy(() => import('./pages/portal/PortalEntry'));
 const PlatformLogin = lazy(() => import('./pages/auth/PlatformLogin'));
 const PlatformAdminDashboard = lazy(() => import('./pages/portal/PlatformAdminDashboard'));
@@ -84,8 +86,8 @@ type Page =
   // Study
   | 'library'
   // Portal pages
-  | 'portal' | 'teacher-login' | 'student-login' | 'admin-login'
-  | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard'
+  | 'portal' | 'teacher-login' | 'student-login' | 'admin-login' | 'parent-login'
+  | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard' | 'parent-dashboard'
   | 'platform-login' | 'platform-dashboard';
 
 // ── Free Tools Nav — shown on career/tvet pages ───────────────────────────────
@@ -153,8 +155,8 @@ const pageProps = (navigate: (p: Page) => void) => ({
 // Pages that should NOT be pushed to browser history (auth/session transitions).
 // Going "back" into a login screen after you're already logged in is confusing.
 const NO_HISTORY_PAGES = new Set<Page>([
-  'teacher-dashboard', 'student-dashboard', 'admin-dashboard',
-  'teacher-login', 'student-login', 'admin-login',
+  'teacher-dashboard', 'student-dashboard', 'admin-dashboard', 'parent-dashboard',
+  'teacher-login', 'student-login', 'admin-login', 'parent-login',
   'platform-login', 'platform-dashboard',
 ]);
 
@@ -195,6 +197,7 @@ export default function App() {
       if (localStorage.getItem('prospect_teacher_session')) return 'teacher-dashboard';
       if (localStorage.getItem('prospect_student_session')) return 'student-dashboard';
       if (localStorage.getItem('prospect_admin_session')) return 'admin-dashboard';
+      if (localStorage.getItem('prospect_parent_session')) return 'parent-dashboard';
       if (sessionStorage.getItem('prospect_platform_session')) return 'platform-dashboard';
     } catch {}
     // 2. Hash in URL (e.g. user refreshed or followed a shared link)
@@ -258,9 +261,11 @@ export default function App() {
       case 'teacher-login':     return <PageTransition pageKey="teacher-login"><TeacherLogin onNavigate={navigate} /></PageTransition>;
       case 'student-login':     return <PageTransition pageKey="student-login"><StudentLogin onNavigate={navigate} /></PageTransition>;
       case 'admin-login':       return <PageTransition pageKey="admin-login"><AdminLogin onNavigate={navigate} /></PageTransition>;
+      case 'parent-login':      return <PageTransition pageKey="parent-login"><ParentLogin onNavigate={navigate} /></PageTransition>;
       case 'teacher-dashboard': return <PageTransition pageKey="teacher-dashboard"><TeacherDashboard onNavigate={navigate} /></PageTransition>;
       case 'student-dashboard': return <PageTransition pageKey="student-dashboard"><StudentDashboard onNavigate={navigate} /></PageTransition>;
       case 'admin-dashboard':   return <PageTransition pageKey="admin-dashboard"><AdminDashboard onNavigate={navigate} /></PageTransition>;
+      case 'parent-dashboard':  return <PageTransition pageKey="parent-dashboard"><ParentDashboard onNavigate={navigate} /></PageTransition>;
       case 'platform-login':    return <PageTransition pageKey="platform-login"><PlatformLogin onNavigate={navigate} /></PageTransition>;
       case 'platform-dashboard': return <PageTransition pageKey="platform-dashboard"><PlatformAdminDashboard onNavigate={navigate} /></PageTransition>;
 

@@ -20,7 +20,9 @@ export interface HomeroomStudent {
   student_code: string;
 }
 
-export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused';
+// 'excused' is displayed to users as "Sick" — kept as the DB/internal value
+// to avoid a data migration; only the label changed.
+export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused' | 'non_school_day';
 
 export interface AttendanceRecord {
   student_id: number;
@@ -225,7 +227,10 @@ export async function markAttendance(
       { onConflict: 'student_id,date' }
     );
 
-  if (error) return { success: false, error: 'Failed to save attendance.' };
+  if (error) {
+    console.error('markAttendance failed:', error.message);
+    return { success: false, error: `Failed to save attendance: ${error.message}` };
+  }
   return { success: true };
 }
 
@@ -247,8 +252,22 @@ export async function markAttendanceBulk(
     .from('attendance')
     .upsert(rows, { onConflict: 'student_id,date' });
 
-  if (error) return { success: false, error: 'Failed to save attendance.' };
+  if (error) {
+    console.error('markAttendanceBulk failed:', error.message);
+    return { success: false, error: `Failed to save attendance: ${error.message}` };
+  }
   return { success: true };
+}
+
+// ── Attendance: mark the whole roster as a non-school day (public holiday,
+// closure, etc). Excluded from attendance % — see fetchAttendanceSummary. ──
+
+export async function markNonSchoolDay(
+  student_ids: number[],
+  date: string,
+  marked_by: number
+): Promise<SetHomeroomResult> {
+  return markAttendanceBulk(student_ids, date, 'non_school_day', marked_by);
 }
 
 // ── Attendance: monthly summary per student for a cohort (for a stats view) ──
@@ -282,8 +301,11 @@ export async function fetchAttendanceSummary(
     byStudent.set(id, { student_id: id, present: 0, late: 0, absent: 0, excused: 0 });
   }
   for (const row of data) {
+    // non_school_day is intentionally excluded from the summary — it
+    // shouldn't count for or against any student's attendance rate.
+    if (row.status === 'non_school_day') continue;
     const s = byStudent.get(row.student_id);
-    if (s) s[row.status as AttendanceStatus] += 1;
+    if (s) s[row.status as Exclude<AttendanceStatus, 'non_school_day'>] += 1;
   }
   return [...byStudent.values()];
 }

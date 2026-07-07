@@ -368,3 +368,107 @@ export async function platformLogin(name: string, password: string): Promise<Pla
   setPlatformSession(session);
   return { success: true, session };
 }
+
+// ═════════════════════════════════════════════════════════════
+// PARENT AUTH
+// ═════════════════════════════════════════════════════════════
+
+const PARENT_SESSION_KEY = 'prospect_parent_session';
+
+export interface ParentSession {
+  parent_id: number;
+  school_id: number;
+  school_code: string;
+  school_name: string;
+  name: string;
+  surname: string;
+  parent_code: string;
+}
+
+export function getParentSession(): ParentSession | null {
+  try {
+    const raw = localStorage.getItem(PARENT_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setParentSession(session: ParentSession): void {
+  localStorage.setItem(PARENT_SESSION_KEY, JSON.stringify(session));
+}
+
+export function clearParentSession(): void {
+  localStorage.removeItem(PARENT_SESSION_KEY);
+}
+
+export type ParentLoginResult =
+  | { success: true; session: ParentSession }
+  | { success: false; error: string };
+
+export async function parentLogin(
+  schoolCode: string,
+  parentCode: string,
+  pin: string
+): Promise<ParentLoginResult> {
+  if (!/^\d{10}$/.test(pin)) {
+    return { success: false, error: 'PIN must be exactly 10 digits.' };
+  }
+
+  // 1. Look up school
+  const { data: school, error: schoolError } = await supabaseAdmin
+    .from('schools')
+    .select('id, name, school_code')
+    .eq('school_code', schoolCode.toUpperCase())
+    .single();
+
+  if (schoolError || !school) {
+    return { success: false, error: 'School code not found.' };
+  }
+
+  // 2. Look up parent within that school
+  const { data: parent, error: parentError } = await supabaseAdmin
+    .from('parents')
+    .select('id, school_id, name, surname, parent_code, pin_hash, is_active')
+    .eq('school_id', school.id)
+    .eq('parent_code', parentCode.toUpperCase())
+    .single();
+
+  if (parentError || !parent) {
+    return { success: false, error: 'Parent code not found.' };
+  }
+
+  if (!parent.is_active) {
+    return { success: false, error: 'This account has been deactivated. Contact your school.' };
+  }
+
+  // 3. Verify PIN
+  const pinHash = await hashPin(pin);
+  if (pinHash !== parent.pin_hash) {
+    return { success: false, error: 'Incorrect PIN.' };
+  }
+
+  // 4. Update last_login_at
+  await supabaseAdmin
+    .from('parents')
+    .update({ last_login_at: new Date().toISOString() })
+    .eq('id', parent.id);
+
+  // 5. Build and store session
+  const session: ParentSession = {
+    parent_id: parent.id,
+    school_id: school.id,
+    school_code: school.school_code,
+    school_name: school.name,
+    name: parent.name,
+    surname: parent.surname,
+    parent_code: parent.parent_code,
+  };
+
+  setParentSession(session);
+  return { success: true, session };
+}
+
+export function parentLogout(): void {
+  clearParentSession();
+}

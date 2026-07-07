@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ArrowLeft, Shield, GraduationCap, BookOpen, ChevronRight, LucideIcon } from 'lucide-react';
+import { ArrowLeft, Shield, GraduationCap, BookOpen, Users, ChevronRight, LucideIcon } from 'lucide-react';
 
 type Page = string;
 
@@ -10,6 +10,13 @@ const roles = [
     label: 'Learner',
     eyebrow: 'For Students',
     desc: 'Access your study library, marks & career tools.',
+  },
+  {
+    id: 'parent-login',
+    icon: Users,
+    label: 'Parent',
+    eyebrow: 'For Parents',
+    desc: "Follow your child's attendance, marks & behaviour.",
   },
   {
     id: 'teacher-login',

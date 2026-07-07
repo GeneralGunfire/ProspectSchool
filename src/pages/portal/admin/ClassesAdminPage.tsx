@@ -78,7 +78,7 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
   }
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
           <span className="eyebrow">Admin</span>

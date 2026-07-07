@@ -44,6 +44,7 @@
             |-- latest.json
         |-- water
             |-- latest.json
+    |-- hero-devices.webp
     |-- images
         |-- career-education.jpg
         |-- career-engineering.jpg
@@ -290,6 +291,7 @@
         |-- actionCenter.ts
         |-- announcements.ts
         |-- auth.ts
+        |-- behaviour.ts
         |-- events.ts
         |-- homeroom.ts
         |-- interventions.ts
@@ -298,6 +300,7 @@
         |-- myFuture.ts
         |-- notifications.ts
         |-- parentContacts.ts
+        |-- parents.ts
         |-- pastPapers.ts
         |-- resources.ts
         |-- schools.ts
@@ -316,6 +319,7 @@
     |-- pages
         |-- auth
             |-- AdminLogin.tsx
+            |-- ParentLogin.tsx
             |-- PlatformLogin.tsx
             |-- StudentLogin.tsx
             |-- TeacherLogin.tsx
@@ -325,11 +329,20 @@
                 |-- AdminHomePage.tsx
                 |-- ClassDetailPage.tsx
                 |-- ClassesAdminPage.tsx
+                |-- ParentsAdminPage.tsx
                 |-- StudentAssignmentsPage.tsx
                 |-- StudentDetailModal.tsx
                 |-- StudentsDirectoryPage.tsx
                 |-- TeachersPage.tsx
             |-- AdminDashboard.tsx
+            |-- parent
+                |-- ParentAnnouncementsPage.tsx
+                |-- ParentAttendancePage.tsx
+                |-- ParentBehaviourPage.tsx
+                |-- ParentHomePage.tsx
+                |-- ParentHomeworkPage.tsx
+                |-- ParentMarksPage.tsx
+            |-- ParentDashboard.tsx
             |-- PlatformAdminDashboard.tsx
             |-- PortalEntry.tsx
             |-- PortalSidePanel.tsx
@@ -338,6 +351,7 @@
                 |-- LibraryPage.tsx
                 |-- MyFuturePage.tsx
                 |-- StudentAnnouncementsPage.tsx
+                |-- StudentBehaviourPage.tsx
                 |-- StudentCalendarPage.tsx
                 |-- StudentHomePage.tsx
                 |-- StudentHomeroomPage.tsx
@@ -348,6 +362,7 @@
             |-- StudentDashboard.tsx
             |-- teacher
                 |-- AnnouncementsPage.tsx
+                |-- BehaviourPage.tsx
                 |-- CalendarPage.tsx
                 |-- ClassesPage.tsx
                 |-- HomeroomPage.tsx

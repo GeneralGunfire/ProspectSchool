@@ -134,7 +134,7 @@ export default function AdminAnnouncementsPage({ session }: AdminAnnouncementsPa
   const unpinned = announcements.filter(a => !a.pinned);
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
 
       {/* Toast */}
       <AnimatePresence>

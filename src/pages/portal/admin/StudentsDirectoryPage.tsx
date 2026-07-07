@@ -114,7 +114,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
   };
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <div>
           <span className="eyebrow">Admin</span>

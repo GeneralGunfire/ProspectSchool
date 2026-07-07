@@ -66,7 +66,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
   }, [session.school_id]);
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
 
       {/* ── Page header ────────────────────────────────────────── */}
       <motion.div

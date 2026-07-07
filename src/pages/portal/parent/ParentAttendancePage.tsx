@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Check, Clock, X as XIcon, Thermometer, CalendarOff, UserRound } from 'lucide-react';
-import type { StudentSession } from '../../../lib/auth';
-import {
-  fetchCohortHomeroomTeacher, fetchStudentAttendanceHistory,
-  type HomeroomTeacherInfo, type AttendanceRecord, type AttendanceStatus,
-} from '../../../lib/homeroom';
+import { Check, Clock, X as XIcon, Thermometer, CalendarOff } from 'lucide-react';
+import { fetchStudentAttendanceHistory, type AttendanceRecord, type AttendanceStatus } from '../../../lib/homeroom';
+import type { ParentChild } from '../../../lib/parents';
 
-interface StudentHomeroomPageProps { session: StudentSession; }
+interface ParentAttendancePageProps { child: ParentChild; }
 
 const STATUS_CONFIG: Record<AttendanceStatus, { label: string; icon: typeof Check; className: string }> = {
   present:        { label: 'Present',        icon: Check,       className: 'bg-green-50 text-green-700' },
@@ -16,26 +13,19 @@ const STATUS_CONFIG: Record<AttendanceStatus, { label: string; icon: typeof Chec
   non_school_day: { label: 'No School',      icon: CalendarOff, className: 'bg-stone-100 text-stone-600' },
 };
 
-export default function StudentHomeroomPage({ session }: StudentHomeroomPageProps) {
-  const [teacher, setTeacher] = useState<HomeroomTeacherInfo | null>(null);
+export default function ParentAttendancePage({ child }: ParentAttendancePageProps) {
   const [history, setHistory] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
-      if (session.cohort_id) {
-        const [t, h] = await Promise.all([
-          fetchCohortHomeroomTeacher(session.cohort_id),
-          fetchStudentAttendanceHistory(session.student_id, 30),
-        ]);
-        setTeacher(t);
-        setHistory(h);
-      }
+      const h = await fetchStudentAttendanceHistory(child.student_id, 60);
+      setHistory(h);
       setLoading(false);
     };
     load();
-  }, [session.cohort_id, session.student_id]);
+  }, [child.student_id]);
 
   const formatDate = (d: string) =>
     new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -43,46 +33,28 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-accent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
-      <div className="mb-8">
-        <span className="eyebrow">My Class</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight">Homeroom</h1>
+      <div className="mb-6">
+        <span className="eyebrow">{child.name} {child.surname}</span>
+        <h1 className="text-2xl font-black text-brand-dark tracking-tight">Attendance</h1>
       </div>
 
-      {/* Teacher card */}
-      <div className="card-premium bg-white border border-brand-border rounded-[24px] p-6 mb-6 flex items-center gap-4">
-        <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center shrink-0">
-          <UserRound className="w-5 h-5 text-accent-foreground" />
-        </div>
-        <div>
-          <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-0.5">
-            {session.cohort_name ?? `Grade ${session.grade}`}
-          </p>
-          {teacher ? (
-            <p className="text-lg font-black text-brand-dark">{teacher.name} {teacher.surname}</p>
-          ) : (
-            <p className="text-sm text-stone-500 font-medium">No homeroom teacher assigned yet</p>
-          )}
-        </div>
-      </div>
-
-      {/* Attendance history */}
       <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
         <div className="px-6 py-4 border-b border-brand-border/60">
-          <h2 className="text-sm font-black text-brand-dark">My Attendance</h2>
+          <h2 className="text-sm font-black text-brand-dark">History</h2>
           <p className="text-xs text-stone-500 mt-0.5">Last {history.length} recorded day{history.length === 1 ? '' : 's'}</p>
         </div>
 
         {history.length === 0 ? (
           <div className="p-12 text-center">
             <p className="font-bold text-brand-dark mb-1">No attendance recorded yet</p>
-            <p className="text-sm text-stone-500">Your homeroom teacher marks attendance each school day.</p>
+            <p className="text-sm text-stone-500">The homeroom teacher marks attendance each school day.</p>
           </div>
         ) : (
           <table className="w-full text-sm">

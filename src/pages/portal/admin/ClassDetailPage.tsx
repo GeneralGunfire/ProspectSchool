@@ -70,7 +70,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
   }
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full">
+    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
       <button onClick={onBack} className="flex items-center gap-1.5 text-sm font-bold text-stone-500 hover:text-brand-dark transition-colors mb-4">
         <ArrowLeft className="w-4 h-4" /> Back to Classes
       </button>

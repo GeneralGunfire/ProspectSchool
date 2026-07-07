@@ -1,47 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Plus, X, ArrowRight, Check, AlertCircle,
-  Pencil, ToggleLeft, ToggleRight, ShieldCheck, Trash2
-} from 'lucide-react';
+import { Plus, X, ArrowRight, AlertCircle, Pencil, ToggleLeft, ToggleRight, Trash2, Search } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
 import {
-  fetchSchoolTeachers, createTeacher, updateTeacher, setTeacherActive, deleteTeacher,
-  fetchTeacherSubjects, setTeacherSubjects,
-  type Teacher,
-} from '../../../lib/teachers';
-import { fetchSubjects, type Subject } from '../../../lib/students';
+  fetchSchoolParents, createParent, updateParent, deleteParent, setParentChildren,
+  type Parent, type ParentChild,
+} from '../../../lib/parents';
+import { fetchSchoolStudentDirectory, type DirectoryStudent } from '../../../lib/students';
 
-interface TeachersPageProps { session: AdminSession; }
+interface ParentsAdminPageProps { session: AdminSession; }
 
-interface TeacherForm {
+interface ParentForm {
   name: string; surname: string;
-  teacher_code: string; pin: string;
-  role: 'teacher' | 'school_admin';
+  parent_code: string; pin: string;
 }
 
-interface SubjectGradeRow {
-  subject_id: number | null;
-  grade: number;
-}
-
-const EMPTY: TeacherForm = { name: '', surname: '', teacher_code: '', pin: '', role: 'teacher' };
-const EMPTY_SUBJECT_ROW: SubjectGradeRow = { subject_id: null, grade: 10 };
+const EMPTY: ParentForm = { name: '', surname: '', parent_code: '', pin: '' };
 type ModalMode = 'add' | 'edit';
+type ParentWithChildren = Parent & { children: ParentChild[] };
 
-export default function TeachersPage({ session }: TeachersPageProps) {
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+export default function ParentsAdminPage({ session }: ParentsAdminPageProps) {
+  const [parents, setParents] = useState<ParentWithChildren[]>([]);
+  const [students, setStudents] = useState<DirectoryStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalMode, setModalMode] = useState<ModalMode>('add');
-  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
+  const [editingParent, setEditingParent] = useState<ParentWithChildren | null>(null);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<TeacherForm>(EMPTY);
-  const [subjectRows, setSubjectRows] = useState<SubjectGradeRow[]>([{ ...EMPTY_SUBJECT_ROW }]);
+  const [form, setForm] = useState<ParentForm>(EMPTY);
+  const [selectedStudentIds, setSelectedStudentIds] = useState<Set<number>>(new Set());
+  const [studentSearch, setStudentSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<number | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<Teacher | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<ParentWithChildren | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -50,47 +41,56 @@ export default function TeachersPage({ session }: TeachersPageProps) {
   const load = async () => {
     setLoading(true);
     if (session.school_id) {
-      const [data, subjectData] = await Promise.all([
-        fetchSchoolTeachers(session.school_id),
-        fetchSubjects(),
+      const [parentData, studentData] = await Promise.all([
+        fetchSchoolParents(session.school_id),
+        fetchSchoolStudentDirectory(session.school_id),
       ]);
-      setTeachers(data);
-      setSubjects(subjectData);
+      setParents(parentData);
+      setStudents(studentData);
     }
     setLoading(false);
   };
 
-  const setSubjectRow = (index: number, field: keyof SubjectGradeRow, value: number) => {
-    setSubjectRows((prev) => prev.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
-  };
-  const addSubjectRow = () => setSubjectRows((prev) => [...prev, { ...EMPTY_SUBJECT_ROW }]);
-  const removeSubjectRow = (index: number) => setSubjectRows((prev) => prev.filter((_, i) => i !== index));
-
-  const set = (field: keyof TeacherForm, value: string) =>
+  const set = (field: keyof ParentForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
 
   const openAdd = () => {
     setModalMode('add');
-    setEditingTeacher(null);
+    setEditingParent(null);
     setForm(EMPTY);
-    setSubjectRows([{ ...EMPTY_SUBJECT_ROW }]);
+    setSelectedStudentIds(new Set());
+    setStudentSearch('');
     setFormError(null);
     setShowForm(true);
   };
 
-  const openEdit = async (t: Teacher) => {
+  const openEdit = (p: ParentWithChildren) => {
     setModalMode('edit');
-    setEditingTeacher(t);
-    setForm({ name: t.name, surname: t.surname, teacher_code: t.teacher_code, pin: '', role: t.role });
+    setEditingParent(p);
+    setForm({ name: p.name, surname: p.surname, parent_code: p.parent_code, pin: '' });
+    setSelectedStudentIds(new Set(p.children.map((c) => c.student_id)));
+    setStudentSearch('');
     setFormError(null);
     setShowForm(true);
-    const existing = await fetchTeacherSubjects(t.id);
-    setSubjectRows(existing.length > 0
-      ? existing.map((e) => ({ subject_id: e.subject_id, grade: e.grade }))
-      : [{ ...EMPTY_SUBJECT_ROW }]);
   };
 
-  const closeForm = () => { setShowForm(false); setForm(EMPTY); setSubjectRows([{ ...EMPTY_SUBJECT_ROW }]); setFormError(null); };
+  const closeForm = () => { setShowForm(false); setForm(EMPTY); setSelectedStudentIds(new Set()); setFormError(null); };
+
+  const toggleStudent = (id: number) => {
+    setSelectedStudentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const filteredStudents = useMemo(() => {
+    const q = studentSearch.trim().toLowerCase();
+    if (!q) return students;
+    return students.filter((s) =>
+      `${s.name} ${s.surname}`.toLowerCase().includes(q) || s.student_code.toLowerCase().includes(q)
+    );
+  }, [students, studentSearch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,40 +103,25 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         setSubmitting(false);
         return;
       }
-      const result = await createTeacher({
+      const result = await createParent({
         school_id: session.school_id!,
         name: form.name, surname: form.surname,
-        teacher_code: form.teacher_code, pin: form.pin, role: form.role,
+        parent_code: form.parent_code, pin: form.pin,
+        student_ids: [...selectedStudentIds],
       });
       if (!result.success) { setFormError(result.error); setSubmitting(false); return; }
-
-      if (form.role === 'teacher') {
-        const pairs = subjectRows
-          .filter((r): r is { subject_id: number; grade: number } => r.subject_id !== null)
-          .map((r) => ({ subject_id: r.subject_id, grade: r.grade }));
-        if (pairs.length > 0) await setTeacherSubjects(result.teacher.id, pairs);
-      }
-    } else if (editingTeacher) {
+    } else if (editingParent) {
       if (form.pin && !/^\d{10}$/.test(form.pin)) {
         setFormError('PIN must be exactly 10 digits.');
         setSubmitting(false);
         return;
       }
-      const result = await updateTeacher({
-        teacher_id: editingTeacher.id,
-        school_id: session.school_id!,
+      const result = await updateParent(editingParent.id, {
         name: form.name, surname: form.surname,
-        role: form.role,
         pin: form.pin || undefined,
       });
       if (!result.success) { setFormError(result.error); setSubmitting(false); return; }
-
-      const pairs = form.role === 'teacher'
-        ? subjectRows
-            .filter((r): r is { subject_id: number; grade: number } => r.subject_id !== null)
-            .map((r) => ({ subject_id: r.subject_id, grade: r.grade }))
-        : []; // school admins don't teach subjects — clear any existing rows
-      await setTeacherSubjects(editingTeacher.id, pairs);
+      await setParentChildren(editingParent.id, [...selectedStudentIds]);
     }
 
     await load();
@@ -144,20 +129,20 @@ export default function TeachersPage({ session }: TeachersPageProps) {
     setSubmitting(false);
   };
 
-  const handleToggle = async (t: Teacher) => {
-    setTogglingId(t.id);
-    await setTeacherActive(t.id, session.school_id!, !t.is_active);
+  const handleToggle = async (p: ParentWithChildren) => {
+    setTogglingId(p.id);
+    await updateParent(p.id, { is_active: !p.is_active });
     await load();
     setTogglingId(null);
   };
 
-  const openDelete = (t: Teacher) => { setConfirmDelete(t); setDeleteError(null); };
+  const openDelete = (p: ParentWithChildren) => { setConfirmDelete(p); setDeleteError(null); };
 
   const handleDelete = async () => {
     if (!confirmDelete) return;
     setDeleting(true);
     setDeleteError(null);
-    const result = await deleteTeacher(confirmDelete.id, session.school_id!);
+    const result = await deleteParent(confirmDelete.id);
     if (!result.success) {
       setDeleteError(result.error);
       setDeleting(false);
@@ -175,33 +160,31 @@ export default function TeachersPage({ session }: TeachersPageProps) {
 
   return (
     <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <span className="eyebrow">Admin</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Teachers</h1>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Parents</h1>
         </div>
         <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
-          <Plus className="w-4 h-4" /> Add Teacher
+          <Plus className="w-4 h-4" /> Add Parent
         </motion.button>
       </div>
 
-      {/* List */}
       {loading ? (
         <div className="flex items-center justify-center py-24">
           <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
-      ) : teachers.length === 0 ? (
+      ) : parents.length === 0 ? (
         <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
           <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Plus className="w-5 h-5 text-stone-500" />
           </div>
-          <p className="font-bold text-brand-dark mb-1">No teachers yet</p>
-          <p className="text-sm text-stone-500 mb-6">Add your first teacher to get started.</p>
+          <p className="font-bold text-brand-dark mb-1">No parents yet</p>
+          <p className="text-sm text-stone-500 mb-6">Add a parent account and link it to their child.</p>
           <button onClick={openAdd}
             className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
-            Add Teacher <ArrowRight className="w-4 h-4" />
+            Add Parent <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       ) : (
@@ -209,52 +192,54 @@ export default function TeachersPage({ session }: TeachersPageProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Teacher</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Parent</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Role</th>
+                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Children</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Last Login</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody>
-              {teachers.map((t, i) => (
-                <tr key={t.id} className={`border-b border-stone-50 transition-colors ${!t.is_active ? 'opacity-50' : 'hover:bg-stone-50'} ${i === teachers.length - 1 ? 'border-0' : ''}`}>
+              {parents.map((p, i) => (
+                <tr key={p.id} className={`border-b border-stone-50 transition-colors ${!p.is_active ? 'opacity-50' : 'hover:bg-stone-50'} ${i === parents.length - 1 ? 'border-0' : ''}`}>
                   <td className="px-5 py-3.5">
-                    <p className="font-bold text-brand-dark">{t.surname}, {t.name}</p>
+                    <p className="font-bold text-brand-dark">{p.surname}, {p.name}</p>
                   </td>
-                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{t.teacher_code}</td>
+                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{p.parent_code}</td>
                   <td className="px-5 py-3.5">
-                    {t.role === 'school_admin' ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-dark text-white text-xs font-bold rounded-lg">
-                        <ShieldCheck className="w-2.5 h-2.5" /> Admin
-                      </span>
+                    {p.children.length === 0 ? (
+                      <span className="text-xs text-stone-400">No children linked</span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
-                        Teacher
-                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {p.children.map((c) => (
+                          <span key={c.student_id} className="text-xs font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded-lg">
+                            {c.name} {c.surname}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </td>
-                  <td className="px-5 py-3.5 text-stone-500 text-xs">{formatDate(t.last_login_at)}</td>
+                  <td className="px-5 py-3.5 text-stone-500 text-xs">{formatDate(p.last_login_at)}</td>
                   <td className="px-5 py-3.5">
-                    <span className={`inline-block px-2 py-0.5 text-xs font-black rounded-lg ${t.is_active ? 'bg-green-50 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
-                      {t.is_active ? 'Active' : 'Inactive'}
+                    <span className={`inline-block px-2 py-0.5 text-xs font-black rounded-lg ${p.is_active ? 'bg-green-50 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
+                      {p.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-1 justify-end">
-                      <button onClick={() => openEdit(t)}
+                      <button onClick={() => openEdit(p)}
                         className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button onClick={() => handleToggle(t)} disabled={togglingId === t.id}
+                      <button onClick={() => handleToggle(p)} disabled={togglingId === p.id}
                         className="p-2 rounded-lg hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-40">
-                        {t.is_active
+                        {p.is_active
                           ? <ToggleRight className="w-4 h-4 text-green-600" />
                           : <ToggleLeft className="w-4 h-4" />
                         }
                       </button>
-                      <button onClick={() => openDelete(t)}
+                      <button onClick={() => openDelete(p)}
                         className="p-2 rounded-lg hover:bg-red-50 text-stone-500 hover:text-red-600 transition-colors">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -283,7 +268,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                 <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
-                <h2 className="text-base font-black text-brand-dark mb-1">Delete teacher?</h2>
+                <h2 className="text-base font-black text-brand-dark mb-1">Delete parent?</h2>
                 <p className="text-sm text-stone-500 mb-4">
                   This will permanently delete <span className="font-bold text-brand-dark">{confirmDelete.name} {confirmDelete.surname}</span>'s account. This cannot be undone.
                 </p>
@@ -325,18 +310,18 @@ export default function TeachersPage({ session }: TeachersPageProps) {
               transition={{ type: 'spring', stiffness: 320, damping: 28 }}
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[85vh]">
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
                   <h2 className="text-lg font-black text-brand-dark">
-                    {modalMode === 'add' ? 'Add Teacher' : 'Edit Teacher'}
+                    {modalMode === 'add' ? 'Add Parent' : 'Edit Parent'}
                   </h2>
                   <button onClick={closeForm} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="px-6 py-4">
-                  <form id="teacher-form" onSubmit={handleSubmit} className="space-y-4">
+                <div className="px-6 py-4 overflow-y-auto">
+                  <form id="parent-form" onSubmit={handleSubmit} className="space-y-4">
                     {formError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                         className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
@@ -345,7 +330,6 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       </motion.div>
                     )}
 
-                    {/* Name + Surname */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
@@ -361,19 +345,17 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       </div>
                     </div>
 
-                    {/* Teacher Code — locked in edit */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher Code</label>
-                      <input required type="text" value={form.teacher_code}
-                        onChange={(e) => modalMode === 'add' && set('teacher_code', e.target.value.toUpperCase())}
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Parent Code</label>
+                      <input required type="text" value={form.parent_code}
+                        onChange={(e) => modalMode === 'add' && set('parent_code', e.target.value.toUpperCase())}
                         readOnly={modalMode === 'edit'}
                         className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
                           modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
                         }`}
-                        placeholder="e.g. TCH-0002" autoCapitalize="characters" />
+                        placeholder="e.g. PAR-0001" autoCapitalize="characters" />
                     </div>
 
-                    {/* PIN */}
                     <div>
                       <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">
                         PIN {modalMode === 'edit' && <span className="normal-case font-medium text-stone-400">(leave blank to keep current)</span>}
@@ -385,68 +367,51 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                         placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
                     </div>
 
-                    {/* Role */}
                     <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Role</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {(['teacher', 'school_admin'] as const).map((r) => (
-                          <button key={r} type="button" onClick={() => set('role', r)}
-                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold border transition-all ${
-                              form.role === r ? 'bg-brand-dark text-white border-brand-dark' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
-                            }`}>
-                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${form.role === r ? 'bg-white/20' : 'border border-stone-300'}`}>
-                              {form.role === r && <Check className="w-2.5 h-2.5" />}
-                            </div>
-                            {r === 'teacher' ? 'Teacher' : 'School Admin'}
-                          </button>
-                        ))}
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
+                        Children ({selectedStudentIds.size} selected)
+                      </label>
+                      <div className="relative mb-2">
+                        <Search className="w-3.5 h-3.5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          value={studentSearch}
+                          onChange={(e) => setStudentSearch(e.target.value)}
+                          placeholder="Search students..."
+                          className="w-full pl-9 pr-3 py-2 rounded-xl border border-brand-border bg-stone-50 text-xs font-medium focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                        />
+                      </div>
+                      <div className="max-h-44 overflow-y-auto border border-brand-border rounded-xl divide-y divide-stone-50">
+                        {filteredStudents.length === 0 ? (
+                          <p className="text-xs text-stone-400 px-3 py-3 text-center">No students found.</p>
+                        ) : (
+                          filteredStudents.map((s) => (
+                            <label key={s.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-stone-50 transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={selectedStudentIds.has(s.id)}
+                                onChange={() => toggleStudent(s.id)}
+                                className="w-3.5 h-3.5 rounded border-brand-border accent-accent"
+                              />
+                              <span className="text-xs font-bold text-brand-dark">{s.surname}, {s.name}</span>
+                              <span className="text-[10px] text-stone-400 ml-auto font-mono">{s.student_code}</span>
+                            </label>
+                          ))
+                        )}
                       </div>
                     </div>
-
-                    {/* Subjects & Grades — teachers only, not school admins */}
-                    {form.role === 'teacher' && (
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subjects Taught</label>
-                      <div className="space-y-2">
-                        {subjectRows.map((row, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <select value={row.subject_id ?? ''} onChange={(e) => setSubjectRow(i, 'subject_id', Number(e.target.value))}
-                              className="flex-1 min-w-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                              <option value="">Select subject</option>
-                              {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                            </select>
-                            <select value={row.grade} onChange={(e) => setSubjectRow(i, 'grade', Number(e.target.value))}
-                              className="w-32 shrink-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                              {[8, 9, 10, 11, 12].map((g) => <option key={g} value={g}>Grade {g}</option>)}
-                            </select>
-                            {subjectRows.length > 1 && (
-                              <button type="button" onClick={() => removeSubjectRow(i)}
-                                className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <button type="button" onClick={addSubjectRow}
-                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-brand-dark transition-colors">
-                        <Plus className="w-3.5 h-3.5" /> Add another subject
-                      </button>
-                    </div>
-                    )}
                   </form>
                 </div>
 
-                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
+                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
                   <button type="button" onClick={closeForm}
                     className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
-                  <button type="submit" form="teacher-form" disabled={submitting}
+                  <button type="submit" form="parent-form" disabled={submitting}
                     className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-                      : <>{modalMode === 'add' ? 'Add Teacher' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
+                      : <>{modalMode === 'add' ? 'Add Parent' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
                     }
                   </button>
                 </div>

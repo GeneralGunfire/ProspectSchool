@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
@@ -8,8 +8,9 @@ import AdminHomePage from './admin/AdminHomePage';
 import StudentAssignmentsPage from './admin/StudentAssignmentsPage';
 import ClassesAdminPage from './admin/ClassesAdminPage';
 import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
+import ParentsAdminPage from './admin/ParentsAdminPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -36,6 +37,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'teachers',      label: 'Teachers',      icon: GraduationCap },
     { id: 'students',      label: 'Students',      icon: Users },
+    { id: 'parents',       label: 'Parents',       icon: Heart },
     { id: 'classes',       label: 'Classes',       icon: School },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
   ];
@@ -194,6 +196,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'teachers'      && <TeachersPage session={session} />}
           {activePage === 'classes'       && <ClassesAdminPage session={session} />}
           {activePage === 'students'      && <StudentsDirectoryPage session={session} />}
+          {activePage === 'parents'       && <ParentsAdminPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
         </div>
       </div>

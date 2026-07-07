@@ -422,6 +422,13 @@ html {
   letter-spacing: 0;
 }
 
+/* Sharper display sans, pairs with the Instrument Serif accent above.
+   Loaded at 600/700/800 only — use font-black (900) sparingly, it will
+   faux-bold since there's no true black weight in the font file. */
+.font-instrument {
+  font-family: "Instrument Sans", "Plus Jakarta Sans", sans-serif;
+}
+
 /* Two star layers pulsing out of phase = cheap parallax twinkle.
    Opacity-only, GPU-friendly, safe on mobile. */
 @keyframes twinkle-a { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.35; } }
