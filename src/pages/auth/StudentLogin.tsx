@@ -38,12 +38,17 @@ export default function StudentLogin({ onNavigate }: { onNavigate: (page: string
 
   return (
     <div
-      className="relative min-h-screen flex flex-col"
-      style={{ background: 'linear-gradient(160deg, #FAFAFA 0%, #F1F0EC 55%, #FAFAFA 100%)' }}
+      className="relative min-h-screen flex flex-col overflow-hidden"
+      style={{ background: 'linear-gradient(160deg, #EAF3FB 0%, #DCEAF6 45%, #CFE2F2 100%)' }}
     >
+      {/* Soft blue glow accents, matching the landing page hero */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-32 w-[560px] h-[560px] rounded-full bg-[color-mix(in_srgb,var(--color-accent)_20%,transparent)] blur-[100px] opacity-60" />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[520px] h-[520px] rounded-full bg-[color-mix(in_srgb,var(--color-brand-pale)_65%,transparent)] blur-[90px] opacity-70" />
+      </div>
 
       {/* Top nav */}
-      <div className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-brand-border">
+      <div className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-white/40">
         <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
           <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
           <span className="text-brand-dark font-black text-sm tracking-tight">Prospect</span>
@@ -62,15 +67,19 @@ export default function StudentLogin({ onNavigate }: { onNavigate: (page: string
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
-          className="w-full max-w-md bg-white rounded-3xl border border-brand-border shadow-xl shadow-stone-900/5 px-8 py-10"
+          className="w-full max-w-md rounded-3xl px-8 py-10"
+          style={{
+            background: 'color-mix(in srgb, white 55%, transparent)',
+            backdropFilter: 'blur(20px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+            border: '1px solid color-mix(in srgb, white 60%, var(--color-brand-border))',
+            boxShadow: '0 20px 60px -20px rgba(11,29,51,0.25)',
+          }}
         >
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-3">For Learners</p>
-          <h1 className="font-black text-brand-dark text-[clamp(1.75rem,3vw,2.25rem)] leading-tight mb-2" style={{ letterSpacing: '-0.03em' }}>
+          <h1 className="font-black text-brand-dark text-[clamp(1.75rem,3vw,2.25rem)] leading-tight mb-8" style={{ letterSpacing: '-0.03em' }}>
             Welcome back.
           </h1>
-          <p className="text-stone-500 text-[14px] font-medium mb-8">
-            Enter the codes provided by your school.
-          </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
 

@@ -26,10 +26,14 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
           same vertical rhythm, so a narrower card here read as undersized
           next to it. */}
       <FadeIn delay={0.1} className="max-w-5xl mx-auto mt-10 lg:mt-14">
-        <div className="relative overflow-hidden rounded-4xl shadow-[0_30px_80px_-20px_rgba(11,29,51,0.4)] card-premium-dark bg-brand-dark">
+        <div className="relative overflow-hidden rounded-4xl shadow-[0_30px_80px_-20px_rgba(11,29,51,0.25)] card-premium bg-white border border-brand-border">
           {/* Photo strip — normal document flow, sized by its own aspect
               ratio rather than absolute-positioned inside a heightless
-              parent (that was collapsing to near-nothing before). */}
+              parent (that was collapsing to near-nothing before). Fades to
+              white at the base so it hands off to the light panel below
+              instead of the dark card this used to end on — back-to-back
+              dark cards with FinalCTA underneath it read as one clashing
+              blob rather than two distinct sections. */}
           <div className="relative w-full aspect-[16/7] sm:aspect-[16/6]">
             <img
               src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1600&q=80&fit=crop"
@@ -41,23 +45,23 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
             />
             <div
               className="absolute inset-0"
-              style={{ background: 'linear-gradient(180deg, color-mix(in srgb, var(--color-brand-dark) 20%, transparent) 0%, var(--color-brand-dark) 100%)' }}
+              style={{ background: 'linear-gradient(180deg, color-mix(in srgb, var(--color-brand-dark) 15%, transparent) 0%, white 100%)' }}
             />
           </div>
 
           {/* Glass panel — overlaps the bottom of the photo strip. Translucent
-              + blurred where it sits over the image, so the photo bleeds
-              through softly at the seam instead of a hard cut, then reads as
-              a normal solid dark card for the rest of its height. */}
+              white + blurred where it sits over the image, then reads as a
+              normal solid white card for the rest of its height, matching
+              the other light cards on the page. */}
           <div
             className="relative -mt-16 sm:-mt-20 px-6 py-10 sm:px-12 sm:py-14 text-center"
             style={{
-              background: 'linear-gradient(180deg, color-mix(in srgb, var(--color-brand-dark) 55%, transparent) 0%, var(--color-brand-dark) 45%)',
+              background: 'linear-gradient(180deg, color-mix(in srgb, white 55%, transparent) 0%, white 45%)',
               backdropFilter: 'blur(18px) saturate(160%)',
               WebkitBackdropFilter: 'blur(18px) saturate(160%)',
             }}
           >
-            <p className="text-white/75 text-[14px] sm:text-[15px] leading-relaxed font-medium max-w-md mx-auto">
+            <p className="text-brand-eyebrow text-[14px] sm:text-[15px] leading-relaxed font-medium max-w-md mx-auto">
               No trials. No freemium tiers. No hidden costs. Prospect is free for every South African school.
             </p>
 
@@ -65,7 +69,7 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
               {features.map(f => (
                 <li key={f} className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: 'var(--color-accent)' }} />
-                  <span className="text-white/90 text-[13.5px] font-medium leading-snug">{f}</span>
+                  <span className="text-brand-dark/80 text-[13.5px] font-medium leading-snug">{f}</span>
                 </li>
               ))}
             </ul>
@@ -73,11 +77,11 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
             <div className="mt-8 flex flex-col items-center">
               <button
                 onClick={() => onNavigate('portal')}
-                className="w-full sm:w-auto bg-white text-brand-dark rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-white/90 active:scale-[0.97] transition-all cursor-pointer"
+                className="w-full sm:w-auto bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-brand-dark/90 active:scale-[0.97] transition-all cursor-pointer"
               >
                 Set Up Your School Free
               </button>
-              <p className="mt-3.5 text-[10px] text-white/60 font-black uppercase tracking-widest">
+              <p className="mt-3.5 text-[10px] text-brand-eyebrow/60 font-black uppercase tracking-widest">
                 No credit card required
               </p>
             </div>
