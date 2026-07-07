@@ -139,6 +139,57 @@ export async function setTeacherActive(
   return { success: true };
 }
 
+// ── Teacher Subjects: what a teacher teaches (subject + grade) ──
+// Independent of teacher_students (per-student links) — this is a pure
+// teaching-assignment declaration used for display/filtering.
+
+export interface TeacherSubject {
+  subject_id: number;
+  grade: number;
+  subject_label: string;
+}
+
+export async function fetchTeacherSubjects(teacher_id: number): Promise<TeacherSubject[]> {
+  const { data, error } = await supabaseAdmin
+    .from('teacher_subjects')
+    .select('subject_id, grade, subjects(label)')
+    .eq('teacher_id', teacher_id)
+    .order('grade');
+
+  if (error || !data) return [];
+  return data.map((r: any) => ({
+    subject_id: r.subject_id,
+    grade: r.grade,
+    subject_label: r.subjects?.label ?? '',
+  }));
+}
+
+export type SetTeacherSubjectsResult =
+  | { success: true }
+  | { success: false; error: string };
+
+// Replaces all of this teacher's subject+grade rows with the given set.
+export async function setTeacherSubjects(
+  teacher_id: number,
+  pairs: { subject_id: number; grade: number }[]
+): Promise<SetTeacherSubjectsResult> {
+  const { error: deleteError } = await supabaseAdmin
+    .from('teacher_subjects')
+    .delete()
+    .eq('teacher_id', teacher_id);
+
+  if (deleteError) return { success: false, error: 'Failed to update subjects.' };
+
+  if (pairs.length === 0) return { success: true };
+
+  const { error: insertError } = await supabaseAdmin
+    .from('teacher_subjects')
+    .insert(pairs.map((p) => ({ teacher_id, subject_id: p.subject_id, grade: p.grade })));
+
+  if (insertError) return { success: false, error: 'Failed to save subjects.' };
+  return { success: true };
+}
+
 // ── Delete teacher ────────────────────────────────────────────
 // Blocked while the teacher still has students assigned (teacher_students),
 // so admins reassign students before removing the account. All other content

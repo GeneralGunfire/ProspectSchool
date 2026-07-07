@@ -57,6 +57,8 @@ const TeacherDashboard = lazy(() => import('./pages/portal/TeacherDashboard'));
 const StudentDashboard = lazy(() => import('./pages/portal/StudentDashboard'));
 const AdminDashboard = lazy(() => import('./pages/portal/AdminDashboard'));
 const PortalEntry = lazy(() => import('./pages/portal/PortalEntry'));
+const PlatformLogin = lazy(() => import('./pages/auth/PlatformLogin'));
+const PlatformAdminDashboard = lazy(() => import('./pages/portal/PlatformAdminDashboard'));
 
 
 type Page =
@@ -83,7 +85,8 @@ type Page =
   | 'library'
   // Portal pages
   | 'portal' | 'teacher-login' | 'student-login' | 'admin-login'
-  | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard';
+  | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard'
+  | 'platform-login' | 'platform-dashboard';
 
 // ── Free Tools Nav — shown on career/tvet pages ───────────────────────────────
 
@@ -152,6 +155,7 @@ const pageProps = (navigate: (p: Page) => void) => ({
 const NO_HISTORY_PAGES = new Set<Page>([
   'teacher-dashboard', 'student-dashboard', 'admin-dashboard',
   'teacher-login', 'student-login', 'admin-login',
+  'platform-login', 'platform-dashboard',
 ]);
 
 /** Read the hash fragment and return a valid Page, or null. */
@@ -191,6 +195,7 @@ export default function App() {
       if (localStorage.getItem('prospect_teacher_session')) return 'teacher-dashboard';
       if (localStorage.getItem('prospect_student_session')) return 'student-dashboard';
       if (localStorage.getItem('prospect_admin_session')) return 'admin-dashboard';
+      if (sessionStorage.getItem('prospect_platform_session')) return 'platform-dashboard';
     } catch {}
     // 2. Hash in URL (e.g. user refreshed or followed a shared link)
     const fromHash = pageFromHash(window.location.hash);
@@ -256,6 +261,8 @@ export default function App() {
       case 'teacher-dashboard': return <PageTransition pageKey="teacher-dashboard"><TeacherDashboard onNavigate={navigate} /></PageTransition>;
       case 'student-dashboard': return <PageTransition pageKey="student-dashboard"><StudentDashboard onNavigate={navigate} /></PageTransition>;
       case 'admin-dashboard':   return <PageTransition pageKey="admin-dashboard"><AdminDashboard onNavigate={navigate} /></PageTransition>;
+      case 'platform-login':    return <PageTransition pageKey="platform-login"><PlatformLogin onNavigate={navigate} /></PageTransition>;
+      case 'platform-dashboard': return <PageTransition pageKey="platform-dashboard"><PlatformAdminDashboard onNavigate={navigate} /></PageTransition>;
 
       // Learning pages
       case 'learning-algebra-g10-t1-linear-equations':    return <PageTransition pageKey={page}><LinearEquationsPage {...pp} /></PageTransition>;
@@ -295,7 +302,7 @@ export default function App() {
         return (
           <PageTransition pageKey="home">
             <ErrorBoundary>
-              <NewLandingPage onNavigate={setPage} />
+              <NewLandingPage onNavigate={navigate} />
             </ErrorBoundary>
           </PageTransition>
         );

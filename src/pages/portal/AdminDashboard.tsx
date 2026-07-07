@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
 import AdminHomePage from './admin/AdminHomePage';
 import StudentAssignmentsPage from './admin/StudentAssignmentsPage';
+import ClassesAdminPage from './admin/ClassesAdminPage';
+import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -33,6 +35,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'home',          label: 'Home',          icon: Home },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'teachers',      label: 'Teachers',      icon: GraduationCap },
+    { id: 'students',      label: 'Students',      icon: Users },
+    { id: 'classes',       label: 'Classes',       icon: School },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
   ];
 
@@ -49,8 +53,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
 
         {/* Logo */}
         <div className="flex items-center gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
-          <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
+          <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
+            <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+            <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
+          </button>
         </div>
 
         {/* Nav */}
@@ -103,8 +109,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
-            <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
+              <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
+              <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
@@ -133,10 +141,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                 className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[82vw] bg-white border-r border-brand-border flex flex-col"
               >
                 <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-                  <div className="flex items-center gap-2">
+                  <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
                     <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                     <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-                  </div>
+                  </button>
                   <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-dash-bg transition-colors">
                     <X className="w-5 h-5" />
                   </button>
@@ -184,6 +192,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'home'          && <AdminHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <AdminAnnouncementsPage session={session} />}
           {activePage === 'teachers'      && <TeachersPage session={session} />}
+          {activePage === 'classes'       && <ClassesAdminPage session={session} />}
+          {activePage === 'students'      && <StudentsDirectoryPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
         </div>
       </div>

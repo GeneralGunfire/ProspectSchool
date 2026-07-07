@@ -102,8 +102,16 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
         </div>
       </div>
 
-      <div className="relative z-10 px-8 py-5 text-[11px] text-stone-400 font-medium border-t border-brand-border">
-        © {new Date().getFullYear()} Prospect South Africa · Free for every school
+      <div className="relative z-10 px-8 py-5 flex items-center justify-between border-t border-brand-border">
+        <p className="text-[11px] text-stone-400 font-medium">
+          © {new Date().getFullYear()} Prospect South Africa · Free for every school
+        </p>
+        <button
+          onClick={() => onNavigate('platform-login')}
+          className="text-[11px] font-medium text-stone-300 hover:text-stone-500 transition-colors"
+        >
+          Platform Administrator
+        </button>
       </div>
     </div>
   );

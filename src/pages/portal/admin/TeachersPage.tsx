@@ -7,8 +7,10 @@ import {
 import type { AdminSession } from '../../../lib/auth';
 import {
   fetchSchoolTeachers, createTeacher, updateTeacher, setTeacherActive, deleteTeacher,
+  fetchTeacherSubjects, setTeacherSubjects,
   type Teacher,
 } from '../../../lib/teachers';
+import { fetchSubjects, type Subject } from '../../../lib/students';
 
 interface TeachersPageProps { session: AdminSession; }
 
@@ -18,16 +20,24 @@ interface TeacherForm {
   role: 'teacher' | 'school_admin';
 }
 
+interface SubjectGradeRow {
+  subject_id: number | null;
+  grade: number;
+}
+
 const EMPTY: TeacherForm = { name: '', surname: '', teacher_code: '', pin: '', role: 'teacher' };
+const EMPTY_SUBJECT_ROW: SubjectGradeRow = { subject_id: null, grade: 10 };
 type ModalMode = 'add' | 'edit';
 
 export default function TeachersPage({ session }: TeachersPageProps) {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalMode, setModalMode] = useState<ModalMode>('add');
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<TeacherForm>(EMPTY);
+  const [subjectRows, setSubjectRows] = useState<SubjectGradeRow[]>([{ ...EMPTY_SUBJECT_ROW }]);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<number | null>(null);
@@ -40,11 +50,21 @@ export default function TeachersPage({ session }: TeachersPageProps) {
   const load = async () => {
     setLoading(true);
     if (session.school_id) {
-      const data = await fetchSchoolTeachers(session.school_id);
+      const [data, subjectData] = await Promise.all([
+        fetchSchoolTeachers(session.school_id),
+        fetchSubjects(),
+      ]);
       setTeachers(data);
+      setSubjects(subjectData);
     }
     setLoading(false);
   };
+
+  const setSubjectRow = (index: number, field: keyof SubjectGradeRow, value: number) => {
+    setSubjectRows((prev) => prev.map((r, i) => (i === index ? { ...r, [field]: value } : r)));
+  };
+  const addSubjectRow = () => setSubjectRows((prev) => [...prev, { ...EMPTY_SUBJECT_ROW }]);
+  const removeSubjectRow = (index: number) => setSubjectRows((prev) => prev.filter((_, i) => i !== index));
 
   const set = (field: keyof TeacherForm, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -53,19 +73,24 @@ export default function TeachersPage({ session }: TeachersPageProps) {
     setModalMode('add');
     setEditingTeacher(null);
     setForm(EMPTY);
+    setSubjectRows([{ ...EMPTY_SUBJECT_ROW }]);
     setFormError(null);
     setShowForm(true);
   };
 
-  const openEdit = (t: Teacher) => {
+  const openEdit = async (t: Teacher) => {
     setModalMode('edit');
     setEditingTeacher(t);
     setForm({ name: t.name, surname: t.surname, teacher_code: t.teacher_code, pin: '', role: t.role });
     setFormError(null);
     setShowForm(true);
+    const existing = await fetchTeacherSubjects(t.id);
+    setSubjectRows(existing.length > 0
+      ? existing.map((e) => ({ subject_id: e.subject_id, grade: e.grade }))
+      : [{ ...EMPTY_SUBJECT_ROW }]);
   };
 
-  const closeForm = () => { setShowForm(false); setForm(EMPTY); setFormError(null); };
+  const closeForm = () => { setShowForm(false); setForm(EMPTY); setSubjectRows([{ ...EMPTY_SUBJECT_ROW }]); setFormError(null); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,6 +109,13 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         teacher_code: form.teacher_code, pin: form.pin, role: form.role,
       });
       if (!result.success) { setFormError(result.error); setSubmitting(false); return; }
+
+      if (form.role === 'teacher') {
+        const pairs = subjectRows
+          .filter((r): r is { subject_id: number; grade: number } => r.subject_id !== null)
+          .map((r) => ({ subject_id: r.subject_id, grade: r.grade }));
+        if (pairs.length > 0) await setTeacherSubjects(result.teacher.id, pairs);
+      }
     } else if (editingTeacher) {
       if (form.pin && !/^\d{10}$/.test(form.pin)) {
         setFormError('PIN must be exactly 10 digits.');
@@ -98,6 +130,13 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         pin: form.pin || undefined,
       });
       if (!result.success) { setFormError(result.error); setSubmitting(false); return; }
+
+      const pairs = form.role === 'teacher'
+        ? subjectRows
+            .filter((r): r is { subject_id: number; grade: number } => r.subject_id !== null)
+            .map((r) => ({ subject_id: r.subject_id, grade: r.grade }))
+        : []; // school admins don't teach subjects — clear any existing rows
+      await setTeacherSubjects(editingTeacher.id, pairs);
     }
 
     await load();
@@ -363,6 +402,38 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                         ))}
                       </div>
                     </div>
+
+                    {/* Subjects & Grades — teachers only, not school admins */}
+                    {form.role === 'teacher' && (
+                    <div>
+                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subjects Taught</label>
+                      <div className="space-y-2">
+                        {subjectRows.map((row, i) => (
+                          <div key={i} className="flex items-center gap-2">
+                            <select value={row.subject_id ?? ''} onChange={(e) => setSubjectRow(i, 'subject_id', Number(e.target.value))}
+                              className="flex-1 min-w-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
+                              <option value="">Select subject</option>
+                              {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+                            </select>
+                            <select value={row.grade} onChange={(e) => setSubjectRow(i, 'grade', Number(e.target.value))}
+                              className="w-32 shrink-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
+                              {[8, 9, 10, 11, 12].map((g) => <option key={g} value={g}>Grade {g}</option>)}
+                            </select>
+                            {subjectRows.length > 1 && (
+                              <button type="button" onClick={() => removeSubjectRow(i)}
+                                className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <button type="button" onClick={addSubjectRow}
+                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-brand-dark transition-colors">
+                        <Plus className="w-3.5 h-3.5" /> Add another subject
+                      </button>
+                    </div>
+                    )}
                   </form>
                 </div>
 

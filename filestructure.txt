@@ -291,6 +291,7 @@
         |-- announcements.ts
         |-- auth.ts
         |-- events.ts
+        |-- homeroom.ts
         |-- interventions.ts
         |-- interventionTemplates.ts
         |-- marks.ts
@@ -299,6 +300,7 @@
         |-- parentContacts.ts
         |-- pastPapers.ts
         |-- resources.ts
+        |-- schools.ts
         |-- studentGoals.ts
         |-- studentInsights.ts
         |-- students.ts
@@ -314,15 +316,21 @@
     |-- pages
         |-- auth
             |-- AdminLogin.tsx
+            |-- PlatformLogin.tsx
             |-- StudentLogin.tsx
             |-- TeacherLogin.tsx
         |-- portal
             |-- admin
                 |-- AdminAnnouncementsPage.tsx
                 |-- AdminHomePage.tsx
+                |-- ClassDetailPage.tsx
+                |-- ClassesAdminPage.tsx
                 |-- StudentAssignmentsPage.tsx
+                |-- StudentDetailModal.tsx
+                |-- StudentsDirectoryPage.tsx
                 |-- TeachersPage.tsx
             |-- AdminDashboard.tsx
+            |-- PlatformAdminDashboard.tsx
             |-- PortalEntry.tsx
             |-- PortalSidePanel.tsx
             |-- student
@@ -332,6 +340,7 @@
                 |-- StudentAnnouncementsPage.tsx
                 |-- StudentCalendarPage.tsx
                 |-- StudentHomePage.tsx
+                |-- StudentHomeroomPage.tsx
                 |-- StudentMarksPage.tsx
                 |-- StudentPastPapersPage.tsx
                 |-- StudentResourcesPage.tsx
@@ -341,6 +350,7 @@
                 |-- AnnouncementsPage.tsx
                 |-- CalendarPage.tsx
                 |-- ClassesPage.tsx
+                |-- HomeroomPage.tsx
                 |-- MarksPage.tsx
                 |-- PastPapersPage.tsx
                 |-- RecordOutcomeModal.tsx

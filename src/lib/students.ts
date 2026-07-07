@@ -71,6 +71,141 @@ export async function fetchSubjects(): Promise<Subject[]> {
   return data;
 }
 
+// ── Admin: create a new subject ───────────────────────────────
+
+export type CreateSubjectResult =
+  | { success: true; subject: Subject }
+  | { success: false; error: string };
+
+export async function createSubject(
+  code: string,
+  label: string,
+  grades: string
+): Promise<CreateSubjectResult> {
+  const trimmedCode = code.trim().toLowerCase();
+  const trimmedLabel = label.trim();
+  if (!trimmedCode || !trimmedLabel) {
+    return { success: false, error: 'Code and label are required.' };
+  }
+
+  const { data: existing } = await supabaseAdmin
+    .from('subjects')
+    .select('id')
+    .eq('code', trimmedCode)
+    .maybeSingle();
+
+  if (existing) {
+    return { success: false, error: `Subject code "${trimmedCode}" already exists.` };
+  }
+
+  const { data, error } = await supabaseAdmin
+    .from('subjects')
+    .insert({ code: trimmedCode, label: trimmedLabel, grades: grades.trim() })
+    .select('id, code, label, grades')
+    .single();
+
+  if (error || !data) return { success: false, error: 'Failed to create subject.' };
+  return { success: true, subject: data };
+}
+
+// ── Admin: create a student with per-subject teacher assignments ──
+// Unlike createStudent() (teacher-side, single teacher for all subjects),
+// this lets admin pair each subject with a different teacher in one form.
+
+export interface SubjectTeacherPair {
+  subject_id: number;
+  teacher_id: number;
+}
+
+export interface AdminCreateStudentInput {
+  name: string;
+  surname: string;
+  student_code: string;
+  pin: string;
+  cohort_name: string;
+  grade: number;
+  school_id: number;
+  assignments: SubjectTeacherPair[]; // one row per subject+teacher pair
+}
+
+export async function adminCreateStudent(input: AdminCreateStudentInput): Promise<CreateStudentResult> {
+  const { name, surname, student_code, pin, cohort_name, grade, school_id, assignments } = input;
+
+  const { data: existing } = await supabaseAdmin
+    .from('students')
+    .select('id')
+    .eq('school_id', school_id)
+    .eq('student_code', student_code.toUpperCase())
+    .maybeSingle();
+
+  if (existing) {
+    return { success: false, error: `Student code "${student_code}" already exists in this school.` };
+  }
+
+  let cohortId: number | null = null;
+  if (cohort_name.trim()) {
+    const { data: existingCohort } = await supabaseAdmin
+      .from('cohorts')
+      .select('id')
+      .eq('school_id', school_id)
+      .eq('name', cohort_name.trim())
+      .maybeSingle();
+
+    if (existingCohort) {
+      cohortId = existingCohort.id;
+    } else {
+      const { data: newCohort, error: cohortError } = await supabaseAdmin
+        .from('cohorts')
+        .insert({ school_id, name: cohort_name.trim(), grade })
+        .select('id')
+        .single();
+
+      if (cohortError || !newCohort) {
+        return { success: false, error: 'Failed to create class. Please try again.' };
+      }
+      cohortId = newCohort.id;
+    }
+  }
+
+  const pin_hash = await hashPin(pin);
+
+  const { data: student, error: studentError } = await supabaseAdmin
+    .from('students')
+    .insert({
+      school_id,
+      cohort_id: cohortId,
+      name: name.trim(),
+      surname: surname.trim(),
+      grade,
+      student_code: student_code.toUpperCase(),
+      pin_hash,
+    })
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at')
+    .single();
+
+  if (studentError || !student) {
+    return { success: false, error: 'Failed to create student. Please try again.' };
+  }
+
+  if (assignments.length > 0) {
+    const junctionRows = assignments.map((a) => ({
+      teacher_id: a.teacher_id,
+      student_id: student.id,
+      subject_id: a.subject_id,
+    }));
+
+    const { error: junctionError } = await supabaseAdmin
+      .from('teacher_students')
+      .insert(junctionRows);
+
+    if (junctionError) {
+      console.error('Subject/teacher linking failed:', junctionError.message);
+    }
+  }
+
+  return { success: true, student };
+}
+
 // ── Create student ────────────────────────────────────────────
 // Steps:
 //  1. Validate student_code unique within school
@@ -451,6 +586,240 @@ export async function adminRemoveAssignment(assignment_id: number): Promise<Admi
     .eq('id', assignment_id);
 
   if (error) return { success: false, error: 'Failed to remove link.' };
+  return { success: true };
+}
+
+// ── Admin: school-wide student directory ──────────────────────
+
+export interface DirectoryStudent {
+  id: number;
+  school_id: number;
+  cohort_id: number | null;
+  name: string;
+  surname: string;
+  grade: number;
+  student_code: string;
+  created_at: string;
+  cohort_name: string | null;
+}
+
+export async function fetchSchoolStudentDirectory(school_id: number): Promise<DirectoryStudent[]> {
+  const { data, error } = await supabaseAdmin
+    .from('students')
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at, cohorts(name)')
+    .eq('school_id', school_id)
+    .order('surname');
+
+  if (error || !data) return [];
+  return data.map((s: any) => ({
+    ...s,
+    cohort_name: s.cohorts?.name ?? null,
+  }));
+}
+
+// ── Admin: full detail for one student (profile + subjects/teachers) ──
+
+export interface StudentDetail {
+  id: number;
+  school_id: number;
+  cohort_id: number | null;
+  cohort_name: string | null;
+  name: string;
+  surname: string;
+  grade: number;
+  student_code: string;
+  created_at: string;
+  teacherLinks: { teacher_id: number; teacher_name: string; teacher_surname: string; subject_id: number; subject_label: string }[];
+}
+
+export type StudentDetailResult =
+  | { success: true; detail: StudentDetail }
+  | { success: false; error: string };
+
+export async function fetchStudentDetail(
+  student_id: number,
+  school_id: number
+): Promise<StudentDetailResult> {
+  const { data: student, error } = await supabaseAdmin
+    .from('students')
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at, cohorts(name)')
+    .eq('id', student_id)
+    .eq('school_id', school_id)
+    .maybeSingle();
+
+  if (error || !student) return { success: false, error: 'Student not found.' };
+
+  const { data: links } = await supabaseAdmin
+    .from('teacher_students')
+    .select('teacher_id, subject_id, teachers(name, surname), subjects(label)')
+    .eq('student_id', student_id);
+
+  const teacherLinks = (links ?? []).map((l: any) => ({
+    teacher_id: l.teacher_id,
+    teacher_name: l.teachers?.name ?? '',
+    teacher_surname: l.teachers?.surname ?? '',
+    subject_id: l.subject_id,
+    subject_label: l.subjects?.label ?? '',
+  }));
+
+  return {
+    success: true,
+    detail: {
+      id: student.id,
+      school_id: student.school_id,
+      cohort_id: student.cohort_id,
+      cohort_name: (student as any).cohorts?.name ?? null,
+      name: student.name,
+      surname: student.surname,
+      grade: student.grade,
+      student_code: student.student_code,
+      created_at: student.created_at,
+      teacherLinks,
+    },
+  };
+}
+
+// ── Admin: update a student's profile fields ──────────────────
+// Separate from teacher-side updateStudent() — admin can rename the cohort
+// (get-or-create by name, same as elsewhere), change grade, reset the PIN,
+// and edit the student_code (checked for uniqueness within the school).
+
+export interface AdminUpdateStudentInput {
+  student_id: number;
+  school_id: number;
+  name: string;
+  surname: string;
+  student_code: string;
+  cohort_name: string;
+  grade: number;
+  pin?: string; // only re-hash if provided
+}
+
+export async function adminUpdateStudent(input: AdminUpdateStudentInput): Promise<UpdateStudentResult> {
+  const { student_id, school_id, name, surname, student_code, cohort_name, grade, pin } = input;
+
+  const { data: codeClash } = await supabaseAdmin
+    .from('students')
+    .select('id')
+    .eq('school_id', school_id)
+    .eq('student_code', student_code.toUpperCase())
+    .neq('id', student_id)
+    .maybeSingle();
+
+  if (codeClash) {
+    return { success: false, error: `Student code "${student_code}" is already used by another student.` };
+  }
+
+  let cohortId: number | null = null;
+  if (cohort_name.trim()) {
+    const { data: existingCohort } = await supabaseAdmin
+      .from('cohorts')
+      .select('id')
+      .eq('school_id', school_id)
+      .eq('name', cohort_name.trim())
+      .maybeSingle();
+
+    if (existingCohort) {
+      cohortId = existingCohort.id;
+    } else {
+      const { data: newCohort, error: cohortError } = await supabaseAdmin
+        .from('cohorts')
+        .insert({ school_id, name: cohort_name.trim(), grade })
+        .select('id')
+        .single();
+      if (cohortError || !newCohort) return { success: false, error: 'Failed to update class.' };
+      cohortId = newCohort.id;
+    }
+  }
+
+  const payload: Record<string, any> = {
+    name: name.trim(),
+    surname: surname.trim(),
+    student_code: student_code.toUpperCase(),
+    cohort_id: cohortId,
+    grade,
+  };
+  if (pin) payload.pin_hash = await hashPin(pin);
+
+  const { error } = await supabaseAdmin
+    .from('students')
+    .update(payload)
+    .eq('id', student_id)
+    .eq('school_id', school_id);
+
+  if (error) return { success: false, error: 'Failed to update student.' };
+  return { success: true };
+}
+
+// ── Admin: replace all of a student's subject+teacher links ───
+// Full replace-all, same pattern as adminCreateStudent's assignments.
+
+export async function replaceStudentAssignments(
+  student_id: number,
+  assignments: SubjectTeacherPair[]
+): Promise<UpdateStudentResult> {
+  const { error: deleteError } = await supabaseAdmin
+    .from('teacher_students')
+    .delete()
+    .eq('student_id', student_id);
+
+  if (deleteError) return { success: false, error: 'Failed to update subject assignments.' };
+
+  if (assignments.length === 0) return { success: true };
+
+  const { error: insertError } = await supabaseAdmin
+    .from('teacher_students')
+    .insert(assignments.map((a) => ({ teacher_id: a.teacher_id, student_id, subject_id: a.subject_id })));
+
+  if (insertError) return { success: false, error: 'Failed to save subject assignments.' };
+  return { success: true };
+}
+
+// ── Admin: students in the school not currently in a given cohort ──
+// Used by the "add student to class" flow on the class detail page.
+
+export async function fetchStudentsOutsideCohort(
+  school_id: number,
+  cohort_id: number
+): Promise<DirectoryStudent[]> {
+  const { data, error } = await supabaseAdmin
+    .from('students')
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at, cohorts(name)')
+    .eq('school_id', school_id)
+    .neq('cohort_id', cohort_id)
+    .order('surname');
+
+  // neq excludes NULL cohort_id rows in Postgres, so fetch those separately.
+  const { data: unassigned } = await supabaseAdmin
+    .from('students')
+    .select('id, school_id, cohort_id, name, surname, grade, student_code, created_at, cohorts(name)')
+    .eq('school_id', school_id)
+    .is('cohort_id', null)
+    .order('surname');
+
+  if (error) return [];
+  const combined = [...(data ?? []), ...(unassigned ?? [])];
+  return combined.map((s: any) => ({ ...s, cohort_name: s.cohorts?.name ?? null }));
+}
+
+// ── Admin: move an existing student into a different cohort ──
+
+export type MoveStudentResult =
+  | { success: true }
+  | { success: false; error: string };
+
+export async function moveStudentToCohort(
+  student_id: number,
+  cohort_id: number,
+  school_id: number
+): Promise<MoveStudentResult> {
+  const { error } = await supabaseAdmin
+    .from('students')
+    .update({ cohort_id })
+    .eq('id', student_id)
+    .eq('school_id', school_id);
+
+  if (error) return { success: false, error: 'Failed to add student to class.' };
   return { success: true };
 }
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
+import { fetchTeacherHomerooms } from '../../lib/homeroom';
 import ClassesPage from './teacher/ClassesPage';
 import CalendarPage from './teacher/CalendarPage';
 import MarksPage from './teacher/MarksPage';
@@ -12,9 +13,10 @@ import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
 import RiskEnginePage from './teacher/RiskEnginePage';
 import TopicTestsPage from './teacher/TopicTestsPage';
+import HomeroomPage from './teacher/HomeroomPage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -24,11 +26,13 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
   const [session, setSession] = useState<TeacherSession | null>(null);
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isHomeroom, setIsHomeroom] = useState(false);
 
   useEffect(() => {
     const s = getTeacherSession();
     if (!s) { onNavigate('teacher-login'); return; }
     setSession(s);
+    fetchTeacherHomerooms(s.teacher_id).then((h) => setIsHomeroom(h.length > 0));
   }, []);
 
   if (!session) return null;
@@ -38,6 +42,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'home',          label: 'Home',          icon: Home },
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'classes',       label: 'Classes',       icon: Users },
+    ...(isHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
     { id: 'marks',         label: 'Marks',         icon: ClipboardList },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
@@ -62,10 +67,10 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
 
         {/* Logo */}
         <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-          <div className="flex items-center gap-2">
+          <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
             <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
             <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-          </div>
+          </button>
           <NotificationBell userType="teacher" userId={session.teacher_id} />
         </div>
 
@@ -124,8 +129,10 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
-            <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
+              <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
+              <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell userType="teacher" userId={session.teacher_id} />
@@ -158,10 +165,10 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
               >
                 {/* Logo + close */}
                 <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-                  <div className="flex items-center gap-2">
+                  <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
                     <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                     <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-                  </div>
+                  </button>
                   <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
                     <X className="w-5 h-5" />
                   </button>
@@ -217,6 +224,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'home'          && <TeacherHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <AnnouncementsPage session={session} />}
           {activePage === 'classes'       && <ClassesPage session={session} />}
+          {activePage === 'homeroom'      && <HomeroomPage session={session} />}
           {activePage === 'calendar'      && <CalendarPage session={session} />}
           {activePage === 'marks'         && <MarksPage session={session} />}
           {activePage === 'resources'     && <ResourcesPage session={session} />}

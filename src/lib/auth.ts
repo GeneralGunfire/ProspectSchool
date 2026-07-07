@@ -320,3 +320,51 @@ export async function adminLogin(
 export function adminLogout(): void {
   clearAdminSession();
 }
+
+// ═════════════════════════════════════════════════════════════
+// PLATFORM ADMIN AUTH — hardcoded owner login, not Supabase-backed.
+// Session is a client-side flag only. This is a soft gate (the hash
+// ships in the JS bundle), not real security — do not use for anything
+// that needs to withstand a determined attacker.
+// ═════════════════════════════════════════════════════════════
+
+const PLATFORM_SESSION_KEY = 'prospect_platform_session';
+const PLATFORM_NAME = 'Rajen';
+// SHA-256 of the platform owner's password — avoids the plaintext sitting in the bundle.
+const PLATFORM_PASSWORD_HASH = '3ed4033a1d292b39f9a73db9dcfc99824339f5b317725815f684643986680b7d';
+
+export interface PlatformSession {
+  name: string;
+}
+
+export function getPlatformSession(): PlatformSession | null {
+  try {
+    const raw = sessionStorage.getItem(PLATFORM_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function setPlatformSession(session: PlatformSession): void {
+  sessionStorage.setItem(PLATFORM_SESSION_KEY, JSON.stringify(session));
+}
+
+export function platformLogout(): void {
+  sessionStorage.removeItem(PLATFORM_SESSION_KEY);
+}
+
+export type PlatformLoginResult =
+  | { success: true; session: PlatformSession }
+  | { success: false; error: string };
+
+export async function platformLogin(name: string, password: string): Promise<PlatformLoginResult> {
+  if (name.trim().toLowerCase() !== PLATFORM_NAME.toLowerCase()) {
+    return { success: false, error: 'Invalid credentials.' };
+  }
+  const hash = await hashPin(password);
+  if (hash !== PLATFORM_PASSWORD_HASH) {
+    return { success: false, error: 'Invalid credentials.' };
+  }
+  const session: PlatformSession = { name: PLATFORM_NAME };
+  setPlatformSession(session);
+  return { success: true, session };
+}

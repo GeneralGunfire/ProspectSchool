@@ -1,7 +1,8 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck, School } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
+import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
 import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
 import StudentMarksPage from './student/StudentMarksPage';
@@ -10,12 +11,13 @@ import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 import StudentPastPapersPage from './student/StudentPastPapersPage';
 import ApsCalculatorPage from './student/ApsCalculatorPage';
 import StudentTopicTestsPage from './student/StudentTopicTestsPage';
+import StudentHomeroomPage from './student/StudentHomeroomPage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -32,11 +34,15 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [innerPage, setInnerPage] = useState<string>('library');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hasHomeroom, setHasHomeroom] = useState(false);
 
   useEffect(() => {
     const s = getStudentSession();
     if (!s) { onNavigate('student-login'); return; }
     setSession(s);
+    if (s.cohort_id) {
+      fetchCohortHomeroomTeacher(s.cohort_id).then((t) => setHasHomeroom(!!t));
+    }
   }, []);
 
   if (!session) return null;
@@ -47,6 +53,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   const navItems: { id: ActivePage; label: string; icon: any; mobileLabel?: string }[] = [
     { id: 'home',          label: 'Home',          icon: Home },
     { id: 'announcements', label: 'Announcements', icon: Megaphone,      mobileLabel: 'News' },
+    ...(hasHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
     { id: 'marks',         label: 'My Marks',      icon: ClipboardList,  mobileLabel: 'Marks' },
     { id: 'resources',     label: 'Resources',     icon: FolderOpen },
@@ -81,10 +88,10 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
 
         {/* Logo */}
         <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-          <div className="flex items-center gap-2">
+          <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
             <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
             <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-          </div>
+          </button>
           <NotificationBell userType="student" userId={session.student_id} />
         </div>
 
@@ -145,8 +152,10 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
-            <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
+              <img src="/logo.jpg" alt="Prospect" className="w-6 h-6 rounded-md object-cover shrink-0" />
+              <span className="font-serif-accent text-base text-brand-dark leading-none">Prospect</span>
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell userType="student" userId={session.student_id} />
@@ -179,10 +188,10 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               >
                 {/* Logo + close */}
                 <div className="flex items-center justify-between gap-2 px-4 h-16 border-b border-brand-border shrink-0">
-                  <div className="flex items-center gap-2">
+                  <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
                     <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                     <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-                  </div>
+                  </button>
                   <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
                     <X className="w-5 h-5" />
                   </button>
@@ -239,6 +248,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         <div className="flex-1 overflow-y-auto">
           {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
+          {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
           {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
