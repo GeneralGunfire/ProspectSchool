@@ -174,17 +174,23 @@
                 |-- FlipShowcase.tsx
                 |-- Footer.tsx
                 |-- Hero.tsx
+                |-- HoverExpand.tsx
                 |-- HowItWorks.tsx
                 |-- icons.ts
                 |-- LandingPage.tsx
+                |-- LearnerDestinations.tsx
+                |-- LearnerFeatureCards.tsx
                 |-- Navbar.tsx
                 |-- Pricing.tsx
                 |-- QuoteSection.tsx
+                |-- RoleDestinations.tsx
+                |-- StackedFeatureCards.tsx
                 |-- StatsBar.tsx
                 |-- StudentDeepDive.tsx
                 |-- StudyLibrary.tsx
                 |-- TeacherTools.tsx
                 |-- VideoShowcase.tsx
+                |-- WaveBackground.tsx
             |-- Perspectives.tsx
             |-- ProblemSection.tsx
             |-- UI-REVIEW.md
@@ -322,6 +328,10 @@
             |-- AdminLogin.tsx
             |-- ParentLogin.tsx
             |-- PlatformLogin.tsx
+            |-- shared
+                |-- AuthShell.tsx
+                |-- CodeField.tsx
+                |-- PinInput.tsx
             |-- StudentLogin.tsx
             |-- TeacherLogin.tsx
         |-- portal

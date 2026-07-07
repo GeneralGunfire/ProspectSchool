@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Plus, X, AlertCircle, ArrowRight, Pencil, School, Users, GraduationCap } from 'lucide-react';
+import {
+  LogOut, Plus, X, AlertCircle, ArrowRight, Pencil, School, Users, GraduationCap,
+  ChevronLeft, ClipboardList, FolderOpen, FileText, Megaphone, Activity, CheckCircle2,
+  ClipboardCheck, Layers, ShieldCheck, CalendarDays, Send,
+} from 'lucide-react';
 import { getPlatformSession, platformLogout, type PlatformSession } from '../../lib/auth';
 import {
-  fetchAllSchools, updateSchoolName, createSchoolWithAdmin,
-  type SchoolWithStats,
+  fetchAllSchools, updateSchoolName, createSchoolWithAdmin, fetchSchoolStats,
+  type SchoolWithStats, type SchoolStats,
 } from '../../lib/schools';
 
 interface PlatformAdminDashboardProps {
@@ -26,10 +30,47 @@ const EMPTY_CREATE_FORM: CreateSchoolForm = {
   admin_name: '', admin_surname: '', admin_code: '', admin_pin: '',
 };
 
+// ── Shared top bar — consistent across the schools list and school detail views ──
+// Clicking the logo/name returns to the schools list (never leaves the admin tool
+// via a bare "home" link, which would silently drop the admin session context).
+
+function PlatformTopBar({ session, crumb, onHome, onSignOut }: {
+  session: PlatformSession;
+  crumb: string | null;
+  onHome: () => void;
+  onSignOut: () => void;
+}) {
+  return (
+    <div className="flex items-center justify-between px-6 md:px-10 h-16 bg-white border-b border-brand-border">
+      <div className="flex items-center gap-2 min-w-0">
+        <button onClick={onHome} className="flex items-center gap-2 cursor-pointer shrink-0">
+          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+          <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect Platform</span>
+        </button>
+        {crumb && (
+          <>
+            <span className="text-stone-300 shrink-0">/</span>
+            <span className="text-sm font-bold text-stone-600 truncate">{crumb}</span>
+          </>
+        )}
+      </div>
+      <div className="flex items-center gap-4 shrink-0">
+        <span className="text-sm font-bold text-stone-600 hidden sm:inline">{session.name}</span>
+        <button onClick={onSignOut}
+          className="flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
+          <LogOut className="w-4 h-4" /> Sign Out
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function PlatformAdminDashboard({ onNavigate }: PlatformAdminDashboardProps) {
   const [session, setSession] = useState<PlatformSession | null>(null);
   const [schools, setSchools] = useState<SchoolWithStats[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [detailSchool, setDetailSchool] = useState<SchoolWithStats | null>(null);
 
   const [editingSchool, setEditingSchool] = useState<SchoolWithStats | null>(null);
   const [editName, setEditName] = useState('');
@@ -56,6 +97,17 @@ export default function PlatformAdminDashboard({ onNavigate }: PlatformAdminDash
   };
 
   if (!session) return null;
+
+  if (detailSchool) {
+    return (
+      <SchoolDetail
+        school={detailSchool}
+        session={session}
+        onBack={() => setDetailSchool(null)}
+        onSignOut={() => { platformLogout(); onNavigate('portal'); }}
+      />
+    );
+  }
 
   // ── Edit school name ─────────────────────────────────────────
 
@@ -101,19 +153,12 @@ export default function PlatformAdminDashboard({ onNavigate }: PlatformAdminDash
 
   return (
     <div className="min-h-screen bg-dash-bg">
-      <div className="flex items-center justify-between px-6 md:px-10 h-16 bg-white border-b border-brand-border">
-        <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
-          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
-          <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect Platform</span>
-        </button>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-bold text-stone-600">{session.name}</span>
-          <button onClick={() => { platformLogout(); onNavigate('portal'); }}
-            className="flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
-            <LogOut className="w-4 h-4" /> Sign Out
-          </button>
-        </div>
-      </div>
+      <PlatformTopBar
+        session={session}
+        crumb={null}
+        onHome={() => {}}
+        onSignOut={() => { platformLogout(); onNavigate('portal'); }}
+      />
 
       <div className="px-6 md:px-10 py-8 max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8 gap-3 flex-wrap">
@@ -147,23 +192,30 @@ export default function PlatformAdminDashboard({ onNavigate }: PlatformAdminDash
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {schools.map((s) => (
-              <div key={s.id} className="card-premium bg-white border border-brand-border rounded-3xl p-5">
+              <button
+                key={s.id}
+                onClick={() => setDetailSchool(s)}
+                className="text-left card-premium bg-white border border-brand-border rounded-3xl p-5 hover:border-stone-300 hover:shadow-sm transition-all"
+              >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1 font-mono tracking-widest">{s.school_code}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1 font-mono">{s.school_code}</p>
                     <p className="text-lg font-black text-brand-dark">{s.name}</p>
                     {s.province && <p className="text-xs text-stone-500 mt-0.5">{s.province}</p>}
                   </div>
-                  <button onClick={() => openEdit(s)}
-                    className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors shrink-0">
+                  <span
+                    role="button"
+                    onClick={(e) => { e.stopPropagation(); openEdit(s); }}
+                    className="p-2 rounded-lg hover:bg-stone-100 text-stone-400 hover:text-stone-700 transition-colors shrink-0"
+                  >
                     <Pencil className="w-3.5 h-3.5" />
-                  </button>
+                  </span>
                 </div>
                 <div className="flex items-center gap-4 text-xs text-stone-500 font-bold">
                   <span className="flex items-center gap-1.5"><GraduationCap className="w-3.5 h-3.5" /> {s.teacher_count} teachers</span>
                   <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> {s.student_count} students</span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -334,6 +386,133 @@ export default function PlatformAdminDashboard({ onNavigate }: PlatformAdminDash
           </>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ── School Detail (drill-down) ───────────────────────────────
+
+function StatTile({ icon: Icon, label, value, sub }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string | number; sub?: string }) {
+  return (
+    <div className="card-premium bg-white border border-brand-border rounded-2xl p-4">
+      <div className="flex items-center gap-2 mb-1.5">
+        <Icon className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+        <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">{label}</p>
+      </div>
+      <p className="text-2xl font-black text-brand-dark leading-none">{value}</p>
+      {sub && <p className="text-[11px] text-stone-500 mt-1">{sub}</p>}
+    </div>
+  );
+}
+
+function SchoolDetail({ school, session, onBack, onSignOut }: {
+  school: SchoolWithStats;
+  session: PlatformSession;
+  onBack: () => void;
+  onSignOut: () => void;
+}) {
+  const [stats, setStats] = useState<SchoolStats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    fetchSchoolStats(school.id).then((data) => { setStats(data); setLoading(false); });
+  }, [school.id]);
+
+  const formattedCreated = stats?.created_at
+    ? new Date(stats.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })
+    : school.created_at
+    ? new Date(school.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })
+    : '—';
+
+  return (
+    <div className="min-h-screen bg-dash-bg">
+      <PlatformTopBar
+        session={session}
+        crumb={school.name}
+        onHome={onBack}
+        onSignOut={onSignOut}
+      />
+
+      <div className="px-6 md:px-10 py-8 max-w-6xl mx-auto">
+        {/* Back + header */}
+        <button onClick={onBack} className="flex items-center gap-1.5 text-[13px] font-bold text-stone-500 hover:text-brand-dark transition-colors mb-4">
+          <ChevronLeft className="w-4 h-4" /> All Schools
+        </button>
+        <div className="mb-8">
+          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1 font-mono">{school.school_code}</p>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">{school.name}</h1>
+          <p className="text-sm text-stone-500 mt-1">
+            {school.province ? `${school.province} · ` : ''}Onboarded {formattedCreated}
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+          </div>
+        ) : !stats ? (
+          <p className="text-sm text-stone-500">Failed to load school stats.</p>
+        ) : (
+          <div className="space-y-8">
+
+            {/* Roster */}
+            <section>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">Roster</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <StatTile icon={GraduationCap} label="Teachers" value={stats.teacher_count} />
+                <StatTile icon={Users} label="Students" value={stats.student_count} />
+                <StatTile icon={ShieldCheck} label="Admins" value={stats.admin_count} />
+                <StatTile icon={Layers} label="Classes" value={stats.cohort_count} />
+              </div>
+            </section>
+
+            {/* Activity / engagement */}
+            <section>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">Activity & Engagement</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <StatTile icon={ClipboardList} label="Mark Sheets" value={stats.mark_sheet_count} sub={`${stats.marks_entered_count} marks entered`} />
+                <StatTile icon={FolderOpen} label="Resources" value={stats.resource_count} />
+                <StatTile icon={FileText} label="Past Papers" value={stats.past_paper_count} />
+                <StatTile icon={Megaphone} label="Announcements" value={stats.announcement_count} />
+              </div>
+            </section>
+
+            {/* At-risk / intervention health */}
+            <section>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">Intervention Health</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <StatTile icon={Activity} label="Active" value={stats.active_interventions} sub="interventions in progress" />
+                <StatTile icon={CheckCircle2} label="Completed" value={stats.completed_interventions} />
+                <StatTile
+                  icon={CheckCircle2}
+                  label="Success Rate"
+                  value={stats.outcomes_recorded > 0 ? `${stats.success_rate}%` : '—'}
+                  sub={stats.outcomes_recorded > 0 ? `${stats.successful_outcomes}/${stats.outcomes_recorded} outcomes improved` : 'No outcomes recorded yet'}
+                />
+                <StatTile icon={CalendarDays} label="Outcomes Recorded" value={stats.outcomes_recorded} />
+              </div>
+            </section>
+
+            {/* Topic Tests adoption */}
+            <section>
+              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">Topic Tests Adoption</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <StatTile icon={ClipboardCheck} label="Tests Created" value={stats.topic_test_count} />
+                <StatTile icon={Send} label="Assignments" value={stats.topic_test_assignment_count} />
+                <StatTile icon={CheckCircle2} label="Attempts Submitted" value={stats.topic_test_attempt_count} />
+                <StatTile
+                  icon={AlertCircle}
+                  label="Pending Marking"
+                  value={stats.topic_test_pending_marking}
+                  sub={stats.topic_test_pending_marking > 0 ? 'awaiting teacher review' : 'all caught up'}
+                />
+              </div>
+            </section>
+
+          </div>
+        )}
+      </div>
     </div>
   );
 }
