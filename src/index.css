@@ -631,6 +631,62 @@ html {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
+/* ─── Animated check checkbox ───
+   From Uiverse.io by ke1221. Used on the auth "Remember me" checkboxes —
+   appearance:none + a pseudo-element checkmark that flips in on check via
+   a rotateY keyframe, rather than the browser's default checkbox skin. */
+.check {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: var(--color-brand-border);
+  background-image: none;
+  transition: all .3s;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin: 0;
+  font-size: 18px; /* pins the em-based checkmark below to the box's own
+                       size instead of inheriting the page's 16px default,
+                       which was throwing off the checkmark's position. */
+}
+
+.check::before {
+  content: '';
+  position: absolute;
+  border: solid #fff;
+  display: block;
+  width: .3em;
+  height: .6em;
+  border-width: 0 .2em .2em 0;
+  z-index: 1;
+  opacity: 0;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%) rotate(0deg);
+  transition: all .3s;
+  transform-origin: center center;
+}
+
+.check:checked {
+  animation: check-pop .3s ease-in forwards;
+  background-color: var(--color-accent);
+}
+
+.check:checked::before {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(405deg);
+}
+
+@keyframes check-pop {
+  0%   { opacity: 1; transform: scale(1) rotateY(0deg); }
+  50%  { opacity: 0; transform: scale(.8) rotateY(180deg); }
+  100% { opacity: 1; transform: scale(1) rotateY(360deg); }
+}
+
 /* ─── Badge variants ─── */
 .badge-success { background: #dcfce7; color: #15803d; }
 .badge-warning { background: #fef9c3; color: #92400e; }
