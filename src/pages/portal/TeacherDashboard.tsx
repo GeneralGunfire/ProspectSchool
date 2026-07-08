@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock, ListChecks } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import { fetchTeacherHomerooms } from '../../lib/homeroom';
 import SubjectApprovalsPage from './teacher/SubjectApprovalsPage';
@@ -17,9 +17,10 @@ import TopicTestsPage from './teacher/TopicTestsPage';
 import HomeroomPage from './teacher/HomeroomPage';
 import BehaviourPage from './teacher/BehaviourPage';
 import TimetablePage from './teacher/TimetablePage';
+import MarketplacePage from './shared/MarketplacePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-approvals';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-approvals' | 'marketplace';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -56,6 +57,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'past-papers',   label: 'Past Papers',   icon: FileText },
     { id: 'library',       label: 'Progress',      icon: BookOpen },
     { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
+    { id: 'marketplace',   label: 'Marketplace',   icon: ShoppingBag },
     { id: 'risk',          label: 'At-Risk',       icon: AlertTriangle },
   ];
 
@@ -241,6 +243,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'past-papers'   && <PastPapersPage session={session} />}
           {activePage === 'library'       && <StudentProgressPage session={session} onOpenTopicTest={(id) => { setJumpToTestId(id); setPage('topic-tests'); }} />}
           {activePage === 'topic-tests'   && <TopicTestsPage session={session} initialTestId={jumpToTestId} onConsumeInitialTestId={() => setJumpToTestId(null)} />}
+          {activePage === 'marketplace'   && <MarketplacePage sellerType="teacher" sellerId={session.teacher_id} schoolId={session.school_id} />}
           {activePage === 'risk'          && <RiskEnginePage session={session} />}
         </div>
       </div>

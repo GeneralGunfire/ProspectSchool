@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock, ListChecks } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock, ListChecks, ShoppingBag, BookOpen } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
@@ -11,8 +11,10 @@ import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
 import ParentsAdminPage from './admin/ParentsAdminPage';
 import TimetableAdminPage from './admin/TimetableAdminPage';
 import SubjectSelectionAdminPage from './admin/SubjectSelectionAdminPage';
+import MarketplacePage from './shared/MarketplacePage';
+import SupplyGuideAdminPage from './admin/SupplyGuideAdminPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable' | 'subject-selection';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable' | 'subject-selection' | 'marketplace' | 'supply-guide';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -44,6 +46,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'subject-selection', label: 'Subject Selection', icon: ListChecks },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
+    ...(session.school_id ? [{ id: 'marketplace' as ActivePage, label: 'Marketplace', icon: ShoppingBag }] : []),
+    ...(session.school_id ? [{ id: 'supply-guide' as ActivePage, label: 'Supply Guide', icon: BookOpen }] : []),
   ];
 
   function setPage(id: ActivePage) {
@@ -204,6 +208,12 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'timetable'     && <TimetableAdminPage session={session} />}
           {activePage === 'subject-selection' && <SubjectSelectionAdminPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
+          {activePage === 'marketplace' && session.school_id && (
+            <MarketplacePage sellerType="admin" sellerId={session.admin_id} schoolId={session.school_id} />
+          )}
+          {activePage === 'supply-guide' && session.school_id && (
+            <SupplyGuideAdminPage session={session} />
+          )}
         </div>
       </div>
     </div>
