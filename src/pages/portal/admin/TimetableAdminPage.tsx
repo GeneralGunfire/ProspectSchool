@@ -1,6 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, X, AlertCircle, Trash2, Coffee, Copy, GripVertical, Pencil } from 'lucide-react';
+import {
+  Plus, X, AlertCircle, Trash2, Coffee, Copy, GripVertical, Pencil,
+  ChevronLeft, ChevronRight, PencilLine, Check, RotateCcw, Sparkles, CalendarDays,
+} from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
 import { fetchSchoolCohorts, type CohortWithHomeroom } from '../../../lib/homeroom';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
@@ -13,22 +16,6 @@ import {
   type TimetablePeriod, type TimetableEntryDetailed,
 } from '../../../lib/timetable';
 
-// Period colour bands — cycled by period_number so every card's top strip
-// reflects which period it belongs to, at a glance, across the whole grid.
-const PERIOD_COLORS = [
-  { strip: 'bg-blue-400',    ring: 'border-blue-100' },
-  { strip: 'bg-violet-400',  ring: 'border-violet-100' },
-  { strip: 'bg-emerald-400', ring: 'border-emerald-100' },
-  { strip: 'bg-amber-400',   ring: 'border-amber-100' },
-  { strip: 'bg-rose-400',    ring: 'border-rose-100' },
-  { strip: 'bg-cyan-400',    ring: 'border-cyan-100' },
-  { strip: 'bg-fuchsia-400', ring: 'border-fuchsia-100' },
-  { strip: 'bg-lime-500',    ring: 'border-lime-100' },
-];
-function periodColor(period_number: number) {
-  return PERIOD_COLORS[(period_number - 1) % PERIOD_COLORS.length];
-}
-
 interface TimetableAdminPageProps { session: AdminSession; }
 
 const DEFAULT_PERIODS: { period_number: number; label: string; start_time: string | null; end_time: string | null }[] =
@@ -39,7 +26,18 @@ const DEFAULT_PERIODS: { period_number: number; label: string; start_time: strin
     end_time: null,
   }));
 
-type DragPayload = { entryId: number; fromDay: number; fromPeriod: number; isBreak: boolean; isSoleOccupant: boolean };
+type DragPayload = { entryId: number; fromDay: number; fromPeriod: number; isBreak: boolean };
+
+// A locally-staged entry — real rows carry their DB id; brand-new rows get a
+// negative temp id so they can be tracked/edited/removed before ever hitting
+// the database. `_dirty` marks rows changed since the last save (for the
+// "Unsaved changes" indicator and to compute the save diff).
+interface DraftEntry extends TimetableEntryDetailed {
+  _new?: boolean;
+}
+
+let tempIdCounter = -1;
+function nextTempId() { return tempIdCounter--; }
 
 export default function TimetableAdminPage({ session }: TimetableAdminPageProps) {
   const [cohorts, setCohorts] = useState<CohortWithHomeroom[]>([]);
@@ -47,11 +45,24 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [periods, setPeriods] = useState<TimetablePeriod[]>([]);
   const [selectedCohortId, setSelectedCohortId] = useState<number | null>(null);
-  const [entries, setEntries] = useState<TimetableEntryDetailed[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  const [slotModal, setSlotModal] = useState<{ day: number; period: number; existing: TimetableEntryDetailed[]; editEntryId?: number } | null>(null);
+  // Last-saved baseline vs. the local working draft. Outside edit mode the
+  // grid is read-only and always shows `savedEntries`. Entering edit mode
+  // seeds `draftEntries` from it; every add/edit/delete/move/duplicate then
+  // mutates the draft only. Save diffs draft against baseline and commits;
+  // Cancel just discards the draft and reverts to baseline.
+  const [savedEntries, setSavedEntries] = useState<DraftEntry[]>([]);
+  const [draftEntries, setDraftEntries] = useState<DraftEntry[]>([]);
+  const [editMode, setEditMode] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const entries = editMode ? draftEntries : savedEntries;
+
+  const [slotModal, setSlotModal] = useState<{ day: number; period: number; existing: DraftEntry[]; editEntryId?: number } | null>(null);
   const [addingRow, setAddingRow] = useState(false);
   const [editingRowId, setEditingRowId] = useState<number | null>(null);
 
@@ -61,9 +72,12 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   // Duplicate popover: a small inline day/period picker anchored to a single
   // card's Copy button — replaces the old global "copy-mode" that hijacked
   // every click in the grid until a target was picked.
-  const [duplicatePopover, setDuplicatePopover] = useState<{ entry: TimetableEntryDetailed } | null>(null);
-  const [duplicating, setDuplicating] = useState(false);
+  const [duplicatePopover, setDuplicatePopover] = useState<{ entry: DraftEntry } | null>(null);
   const [moveError, setMoveError] = useState<string | null>(null);
+
+  // Mobile: one day shown at a time, switched via arrows/tabs — the grid
+  // itself is desktop-only (hidden below md).
+  const [mobileDay, setMobileDay] = useState<number>(1);
 
   useEffect(() => { load(); }, []);
 
@@ -94,7 +108,10 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   const loadEntries = async (cohort_id: number) => {
     setLoadingEntries(true);
     const data = await fetchCohortTimetable(cohort_id);
-    setEntries(data);
+    setSavedEntries(data);
+    setDraftEntries(data);
+    setEditMode(false);
+    setDirty(false);
     setLoadingEntries(false);
   };
 
@@ -106,7 +123,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   const selectedCohort = cohorts.find((c) => c.id === selectedCohortId) ?? null;
 
   const grid = useMemo(() => {
-    const map = new Map<string, TimetableEntryDetailed[]>();
+    const map = new Map<string, DraftEntry[]>();
     for (const e of entries) {
       const key = `${e.day_of_week}-${e.period_number}`;
       const list = map.get(key) ?? [];
@@ -116,13 +133,106 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
     return map;
   }, [entries]);
 
+  // ── Edit mode lifecycle ──
+
+  const startEditing = () => {
+    setDraftEntries(savedEntries);
+    setDirty(false);
+    setSaveError(null);
+    setEditMode(true);
+  };
+
+  const cancelEditing = () => {
+    setDraftEntries(savedEntries);
+    setDirty(false);
+    setSaveError(null);
+    setEditMode(false);
+    setSlotModal(null);
+    setDuplicatePopover(null);
+  };
+
+  const saveChanges = async () => {
+    if (!selectedCohortId || !session.school_id) return;
+    setSaving(true);
+    setSaveError(null);
+
+    const savedIds = new Set(savedEntries.map((e) => e.id));
+    const draftIds = new Set(draftEntries.map((e) => e.id));
+
+    const toDelete = savedEntries.filter((e) => !draftIds.has(e.id));
+    const toInsert = draftEntries.filter((e) => e._new);
+    const toUpdate = draftEntries.filter((e) => {
+      if (e._new || !savedIds.has(e.id)) return false;
+      const prev = savedEntries.find((s) => s.id === e.id);
+      if (!prev) return false;
+      return (
+        prev.subject_id !== e.subject_id || prev.teacher_id !== e.teacher_id ||
+        prev.room !== e.room || prev.day_of_week !== e.day_of_week ||
+        prev.period_number !== e.period_number || prev.break_label !== e.break_label
+      );
+    });
+
+    try {
+      const results = await Promise.all([
+        ...toDelete.map((e) => deleteTimetableEntry(e.id)),
+        ...toUpdate.map(async (e) => {
+          const prev = savedEntries.find((s) => s.id === e.id)!;
+          // Moved to a different slot — use the move endpoint; field edits
+          // (subject/teacher/room) use the update endpoint. A row can need
+          // both, so fire both when relevant.
+          const ops: Promise<{ success: boolean }>[] = [];
+          if (prev.day_of_week !== e.day_of_week || prev.period_number !== e.period_number) {
+            ops.push(moveTimetableEntry(e.id, e.day_of_week, e.period_number));
+          }
+          if (prev.subject_id !== e.subject_id || prev.teacher_id !== e.teacher_id || prev.room !== e.room) {
+            ops.push(updateTimetableEntry(e.id, {
+              subject_id: e.subject_id ?? undefined,
+              teacher_id: e.teacher_id ?? undefined,
+              room: e.room,
+            }));
+          }
+          const opResults = await Promise.all(ops);
+          return { success: opResults.every((r) => r.success) };
+        }),
+        ...toInsert.map((e) => e.is_break
+          ? addBreakEntry({
+              school_id: session.school_id!, cohort_id: selectedCohortId,
+              day_of_week: e.day_of_week, period_number: e.period_number, label: e.break_label ?? undefined,
+            })
+          : addTimetableEntry({
+              school_id: session.school_id!, cohort_id: selectedCohortId,
+              subject_id: e.subject_id!, teacher_id: e.teacher_id!,
+              day_of_week: e.day_of_week, period_number: e.period_number, room: e.room ?? undefined,
+            })
+        ),
+      ]);
+
+      const fresh = await fetchCohortTimetable(selectedCohortId);
+      setSavedEntries(fresh);
+      setDraftEntries(fresh);
+
+      if (results.some((r) => !r.success)) {
+        setSaveError('Some changes failed to save — please review the timetable and try again.');
+        // Stay in edit mode so nothing staged is silently lost from view.
+      } else {
+        setDirty(false);
+        setEditMode(false);
+      }
+    } catch {
+      const fresh = await fetchCohortTimetable(selectedCohortId).catch(() => savedEntries);
+      setSavedEntries(fresh);
+      setDraftEntries(fresh);
+      setSaveError('Some changes failed to save — please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const markDirty = () => setDirty(true);
+
   const openSlot = (day: number, period: number, editEntryId?: number) => {
     const existing = grid.get(`${day}-${period}`) ?? [];
     setSlotModal({ day, period, existing, editEntryId });
-  };
-
-  const handleEntrySaved = async () => {
-    if (selectedCohortId) await loadEntries(selectedCohortId);
   };
 
   const handleAddRow = async () => {
@@ -160,17 +270,25 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   };
 
   // ── Single-cell break add (click empty cell + Break button, or via the slot modal) ──
+  // Staged locally only — becomes a real row on Save.
 
-  const handleAddBreak = async (day: number, period: number) => {
-    if (!session.school_id || !selectedCohortId) return;
-    const result = await addBreakEntry({ school_id: session.school_id, cohort_id: selectedCohortId, day_of_week: day, period_number: period });
-    if (result.success) await loadEntries(selectedCohortId);
+  const handleAddBreak = (day: number, period: number) => {
+    if (!selectedCohortId || !session.school_id) return;
+    const entry: DraftEntry = {
+      id: nextTempId(), school_id: session.school_id, cohort_id: selectedCohortId,
+      subject_id: null, teacher_id: null, day_of_week: day, period_number: period,
+      room: null, is_break: true, break_label: 'Break',
+      subject_label: '', teacher_name: '', teacher_surname: '', cohort_name: selectedCohort?.name ?? '',
+      _new: true,
+    };
+    setDraftEntries((prev) => [...prev, entry]);
+    markDirty();
   };
 
-  // ── Drag-and-drop move ──
+  // ── Drag-and-drop move (local only) ──
 
-  const handleDragStart = (e: React.DragEvent, entry: TimetableEntryDetailed, slotCount: number) => {
-    dragData.current = { entryId: entry.id, fromDay: entry.day_of_week, fromPeriod: entry.period_number, isBreak: entry.is_break, isSoleOccupant: slotCount === 1 };
+  const handleDragStart = (e: React.DragEvent, entry: DraftEntry) => {
+    dragData.current = { entryId: entry.id, fromDay: entry.day_of_week, fromPeriod: entry.period_number, isBreak: entry.is_break };
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -179,7 +297,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
     setDragOverKey(`${day}-${period}`);
   };
 
-  const handleDrop = async (e: React.DragEvent, day: number, period: number) => {
+  const handleDrop = (e: React.DragEvent, day: number, period: number) => {
     e.preventDefault();
     setDragOverKey(null);
     const drag = dragData.current;
@@ -189,51 +307,94 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
 
     const targetEntries = grid.get(`${day}-${period}`) ?? [];
 
-    // Empty cell — plain move.
-    if (targetEntries.length === 0) {
-      const result = await moveTimetableEntry(drag.entryId, day, period);
-      if (!result.success) { setMoveError(result.error); return; }
-      if (selectedCohortId) await loadEntries(selectedCohortId);
+    if (drag.isBreak && targetEntries.length > 0) {
+      setMoveError('Breaks can\'t share a slot with something else — drop on an empty cell.');
+      return;
+    }
+    if (targetEntries.some((t) => t.is_break)) {
+      setMoveError('That cell is a break — remove it first, or drop on an empty cell.');
       return;
     }
 
-    // Exactly one entry already there — swap the two cells' slots.
-    if (targetEntries.length === 1 && !drag.isBreak && !targetEntries[0].is_break) {
-      const target = targetEntries[0];
-      const [moveA, moveB] = await Promise.all([
-        moveTimetableEntry(drag.entryId, day, period),
-        moveTimetableEntry(target.id, drag.fromDay, drag.fromPeriod),
-      ]);
-      if (!moveA.success) { setMoveError(moveA.error); return; }
-      if (!moveB.success) { setMoveError(moveB.error); return; }
-      if (selectedCohortId) await loadEntries(selectedCohortId);
-      return;
-    }
-
-    // Multiple entries in target, or a break involved — ambiguous to auto-swap.
-    setMoveError('That cell already has multiple things in it — open it and remove one first, or drop on an empty cell.');
+    // Move the card there, stacking alongside whatever's already in the slot
+    // (same model as a class splitting into simultaneous subject groups).
+    setDraftEntries((prev) => prev.map((e) =>
+      e.id === drag.entryId ? { ...e, day_of_week: day, period_number: period } : e
+    ));
+    markDirty();
   };
 
-  // ── Duplicate: pick a card's Copy button, then a day/period from the popover ──
+  // ── Duplicate: pick a card's Copy button, then a day/period from the popover (local only) ──
 
-  const handleDuplicateTo = async (entry: TimetableEntryDetailed, day: number, period: number) => {
-    setDuplicating(true);
-    const result = await copyTimetableEntry(entry.id, day, period);
-    setDuplicating(false);
+  const handleDuplicateTo = (entry: DraftEntry, day: number, period: number) => {
+    const copy: DraftEntry = { ...entry, id: nextTempId(), day_of_week: day, period_number: period, _new: true };
+    setDraftEntries((prev) => [...prev, copy]);
     setDuplicatePopover(null);
-    if (!result.success) { setMoveError(result.error); return; }
-    if (selectedCohortId) await loadEntries(selectedCohortId);
+    markDirty();
   };
+
+  const entryCardProps = { duplicatePopover, periods,
+    onOpenSlot: openSlot, onAddBreak: handleAddBreak, onDragStart: handleDragStart,
+    onToggleDuplicate: (entry: DraftEntry | null) => setDuplicatePopover(entry ? { entry } : null),
+    onDuplicateTo: handleDuplicateTo, editMode };
 
   return (
     <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
-      <div className="mb-6">
-        <span className="eyebrow">Admin</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight">Timetable</h1>
-        <p className="text-sm text-stone-500 mt-1">
-          Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move or swap a cell, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it to another slot.
-        </p>
+      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <span className="eyebrow">Admin</span>
+          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Timetable</h1>
+          <p className="text-sm text-stone-500 mt-1 hidden sm:block">
+            {editMode
+              ? <>Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</>
+              : 'Click Edit Timetable to make changes.'}
+          </p>
+        </div>
+
+        {selectedCohort && !loading && (
+          <div className="flex items-center gap-2 shrink-0">
+            {editMode && (
+              <SaveStatusPill dirty={dirty} saving={saving} />
+            )}
+            {!editMode ? (
+              <button
+                onClick={startEditing}
+                className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors shadow-sm"
+              >
+                <PencilLine className="w-4 h-4" /> Edit Timetable
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={cancelEditing}
+                  disabled={saving}
+                  className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" /> Cancel
+                </button>
+                <button
+                  onClick={saveChanges}
+                  disabled={saving || !dirty}
+                  className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
+                >
+                  {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
+                  {saving ? 'Saving…' : 'Save Changes'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
+
+      {saveError && (
+        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+          <p className="text-sm font-bold text-red-700 flex-1">{saveError}</p>
+          <button onClick={() => setSaveError(null)} className="text-red-400 hover:text-red-600">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {moveError && (
         <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
@@ -250,20 +411,21 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
           <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : cohorts.length === 0 ? (
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+        <div className="glass-panel rounded-[24px] p-12 text-center">
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500">Create classes on the Classes page first.</p>
         </div>
       ) : (
         <>
-          {/* Class selector */}
-          <div className="flex gap-2 overflow-x-auto pb-1 mb-5">
+          {/* Class selector — pill toolbar */}
+          <div className="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto mb-5">
             {cohorts.map((c) => (
               <button
                 key={c.id}
-                onClick={() => setSelectedCohortId(c.id)}
-                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-black transition-colors whitespace-nowrap ${
-                  selectedCohortId === c.id ? 'bg-brand-dark text-white' : 'bg-white border border-brand-border text-stone-600 hover:border-stone-300'
+                onClick={() => { if (!editMode) setSelectedCohortId(c.id); }}
+                disabled={editMode}
+                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed ${
+                  selectedCohortId === c.id ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-600 hover:bg-white/70'
                 }`}
               >
                 {c.name} <span className="opacity-60 font-bold">Gr {c.grade}</span>
@@ -276,32 +438,42 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
               <div className="flex items-center justify-center py-24">
                 <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
               </div>
+            ) : entries.length === 0 && !editMode ? (
+              <EmptyTimetableState onStartEditing={startEditing} />
             ) : (
-              <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-x-auto">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr>
-                      <th className="text-left px-4 py-3 text-xs font-black uppercase tracking-widest text-stone-500 border-b border-r border-brand-border/60 bg-stone-50 sticky left-0 z-10 min-w-[110px]">
-                        Period
-                      </th>
-                      {DAYS.map((d) => (
-                        <th key={d.value} className="text-left px-4 py-3 text-xs font-black uppercase tracking-widest text-stone-500 border-b border-brand-border/60 min-w-[180px]">
-                          {d.label}
+              <>
+                {/* ── Desktop grid (md and up) — macOS-Calendar-style hairlines, no heavy borders ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                  className="hidden md:block glass-panel rounded-[24px] overflow-x-auto"
+                >
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="text-left px-4 py-3.5 text-xs font-black uppercase tracking-widest text-stone-600 border-b-2 border-r border-stone-300/60 sticky left-0 z-20 min-w-[110px] bg-white/85 backdrop-blur-md shadow-[2px_0_8px_-2px_rgba(0,0,0,0.06)]">
+                          Period
                         </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {periods.map((p, pIdx) => {
-                      const isEditing = editingRowId === p.id;
-                      const color = periodColor(p.period_number);
-                      return (
-                        <tr key={p.id} className={`${pIdx > 0 ? 'border-t-2 border-stone-200' : ''}`}>
-                          <td className={`px-4 py-3 font-bold text-brand-dark border-r border-brand-border/60 bg-stone-50 sticky left-0`}>
-                            <div className="flex items-center gap-2">
-                              <span className={`w-1.5 h-8 rounded-full shrink-0 ${color.strip}`} />
-                              <div className="min-w-0 flex-1">
-                                {isEditing ? (
+                        {DAYS.map((d) => (
+                          <th key={d.value} className="text-left px-4 py-3.5 text-xs font-black uppercase tracking-widest text-stone-600 border-b-2 border-stone-300/60 bg-white/50 backdrop-blur-md min-w-[170px]">
+                            {d.label}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {periods.map((p, pIdx) => {
+                        const isEditing = editingRowId === p.id;
+                        return (
+                          <motion.tr
+                            key={p.id}
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                            transition={{ duration: 0.25, delay: Math.min(pIdx * 0.02, 0.2) }}
+                            className="border-b border-stone-100/80 last:border-0"
+                          >
+                            <td className="p-0 font-bold text-brand-dark sticky left-0 z-10 bg-gradient-to-r from-stone-100/90 to-stone-50/70 backdrop-blur-md border-r border-stone-300/50 shadow-[2px_0_8px_-2px_rgba(0,0,0,0.05)]">
+                              <div className="px-4 py-3 border-l-[3px] border-brand-dark/15">
+                                {isEditing && editMode ? (
                                   <div className="space-y-1.5">
                                     <input value={p.label} onChange={(e) => handleRowLabelChange(p, e.target.value)}
                                       className="w-full px-2 py-1 bg-white border border-brand-border rounded-lg text-xs font-black"
@@ -320,115 +492,97 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                                     </div>
                                   </div>
                                 ) : (
-                                  <button onClick={() => setEditingRowId(p.id)} className="text-left w-full">
-                                    <p className="text-xs font-black">{p.label}</p>
+                                  <button
+                                    onClick={() => editMode && setEditingRowId(p.id)}
+                                    disabled={!editMode}
+                                    className="text-left w-full disabled:cursor-default"
+                                  >
+                                    <p className="text-[13px] font-black text-brand-dark tracking-tight">{p.label}</p>
                                     {p.start_time && p.end_time ? (
-                                      <p className="text-[10px] text-stone-400 mt-0.5">{p.start_time.slice(0, 5)}–{p.end_time.slice(0, 5)}</p>
+                                      <p className="text-[10px] font-bold text-stone-400 mt-0.5">{p.start_time.slice(0, 5)}–{p.end_time.slice(0, 5)}</p>
                                     ) : (
-                                      <p className="text-[10px] text-stone-300 mt-0.5">Set time</p>
+                                      <p className="text-[10px] text-stone-300 mt-0.5">{editMode ? 'Set time' : ''}</p>
                                     )}
                                   </button>
                                 )}
                               </div>
-                            </div>
-                          </td>
-                          {DAYS.map((d) => {
-                            const key = `${d.value}-${p.period_number}`;
-                            const slotEntries = grid.get(key) ?? [];
-                            const isDragOver = dragOverKey === key;
-                            return (
-                              <td
-                                key={d.value}
-                                className={`px-2 py-2.5 align-top border-l border-stone-100 transition-colors ${isDragOver ? 'bg-blue-50' : ''}`}
-                                onDragOver={(e) => handleDragOver(e, d.value, p.period_number)}
-                                onDragLeave={() => setDragOverKey((k) => (k === key ? null : k))}
-                                onDrop={(e) => handleDrop(e, d.value, p.period_number)}
-                              >
-                                {slotEntries.length === 0 ? (
-                                  <div className="min-h-[52px] flex items-center justify-center gap-1">
-                                    <button
-                                      onClick={() => openSlot(d.value, p.period_number)}
-                                      className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-300 hover:text-stone-500 transition-colors"
-                                      title="Add subject"
-                                    >
-                                      <Plus className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleAddBreak(d.value, p.period_number)}
-                                      className="p-1.5 rounded-lg hover:bg-amber-50 text-stone-300 hover:text-amber-500 transition-colors"
-                                      title="Add break to this cell only"
-                                    >
-                                      <Coffee className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-1.5">
-                                    {slotEntries.map((e) => (
-                                      <div
-                                        key={e.id}
-                                        draggable
-                                        onDragStart={(ev) => handleDragStart(ev, e, slotEntries.length)}
-                                        className={`group relative rounded-lg border overflow-hidden cursor-grab active:cursor-grabbing ${
-                                          e.is_break ? 'bg-amber-50 border-amber-200' : `bg-white ${color.ring}`
-                                        }`}
-                                      >
-                                        {/* Top strip — colored per-period so a glance across the grid shows which period each card belongs to */}
-                                        {!e.is_break && <div className={`h-1 w-full ${color.strip}`} />}
-                                        <div className="flex items-start gap-1 px-2 py-1.5">
-                                          <GripVertical className="w-3 h-3 text-stone-300 shrink-0 mt-0.5 group-hover:text-stone-400" />
-                                          <button
-                                            onClick={() => openSlot(d.value, p.period_number, e.id)}
-                                            className="min-w-0 flex-1 text-left"
-                                            title="Click to edit"
-                                          >
-                                            {e.is_break ? (
-                                              <p className="text-[11px] font-black text-amber-700 leading-tight truncate">{e.break_label ?? 'Break'}</p>
-                                            ) : (
-                                              <>
-                                                <p className="text-[11px] font-black text-brand-dark leading-tight truncate">{e.subject_label}</p>
-                                                <p className="text-[10px] text-stone-500 leading-tight truncate">
-                                                  {e.teacher_name} {e.teacher_surname}{e.room ? ` · ${e.room}` : ''}
-                                                </p>
-                                              </>
-                                            )}
-                                          </button>
-                                          {!e.is_break && (
-                                            <div className="relative shrink-0">
-                                              <button
-                                                onClick={(ev) => { ev.stopPropagation(); setDuplicatePopover(duplicatePopover?.entry.id === e.id ? null : { entry: e }); }}
-                                                className="p-0.5 text-stone-300 hover:text-brand-dark transition-colors"
-                                                title="Duplicate this card to another slot"
-                                              >
-                                                <Copy className="w-3 h-3" />
-                                              </button>
-                                              {duplicatePopover?.entry.id === e.id && (
-                                                <DuplicatePopover
-                                                  periods={periods}
-                                                  duplicating={duplicating}
-                                                  onPick={(day, period) => handleDuplicateTo(e, day, period)}
-                                                  onClose={() => setDuplicatePopover(null)}
-                                                />
-                                              )}
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
+                            </td>
+                            {DAYS.map((d) => {
+                              const key = `${d.value}-${p.period_number}`;
+                              const slotEntries = grid.get(key) ?? [];
+                              const isDragOver = dragOverKey === key;
+                              return (
+                                <td
+                                  key={d.value}
+                                  className={`px-2 py-2 align-top border-l border-stone-100/80 transition-colors ${isDragOver ? 'bg-blue-50/70' : ''}`}
+                                  onDragOver={editMode ? (e) => handleDragOver(e, d.value, p.period_number) : undefined}
+                                  onDragLeave={editMode ? () => setDragOverKey((k) => (k === key ? null : k)) : undefined}
+                                  onDrop={editMode ? (e) => handleDrop(e, d.value, p.period_number) : undefined}
+                                >
+                                  <SlotCell day={d.value} period={p.period_number} slotEntries={slotEntries} {...entryCardProps} />
+                                </td>
+                              );
+                            })}
+                          </motion.tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </motion.div>
+
+                {/* ── Mobile day view (below md) — one day at a time, switched with arrows/tabs ── */}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                  className="md:hidden"
+                >
+                  <div className="glass-panel rounded-2xl p-1.5 flex items-center gap-1 mb-3">
+                    <button onClick={() => setMobileDay((d) => (d === 1 ? 5 : d - 1))} className="p-2 text-stone-500 hover:text-brand-dark shrink-0">
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <div className="flex-1 grid grid-cols-5 gap-1">
+                      {DAYS.map((d) => (
+                        <button
+                          key={d.value}
+                          onClick={() => setMobileDay(d.value)}
+                          className={`py-2 rounded-xl text-[11px] font-black transition-colors ${
+                            mobileDay === d.value ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-500 hover:bg-white/70'
+                          }`}
+                        >
+                          {d.label.slice(0, 3)}
+                        </button>
+                      ))}
+                    </div>
+                    <button onClick={() => setMobileDay((d) => (d === 5 ? 1 : d + 1))} className="p-2 text-stone-500 hover:text-brand-dark shrink-0">
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <div className="glass-panel rounded-[24px] divide-y divide-stone-100/80 overflow-hidden">
+                    {periods.map((p) => {
+                      const key = `${mobileDay}-${p.period_number}`;
+                      const slotEntries = grid.get(key) ?? [];
+                      return (
+                        <div key={p.id} className="flex">
+                          <div className="w-20 shrink-0 pl-3.5 pr-3 py-3 bg-gradient-to-r from-stone-100/90 to-stone-50/70 backdrop-blur-md border-r border-stone-300/50 border-l-[3px] border-l-brand-dark/15">
+                            <p className="text-[13px] font-black text-brand-dark tracking-tight leading-tight">{p.label}</p>
+                            {p.start_time && p.end_time ? (
+                              <p className="text-[10px] font-bold text-stone-400 mt-0.5">{p.start_time.slice(0, 5)}–{p.end_time.slice(0, 5)}</p>
+                            ) : null}
+                          </div>
+                          <div className="flex-1 min-w-0 px-3 py-3">
+                            <SlotCell day={mobileDay} period={p.period_number} slotEntries={slotEntries} {...entryCardProps} />
+                          </div>
+                        </div>
                       );
                     })}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+                </motion.div>
+              </>
             )
           )}
 
-          {selectedCohort && !loadingEntries && (
+          {selectedCohort && !loadingEntries && editMode && (
             <div className="flex gap-2 mt-3">
               <button
                 onClick={handleAddRow} disabled={addingRow}
@@ -443,18 +597,17 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
 
       {/* Slot editor modal */}
       <AnimatePresence>
-        {slotModal && selectedCohort && (
+        {slotModal && selectedCohort && editMode && (
           <SlotModal
-            schoolId={session.school_id!}
-            cohort={selectedCohort}
             day={slotModal.day}
             period={slotModal.period}
             existing={slotModal.existing}
             initialEditId={slotModal.editEntryId}
             teachers={teachers}
             subjects={subjects}
+            allDraftEntries={draftEntries}
             onClose={() => setSlotModal(null)}
-            onSaved={handleEntrySaved}
+            onChange={(updater) => { setDraftEntries(updater); markDirty(); }}
           />
         )}
       </AnimatePresence>
@@ -462,23 +615,181 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   );
 }
 
-// ── Slot modal: shows existing subject-groups for this day/period, lets admin add/edit/remove ──
+// ── Save status pill ──
 
-function SlotModal({
-  schoolId, cohort, day, period, existing, initialEditId, teachers, subjects, onClose, onSaved,
-}: {
-  schoolId: number;
-  cohort: CohortWithHomeroom;
+function SaveStatusPill({ dirty, saving }: { dirty: boolean; saving: boolean }) {
+  const label = saving ? 'Saving…' : dirty ? 'Unsaved changes' : 'All changes saved';
+  const dot = saving ? 'bg-blue-400 animate-pulse' : dirty ? 'bg-amber-400' : 'bg-emerald-400';
+  return (
+    <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 border border-stone-200/70 backdrop-blur-sm">
+      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+      <span className="text-[11px] font-bold text-stone-500">{label}</span>
+    </div>
+  );
+}
+
+// ── Empty state ──
+
+function EmptyTimetableState({ onStartEditing }: { onStartEditing: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+      className="glass-panel rounded-[24px] p-12 text-center"
+    >
+      <div className="w-12 h-12 rounded-2xl bg-brand-bg flex items-center justify-center mx-auto mb-4">
+        <CalendarDays className="w-5 h-5 text-stone-400" />
+      </div>
+      <p className="font-black text-brand-dark mb-1">No timetable yet for this class</p>
+      <p className="text-sm text-stone-500 mb-5">Enter edit mode to start adding subjects and breaks.</p>
+      <button
+        onClick={onStartEditing}
+        className="inline-flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors"
+      >
+        <Sparkles className="w-4 h-4" /> Start Building
+      </button>
+    </motion.div>
+  );
+}
+
+// ── Slot cell: renders either the empty-cell add buttons or the stacked entry
+// cards for a single (day, period) slot — shared between the desktop grid and
+// the mobile day view so both stay visually and behaviourally identical. ──
+
+interface SlotCellProps {
   day: number;
   period: number;
-  existing: TimetableEntryDetailed[];
+  slotEntries: DraftEntry[];
+  duplicatePopover: { entry: DraftEntry } | null;
+  periods: TimetablePeriod[];
+  editMode: boolean;
+  onOpenSlot: (day: number, period: number, editEntryId?: number) => void;
+  onAddBreak: (day: number, period: number) => void;
+  onDragStart: (e: React.DragEvent, entry: DraftEntry) => void;
+  onToggleDuplicate: (entry: DraftEntry | null) => void;
+  onDuplicateTo: (entry: DraftEntry, day: number, period: number) => void;
+}
+
+function SlotCell({
+  day, period, slotEntries, duplicatePopover, periods, editMode,
+  onOpenSlot, onAddBreak, onDragStart, onToggleDuplicate, onDuplicateTo,
+}: SlotCellProps) {
+  if (slotEntries.length === 0) {
+    if (!editMode) return <div className="min-h-[40px]" />;
+    return (
+      <div className="min-h-[48px] flex items-center gap-1">
+        <button
+          onClick={() => onOpenSlot(day, period)}
+          className="p-1.5 rounded-lg hover:bg-stone-100 text-stone-300 hover:text-stone-500 transition-colors"
+          title="Add subject"
+        >
+          <Plus className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => onAddBreak(day, period)}
+          className="p-1.5 rounded-lg hover:bg-amber-50 text-stone-300 hover:text-amber-500 transition-colors"
+          title="Add break to this cell only"
+        >
+          <Coffee className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1">
+      {slotEntries.map((e) => (
+        e.is_break ? (
+          <BreakChip key={e.id} entry={e} editMode={editMode} onDragStart={onDragStart} onOpenSlot={() => onOpenSlot(day, period, e.id)} />
+        ) : (
+          <div
+            key={e.id}
+            draggable={editMode}
+            onDragStart={editMode ? (ev) => onDragStart(ev, e) : undefined}
+            onClick={!editMode ? undefined : () => onOpenSlot(day, period, e.id)}
+            className={`group flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 transition-colors ${
+              editMode ? 'cursor-grab active:cursor-grabbing hover:border-stone-300 hover:bg-white' : ''
+            } bg-white/70 border-stone-200/70`}
+          >
+            {editMode && <GripVertical className="w-3 h-3 text-stone-300 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />}
+            <div className="min-w-0 flex-1" title={editMode ? 'Click to edit' : undefined}>
+              <p className="text-[11px] font-black text-brand-dark leading-tight truncate">{e.subject_label}</p>
+              <p className="text-[10px] text-stone-500 leading-tight truncate">
+                {e.teacher_name} {e.teacher_surname}{e.room ? ` · ${e.room}` : ''}
+              </p>
+            </div>
+            {editMode && (
+              <div className="relative shrink-0">
+                <button
+                  onClick={(ev) => { ev.stopPropagation(); onToggleDuplicate(duplicatePopover?.entry.id === e.id ? null : e); }}
+                  className="p-0.5 text-stone-300 opacity-0 group-hover:opacity-100 hover:text-brand-dark! transition-all"
+                  title="Duplicate this card to another slot"
+                >
+                  <Copy className="w-3 h-3" />
+                </button>
+                {duplicatePopover?.entry.id === e.id && (
+                  <DuplicatePopover
+                    periods={periods}
+                    onPick={(pickDay, pickPeriod) => onDuplicateTo(e, pickDay, pickPeriod)}
+                    onClose={() => onToggleDuplicate(null)}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        )
+      ))}
+    </div>
+  );
+}
+
+// ── Break chip — visually distinct from subject cards: a solid amber pill
+// with an icon badge, clearly color-coded without a busy pattern. ──
+
+function BreakChip({
+  entry, editMode, onDragStart, onOpenSlot,
+}: {
+  entry: DraftEntry;
+  editMode: boolean;
+  onDragStart: (e: React.DragEvent, entry: DraftEntry) => void;
+  onOpenSlot: () => void;
+}) {
+  return (
+    <div
+      draggable={editMode}
+      onDragStart={editMode ? (ev) => onDragStart(ev, entry) : undefined}
+      onClick={editMode ? onOpenSlot : undefined}
+      className={`flex items-center gap-2 rounded-full pl-1 pr-3 py-1 bg-amber-50 border border-amber-200 ${
+        editMode ? 'cursor-grab active:cursor-grabbing hover:bg-amber-100 hover:border-amber-300 transition-colors' : ''
+      }`}
+    >
+      <span className="w-5 h-5 rounded-full bg-amber-400 flex items-center justify-center shrink-0">
+        <Coffee className="w-2.5 h-2.5 text-white" />
+      </span>
+      <p className="text-[11px] font-black text-amber-800 leading-tight truncate">{entry.break_label ?? 'Break'}</p>
+    </div>
+  );
+}
+
+// ── Slot modal: shows existing subject-groups for this day/period, lets admin add/edit/remove ──
+// Operates entirely on the in-memory draft — passed the full draft array and
+// a setter, rather than talking to Supabase directly (that only happens on
+// the page-level Save).
+
+function SlotModal({
+  day, period, existing, initialEditId, teachers, subjects, allDraftEntries, onClose, onChange,
+}: {
+  day: number;
+  period: number;
+  existing: DraftEntry[];
   initialEditId?: number;
   teachers: Teacher[];
   subjects: Subject[];
+  allDraftEntries: DraftEntry[];
   onClose: () => void;
-  onSaved: () => void;
+  onChange: (updater: (prev: DraftEntry[]) => DraftEntry[]) => void;
 }) {
-  const [rows, setRows] = useState<TimetableEntryDetailed[]>(existing);
+  const [rows, setRows] = useState<DraftEntry[]>(existing);
   // `editingId === null` means the form is adding a new row; a number means
   // the form is editing that existing row (pre-filled) instead.
   const [editingId, setEditingId] = useState<number | null | undefined>(
@@ -487,17 +798,13 @@ function SlotModal({
   const [subjectId, setSubjectId] = useState<number | ''>('');
   const [teacherId, setTeacherId] = useState<number | ''>('');
   const [room, setRoom] = useState('');
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clashWarning, setClashWarning] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const formOpen = editingId !== undefined;
   const dayLabel = DAYS.find((d) => d.value === day)?.label ?? '';
   const hasBreak = rows.some((r) => r.is_break);
 
-  // Pre-fill the form when opening in edit mode (including on initial mount,
-  // when a card's own edit button opened this modal directly).
   useEffect(() => {
     if (typeof editingId === 'number') {
       const row = rows.find((r) => r.id === editingId);
@@ -512,88 +819,63 @@ function SlotModal({
     setError(null); setClashWarning(null);
   }, [editingId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const checkClash = async (tId: number) => {
-    const clashes = await fetchTeacherClash(tId, day, period, typeof editingId === 'number' ? editingId : undefined);
-    if (clashes.length > 0) {
-      const c = clashes[0];
-      setClashWarning(`This teacher is already teaching ${c.subject_label} to ${c.cohort_name} at this time.`);
-    } else {
-      setClashWarning(null);
-    }
+  // Clash-check against the local draft — no network call, since the whole
+  // point of edit mode is that nothing's saved yet to check against remotely.
+  const checkClash = (tId: number) => {
+    const clash = allDraftEntries.find((e) =>
+      e.teacher_id === tId && e.day_of_week === day && e.period_number === period &&
+      e.id !== editingId && !e.is_break
+    );
+    setClashWarning(clash ? `This teacher is already teaching ${clash.subject_label} to ${clash.cohort_name} at this time.` : null);
   };
 
   const handleTeacherChange = (val: string) => {
     const id = val === '' ? '' : Number(val);
     setTeacherId(id);
-    if (id !== '') checkClash(id);
-    else setClashWarning(null);
+    if (id !== '') checkClash(id); else setClashWarning(null);
   };
 
-  const handleAdd = async () => {
+  const handleAdd = () => {
     if (subjectId === '' || teacherId === '') {
       setError('Select a subject and teacher.');
       return;
     }
-    setSaving(true);
-    setError(null);
-    const result = await addTimetableEntry({
-      school_id: schoolId,
-      cohort_id: cohort.id,
-      subject_id: subjectId,
-      teacher_id: teacherId,
-      day_of_week: day,
-      period_number: period,
-      room: room || undefined,
-    });
-    setSaving(false);
-    if (!result.success) { setError(result.error); return; }
-    onSaved();
     const subj = subjects.find((s) => s.id === subjectId);
     const t = teachers.find((tt) => tt.id === teacherId);
-    setRows((prev) => [...prev, {
-      id: result.entry_id, school_id: schoolId, cohort_id: cohort.id, subject_id: subjectId,
-      teacher_id: teacherId, day_of_week: day, period_number: period, room: room || null,
-      is_break: false, break_label: null,
-      subject_label: subj?.label ?? '', teacher_name: t?.name ?? '', teacher_surname: t?.surname ?? '', cohort_name: cohort.name,
-    }]);
-    setSubjectId(''); setTeacherId(''); setRoom(''); setClashWarning(null);
+    const entry: DraftEntry = {
+      id: nextTempId(), school_id: 0, cohort_id: 0, subject_id: subjectId, teacher_id: teacherId,
+      day_of_week: day, period_number: period, room: room || null, is_break: false, break_label: null,
+      subject_label: subj?.label ?? '', teacher_name: t?.name ?? '', teacher_surname: t?.surname ?? '', cohort_name: '',
+      _new: true,
+    };
+    onChange((prev) => [...prev, entry]);
+    setRows((prev) => [...prev, entry]);
+    setSubjectId(''); setTeacherId(''); setRoom(''); setClashWarning(null); setError(null);
     setEditingId(undefined);
   };
 
-  const handleSaveEdit = async () => {
+  const handleSaveEdit = () => {
     if (typeof editingId !== 'number' || subjectId === '' || teacherId === '') {
       setError('Select a subject and teacher.');
       return;
     }
-    setSaving(true);
-    setError(null);
-    const result = await updateTimetableEntry(editingId, {
-      subject_id: subjectId,
-      teacher_id: teacherId,
-      room: room || null,
-    });
-    setSaving(false);
-    if (!result.success) { setError(result.error); return; }
-    onSaved();
     const subj = subjects.find((s) => s.id === subjectId);
     const t = teachers.find((tt) => tt.id === teacherId);
-    setRows((prev) => prev.map((r) => r.id === editingId ? {
+    const targetId = editingId;
+    const applyEdit = (r: DraftEntry) => r.id === targetId ? {
       ...r, subject_id: subjectId, teacher_id: teacherId, room: room || null,
       subject_label: subj?.label ?? r.subject_label, teacher_name: t?.name ?? r.teacher_name, teacher_surname: t?.surname ?? r.teacher_surname,
-    } : r));
-    setSubjectId(''); setTeacherId(''); setRoom(''); setClashWarning(null);
+    } : r;
+    onChange((prev) => prev.map(applyEdit));
+    setRows((prev) => prev.map(applyEdit));
+    setSubjectId(''); setTeacherId(''); setRoom(''); setClashWarning(null); setError(null);
     setEditingId(undefined);
   };
 
-  const handleDelete = async (id: number) => {
-    setDeletingId(id);
-    const result = await deleteTimetableEntry(id);
-    if (result.success) {
-      setRows((prev) => prev.filter((r) => r.id !== id));
-      if (editingId === id) setEditingId(undefined);
-      onSaved();
-    }
-    setDeletingId(null);
+  const handleDelete = (id: number) => {
+    onChange((prev) => prev.filter((r) => r.id !== id));
+    setRows((prev) => prev.filter((r) => r.id !== id));
+    if (editingId === id) setEditingId(undefined);
   };
 
   return (
@@ -606,10 +888,10 @@ function SlotModal({
         transition={{ type: 'spring', stiffness: 320, damping: 28 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
       >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col">
-          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
+        <div className="glass-panel rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col">
+          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-200/70 shrink-0">
             <div>
-              <h2 className="text-base font-black text-brand-dark">{cohort.name} — {dayLabel}, Period {period}</h2>
+              <h2 className="text-base font-black text-brand-dark">{dayLabel}, Period {period}</h2>
               <p className="text-xs text-stone-500 mt-0.5">
                 {typeof editingId === 'number' ? 'Editing a subject group in this slot.' : 'Add each subject group running in this slot.'}
               </p>
@@ -623,7 +905,7 @@ function SlotModal({
             {rows.map((r) => (
               typeof editingId === 'number' && editingId === r.id ? null : (
                 <div key={r.id} className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border ${
-                  r.is_break ? 'bg-amber-50 border-amber-100' : 'bg-stone-50 border-stone-100'
+                  r.is_break ? 'bg-amber-50/70 border-amber-100' : 'bg-white/60 border-stone-200/70'
                 }`}>
                   <div className="min-w-0">
                     {r.is_break ? (
@@ -642,7 +924,7 @@ function SlotModal({
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                     )}
-                    <button onClick={() => handleDelete(r.id)} disabled={deletingId === r.id}
+                    <button onClick={() => handleDelete(r.id)}
                       className="p-2 text-stone-400 hover:text-red-600 transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -696,11 +978,9 @@ function SlotModal({
                       Cancel
                     </button>
                   )}
-                  <button onClick={typeof editingId === 'number' ? handleSaveEdit : handleAdd} disabled={saving}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {saving
-                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      : typeof editingId === 'number' ? 'Save Changes' : 'Add Subject Group'}
+                  <button onClick={typeof editingId === 'number' ? handleSaveEdit : handleAdd}
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all">
+                    {typeof editingId === 'number' ? 'Update' : 'Add Subject Group'}
                   </button>
                 </div>
               </div>
@@ -724,10 +1004,9 @@ function SlotModal({
 // ── Duplicate popover: small day/period picker anchored to a card's Copy button ──
 
 function DuplicatePopover({
-  periods, duplicating, onPick, onClose,
+  periods, onPick, onClose,
 }: {
   periods: TimetablePeriod[];
-  duplicating: boolean;
   onPick: (day: number, period: number) => void;
   onClose: () => void;
 }) {
@@ -744,7 +1023,7 @@ function DuplicatePopover({
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full mt-1 z-30 bg-white border border-brand-border rounded-xl shadow-xl p-2 w-56 max-h-64 overflow-y-auto"
+      className="absolute right-0 top-full mt-1 z-30 glass-panel rounded-xl shadow-xl p-2 w-56 max-h-64 overflow-y-auto"
       onClick={(ev) => ev.stopPropagation()}
     >
       <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 px-2 pt-1 pb-2">Duplicate to…</p>
@@ -755,9 +1034,8 @@ function DuplicatePopover({
             {periods.map((p) => (
               <button
                 key={p.id}
-                disabled={duplicating}
                 onClick={() => onPick(d.value, p.period_number)}
-                className="px-2 py-1 rounded-lg text-[10px] font-bold bg-stone-100 text-stone-600 hover:bg-brand-dark hover:text-white transition-colors disabled:opacity-40"
+                className="px-2 py-1 rounded-lg text-[10px] font-bold bg-stone-100 text-stone-600 hover:bg-brand-dark hover:text-white transition-colors"
               >
                 {p.period_number}
               </button>
