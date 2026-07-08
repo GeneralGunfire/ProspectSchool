@@ -315,6 +315,7 @@
         |-- students.ts
         |-- studentTasks.ts
         |-- studyProgress.ts
+        |-- subjectSelection.ts
         |-- supabase.ts
         |-- teacherAnalytics.ts
         |-- teachers.ts
@@ -344,6 +345,7 @@
                 |-- StudentAssignmentsPage.tsx
                 |-- StudentDetailModal.tsx
                 |-- StudentsDirectoryPage.tsx
+                |-- SubjectSelectionAdminPage.tsx
                 |-- TeachersPage.tsx
                 |-- TimetableAdminPage.tsx
             |-- AdminDashboard.tsx
@@ -373,6 +375,7 @@
                 |-- StudentResourcesPage.tsx
                 |-- StudentTimetablePage.tsx
                 |-- StudentTopicTestsPage.tsx
+                |-- SubjectSelectionPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
                 |-- AnnouncementsPage.tsx
@@ -386,6 +389,7 @@
                 |-- ResourcesPage.tsx
                 |-- RiskEnginePage.tsx
                 |-- StudentProgressPage.tsx
+                |-- SubjectApprovalsPage.tsx
                 |-- TeacherHomePage.tsx
                 |-- TimetablePage.tsx
                 |-- TopicTestsPage.tsx

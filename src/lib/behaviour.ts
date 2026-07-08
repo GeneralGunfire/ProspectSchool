@@ -62,6 +62,11 @@ export interface BehaviourEntry {
   created_at: string;
 }
 
+export interface BehaviourEntryFull extends BehaviourEntry {
+  student_name: string;
+  student_surname: string;
+}
+
 export interface BehaviourStudentSummary {
   student_id: number;
   merit_points: number;
@@ -137,6 +142,56 @@ export async function fetchStudentBehaviour(student_id: number, limit = 50): Pro
     points: row.points,
     note: row.note,
     created_at: row.created_at,
+  }));
+}
+
+// ── Teacher: edit an entry's category/reason/note (type & points stay fixed) ──
+
+export async function updateBehaviourEntry(
+  id: number,
+  updates: { category: string; reason: string; note?: string }
+): Promise<AwardBehaviourResult> {
+  const { error } = await supabaseAdmin
+    .from('behaviour_points')
+    .update({
+      category: updates.category,
+      reason: updates.reason.trim() || null,
+      note: updates.note?.trim() || null,
+    })
+    .eq('id', id);
+
+  if (error) return { success: false, error: 'Failed to update entry.' };
+  return { success: true };
+}
+
+// ── Fetch every behaviour entry (by any teacher) across a set of students —
+// used for the teacher's "view all entries" expanded list ──
+
+export async function fetchAllBehaviourEntries(student_ids: number[]): Promise<BehaviourEntryFull[]> {
+  if (student_ids.length === 0) return [];
+
+  const { data, error } = await supabaseAdmin
+    .from('behaviour_points')
+    .select('id, student_id, teacher_id, type, category, reason, points, note, created_at, teachers(name, surname), students(name, surname)')
+    .in('student_id', student_ids)
+    .order('created_at', { ascending: false });
+
+  if (error || !data) return [];
+
+  return data.map((row: any) => ({
+    id: row.id,
+    student_id: row.student_id,
+    teacher_id: row.teacher_id,
+    teacher_name: row.teachers?.name ?? null,
+    teacher_surname: row.teachers?.surname ?? null,
+    type: row.type,
+    category: row.category,
+    reason: row.reason,
+    points: row.points,
+    note: row.note,
+    created_at: row.created_at,
+    student_name: row.students?.name ?? 'Unknown',
+    student_surname: row.students?.surname ?? '',
   }));
 }
 

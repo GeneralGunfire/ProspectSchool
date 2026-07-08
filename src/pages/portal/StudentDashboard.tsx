@@ -1,8 +1,9 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock, ListChecks } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
+import SubjectSelectionPage from './student/SubjectSelectionPage';
 import StudentHomePage from './student/StudentHomePage';
 import StudentCalendarPage from './student/StudentCalendarPage';
 import StudentMarksPage from './student/StudentMarksPage';
@@ -18,7 +19,7 @@ import NotificationBell from '../../shared/components/NotificationBell';
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-selection';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -67,6 +68,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'library',       label: 'Library',       icon: BookOpen },
     { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
     { id: 'future',        label: 'My Future',     icon: Sparkles,       mobileLabel: 'Future' },
+    ...(session?.grade === 9 ? [{ id: 'subject-selection' as ActivePage, label: 'Subject Selection', icon: ListChecks }] : []),
   ];
 
   function handleLibraryNavigate(page: string) {
@@ -270,6 +272,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'topic-tests'   && <StudentTopicTestsPage session={session} />}
+          {activePage === 'subject-selection' && <SubjectSelectionPage session={session} />}
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
               <MyFuturePage

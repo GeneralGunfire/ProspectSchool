@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock, ListChecks } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
@@ -10,8 +10,9 @@ import ClassesAdminPage from './admin/ClassesAdminPage';
 import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
 import ParentsAdminPage from './admin/ParentsAdminPage';
 import TimetableAdminPage from './admin/TimetableAdminPage';
+import SubjectSelectionAdminPage from './admin/SubjectSelectionAdminPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable' | 'subject-selection';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -41,6 +42,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'parents',       label: 'Parents',       icon: Heart },
     { id: 'classes',       label: 'Classes',       icon: School },
     { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
+    { id: 'subject-selection', label: 'Subject Selection', icon: ListChecks },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
   ];
 
@@ -200,6 +202,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'students'      && <StudentsDirectoryPage session={session} />}
           {activePage === 'parents'       && <ParentsAdminPage session={session} />}
           {activePage === 'timetable'     && <TimetableAdminPage session={session} />}
+          {activePage === 'subject-selection' && <SubjectSelectionAdminPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
         </div>
       </div>

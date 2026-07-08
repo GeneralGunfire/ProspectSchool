@@ -1,16 +1,16 @@
 # Graph Report - prospect  (2026-07-08)
 
 ## Corpus Check
-- 289 files · ~1,149,061 words
+- 289 files · ~1,149,257 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2261 nodes · 3940 edges · 164 communities (136 shown, 28 thin omitted)
+- 2262 nodes · 3941 edges · 168 communities (140 shown, 28 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `fc7f9807`
+- Built from commit: `a27f881c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -158,6 +158,7 @@
 - [[_COMMUNITY_Community 145|Community 145]]
 - [[_COMMUNITY_Community 146|Community 146]]
 - [[_COMMUNITY_Community 147|Community 147]]
+- [[_COMMUNITY_Community 148|Community 148]]
 - [[_COMMUNITY_Community 149|Community 149]]
 - [[_COMMUNITY_Community 150|Community 150]]
 - [[_COMMUNITY_Community 151|Community 151]]
@@ -172,7 +173,10 @@
 - [[_COMMUNITY_Community 160|Community 160]]
 - [[_COMMUNITY_Community 161|Community 161]]
 - [[_COMMUNITY_Community 162|Community 162]]
+- [[_COMMUNITY_Community 164|Community 164]]
+- [[_COMMUNITY_Community 165|Community 165]]
 - [[_COMMUNITY_Community 166|Community 166]]
+- [[_COMMUNITY_Community 167|Community 167]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `useStudySession()` - 63 edges
@@ -187,21 +191,21 @@
 10. `SummaryCard()` - 31 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `StudentAssignmentsPageProps` --references--> `AdminSession`  [EXTRACTED]
+  src/pages/portal/admin/StudentAssignmentsPage.tsx → src/lib/auth.ts
 - `CareerDetailModalProps` --references--> `CareerFull`  [EXTRACTED]
   src/features/careers/components/CareerDetailModal.tsx → src/features/careers/data/careersTypes.ts
+- `AdminAnnouncementsPageProps` --references--> `AdminSession`  [EXTRACTED]
+  src/pages/portal/admin/AdminAnnouncementsPage.tsx → src/lib/auth.ts
 - `StudentAnnouncementsPageProps` --references--> `StudentSession`  [EXTRACTED]
   src/pages/portal/student/StudentAnnouncementsPage.tsx → src/lib/auth.ts
-- `HomeroomPageProps` --references--> `TeacherSession`  [EXTRACTED]
-  src/pages/portal/teacher/HomeroomPage.tsx → src/lib/auth.ts
-- `PastPapersPageProps` --references--> `TeacherSession`  [EXTRACTED]
-  src/pages/portal/teacher/PastPapersPage.tsx → src/lib/auth.ts
-- `StudentHomeroomPageProps` --references--> `StudentSession`  [EXTRACTED]
-  src/pages/portal/student/StudentHomeroomPage.tsx → src/lib/auth.ts
+- `StudentPastPapersPageProps` --references--> `StudentSession`  [EXTRACTED]
+  src/pages/portal/student/StudentPastPapersPage.tsx → src/lib/auth.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (164 total, 28 thin omitted)
+## Communities (168 total, 28 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.03
@@ -237,35 +241,35 @@ Nodes (24): accountingEquation, algebraicExpressions, classificationOfMatter, do
 
 ### Community 8 - "Community 8"
 Cohesion: 0.09
-Nodes (27): AdminAnnouncementCard(), audienceSummary(), emptyForm, timeAgo(), Announcement, AnnouncementResult, AnnouncementTargetType, createAnnouncement() (+19 more)
+Nodes (28): AdminAnnouncementCard(), AdminAnnouncementsPageProps, audienceSummary(), emptyForm, timeAgo(), Announcement, AnnouncementResult, AnnouncementTargetType (+20 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.08
-Nodes (35): createEvent(), CreateEventInput, deleteAttachment(), deleteEvent(), EVENT_COLORS, EVENT_LABELS, EventResult, EventType (+27 more)
+Cohesion: 0.10
+Nodes (29): createEvent(), CreateEventInput, deleteAttachment(), deleteEvent(), EVENT_COLORS, EventResult, EventType, fetchHomeworkCompletionCount() (+21 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.07
 Nodes (22): Subject, subjects, ACCOUNTING_G10_T1_PAGES, ACCOUNTING_G10_TOPICS, ALGEBRA_G10_TOPICS, BIZSTUDIES_G10_T1_PAGES, BIZSTUDIES_G10_TOPICS, CAT_G10_T1_PAGES (+14 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.13
-Nodes (17): createPastPaper(), CreatePastPaperInput, deletePaperFile(), deletePastPaper(), fetchAllPastPapers(), fetchTeacherPastPapers(), getPastPaperDownloadUrl(), PastPaperResult (+9 more)
+Cohesion: 0.09
+Nodes (25): createPastPaper(), CreatePastPaperInput, deletePaperFile(), deletePastPaper(), fetchAllPastPapers(), fetchTeacherPastPapers(), getPastPaperDownloadUrl(), PastPaper (+17 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.11
-Nodes (25): createResource(), CreateResourceInput, deleteResource(), deleteResourceFile(), fetchStudentResources(), fetchTeacherResources(), getResourceDownloadUrl(), Resource (+17 more)
+Nodes (24): createResource(), CreateResourceInput, deleteResource(), deleteResourceFile(), fetchStudentResources(), fetchTeacherResources(), getResourceDownloadUrl(), Resource (+16 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.12
-Nodes (20): createMarkSheet(), CreateMarkSheetInput, deleteMarkSheet(), fetchSheetMarks(), fetchTeacherMarkSheets(), fetchTeacherTermWeightStatus(), FinalMarkResult, MarkSheet (+12 more)
+Nodes (19): createMarkSheet(), CreateMarkSheetInput, deleteMarkSheet(), fetchSheetMarks(), fetchTeacherMarkSheets(), fetchTeacherTermWeightStatus(), FinalMarkResult, MarkSheet (+11 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.08
 Nodes (18): deleteTopicTest(), deleteTopicTestQuestion(), fetchPendingMarking(), fetchTeacherTopicTests(), fetchTestAssignments(), finalizeAttemptGrading(), getCatalogTopics(), GradingMode (+10 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.14
-Nodes (15): AttendanceRecord, AttendanceStatus, CreateCohortResult, fetchAttendanceForDate(), fetchCohortHomeroomTeacher(), fetchCohortRoster(), fetchStudentAttendanceHistory(), HomeroomStudent (+7 more)
+Cohesion: 0.12
+Nodes (12): AttendanceRecord, AttendanceStatus, fetchCohortHomeroomTeacher(), fetchStudentAttendanceHistory(), HomeroomTeacherInfo, ParentAttendancePageProps, STATUS_CONFIG, ActivePage (+4 more)
 
 ### Community 16 - "Community 16"
 Cohesion: 0.20
@@ -297,7 +301,7 @@ Nodes (17): calculateAPS(), DEGREE_DATA, DegreeEntry, FieldOfStudy, FIELDS_OF_ST
 
 ### Community 23 - "Community 23"
 Cohesion: 0.13
-Nodes (9): loadTopicProgress(), loadTopicProgress(), LABELS, loadTopicProgress(), Question, TOPIC, TopicStatus, ViewState (+1 more)
+Nodes (9): saveTopicProgress(), saveTopicProgress(), LABELS, Question, saveTopicProgress(), TOPIC, TopicStatus, ViewState (+1 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.11
@@ -308,12 +312,12 @@ Cohesion: 0.11
 Nodes (17): compilerOptions, allowImportingTsExtensions, allowJs, experimentalDecorators, isolatedModules, jsx, lib, module (+9 more)
 
 ### Community 26 - "Community 26"
-Cohesion: 0.10
-Nodes (25): CONTACT_METHOD_LABELS, ContactMethod, daysSince(), deleteParentContact(), fetchLastContactDates(), fetchParentContacts(), lastContactLabel(), logParentContact() (+17 more)
+Cohesion: 0.09
+Nodes (26): CONTACT_METHOD_LABELS, ContactMethod, daysSince(), deleteParentContact(), fetchLastContactDates(), fetchParentContacts(), lastContactLabel(), logParentContact() (+18 more)
 
 ### Community 27 - "Community 27"
-Cohesion: 0.16
-Nodes (12): fetchTeacherStudentProgress(), MasteryLevel, StudentProgressSummary, formatDate(), initials(), REASON_LABEL, RISK_ORDER, RISK_STYLE (+4 more)
+Cohesion: 0.15
+Nodes (13): fetchSchoolEvents(), RiskLevel, fetchTeacherStudentProgress(), StudentProgressSummary, formatDate(), initials(), REASON_LABEL, RISK_ORDER (+5 more)
 
 ### Community 28 - "Community 28"
 Cohesion: 0.13
@@ -328,28 +332,28 @@ Cohesion: 0.13
 Nodes (8): AtomsSubatomicParticlesPage(), LABELS, loadTopicProgress(), Question, saveTopicProgress(), TOPIC, TopicStatus, ViewState
 
 ### Community 31 - "Community 31"
-Cohesion: 0.15
-Nodes (6): BusinessSectorsPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
+Cohesion: 0.14
+Nodes (7): QuizQuestion, BusinessSectorsPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 32 - "Community 32"
 Cohesion: 0.15
 Nodes (6): BusinessStakeholdersPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 33 - "Community 33"
-Cohesion: 0.15
-Nodes (6): LABELS, Question, TOPIC, TopicStatus, ViewState, WordProcessingPage()
+Cohesion: 0.14
+Nodes (7): LearningOutcomes(), LABELS, Question, TOPIC, TopicStatus, ViewState, WordProcessingPage()
 
 ### Community 34 - "Community 34"
-Cohesion: 0.14
-Nodes (7): LearningOutcomes(), BusinessEnvironmentPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
+Cohesion: 0.10
+Nodes (13): EASE, ExamTip(), ExamTipProps, KnowledgeCheckProps, LABELS, LearningOutcomesProps, SummaryCardProps, BusinessEnvironmentPage() (+5 more)
 
 ### Community 35 - "Community 35"
 Cohesion: 0.15
 Nodes (6): FileManagementPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 36 - "Community 36"
-Cohesion: 0.14
-Nodes (7): QuizQuestion, LABELS, ProductionPossibilityCurvePage(), Question, TOPIC, TopicStatus, ViewState
+Cohesion: 0.15
+Nodes (6): LABELS, ProductionPossibilityCurvePage(), Question, TOPIC, TopicStatus, ViewState
 
 ### Community 37 - "Community 37"
 Cohesion: 0.25
@@ -357,15 +361,15 @@ Nodes (14): electricity_monthly_estimate, high, low, medium, electricity_monthly
 
 ### Community 38 - "Community 38"
 Cohesion: 0.14
-Nodes (7): SummaryCard(), GeneralLedgerPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
+Nodes (7): KnowledgeCheck(), GeneralLedgerPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 39 - "Community 39"
-Cohesion: 0.10
-Nodes (13): EASE, ExamTip(), ExamTipProps, KnowledgeCheckProps, LABELS, LearningOutcomesProps, SummaryCardProps, BusinessOperationsPage() (+5 more)
+Cohesion: 0.15
+Nodes (6): BusinessOperationsPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 40 - "Community 40"
 Cohesion: 0.13
-Nodes (8): LABELS, loadTopicProgress(), Question, saveTopicProgress(), SpeciesConceptPage(), TOPIC, TopicStatus, ViewState
+Nodes (9): loadTopicProgress(), LABELS, loadTopicProgress(), Question, SpeciesConceptPage(), TOPIC, TopicStatus, ViewState (+1 more)
 
 ### Community 41 - "Community 41"
 Cohesion: 0.13
@@ -376,8 +380,8 @@ Cohesion: 0.15
 Nodes (9): CareerDetailModal(), CareerDetailModalProps, categoryLabels, demandBadge, riasecBar, riasecNames, categoryLabels, demandConfig (+1 more)
 
 ### Community 43 - "Community 43"
-Cohesion: 0.14
-Nodes (7): KnowledgeCheck(), DoubleEntrySystemPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
+Cohesion: 0.15
+Nodes (6): DoubleEntrySystemPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 44 - "Community 44"
 Cohesion: 0.08
@@ -396,12 +400,12 @@ Cohesion: 0.18
 Nodes (10): cn(), BorderBeam(), BorderBeamProps, Input, InputProps, Label, labelVariants, TabsContent (+2 more)
 
 ### Community 48 - "Community 48"
-Cohesion: 0.15
-Nodes (15): unmarkHomeworkDone(), createStudentTask(), deleteStudentTask(), fetchStudentTasks(), NewStudentTask, StudentTask, updateTaskDone(), DAYS (+7 more)
+Cohesion: 0.12
+Nodes (18): EVENT_LABELS, getAttachmentDownloadUrl(), markHomeworkDone(), unmarkHomeworkDone(), createStudentTask(), deleteStudentTask(), fetchStudentTasks(), NewStudentTask (+10 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.05
-Nodes (39): SkippedQuestionsPanel(), SkippedQuestionsPanelProps, ApplicationProcess, bursaries, Bursary, Coverage, Requirement, SuccessStory (+31 more)
+Cohesion: 0.14
+Nodes (11): ApplicationProcess, bursaries, Bursary, Coverage, Requirement, SuccessStory, fetchSavedBursaryIds(), TRACKER_COLORS (+3 more)
 
 ### Community 50 - "Community 50"
 Cohesion: 0.17
@@ -412,8 +416,8 @@ Cohesion: 0.23
 Nodes (11): Career, CareerCard(), CareerCardProps, categoryLabels, demandConfig, getAPS(), getDemand(), getSalary() (+3 more)
 
 ### Community 52 - "Community 52"
-Cohesion: 0.12
-Nodes (3): fetchStudentCompletions(), fetchStudentEvents(), ZONES
+Cohesion: 0.11
+Nodes (4): computeFinalMark(), fetchStudentResults(), StudentResult, ZONES
 
 ### Community 53 - "Community 53"
 Cohesion: 0.25
@@ -444,8 +448,8 @@ Cohesion: 0.09
 Nodes (19): AddQuestionInput, assignTopicTest(), AssignTopicTestInput, CatalogQuestion, CatalogTopic, CreateTopicTestInput, fetchTopicOverview(), SeedCatalogTestInput (+11 more)
 
 ### Community 60 - "Community 60"
-Cohesion: 0.15
-Nodes (6): LABELS, Question, SpreadsheetsPage(), TOPIC, TopicStatus, ViewState
+Cohesion: 0.14
+Nodes (7): SummaryCard(), JournalsInAccountingPage(), LABELS, Question, TOPIC, TopicStatus, ViewState
 
 ### Community 61 - "Community 61"
 Cohesion: 0.15
@@ -476,16 +480,16 @@ Cohesion: 0.18
 Nodes (10): alerts, currentStage, forecast, scrapedAt, source, statusNote, statusText, suspended (+2 more)
 
 ### Community 68 - "Community 68"
-Cohesion: 0.07
-Nodes (34): StudentAssignmentsPageProps, AssignmentRow, StudentDetailModalProps, StudentForm, AssignmentRow, EMPTY_ROW, EMPTY_STUDENT_FORM, StudentForm (+26 more)
+Cohesion: 0.08
+Nodes (26): StudentAssignmentsPageProps, AssignmentRow, StudentDetailModalProps, StudentForm, AdminAssignResult, adminAssignTeacherToStudent(), AdminCreateStudentInput, adminRemoveAssignment() (+18 more)
 
 ### Community 69 - "Community 69"
 Cohesion: 0.12
-Nodes (14): fetchStudentInterventionChips(), StudentInterventionChip, groupBySubject(), groupMarksBySubject(), initials(), InterventionsTab(), MarksTab(), ProfileProps (+6 more)
+Nodes (15): computeInterventionImpact(), fetchStudentInterventionChips(), StudentInterventionChip, groupBySubject(), groupMarksBySubject(), initials(), InterventionsTab(), MarksTab() (+7 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.14
-Nodes (15): getTeacherSession(), fetchTeacherHomerooms(), markAttendanceBulk(), markNonSchoolDay(), ActivePage, TeacherDashboardProps, addDays(), HomeroomPage() (+7 more)
+Cohesion: 0.11
+Nodes (23): getTeacherSession(), createCohort(), CreateCohortResult, fetchAttendanceForDate(), fetchCohortRoster(), fetchTeacherHomerooms(), HomeroomStudent, markAttendance() (+15 more)
 
 ### Community 71 - "Community 71"
 Cohesion: 0.22
@@ -524,8 +528,8 @@ Cohesion: 0.29
 Nodes (7): description, label, provinces, lifestyle_monthly_total, note, tiers, comfortable
 
 ### Community 80 - "Community 80"
-Cohesion: 0.29
-Nodes (4): StudySessionProvider(), LibraryPageProps, pages, StudyLibraryPage
+Cohesion: 0.14
+Nodes (11): StudentSession, StudySessionProvider(), LibraryPageProps, pages, StudyLibraryPage, MyFuturePageProps, StudentCalendarPageProps, StudentHomePageProps (+3 more)
 
 ### Community 81 - "Community 81"
 Cohesion: 0.29
@@ -584,16 +588,16 @@ Cohesion: 0.50
 Nodes (3): alerts, dams, fetched_at
 
 ### Community 108 - "Community 108"
-Cohesion: 0.22
-Nodes (9): TeacherSession, AnnouncementsPageProps, BehaviourPageProps, CalendarPageProps, ClassesPageProps, MarksPageProps, ResourcesPageProps, StudentProgressPageProps (+1 more)
+Cohesion: 0.20
+Nodes (10): TeacherSession, AnnouncementsPageProps, BehaviourPageProps, CalendarPageProps, ClassesPageProps, MarksPageProps, PastPapersPageProps, ResourcesPageProps (+2 more)
 
 ### Community 109 - "Community 109"
-Cohesion: 0.10
-Nodes (23): EMPTY, EMPTY_SUBJECT_ROW, ModalMode, SubjectGradeRow, TeacherForm, hashPin(), adminCreateStudent(), adminUpdateStudent() (+15 more)
+Cohesion: 0.11
+Nodes (22): EMPTY, EMPTY_SUBJECT_ROW, ModalMode, SubjectGradeRow, TeacherForm, hashPin(), adminUpdateStudent(), createStudent() (+14 more)
 
 ### Community 127 - "Community 127"
 Cohesion: 0.13
-Nodes (9): saveTopicProgress(), LABELS, PeriodicTableTrendsPage(), Question, saveTopicProgress(), TOPIC, TopicStatus, ViewState (+1 more)
+Nodes (8): LABELS, loadTopicProgress(), PeriodicTableTrendsPage(), Question, saveTopicProgress(), TOPIC, TopicStatus, ViewState
 
 ### Community 128 - "Community 128"
 Cohesion: 0.15
@@ -605,7 +609,7 @@ Nodes (31): AddQuestionModal, Announcements (`AnnouncementsPage.tsx`), AssignMod
 
 ### Community 130 - "Community 130"
 Cohesion: 0.10
-Nodes (36): buildGrowthTimeline(), computeInterventionImpact(), createIntervention(), getActiveInterventions(), getCompletedInterventions(), getInterventions(), getOutcomes(), GrowthTimelineEvent (+28 more)
+Nodes (35): buildGrowthTimeline(), completeIntervention(), createIntervention(), getActiveInterventions(), getCompletedInterventions(), getInterventions(), getOutcomes(), GrowthTimelineEvent (+27 more)
 
 ### Community 131 - "Community 131"
 Cohesion: 0.16
@@ -616,8 +620,8 @@ Cohesion: 0.12
 Nodes (16): 1. Data model, 2. Teacher-side authoring UX, 3. Student-side test-taking UX, 4. Granular results surfacing (teacher-facing), 5. Future: at-risk engine integration, Decisions locked in, New page: Topic Overview (teacher dashboard), Open items for follow-up (not blocking this plan) (+8 more)
 
 ### Community 133 - "Community 133"
-Cohesion: 0.12
-Nodes (14): getParentSession(), ParentSession, computeFinalMark(), fetchStudentResults(), fetchParentChildren(), ParentChild, ParentAnnouncementsPageProps, ParentBehaviourPageProps (+6 more)
+Cohesion: 0.18
+Nodes (11): getParentSession(), ParentSession, fetchParentChildren(), ParentChild, ParentAnnouncementsPageProps, ParentHomePageProps, ParentHomeworkPageProps, ParentMarksPageProps (+3 more)
 
 ### Community 134 - "Community 134"
 Cohesion: 0.17
@@ -628,8 +632,8 @@ Cohesion: 0.18
 Nodes (11): CountUp(), EASE, FadeIn(), FadeInProps, StaggerContainer(), QuoteSection(), stats, StatsBar() (+3 more)
 
 ### Community 136 - "Community 136"
-Cohesion: 0.18
-Nodes (11): clearStudentGoals(), getStudentGoals(), KEY(), saveStudentGoals(), StudentGoals, fetchStudentProgress(), StudyProgress, BursariesPage (+3 more)
+Cohesion: 0.20
+Nodes (7): fetchStudentProgress(), MasteryLevel, StudyProgress, BursariesPage, CareersPage, QuizPage, SubView
 
 ### Community 138 - "Community 138"
 Cohesion: 0.70
@@ -652,12 +656,12 @@ Cohesion: 0.12
 Nodes (15): getPlatformSession(), platformLogout(), PlatformSession, CreateSchoolInput, CreateSchoolResult, createSchoolWithAdmin(), fetchAllSchools(), fetchSchoolStats() (+7 more)
 
 ### Community 144 - "Community 144"
-Cohesion: 0.09
-Nodes (20): StudentSession, completeIntervention(), startIntervention(), PastPaper, ActivePage, LibraryPage, MyFuturePage, StudentDashboardProps (+12 more)
+Cohesion: 0.16
+Nodes (12): QuizQuestion, quizQuestions, CAREER_DATABASE, CareerMatch, CODE_NAMES, computeQuizResults(), generateProfileDescription(), PROFILE_BLURBS (+4 more)
 
 ### Community 145 - "Community 145"
-Cohesion: 0.19
-Nodes (11): awardBehaviour(), AwardBehaviourResult, BehaviourEntry, BehaviourType, CUSTOM_REASON, deleteBehaviourEntry(), DEMERIT_CATEGORIES, DEMERIT_REASONS (+3 more)
+Cohesion: 0.15
+Nodes (13): awardBehaviour(), AwardBehaviourResult, BehaviourEntry, BehaviourType, CUSTOM_REASON, deleteBehaviourEntry(), DEMERIT_CATEGORIES, DEMERIT_REASONS (+5 more)
 
 ### Community 146 - "Community 146"
 Cohesion: 0.17
@@ -666,6 +670,10 @@ Nodes (13): EMPTY, ModalMode, ParentForm, ParentWithChildren, createParent(), Cr
 ### Community 147 - "Community 147"
 Cohesion: 0.17
 Nodes (11): demandConfig, TVETCareerCard(), TVETCareerCardProps, LINKS, TVETSubNav(), TVETSubNavProps, allCareersComplete, usePillVisible() (+3 more)
+
+### Community 148 - "Community 148"
+Cohesion: 0.20
+Nodes (6): SkippedQuestionsPanel(), SkippedQuestionsPanelProps, likertOptions, QuizAnswer, riasecColors, riasecLabels
 
 ### Community 149 - "Community 149"
 Cohesion: 0.29
@@ -685,7 +693,7 @@ Nodes (8): ease, Stats, Card, CardContent, CardDescription, CardFooter, CardHead
 
 ### Community 153 - "Community 153"
 Cohesion: 0.15
-Nodes (8): trackAnnouncementViews(), supabase, AuthContext, AuthContextType, AnnouncementCard(), CATEGORY_ACCENTS, StudentAnnouncementsPageProps, timeAgo()
+Nodes (9): trackAnnouncementViews(), supabase, supabaseAdmin, AuthContext, AuthContextType, AnnouncementCard(), CATEGORY_ACCENTS, StudentAnnouncementsPageProps (+1 more)
 
 ### Community 154 - "Community 154"
 Cohesion: 0.25
@@ -716,12 +724,24 @@ Cohesion: 0.28
 Nodes (7): AuthCard(), AuthNavbar(), AuthShell(), CodeField(), CodeFieldProps, PinInput(), PinInputProps
 
 ### Community 161 - "Community 161"
-Cohesion: 0.13
-Nodes (16): AdminAnnouncementsPageProps, AdminHomePageProps, ClassDetailPageProps, ClassesAdminPageProps, ParentsAdminPageProps, StudentsDirectoryPageProps, TeachersPageProps, AdminSession (+8 more)
+Cohesion: 0.11
+Nodes (20): AdminHomePageProps, ClassDetailPageProps, ClassesAdminPageProps, ParentsAdminPageProps, AssignmentRow, EMPTY_ROW, EMPTY_STUDENT_FORM, StudentForm (+12 more)
 
 ### Community 162 - "Community 162"
 Cohesion: 0.24
 Nodes (7): HeroSection(), HeroSectionProps, Logo(), Button, ButtonProps, buttonVariants, WebGLShader()
+
+### Community 164 - "Community 164"
+Cohesion: 0.25
+Nodes (10): QuizResults, getStudentSession(), fetchApsScore(), fetchQuizResults(), isBursarySaved(), saveApsScore(), saveQuizResults(), StoredApsScore (+2 more)
+
+### Community 165 - "Community 165"
+Cohesion: 0.29
+Nodes (4): fetchStudentCompletions(), fetchStudentEvents(), SchoolEvent, HomeworkStat
+
+### Community 167 - "Community 167"
+Cohesion: 0.60
+Nodes (5): clearStudentGoals(), getStudentGoals(), KEY(), saveStudentGoals(), StudentGoals
 
 ## Knowledge Gaps
 - **898 isolated node(s):** `TimetableAdminPageProps`, `DEFAULT_PERIODS`, `DragPayload`, `DraftEntry`, `SlotCellProps` (+893 more)
@@ -731,10 +751,10 @@ Nodes (7): HeroSection(), HeroSectionProps, Logo(), Button, ButtonProps, buttonV
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `supabaseAdmin` connect `Community 12` to `Community 130`, `Community 5`, `Community 8`, `Community 9`, `Community 11`, `Community 13`, `Community 141`, `Community 15`, `Community 143`, `Community 145`, `Community 146`, `Community 20`, `Community 152`, `Community 153`, `Community 26`, `Community 27`, `Community 48`, `Community 49`, `Community 52`, `Community 59`, `Community 68`, `Community 69`, `Community 109`?**
-  _High betweenness centrality (0.122) - this node is a cross-community bridge._
+- **Why does `supabaseAdmin` connect `Community 153` to `Community 130`, `Community 5`, `Community 133`, `Community 8`, `Community 9`, `Community 136`, `Community 11`, `Community 12`, `Community 13`, `Community 141`, `Community 143`, `Community 145`, `Community 146`, `Community 20`, `Community 152`, `Community 26`, `Community 164`, `Community 165`, `Community 48`, `Community 59`, `Community 68`, `Community 69`, `Community 70`, `Community 109`?**
+  _High betweenness centrality (0.126) - this node is a cross-community bridge._
 - **Why does `bursaries` connect `Community 49` to `Community 136`, `Community 17`?**
-  _High betweenness centrality (0.043) - this node is a cross-community bridge._
+  _High betweenness centrality (0.046) - this node is a cross-community bridge._
 - **Why does `cn()` connect `Community 47` to `Community 152`, `Community 162`?**
   _High betweenness centrality (0.027) - this node is a cross-community bridge._
 - **What connects `TimetableAdminPageProps`, `DEFAULT_PERIODS`, `DragPayload` to the rest of the system?**

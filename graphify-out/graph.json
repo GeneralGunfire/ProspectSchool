@@ -4,130 +4,166 @@
   "graph": {},
   "nodes": [
     {
+      "label": "StudentAssignmentsPage.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L1",
+      "id": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "community": 68,
+      "norm_label": "studentassignmentspage.tsx"
+    },
+    {
+      "label": "StudentAssignmentsPageProps",
+      "file_type": "code",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L11",
+      "id": "admin_studentassignmentspage_studentassignmentspageprops",
+      "community": 68,
+      "norm_label": "studentassignmentspageprops"
+    },
+    {
+      "label": "initials()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L13",
+      "id": "admin_studentassignmentspage_initials",
+      "community": 68,
+      "norm_label": "initials()"
+    },
+    {
+      "label": "StudentAssignmentsPage()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L17",
+      "id": "admin_studentassignmentspage_studentassignmentspage",
+      "community": 68,
+      "norm_label": "studentassignmentspage()"
+    },
+    {
       "label": "TimetableAdminPage.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L1",
-      "id": "src_pages_portal_admin_timetableadminpage_tsx",
       "community": 141,
-      "norm_label": "timetableadminpage.tsx"
+      "norm_label": "timetableadminpage.tsx",
+      "id": "src_pages_portal_admin_timetableadminpage_tsx"
     },
     {
       "label": "TimetableAdminPageProps",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L19",
-      "id": "admin_timetableadminpage_timetableadminpageprops",
       "community": 141,
-      "norm_label": "timetableadminpageprops"
+      "norm_label": "timetableadminpageprops",
+      "id": "admin_timetableadminpage_timetableadminpageprops"
     },
     {
       "label": "DEFAULT_PERIODS",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L21",
-      "id": "admin_timetableadminpage_default_periods",
       "community": 141,
-      "norm_label": "default_periods"
+      "norm_label": "default_periods",
+      "id": "admin_timetableadminpage_default_periods"
     },
     {
       "label": "DragPayload",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L29",
-      "id": "admin_timetableadminpage_dragpayload",
       "community": 141,
-      "norm_label": "dragpayload"
+      "norm_label": "dragpayload",
+      "id": "admin_timetableadminpage_dragpayload"
     },
     {
       "label": "DraftEntry",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L35",
-      "id": "admin_timetableadminpage_draftentry",
       "community": 141,
-      "norm_label": "draftentry"
+      "norm_label": "draftentry",
+      "id": "admin_timetableadminpage_draftentry"
     },
     {
       "label": "nextTempId()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L40",
-      "id": "admin_timetableadminpage_nexttempid",
       "community": 141,
-      "norm_label": "nexttempid()"
+      "norm_label": "nexttempid()",
+      "id": "admin_timetableadminpage_nexttempid"
     },
     {
       "label": "TimetableAdminPage()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L42",
-      "id": "admin_timetableadminpage_timetableadminpage",
       "community": 141,
-      "norm_label": "timetableadminpage()"
+      "norm_label": "timetableadminpage()",
+      "id": "admin_timetableadminpage_timetableadminpage"
     },
     {
       "label": "SaveStatusPill()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L620",
-      "id": "admin_timetableadminpage_savestatuspill",
       "community": 141,
-      "norm_label": "savestatuspill()"
+      "norm_label": "savestatuspill()",
+      "id": "admin_timetableadminpage_savestatuspill"
     },
     {
       "label": "EmptyTimetableState()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L633",
-      "id": "admin_timetableadminpage_emptytimetablestate",
       "community": 141,
-      "norm_label": "emptytimetablestate()"
+      "norm_label": "emptytimetablestate()",
+      "id": "admin_timetableadminpage_emptytimetablestate"
     },
     {
       "label": "SlotCellProps",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L659",
-      "id": "admin_timetableadminpage_slotcellprops",
       "community": 141,
-      "norm_label": "slotcellprops"
+      "norm_label": "slotcellprops",
+      "id": "admin_timetableadminpage_slotcellprops"
     },
     {
       "label": "SlotCell()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L673",
-      "id": "admin_timetableadminpage_slotcell",
       "community": 141,
-      "norm_label": "slotcell()"
+      "norm_label": "slotcell()",
+      "id": "admin_timetableadminpage_slotcell"
     },
     {
       "label": "BreakChip()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L749",
-      "id": "admin_timetableadminpage_breakchip",
       "community": 141,
-      "norm_label": "breakchip()"
+      "norm_label": "breakchip()",
+      "id": "admin_timetableadminpage_breakchip"
     },
     {
       "label": "SlotModal()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L779",
-      "id": "admin_timetableadminpage_slotmodal",
       "community": 141,
-      "norm_label": "slotmodal()"
+      "norm_label": "slotmodal()",
+      "id": "admin_timetableadminpage_slotmodal"
     },
     {
       "label": "DuplicatePopover()",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L1006",
-      "id": "admin_timetableadminpage_duplicatepopover",
       "community": 141,
-      "norm_label": "duplicatepopover()"
+      "norm_label": "duplicatepopover()",
+      "id": "admin_timetableadminpage_duplicatepopover"
     },
     {
       "label": "CareerDetailModal.tsx",
@@ -215,7 +251,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L1",
-      "community": 144,
+      "community": 15,
       "norm_label": "studentdashboard.tsx",
       "id": "src_pages_portal_studentdashboard_tsx"
     },
@@ -224,7 +260,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L18",
-      "community": 144,
+      "community": 15,
       "norm_label": "librarypage",
       "id": "portal_studentdashboard_librarypage"
     },
@@ -233,7 +269,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L19",
-      "community": 144,
+      "community": 15,
       "norm_label": "myfuturepage",
       "id": "portal_studentdashboard_myfuturepage"
     },
@@ -242,7 +278,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L21",
-      "community": 144,
+      "community": 15,
       "norm_label": "activepage",
       "id": "portal_studentdashboard_activepage"
     },
@@ -251,7 +287,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L23",
-      "community": 144,
+      "community": 15,
       "norm_label": "studentdashboardprops",
       "id": "portal_studentdashboard_studentdashboardprops"
     },
@@ -260,7 +296,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L27",
-      "community": 144,
+      "community": 15,
       "norm_label": "spinner()",
       "id": "portal_studentdashboard_spinner"
     },
@@ -269,7 +305,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/StudentDashboard.tsx",
       "source_location": "L33",
-      "community": 144,
+      "community": 15,
       "norm_label": "studentdashboard()",
       "id": "portal_studentdashboard_studentdashboard"
     },
@@ -305,7 +341,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/AdminAnnouncementsPage.tsx",
       "source_location": "L38",
-      "community": 161,
+      "community": 8,
       "norm_label": "adminannouncementspageprops",
       "id": "admin_adminannouncementspage_adminannouncementspageprops"
     },
@@ -386,7 +422,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/MyFuturePage.tsx",
       "source_location": "L20",
-      "community": 144,
+      "community": 80,
       "norm_label": "myfuturepageprops",
       "id": "student_myfuturepage_myfuturepageprops"
     },
@@ -557,7 +593,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomePage.tsx",
       "source_location": "L107",
-      "community": 144,
+      "community": 80,
       "norm_label": "studenthomepageprops",
       "id": "student_studenthomepage_studenthomepageprops"
     },
@@ -683,7 +719,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L140",
-      "community": 144,
+      "community": 80,
       "norm_label": "studentmarkspageprops",
       "id": "student_studentmarkspage_studentmarkspageprops"
     },
@@ -701,7 +737,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L1",
-      "community": 144,
+      "community": 11,
       "norm_label": "studentpastpaperspage.tsx",
       "id": "src_pages_portal_student_studentpastpaperspage_tsx"
     },
@@ -710,7 +746,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L11",
-      "community": 144,
+      "community": 11,
       "norm_label": "grades",
       "id": "student_studentpastpaperspage_grades"
     },
@@ -719,7 +755,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L12",
-      "community": 144,
+      "community": 11,
       "norm_label": "terms",
       "id": "student_studentpastpaperspage_terms"
     },
@@ -728,7 +764,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L14",
-      "community": 144,
+      "community": 11,
       "norm_label": "studentpastpaperspageprops",
       "id": "student_studentpastpaperspage_studentpastpaperspageprops"
     },
@@ -737,7 +773,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L19",
-      "community": 144,
+      "community": 11,
       "norm_label": "practicephase",
       "id": "student_studentpastpaperspage_practicephase"
     },
@@ -746,7 +782,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L21",
-      "community": 144,
+      "community": 11,
       "norm_label": "practicesession",
       "id": "student_studentpastpaperspage_practicesession"
     },
@@ -755,7 +791,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L31",
-      "community": 144,
+      "community": 11,
       "norm_label": "practicerecord",
       "id": "student_studentpastpaperspage_practicerecord"
     },
@@ -764,7 +800,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentPastPapersPage.tsx",
       "source_location": "L41",
-      "community": 144,
+      "community": 11,
       "norm_label": "studentpastpaperspage()",
       "id": "student_studentpastpaperspage_studentpastpaperspage"
     },
@@ -800,7 +836,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentResourcesPage.tsx",
       "source_location": "L18",
-      "community": 144,
+      "community": 80,
       "norm_label": "studentresourcespageprops",
       "id": "student_studentresourcespage_studentresourcespageprops"
     },
@@ -2951,7 +2987,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth.ts",
       "source_location": "L125",
-      "community": 144,
+      "community": 80,
       "norm_label": "studentsession",
       "id": "lib_auth_studentsession"
     },
@@ -2960,7 +2996,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth.ts",
       "source_location": "L138",
-      "community": 49,
+      "community": 164,
       "norm_label": "getstudentsession()",
       "id": "lib_auth_getstudentsession"
     },
@@ -3320,7 +3356,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L1",
-      "community": 15,
+      "community": 70,
       "norm_label": "homeroom.ts",
       "id": "src_lib_homeroom_ts"
     },
@@ -3338,7 +3374,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L16",
-      "community": 15,
+      "community": 70,
       "norm_label": "homeroomstudent",
       "id": "lib_homeroom_homeroomstudent"
     },
@@ -3365,7 +3401,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L34",
-      "community": 15,
+      "community": 70,
       "norm_label": "sethomeroomresult",
       "id": "lib_homeroom_sethomeroomresult"
     },
@@ -3383,7 +3419,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L75",
-      "community": 15,
+      "community": 70,
       "norm_label": "createcohortresult",
       "id": "lib_homeroom_createcohortresult"
     },
@@ -3392,7 +3428,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L79",
-      "community": 161,
+      "community": 70,
       "norm_label": "createcohort()",
       "id": "lib_homeroom_createcohort"
     },
@@ -3401,7 +3437,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L110",
-      "community": 161,
+      "community": 70,
       "norm_label": "sethomeroomteacher()",
       "id": "lib_homeroom_sethomeroomteacher"
     },
@@ -3419,7 +3455,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L145",
-      "community": 15,
+      "community": 70,
       "norm_label": "fetchcohortroster()",
       "id": "lib_homeroom_fetchcohortroster"
     },
@@ -3455,7 +3491,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L196",
-      "community": 15,
+      "community": 70,
       "norm_label": "fetchattendancefordate()",
       "id": "lib_homeroom_fetchattendancefordate"
     },
@@ -3464,7 +3500,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L216",
-      "community": 15,
+      "community": 70,
       "norm_label": "markattendance()",
       "id": "lib_homeroom_markattendance"
     },
@@ -3784,38 +3820,11 @@
       "id": "admin_parentsadminpage_parentsadminpage"
     },
     {
-      "label": "StudentAssignmentsPage.tsx",
-      "file_type": "code",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L1",
-      "community": 68,
-      "norm_label": "studentassignmentspage.tsx",
-      "id": "src_pages_portal_admin_studentassignmentspage_tsx"
-    },
-    {
-      "label": "StudentAssignmentsPageProps",
-      "file_type": "code",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L11",
-      "community": 68,
-      "norm_label": "studentassignmentspageprops",
-      "id": "admin_studentassignmentspage_studentassignmentspageprops"
-    },
-    {
-      "label": "StudentAssignmentsPage()",
-      "file_type": "code",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L13",
-      "community": 68,
-      "norm_label": "studentassignmentspage()",
-      "id": "admin_studentassignmentspage_studentassignmentspage"
-    },
-    {
       "label": "StudentsDirectoryPage.tsx",
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L1",
-      "community": 68,
+      "community": 161,
       "norm_label": "studentsdirectorypage.tsx",
       "id": "src_pages_portal_admin_studentsdirectorypage_tsx"
     },
@@ -3833,7 +3842,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L14",
-      "community": 68,
+      "community": 161,
       "norm_label": "assignmentrow",
       "id": "admin_studentsdirectorypage_assignmentrow"
     },
@@ -3842,7 +3851,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L19",
-      "community": 68,
+      "community": 161,
       "norm_label": "empty_row",
       "id": "admin_studentsdirectorypage_empty_row"
     },
@@ -3851,7 +3860,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L21",
-      "community": 68,
+      "community": 161,
       "norm_label": "studentform",
       "id": "admin_studentsdirectorypage_studentform"
     },
@@ -3860,7 +3869,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L30",
-      "community": 68,
+      "community": 161,
       "norm_label": "empty_student_form",
       "id": "admin_studentsdirectorypage_empty_student_form"
     },
@@ -3869,7 +3878,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L34",
-      "community": 68,
+      "community": 161,
       "norm_label": "studentsdirectorypage()",
       "id": "admin_studentsdirectorypage_studentsdirectorypage"
     },
@@ -3950,7 +3959,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 133,
       "norm_label": "parentannouncementspage.tsx",
       "id": "src_pages_portal_parent_parentannouncementspage_tsx"
     },
@@ -3968,7 +3977,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L13",
-      "community": 8,
+      "community": 133,
       "norm_label": "timeago()",
       "id": "parent_parentannouncementspage_timeago"
     },
@@ -3977,7 +3986,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L25",
-      "community": 8,
+      "community": 133,
       "norm_label": "parentannouncementspage()",
       "id": "parent_parentannouncementspage_parentannouncementspage"
     },
@@ -4022,7 +4031,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentBehaviourPage.tsx",
       "source_location": "L1",
-      "community": 133,
+      "community": 145,
       "norm_label": "parentbehaviourpage.tsx",
       "id": "src_pages_portal_parent_parentbehaviourpage_tsx"
     },
@@ -4031,7 +4040,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentBehaviourPage.tsx",
       "source_location": "L6",
-      "community": 133,
+      "community": 145,
       "norm_label": "parentbehaviourpageprops",
       "id": "parent_parentbehaviourpage_parentbehaviourpageprops"
     },
@@ -4040,7 +4049,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentBehaviourPage.tsx",
       "source_location": "L8",
-      "community": 133,
+      "community": 145,
       "norm_label": "parentbehaviourpage()",
       "id": "parent_parentbehaviourpage_parentbehaviourpage"
     },
@@ -4103,7 +4112,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L1",
-      "community": 52,
+      "community": 165,
       "norm_label": "parenthomeworkpage.tsx",
       "id": "src_pages_portal_parent_parenthomeworkpage_tsx"
     },
@@ -4121,7 +4130,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L13",
-      "community": 52,
+      "community": 165,
       "norm_label": "formatdate()",
       "id": "parent_parenthomeworkpage_formatdate"
     },
@@ -4130,7 +4139,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L17",
-      "community": 52,
+      "community": 165,
       "norm_label": "parenthomeworkpage()",
       "id": "parent_parenthomeworkpage_parenthomeworkpage"
     },
@@ -4139,7 +4148,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentMarksPage.tsx",
       "source_location": "L1",
-      "community": 133,
+      "community": 52,
       "norm_label": "parentmarkspage.tsx",
       "id": "src_pages_portal_parent_parentmarkspage_tsx"
     },
@@ -4157,7 +4166,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentMarksPage.tsx",
       "source_location": "L13",
-      "community": 133,
+      "community": 52,
       "norm_label": "pctnum()",
       "id": "parent_parentmarkspage_pctnum"
     },
@@ -4166,7 +4175,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentMarksPage.tsx",
       "source_location": "L17",
-      "community": 133,
+      "community": 52,
       "norm_label": "gradelabel()",
       "id": "parent_parentmarkspage_gradelabel"
     },
@@ -4175,7 +4184,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentMarksPage.tsx",
       "source_location": "L28",
-      "community": 133,
+      "community": 52,
       "norm_label": "formatdate()",
       "id": "parent_parentmarkspage_formatdate"
     },
@@ -4184,7 +4193,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentMarksPage.tsx",
       "source_location": "L32",
-      "community": 133,
+      "community": 52,
       "norm_label": "parentmarkspage()",
       "id": "parent_parentmarkspage_parentmarkspage"
     },
@@ -4202,7 +4211,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentBehaviourPage.tsx",
       "source_location": "L6",
-      "community": 144,
+      "community": 145,
       "norm_label": "studentbehaviourpageprops",
       "id": "student_studentbehaviourpage_studentbehaviourpageprops"
     },
@@ -4229,7 +4238,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomeroomPage.tsx",
       "source_location": "L9",
-      "community": 15,
+      "community": 80,
       "norm_label": "studenthomeroompageprops",
       "id": "student_studenthomeroompage_studenthomeroompageprops"
     },
@@ -4913,7 +4922,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L6",
-      "community": 68,
+      "community": 11,
       "norm_label": "subject",
       "id": "lib_students_subject"
     },
@@ -4994,7 +5003,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L64",
-      "community": 68,
+      "community": 11,
       "norm_label": "fetchsubjects()",
       "id": "lib_students_fetchsubjects"
     },
@@ -5039,7 +5048,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L131",
-      "community": 109,
+      "community": 161,
       "norm_label": "admincreatestudent()",
       "id": "lib_students_admincreatestudent"
     },
@@ -5246,7 +5255,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L829",
-      "community": 13,
+      "community": 26,
       "norm_label": "fetchteacherstudents()",
       "id": "lib_students_fetchteacherstudents"
     },
@@ -5264,7 +5273,7 @@
       "file_type": "code",
       "source_file": "src/lib/teachers.ts",
       "source_location": "L6",
-      "community": 68,
+      "community": 161,
       "norm_label": "teacher",
       "id": "lib_teachers_teacher"
     },
@@ -5309,7 +5318,7 @@
       "file_type": "code",
       "source_file": "src/lib/teachers.ts",
       "source_location": "L41",
-      "community": 68,
+      "community": 161,
       "norm_label": "fetchschoolteachers()",
       "id": "lib_teachers_fetchschoolteachers"
     },
@@ -6038,7 +6047,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L1",
-      "community": 39,
+      "community": 34,
       "norm_label": "lessonenrichment.tsx",
       "id": "src_components_lessonenrichment_tsx"
     },
@@ -6047,7 +6056,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L8",
-      "community": 39,
+      "community": 34,
       "norm_label": "ease",
       "id": "components_lessonenrichment_ease"
     },
@@ -6056,7 +6065,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L9",
-      "community": 39,
+      "community": 34,
       "norm_label": "labels",
       "id": "components_lessonenrichment_labels"
     },
@@ -6065,7 +6074,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L12",
-      "community": 39,
+      "community": 34,
       "norm_label": "learningoutcomesprops",
       "id": "components_lessonenrichment_learningoutcomesprops"
     },
@@ -6074,7 +6083,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L14",
-      "community": 34,
+      "community": 33,
       "norm_label": "learningoutcomes()",
       "id": "components_lessonenrichment_learningoutcomes"
     },
@@ -6083,7 +6092,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L42",
-      "community": 39,
+      "community": 34,
       "norm_label": "knowledgecheckprops",
       "id": "components_lessonenrichment_knowledgecheckprops"
     },
@@ -6092,7 +6101,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L49",
-      "community": 43,
+      "community": 38,
       "norm_label": "knowledgecheck()",
       "id": "components_lessonenrichment_knowledgecheck"
     },
@@ -6101,7 +6110,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L152",
-      "community": 39,
+      "community": 34,
       "norm_label": "examtipprops",
       "id": "components_lessonenrichment_examtipprops"
     },
@@ -6110,7 +6119,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L154",
-      "community": 39,
+      "community": 34,
       "norm_label": "examtip()",
       "id": "components_lessonenrichment_examtip"
     },
@@ -6119,7 +6128,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L173",
-      "community": 39,
+      "community": 34,
       "norm_label": "summarycardprops",
       "id": "components_lessonenrichment_summarycardprops"
     },
@@ -6128,7 +6137,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L175",
-      "community": 38,
+      "community": 60,
       "norm_label": "summarycard()",
       "id": "components_lessonenrichment_summarycard"
     },
@@ -6146,7 +6155,7 @@
       "file_type": "code",
       "source_file": "src/components/QuizBlock.tsx",
       "source_location": "L10",
-      "community": 36,
+      "community": 31,
       "norm_label": "quizquestion",
       "id": "components_quizblock_quizquestion"
     },
@@ -6947,7 +6956,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L1",
-      "community": 44,
+      "community": 60,
       "norm_label": "journalsinaccounting.tsx",
       "id": "src_features_study_pages_learning_accounting_grade10_term1_journalsinaccounting_tsx"
     },
@@ -6956,7 +6965,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L11",
-      "community": 44,
+      "community": 60,
       "norm_label": "topicstatus",
       "id": "term1_journalsinaccounting_topicstatus"
     },
@@ -6965,7 +6974,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L12",
-      "community": 44,
+      "community": 60,
       "norm_label": "viewstate",
       "id": "term1_journalsinaccounting_viewstate"
     },
@@ -6974,7 +6983,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L13",
-      "community": 44,
+      "community": 60,
       "norm_label": "question",
       "id": "term1_journalsinaccounting_question"
     },
@@ -6983,7 +6992,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L15",
-      "community": 44,
+      "community": 60,
       "norm_label": "topic",
       "id": "term1_journalsinaccounting_topic"
     },
@@ -6992,7 +7001,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L188",
-      "community": 44,
+      "community": 60,
       "norm_label": "speechbubble()",
       "id": "term1_journalsinaccounting_speechbubble"
     },
@@ -7001,7 +7010,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L201",
-      "community": 44,
+      "community": 60,
       "norm_label": "interactivelesson()",
       "id": "term1_journalsinaccounting_interactivelesson"
     },
@@ -7010,7 +7019,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L304",
-      "community": 44,
+      "community": 60,
       "norm_label": "guidedpracticemodule()",
       "id": "term1_journalsinaccounting_guidedpracticemodule"
     },
@@ -7019,7 +7028,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L372",
-      "community": 44,
+      "community": 60,
       "norm_label": "scratchpadmodal()",
       "id": "term1_journalsinaccounting_scratchpadmodal"
     },
@@ -7028,7 +7037,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L487",
-      "community": 44,
+      "community": 60,
       "norm_label": "labels",
       "id": "term1_journalsinaccounting_labels"
     },
@@ -7037,7 +7046,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L489",
-      "community": 44,
+      "community": 60,
       "norm_label": "practicemodule()",
       "id": "term1_journalsinaccounting_practicemodule"
     },
@@ -7046,7 +7055,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L622",
-      "community": 44,
+      "community": 60,
       "norm_label": "feedbackmodule()",
       "id": "term1_journalsinaccounting_feedbackmodule"
     },
@@ -7055,7 +7064,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting.tsx",
       "source_location": "L660",
-      "community": 44,
+      "community": 60,
       "norm_label": "journalsinaccountingpage()",
       "id": "term1_journalsinaccounting_journalsinaccountingpage"
     },
@@ -8198,7 +8207,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L1",
-      "community": 60,
+      "community": 44,
       "norm_label": "spreadsheets.tsx",
       "id": "src_features_study_pages_learning_cat_grade10_term1_spreadsheets_tsx"
     },
@@ -8207,7 +8216,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L11",
-      "community": 60,
+      "community": 44,
       "norm_label": "topicstatus",
       "id": "term1_spreadsheets_topicstatus"
     },
@@ -8216,7 +8225,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L12",
-      "community": 60,
+      "community": 44,
       "norm_label": "viewstate",
       "id": "term1_spreadsheets_viewstate"
     },
@@ -8225,7 +8234,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L13",
-      "community": 60,
+      "community": 44,
       "norm_label": "question",
       "id": "term1_spreadsheets_question"
     },
@@ -8234,7 +8243,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L15",
-      "community": 60,
+      "community": 44,
       "norm_label": "topic",
       "id": "term1_spreadsheets_topic"
     },
@@ -8243,7 +8252,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L189",
-      "community": 60,
+      "community": 44,
       "norm_label": "speechbubble()",
       "id": "term1_spreadsheets_speechbubble"
     },
@@ -8252,7 +8261,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L202",
-      "community": 60,
+      "community": 44,
       "norm_label": "interactivelesson()",
       "id": "term1_spreadsheets_interactivelesson"
     },
@@ -8261,7 +8270,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L305",
-      "community": 60,
+      "community": 44,
       "norm_label": "guidedpracticemodule()",
       "id": "term1_spreadsheets_guidedpracticemodule"
     },
@@ -8270,7 +8279,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L373",
-      "community": 60,
+      "community": 44,
       "norm_label": "scratchpadmodal()",
       "id": "term1_spreadsheets_scratchpadmodal"
     },
@@ -8279,7 +8288,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L488",
-      "community": 60,
+      "community": 44,
       "norm_label": "labels",
       "id": "term1_spreadsheets_labels"
     },
@@ -8288,7 +8297,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L490",
-      "community": 60,
+      "community": 44,
       "norm_label": "practicemodule()",
       "id": "term1_spreadsheets_practicemodule"
     },
@@ -8297,7 +8306,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L623",
-      "community": 60,
+      "community": 44,
       "norm_label": "feedbackmodule()",
       "id": "term1_spreadsheets_feedbackmodule"
     },
@@ -8306,7 +8315,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets.tsx",
       "source_location": "L661",
-      "community": 60,
+      "community": 44,
       "norm_label": "spreadsheetspage()",
       "id": "term1_spreadsheets_spreadsheetspage"
     },
@@ -9458,7 +9467,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/LifeSciences/Grade10/Term1/SpeciesConcept.tsx",
       "source_location": "L173",
-      "community": 40,
+      "community": 23,
       "norm_label": "savetopicprogress()",
       "id": "term1_speciesconcept_savetopicprogress"
     },
@@ -10124,7 +10133,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/PhysicalSciences/Grade10/Term1/PeriodicTableTrends.tsx",
       "source_location": "L186",
-      "community": 23,
+      "community": 127,
       "norm_label": "loadtopicprogress()",
       "id": "term1_periodictabletrends_loadtopicprogress"
     },
@@ -10259,7 +10268,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight.tsx",
       "source_location": "L183",
-      "community": 23,
+      "community": 40,
       "norm_label": "loadtopicprogress()",
       "id": "term1_wavessoundlight_loadtopicprogress"
     },
@@ -10268,7 +10277,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight.tsx",
       "source_location": "L190",
-      "community": 127,
+      "community": 23,
       "norm_label": "savetopicprogress()",
       "id": "term1_wavessoundlight_savetopicprogress"
     },
@@ -10376,7 +10385,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L8",
-      "community": 9,
+      "community": 165,
       "norm_label": "schoolevent",
       "id": "lib_events_schoolevent"
     },
@@ -10430,7 +10439,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L80",
-      "community": 9,
+      "community": 48,
       "norm_label": "event_labels",
       "id": "lib_events_event_labels"
     },
@@ -10457,7 +10466,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L120",
-      "community": 9,
+      "community": 27,
       "norm_label": "fetchschoolevents()",
       "id": "lib_events_fetchschoolevents"
     },
@@ -10475,7 +10484,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L157",
-      "community": 52,
+      "community": 165,
       "norm_label": "fetchstudentevents()",
       "id": "lib_events_fetchstudentevents"
     },
@@ -10511,7 +10520,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L295",
-      "community": 9,
+      "community": 48,
       "norm_label": "getattachmentdownloadurl()",
       "id": "lib_events_getattachmentdownloadurl"
     },
@@ -10538,7 +10547,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L324",
-      "community": 9,
+      "community": 48,
       "norm_label": "markhomeworkdone()",
       "id": "lib_events_markhomeworkdone"
     },
@@ -10556,7 +10565,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L349",
-      "community": 52,
+      "community": 165,
       "norm_label": "fetchstudentcompletions()",
       "id": "lib_events_fetchstudentcompletions"
     },
@@ -10682,7 +10691,7 @@
       "file_type": "code",
       "source_file": "src/lib/marks.ts",
       "source_location": "L86",
-      "community": 133,
+      "community": 52,
       "norm_label": "computefinalmark()",
       "id": "lib_marks_computefinalmark"
     },
@@ -10763,7 +10772,7 @@
       "file_type": "code",
       "source_file": "src/lib/marks.ts",
       "source_location": "L342",
-      "community": 130,
+      "community": 52,
       "norm_label": "studentresult",
       "id": "lib_marks_studentresult"
     },
@@ -10772,7 +10781,7 @@
       "file_type": "code",
       "source_file": "src/lib/marks.ts",
       "source_location": "L358",
-      "community": 133,
+      "community": 52,
       "norm_label": "fetchstudentresults()",
       "id": "lib_marks_fetchstudentresults"
     },
@@ -11303,7 +11312,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/TeacherHomePage.tsx",
       "source_location": "L53",
-      "community": 9,
+      "community": 165,
       "norm_label": "homeworkstat",
       "id": "teacher_teacherhomepage_homeworkstat"
     },
@@ -12275,7 +12284,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/PastPapersPage.tsx",
       "source_location": "L22",
-      "community": 11,
+      "community": 108,
       "norm_label": "pastpaperspageprops",
       "id": "teacher_pastpaperspage_pastpaperspageprops"
     },
@@ -13067,7 +13076,7 @@
       "file_type": "code",
       "source_file": "src/lib/interventions.ts",
       "source_location": "L246",
-      "community": 144,
+      "community": 130,
       "norm_label": "startintervention()",
       "id": "lib_interventions_startintervention"
     },
@@ -13076,7 +13085,7 @@
       "file_type": "code",
       "source_file": "src/lib/interventions.ts",
       "source_location": "L255",
-      "community": 144,
+      "community": 130,
       "norm_label": "completeintervention()",
       "id": "lib_interventions_completeintervention"
     },
@@ -13103,7 +13112,7 @@
       "file_type": "code",
       "source_file": "src/lib/interventions.ts",
       "source_location": "L380",
-      "community": 130,
+      "community": 69,
       "norm_label": "computeinterventionimpact()",
       "id": "lib_interventions_computeinterventionimpact"
     },
@@ -13148,7 +13157,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentInsights.ts",
       "source_location": "L27",
-      "community": 130,
+      "community": 27,
       "norm_label": "risklevel",
       "id": "lib_studentinsights_risklevel"
     },
@@ -13400,7 +13409,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L55",
-      "community": 144,
+      "community": 80,
       "norm_label": "studentcalendarpageprops",
       "id": "student_studentcalendarpage_studentcalendarpageprops"
     },
@@ -13418,7 +13427,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L1",
-      "community": 136,
+      "community": 167,
       "norm_label": "studentgoals.ts",
       "id": "src_lib_studentgoals_ts"
     },
@@ -13427,7 +13436,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L3",
-      "community": 136,
+      "community": 167,
       "norm_label": "studentgoals",
       "id": "lib_studentgoals_studentgoals"
     },
@@ -13436,7 +13445,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L9",
-      "community": 136,
+      "community": 167,
       "norm_label": "key()",
       "id": "lib_studentgoals_key"
     },
@@ -13445,7 +13454,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L11",
-      "community": 136,
+      "community": 167,
       "norm_label": "getstudentgoals()",
       "id": "lib_studentgoals_getstudentgoals"
     },
@@ -13454,7 +13463,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L21",
-      "community": 136,
+      "community": 167,
       "norm_label": "savestudentgoals()",
       "id": "lib_studentgoals_savestudentgoals"
     },
@@ -13463,7 +13472,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentGoals.ts",
       "source_location": "L32",
-      "community": 136,
+      "community": 167,
       "norm_label": "clearstudentgoals()",
       "id": "lib_studentgoals_clearstudentgoals"
     },
@@ -13472,7 +13481,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L1",
-      "community": 49,
+      "community": 148,
       "norm_label": "quizpage.tsx",
       "id": "src_features_careers_pages_quizpage_tsx"
     },
@@ -13481,7 +13490,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L12",
-      "community": 49,
+      "community": 148,
       "norm_label": "quizanswer",
       "id": "pages_quizpage_quizanswer"
     },
@@ -13490,7 +13499,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L19",
-      "community": 49,
+      "community": 148,
       "norm_label": "likertoptions",
       "id": "pages_quizpage_likertoptions"
     },
@@ -13499,7 +13508,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L64",
-      "community": 49,
+      "community": 148,
       "norm_label": "riaseccolors",
       "id": "pages_quizpage_riaseccolors"
     },
@@ -13508,7 +13517,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L73",
-      "community": 49,
+      "community": 148,
       "norm_label": "riaseclabels",
       "id": "pages_quizpage_riaseclabels"
     },
@@ -13517,7 +13526,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L84",
-      "community": 49,
+      "community": 148,
       "norm_label": "quizphase()",
       "id": "pages_quizpage_quizphase"
     },
@@ -13526,7 +13535,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L395",
-      "community": 49,
+      "community": 148,
       "norm_label": "resultsphase()",
       "id": "pages_quizpage_resultsphase"
     },
@@ -13535,7 +13544,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L741",
-      "community": 49,
+      "community": 148,
       "norm_label": "quizpage()",
       "id": "pages_quizpage_quizpage"
     },
@@ -13625,7 +13634,7 @@
       "file_type": "code",
       "source_file": "src/lib/pastPapers.ts",
       "source_location": "L5",
-      "community": 144,
+      "community": 11,
       "norm_label": "pastpaper",
       "id": "lib_pastpapers_pastpaper"
     },
@@ -16748,7 +16757,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L1",
-      "community": 49,
+      "community": 148,
       "norm_label": "skippedquestionspanel.tsx",
       "id": "src_features_careers_components_skippedquestionspanel_tsx"
     },
@@ -16757,7 +16766,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L4",
-      "community": 49,
+      "community": 148,
       "norm_label": "skippedquestionspanelprops",
       "id": "components_skippedquestionspanel_skippedquestionspanelprops"
     },
@@ -16766,7 +16775,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L11",
-      "community": 49,
+      "community": 148,
       "norm_label": "skippedquestionspanel()",
       "id": "components_skippedquestionspanel_skippedquestionspanel"
     },
@@ -17189,7 +17198,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizQuestions.ts",
       "source_location": "L1",
-      "community": 49,
+      "community": 144,
       "norm_label": "quizquestions.ts",
       "id": "src_features_careers_data_quizquestions_ts"
     },
@@ -17198,7 +17207,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizQuestions.ts",
       "source_location": "L1",
-      "community": 49,
+      "community": 144,
       "norm_label": "quizquestion",
       "id": "data_quizquestions_quizquestion"
     },
@@ -17207,7 +17216,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizQuestions.ts",
       "source_location": "L8",
-      "community": 49,
+      "community": 144,
       "norm_label": "quizquestions",
       "id": "data_quizquestions_quizquestions"
     },
@@ -17216,7 +17225,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L1",
-      "community": 49,
+      "community": 144,
       "norm_label": "quizscoringlogic.ts",
       "id": "src_features_careers_data_quizscoringlogic_ts"
     },
@@ -17225,7 +17234,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L5",
-      "community": 49,
+      "community": 144,
       "norm_label": "careermatch",
       "id": "data_quizscoringlogic_careermatch"
     },
@@ -17234,7 +17243,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L22",
-      "community": 49,
+      "community": 144,
       "norm_label": "riasecscores",
       "id": "data_quizscoringlogic_riasecscores"
     },
@@ -17243,7 +17252,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L31",
-      "community": 49,
+      "community": 164,
       "norm_label": "quizresults",
       "id": "data_quizscoringlogic_quizresults"
     },
@@ -17252,7 +17261,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L40",
-      "community": 49,
+      "community": 144,
       "norm_label": "subjectrecommendation",
       "id": "data_quizscoringlogic_subjectrecommendation"
     },
@@ -17261,7 +17270,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L48",
-      "community": 49,
+      "community": 144,
       "norm_label": "career_database",
       "id": "data_quizscoringlogic_career_database"
     },
@@ -17270,7 +17279,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L658",
-      "community": 49,
+      "community": 144,
       "norm_label": "subject_map",
       "id": "data_quizscoringlogic_subject_map"
     },
@@ -17279,7 +17288,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L706",
-      "community": 49,
+      "community": 144,
       "norm_label": "code_names",
       "id": "data_quizscoringlogic_code_names"
     },
@@ -17288,7 +17297,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L715",
-      "community": 49,
+      "community": 144,
       "norm_label": "profile_blurbs",
       "id": "data_quizscoringlogic_profile_blurbs"
     },
@@ -17297,7 +17306,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L724",
-      "community": 49,
+      "community": 144,
       "norm_label": "profile_career_hints",
       "id": "data_quizscoringlogic_profile_career_hints"
     },
@@ -17306,7 +17315,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L733",
-      "community": 49,
+      "community": 144,
       "norm_label": "generateprofiledescription()",
       "id": "data_quizscoringlogic_generateprofiledescription"
     },
@@ -17315,7 +17324,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L748",
-      "community": 49,
+      "community": 144,
       "norm_label": "computequizresults()",
       "id": "data_quizscoringlogic_computequizresults"
     },
@@ -19403,7 +19412,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L1",
-      "community": 49,
+      "community": 164,
       "norm_label": "myfuture.ts",
       "id": "src_lib_myfuture_ts"
     },
@@ -19412,7 +19421,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L7",
-      "community": 49,
+      "community": 164,
       "norm_label": "storedquizresult",
       "id": "lib_myfuture_storedquizresult"
     },
@@ -19421,7 +19430,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L18",
-      "community": 49,
+      "community": 164,
       "norm_label": "storedapsscore",
       "id": "lib_myfuture_storedapsscore"
     },
@@ -19430,7 +19439,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L29",
-      "community": 49,
+      "community": 164,
       "norm_label": "savequizresults()",
       "id": "lib_myfuture_savequizresults"
     },
@@ -19439,7 +19448,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L50",
-      "community": 49,
+      "community": 164,
       "norm_label": "fetchquizresults()",
       "id": "lib_myfuture_fetchquizresults"
     },
@@ -19448,7 +19457,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L66",
-      "community": 49,
+      "community": 164,
       "norm_label": "saveapsscore()",
       "id": "lib_myfuture_saveapsscore"
     },
@@ -19457,7 +19466,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L85",
-      "community": 49,
+      "community": 164,
       "norm_label": "fetchapsscore()",
       "id": "lib_myfuture_fetchapsscore"
     },
@@ -19466,7 +19475,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L101",
-      "community": 49,
+      "community": 164,
       "norm_label": "togglesavedbursary()",
       "id": "lib_myfuture_togglesavedbursary"
     },
@@ -19484,7 +19493,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L146",
-      "community": 49,
+      "community": 164,
       "norm_label": "isbursarysaved()",
       "id": "lib_myfuture_isbursarysaved"
     },
@@ -19556,7 +19565,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L1",
-      "community": 27,
+      "community": 136,
       "norm_label": "studyprogress.ts",
       "id": "src_lib_studyprogress_ts"
     },
@@ -19565,7 +19574,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L5",
-      "community": 27,
+      "community": 136,
       "norm_label": "masterylevel",
       "id": "lib_studyprogress_masterylevel"
     },
@@ -19583,7 +19592,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L23",
-      "community": 23,
+      "community": 40,
       "norm_label": "loadtopicprogress()",
       "id": "lib_studyprogress_loadtopicprogress"
     },
@@ -19592,7 +19601,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L44",
-      "community": 127,
+      "community": 23,
       "norm_label": "savetopicprogress()",
       "id": "lib_studyprogress_savetopicprogress"
     },
@@ -19646,7 +19655,7 @@
       "file_type": "code",
       "source_file": "src/lib/supabase.ts",
       "source_location": "L22",
-      "community": 12,
+      "community": 153,
       "norm_label": "supabaseadmin",
       "id": "lib_supabase_supabaseadmin"
     },
@@ -20357,12 +20366,185 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "admin_studentassignmentspage_initials",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "admin_studentassignmentspage_studentassignmentspage"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "admin_studentassignmentspage_studentassignmentspageprops"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_auth_adminsession"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_adminassignteachertostudent"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_adminremoveassignment"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_assignmentrow"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_fetchschoolassignments"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_fetchsubjects"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_students_subject"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_teachers_fetchschoolteachers"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "lib_teachers_teacher"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "src_lib_auth_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
+      "target": "src_lib_students_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/AdminDashboard.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_admindashboard_tsx",
+      "target": "src_pages_portal_admin_studentassignmentspage_tsx"
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
+      "source_location": "L11",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "admin_studentassignmentspage_studentassignmentspageprops",
+      "target": "lib_auth_adminsession"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L749",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_breakchip",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_breakchip"
     },
     {
       "relation": "contains",
@@ -20380,9 +20562,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L35",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_draftentry",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_draftentry"
     },
     {
       "relation": "contains",
@@ -20410,9 +20592,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L633",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_emptytimetablestate",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_emptytimetablestate"
     },
     {
       "relation": "contains",
@@ -20420,9 +20602,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L40",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_nexttempid",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_nexttempid"
     },
     {
       "relation": "contains",
@@ -20430,9 +20612,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L620",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_savestatuspill",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_savestatuspill"
     },
     {
       "relation": "contains",
@@ -20440,9 +20622,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L673",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_slotcell",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_slotcell"
     },
     {
       "relation": "contains",
@@ -20450,9 +20632,9 @@
       "source_file": "src/pages/portal/admin/TimetableAdminPage.tsx",
       "source_location": "L659",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_pages_portal_admin_timetableadminpage_tsx",
-      "target": "admin_timetableadminpage_slotcellprops",
-      "confidence_score": 1.0
+      "target": "admin_timetableadminpage_slotcellprops"
     },
     {
       "relation": "contains",
@@ -26669,17 +26851,6 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/portal/AdminDashboard.tsx",
-      "source_location": "L8",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admindashboard_tsx",
-      "target": "src_pages_portal_admin_studentassignmentspage_tsx"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/AdminDashboard.tsx",
       "source_location": "L10",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -28488,17 +28659,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "src_lib_auth_ts"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -29357,17 +29517,6 @@
       "relation": "references",
       "context": "field",
       "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "admin_studentassignmentspage_studentassignmentspageprops",
-      "target": "lib_auth_adminsession"
-    },
-    {
-      "relation": "references",
-      "context": "field",
-      "confidence": "EXTRACTED",
       "source_file": "src/pages/portal/admin/StudentsDirectoryPage.tsx",
       "source_location": "L12",
       "weight": 1.0,
@@ -29428,17 +29577,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_pages_portal_admin_parentsadminpage_tsx",
-      "target": "lib_auth_adminsession"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
       "target": "lib_auth_adminsession"
     },
     {
@@ -31416,125 +31554,6 @@
       "confidence_score": 1.0,
       "source": "src_pages_portal_admin_parentsadminpage_tsx",
       "target": "lib_students_fetchschoolstudentdirectory"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "admin_studentassignmentspage_studentassignmentspage"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L11",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "admin_studentassignmentspage_studentassignmentspageprops"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_adminassignteachertostudent"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_adminremoveassignment"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_assignmentrow"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_fetchschoolassignments"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_fetchsubjects"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_students_subject"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_teachers_fetchschoolteachers"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L9",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "lib_teachers_teacher"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/admin/StudentAssignmentsPage.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_admin_studentassignmentspage_tsx",
-      "target": "src_lib_students_ts"
     },
     {
       "relation": "contains",
@@ -61630,5 +61649,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fc7f9807ffe27a8003448011bebda472a26b7e22"
+  "built_at_commit": "a27f881c48bbfe9acb2c0a92240072597adfc4cb"
 }

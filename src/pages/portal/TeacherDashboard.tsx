@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock, ListChecks } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import { fetchTeacherHomerooms } from '../../lib/homeroom';
+import SubjectApprovalsPage from './teacher/SubjectApprovalsPage';
 import ClassesPage from './teacher/ClassesPage';
 import CalendarPage from './teacher/CalendarPage';
 import MarksPage from './teacher/MarksPage';
@@ -18,7 +19,7 @@ import BehaviourPage from './teacher/BehaviourPage';
 import TimetablePage from './teacher/TimetablePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-approvals';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -29,6 +30,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
   const [activePage, setActivePage] = useState<ActivePage>('home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [isHomeroom, setIsHomeroom] = useState(false);
+  const [jumpToTestId, setJumpToTestId] = useState<number | null>(null);
 
   useEffect(() => {
     const s = getTeacherSession();
@@ -45,6 +47,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'classes',       label: 'Classes',       icon: Users },
     ...(isHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
+    ...(isHomeroom ? [{ id: 'subject-approvals' as ActivePage, label: 'Subject Selection', icon: ListChecks }] : []),
     { id: 'behaviour',     label: 'Behaviour',     icon: Award },
     { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'calendar',      label: 'Calendar',      icon: CalendarDays },
@@ -229,14 +232,15 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'announcements' && <AnnouncementsPage session={session} />}
           {activePage === 'classes'       && <ClassesPage session={session} />}
           {activePage === 'homeroom'      && <HomeroomPage session={session} />}
+          {activePage === 'subject-approvals' && <SubjectApprovalsPage session={session} />}
           {activePage === 'behaviour'     && <BehaviourPage session={session} />}
           {activePage === 'timetable'     && <TimetablePage session={session} />}
           {activePage === 'calendar'      && <CalendarPage session={session} />}
           {activePage === 'marks'         && <MarksPage session={session} />}
           {activePage === 'resources'     && <ResourcesPage session={session} />}
           {activePage === 'past-papers'   && <PastPapersPage session={session} />}
-          {activePage === 'library'       && <StudentProgressPage session={session} />}
-          {activePage === 'topic-tests'   && <TopicTestsPage session={session} />}
+          {activePage === 'library'       && <StudentProgressPage session={session} onOpenTopicTest={(id) => { setJumpToTestId(id); setPage('topic-tests'); }} />}
+          {activePage === 'topic-tests'   && <TopicTestsPage session={session} initialTestId={jumpToTestId} onConsumeInitialTestId={() => setJumpToTestId(null)} />}
           {activePage === 'risk'          && <RiskEnginePage session={session} />}
         </div>
       </div>
