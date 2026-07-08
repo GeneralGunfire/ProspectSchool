@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen } from 'lucide-react';
+import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen, ChevronDown } from 'lucide-react';
 import {
   fetchStudentResources, getResourceDownloadUrl, trackResourceDownload,
   RESOURCE_TYPE_META, RESOURCE_CATEGORY_META,
@@ -28,7 +28,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   const [filterCategory, setFilterCategory] = useState<ResourceCategory | 'all'>('all');
   const [filterSubject, setFilterSubject] = useState<string>('all');
   const [downloading, setDownloading] = useState<number | null>(null);
-  const [expandedNote, setExpandedNote] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
   const [recentlyViewed, setRecentlyViewed] = useState<number[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(`prospect_recent_resources_${session.student_id}`) ?? '[]');
@@ -82,14 +82,6 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
     new Set(resources.map(r => r.subject_label).filter(Boolean) as string[])
   ).sort();
 
-  const unviewedIds = new Set(
-    resources.filter(r => !recentlyViewed.includes(r.id)).map(r => r.id)
-  );
-
-  const recommended = resources
-    .filter(r => unviewedIds.has(r.id))
-    .slice(0, 3);
-
   const recentResources = recentlyViewed
     .map(id => resources.find(r => r.id === id))
     .filter(Boolean) as Resource[];
@@ -129,48 +121,6 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
 
       {!loading && resources.length > 0 && (
         <>
-          {/* Recommended section */}
-          {recommended.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
-              className="mb-6"
-            >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
-                Suggested For You
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {recommended.map(r => {
-                  const meta = RESOURCE_TYPE_META[r.resource_type];
-                  const Icon = TypeIcon[r.resource_type];
-                  return (
-                    <button
-                      key={r.id}
-                      onClick={() => handleOpen(r)}
-                      disabled={downloading === r.id}
-                      className="card-premium bg-white border border-brand-border rounded-[24px] p-4 text-left hover:border-stone-400 hover:shadow-sm transition-all group disabled:opacity-40"
-                    >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${meta.badge}`}>
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <ExternalLink className="w-3.5 h-3.5 text-stone-400 group-hover:text-stone-600 transition-colors mt-0.5" />
-                      </div>
-                      <p className="font-black text-stone-900 text-sm leading-snug mb-1">{r.title}</p>
-                      {r.subject_label && (
-                        <p className="text-[11px] text-stone-500">{r.subject_label}</p>
-                      )}
-                      {r.description && (
-                        <p className="text-[11px] text-stone-500 mt-0.5 line-clamp-1">{r.description}</p>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-
           {/* Recently Viewed section */}
           {recentResources.length > 0 && (
             <motion.div
@@ -327,7 +277,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
             const meta = RESOURCE_TYPE_META[r.resource_type];
             const Icon = TypeIcon[r.resource_type];
             const isNote = r.resource_type === 'note';
-            const noteExpanded = expandedNote === r.id;
+            const isExpanded = expandedId === r.id;
             const wasViewed = recentlyViewed.includes(r.id);
 
             return (
@@ -336,86 +286,78 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.03, 0.15), duration: 0.18 }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 hover:border-stone-300 transition-colors"
+                className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden hover:border-stone-300 transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  {/* Icon */}
+                {/* Collapsed row — icon, title, one meta line */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : r.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
+                >
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${meta.badge}`}>
                     <Icon className="w-4 h-4" />
                   </div>
-
-                  {/* Body */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <p className="text-sm font-black text-stone-900">{r.title}</p>
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${RESOURCE_CATEGORY_META[r.category].badge}`}>
-                        {RESOURCE_CATEGORY_META[r.category].label}
-                      </span>
-                      {r.subject_label && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
-                          {r.subject_label}
-                        </span>
-                      )}
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${meta.badge}`}>
-                        {meta.label}
-                      </span>
-                      {wasViewed && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-50 text-stone-500 border border-brand-border/60">
-                          Viewed
-                        </span>
-                      )}
-                    </div>
-                    {r.description && (
-                      <p className="text-xs text-stone-500 mb-1 leading-relaxed">{r.description}</p>
-                    )}
-                    {r.resource_type === 'link' && r.link_url && (
-                      <p className="text-xs text-violet-500 truncate">{r.link_url}</p>
-                    )}
-                    {r.resource_type === 'file' && r.file_name && (
-                      <p className="text-xs text-stone-500">{r.file_name}</p>
-                    )}
-                    {isNote && r.note_content && (
-                      <AnimatePresence initial={false}>
-                        {noteExpanded ? (
-                          <motion.p
-                            key="expanded"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="text-xs text-stone-600 bg-amber-50 rounded-xl px-3 py-2.5 mt-2 leading-relaxed border border-amber-100 overflow-hidden"
-                          >
-                            {r.note_content}
-                          </motion.p>
-                        ) : (
-                          <p key="collapsed" className="text-xs text-stone-500 mt-0.5 truncate">{r.note_content}</p>
-                        )}
-                      </AnimatePresence>
-                    )}
-                    <p className="text-[10px] text-stone-400 mt-1.5">{formatDate(r.created_at)}</p>
+                    <p className="text-sm font-black text-stone-900 truncate">{r.title}</p>
+                    <p className="text-[11px] text-stone-500 truncate">
+                      {r.subject_label ? `${r.subject_label} · ` : ''}{meta.label}
+                      {wasViewed && ' · Viewed'}
+                    </p>
                   </div>
+                  <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                </button>
 
-                  {/* Action */}
-                  <div className="shrink-0">
-                    {isNote ? (
-                      <button
-                        onClick={() => setExpandedNote(noteExpanded ? null : r.id)}
-                        className="px-3 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-black transition-colors"
-                      >
-                        {noteExpanded ? 'Collapse' : 'Read'}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleOpen(r)}
-                        disabled={downloading === r.id}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                        {downloading === r.id ? 'Opening…' : r.resource_type === 'file' ? 'Open' : 'Visit'}
-                      </button>
-                    )}
-                  </div>
-                </div>
+                {/* Expanded — description, tags, link/file/note, date, action */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-4 pb-4 pt-0 border-t border-brand-border/60">
+                        <div className="flex items-center gap-1.5 flex-wrap mt-3 mb-2">
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${RESOURCE_CATEGORY_META[r.category].badge}`}>
+                            {RESOURCE_CATEGORY_META[r.category].label}
+                          </span>
+                          {r.subject_label && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
+                              {r.subject_label}
+                            </span>
+                          )}
+                        </div>
+
+                        {r.description && (
+                          <p className="text-xs text-stone-500 mb-1.5 leading-relaxed">{r.description}</p>
+                        )}
+                        {r.resource_type === 'link' && r.link_url && (
+                          <p className="text-xs text-violet-500 break-all mb-1.5">{r.link_url}</p>
+                        )}
+                        {r.resource_type === 'file' && r.file_name && (
+                          <p className="text-xs text-stone-500 mb-1.5 break-all">{r.file_name}</p>
+                        )}
+                        {isNote && r.note_content && (
+                          <p className="text-xs text-stone-600 bg-amber-50 rounded-xl px-3 py-2.5 mb-1.5 leading-relaxed border border-amber-100 whitespace-pre-line">
+                            {r.note_content}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-stone-400 mb-3">{formatDate(r.created_at)}</p>
+
+                        {!isNote && (
+                          <button
+                            onClick={() => handleOpen(r)}
+                            disabled={downloading === r.id}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            {downloading === r.id ? 'Opening…' : r.resource_type === 'file' ? 'Open' : 'Visit'}
+                          </button>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             );
           })}

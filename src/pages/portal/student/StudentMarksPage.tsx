@@ -199,7 +199,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   // ── Intelligence engine ───────────────────────────────────────
   const todayStr = new Date().toISOString().slice(0, 10);
   const insights = computeStudentInsights(markedResults, [], [], goals, todayStr, completedInv, allOutcomes);
-  const { examRiskSubjects, learnerStatus } = insights;
+  const { examRiskSubjects } = insights;
 
   // ── Intervention outcomes per subject ─────────────────────────
   // Map subject → { completed, successful, avgImprovement }
@@ -355,11 +355,6 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 <div className="min-w-0">
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500 mb-1">Overall Average</p>
                   <p className="text-xl font-black tracking-tight">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''} tracked</p>
-                </div>
-                <div className="ml-auto text-right flex flex-col items-end gap-1.5">
-                  <div className={`px-2.5 py-1 rounded-full text-[11px] font-black border ${learnerStatus.bg} ${learnerStatus.color} ${learnerStatus.border}`}>
-                    {learnerStatus.score}/100 · {learnerStatus.label}
-                  </div>
                 </div>
               </div>
             </motion.div>

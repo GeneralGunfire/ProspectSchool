@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft } from 'lucide-react';
+import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft, ChevronDown } from 'lucide-react';
 import {
   fetchAllPastPapers, getPastPaperDownloadUrl, type PastPaper,
 } from '../../../lib/pastPapers';
@@ -50,6 +50,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   const [downloading, setDownloading]     = useState<number | null>(null);
   const [isFilterOpen, setIsFilterOpen]   = useState(false);
   const [memoLoading, setMemoLoading]     = useState<number | null>(null);
+  const [expandedId, setExpandedId]       = useState<number | null>(null);
   const [recentlyOpened, setRecentlyOpened] = useState<number[]>(() => {
     try {
       return JSON.parse(localStorage.getItem(`prospect_recent_papers_${session.student_id}`) ?? '[]');
@@ -854,91 +855,105 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
           {filtered.map((p, i) => {
             const diff = difficultyLabel(p);
             const wasOpened = recentlyOpened.includes(p.id);
+            const isExpanded = expandedId === p.id;
             return (
               <motion.div
                 key={p.id}
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.12), duration: 0.18 }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4 hover:border-stone-300 transition-colors"
+                className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden hover:border-stone-300 transition-colors"
               >
-                {/* Icon with memo dot */}
-                <div className="relative w-9 h-9 shrink-0">
-                  <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-stone-600" />
+                {/* Collapsed row — icon, title, one meta line */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : p.id)}
+                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
+                >
+                  <div className="relative w-9 h-9 shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-stone-600" />
+                    </div>
+                    {p.memo_url && (
+                      <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />
+                    )}
                   </div>
-                  {p.memo_url && (
-                    <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
+                  <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-stone-900 truncate">{p.title}</p>
-                    {wasOpened && (
-                      <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-stone-50 text-stone-500 border border-brand-border/60">
-                        Opened
-                      </span>
-                    )}
+                    <p className="text-[11px] text-stone-500 truncate">
+                      {p.subject_label ? `${p.subject_label} · ` : ''}{p.year}{p.term ? ` · Term ${p.term}` : ''}
+                      {wasOpened && ' · Opened'}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    {p.subject_label && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.subject_label}</span>
-                    )}
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Grade {p.grade}</span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.year}</span>
-                    {p.term && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Term {p.term}</span>
-                    )}
-                    {p.paper_number > 1 && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Paper {p.paper_number}</span>
-                    )}
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${diff.color}`}>{diff.label}</span>
-                  </div>
-                </div>
+                  <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                </button>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2 shrink-0">
-                  {/* Practice button */}
-                  <button
-                    onClick={() => setPractice({
-                      paper: p,
-                      phase: 'setup',
-                      startedAt: null,
-                      durationMinutes: 60,
-                      elapsed: 0,
-                      selfScore: null,
-                      memoOpened: false,
-                    })}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
-                  >
-                    <Timer className="w-3.5 h-3.5" />
-                    Practice
-                  </button>
-
-                  {/* Open button */}
-                  <button
-                    onClick={() => handleOpen(p)}
-                    disabled={downloading === p.id}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    {downloading === p.id ? 'Opening…' : 'Open'}
-                  </button>
-
-                  {/* Memo button */}
-                  {p.memo_url && (
-                    <button
-                      onClick={() => handleShowMemo(p)}
-                      disabled={memoLoading === p.id}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                {/* Expanded — badges + actions */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                      className="overflow-hidden"
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      {memoLoading === p.id ? 'Opening…' : 'Memo'}
-                    </button>
+                      <div className="px-4 pb-4 pt-0 border-t border-brand-border/60">
+                        <div className="flex items-center gap-1.5 flex-wrap mt-3 mb-4">
+                          {p.subject_label && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.subject_label}</span>
+                          )}
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Grade {p.grade}</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.year}</span>
+                          {p.term && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Term {p.term}</span>
+                          )}
+                          {p.paper_number > 1 && (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Paper {p.paper_number}</span>
+                          )}
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${diff.color}`}>{diff.label}</span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <button
+                            onClick={() => setPractice({
+                              paper: p,
+                              phase: 'setup',
+                              startedAt: null,
+                              durationMinutes: 60,
+                              elapsed: 0,
+                              selfScore: null,
+                              memoOpened: false,
+                            })}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
+                          >
+                            <Timer className="w-3.5 h-3.5" />
+                            Practice
+                          </button>
+
+                          <button
+                            onClick={() => handleOpen(p)}
+                            disabled={downloading === p.id}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            {downloading === p.id ? 'Opening…' : 'Open'}
+                          </button>
+
+                          {p.memo_url && (
+                            <button
+                              onClick={() => handleShowMemo(p)}
+                              disabled={memoLoading === p.id}
+                              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              {memoLoading === p.id ? 'Opening…' : 'Memo'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                </div>
+                </AnimatePresence>
               </motion.div>
             );
           })}

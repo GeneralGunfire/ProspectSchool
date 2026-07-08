@@ -10,15 +10,17 @@ import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals, saveStudentGoals, type StudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
 import { buildGrowthTimeline, getCompletedInterventions, getOutcomes } from '../../../lib/interventions';
+import ApsCalculatorPage from './ApsCalculatorPage';
 
 const BursariesPage   = lazy(() => import('../../../features/careers/pages/BursariesPage'));
 const CareersPage     = lazy(() => import('../../../features/careers/pages/CareersPageNew'));
 const QuizPage        = lazy(() => import('../../../features/careers/pages/QuizPage'));
-type SubView = null | 'quiz' | 'careers' | 'bursaries';
+type SubView = null | 'quiz' | 'careers' | 'bursaries' | 'aps';
 
 interface MyFuturePageProps {
   session: StudentSession;
   onNavigate: (page: string) => void;
+  initialSubView?: SubView;
 }
 
 // ── Small shared components ───────────────────────────────────────────────────
@@ -73,13 +75,13 @@ function CtaCard({
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps) {
+export default function MyFuturePage({ session, onNavigate, initialSubView = null }: MyFuturePageProps) {
   const [progress,        setProgress]        = useState<StudyProgress[]>([]);
   const [quizResults,     setQuizResults]     = useState<QuizResults | null>(null);
   const [apsData,         setApsData]         = useState<{ aps: number; subjects: { code: string; percent: number }[] } | null>(null);
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
-  const [subView,         setSubView]         = useState<SubView>(null);
+  const [subView,         setSubView]         = useState<SubView>(initialSubView);
   const [completedInv,    setCompletedInv]    = useState<import('../../../lib/interventions').Intervention[]>([]);
   const [interventionOutcomes, setInterventionOutcomes] = useState<import('../../../lib/interventions').Outcome[]>([]);
 
@@ -104,7 +106,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
 
   // Sub-view navigate handler — keeps everything inside MyFuturePage
   function handleSubNavigate(page: string) {
-    const internalPages: SubView[] = ['quiz', 'careers', 'bursaries'];
+    const internalPages: SubView[] = ['quiz', 'careers', 'bursaries', 'aps'];
     if (internalPages.includes(page as SubView)) {
       setSubView(page as SubView);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -114,6 +116,12 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
       onNavigate(page);
     }
   }
+
+  // Re-sync when the parent asks us to open a specific sub-view (e.g. a quick
+  // action elsewhere in the portal linking straight into "APS & Unis").
+  useEffect(() => {
+    if (initialSubView) setSubView(initialSubView);
+  }, [initialSubView]);
 
   useEffect(() => {
     const { student_id, school_id } = session;
@@ -231,6 +239,7 @@ export default function MyFuturePage({ session, onNavigate }: MyFuturePageProps)
             {subView === 'quiz'      && <QuizPage     onNavigate={handleSubNavigate} />}
             {subView === 'careers'   && <CareersPage  onNavigate={handleSubNavigate} />}
             {subView === 'bursaries' && <BursariesPage onNavigate={handleSubNavigate} />}
+            {subView === 'aps'       && <ApsCalculatorPage session={session} />}
           </Suspense>
         </motion.div>
       </AnimatePresence>

@@ -308,44 +308,48 @@ function AdminAnnouncementCard({ a, i, subjects, toggling, onPin, onDelete }: {
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.04, duration: 0.18 }}
-      className={`bg-white rounded-2xl border px-5 py-4 ${a.pinned ? 'border-amber-200' : 'border-brand-border'}`}>
-      <div className="flex items-start gap-3">
-        {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" />}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-brand-dark">{a.title}</p>
-          {a.body && (
-            <>
-              <p className={`text-xs text-stone-500 mt-1 leading-relaxed ${!expanded ? 'line-clamp-2' : ''}`}>{a.body}</p>
-              {a.body.length > 120 && (
-                <button onClick={() => setExpanded(e => !e)}
-                  className="text-[11px] font-black text-stone-500 hover:text-stone-600 mt-0.5 transition-colors">
-                  {expanded ? 'Show less' : 'Show more'}
-                </button>
-              )}
-            </>
-          )}
-          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-            <p className="text-[10px] text-stone-400">
-              {a.author_name} {a.author_surname}
-              {a.author_role === 'teacher' && <span className="ml-1 text-stone-500 font-bold">(Teacher)</span>}
-              {' · '}{timeAgo(a.created_at)}
-            </p>
-            {a.target_type !== 'all' && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{audience}</span>
+      className={`flex bg-white rounded-2xl border overflow-hidden ${a.pinned ? 'border-amber-200' : 'border-brand-border'}`}>
+      {/* Quiet accent — amber if pinned, otherwise neutral */}
+      <span className={`w-1 shrink-0 ${a.pinned ? 'bg-amber-400' : 'bg-stone-200'}`} />
+
+      <div className="flex-1 min-w-0 px-4 py-4">
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-black text-brand-dark leading-snug">{a.title}</p>
+          {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />}
+        </div>
+        {a.body && (
+          <>
+            <p className={`text-xs text-stone-500 mt-1 leading-relaxed ${!expanded ? 'line-clamp-2' : ''}`}>{a.body}</p>
+            {a.body.length > 120 && (
+              <button onClick={() => setExpanded(e => !e)}
+                className="text-[11px] font-black text-stone-500 hover:text-stone-600 mt-0.5 transition-colors">
+                {expanded ? 'Show less' : 'Show more'}
+              </button>
             )}
-          </div>
+          </>
+        )}
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <p className="text-[10px] text-stone-400">
+            {a.author_name} {a.author_surname}
+            {a.author_role === 'teacher' && <span className="ml-1 text-stone-500 font-bold">(Teacher)</span>}
+            {' · '}{timeAgo(a.created_at)}
+          </p>
+          {a.target_type !== 'all' && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{audience}</span>
+          )}
         </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <button onClick={onPin} disabled={toggling}
-            className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
-            title={a.pinned ? 'Unpin' : 'Pin'}>
-            {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
-          </button>
-          <button onClick={onDelete}
-            className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
+      </div>
+
+      <div className="flex items-start gap-1 shrink-0 p-3">
+        <button onClick={onPin} disabled={toggling}
+          className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
+          title={a.pinned ? 'Unpin' : 'Pin'}>
+          {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
+        </button>
+        <button onClick={onDelete}
+          className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+          <Trash2 className="w-4 h-4" />
+        </button>
       </div>
     </motion.div>
   );

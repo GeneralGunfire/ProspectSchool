@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, GraduationCap, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
 import StudentHomePage from './student/StudentHomePage';
@@ -9,7 +9,6 @@ import StudentMarksPage from './student/StudentMarksPage';
 import StudentResourcesPage from './student/StudentResourcesPage';
 import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 import StudentPastPapersPage from './student/StudentPastPapersPage';
-import ApsCalculatorPage from './student/ApsCalculatorPage';
 import StudentTopicTestsPage from './student/StudentTopicTestsPage';
 import StudentHomeroomPage from './student/StudentHomeroomPage';
 import StudentBehaviourPage from './student/StudentBehaviourPage';
@@ -37,6 +36,9 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   const [innerPage, setInnerPage] = useState<string>('library');
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasHomeroom, setHasHomeroom] = useState(false);
+  // APS & Unis now lives inside My Future — this tells MyFuturePage which
+  // sub-view to open on mount when a link elsewhere in the portal targets 'aps'.
+  const [futureSubView, setFutureSubView] = useState<'aps' | null>(null);
 
   useEffect(() => {
     const s = getStudentSession();
@@ -64,7 +66,6 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'pastpapers',    label: 'Past Papers',   icon: FileText,       mobileLabel: 'Papers' },
     { id: 'library',       label: 'Library',       icon: BookOpen },
     { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
-    { id: 'aps',           label: 'APS & Unis',    icon: GraduationCap,  mobileLabel: 'APS' },
     { id: 'future',        label: 'My Future',     icon: Sparkles,       mobileLabel: 'Future' },
   ];
 
@@ -79,8 +80,17 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   }
 
   function setPage(id: ActivePage) {
+    if (id === 'aps') {
+      // Legacy target from quick actions elsewhere in the portal — APS & Unis
+      // now lives inside My Future rather than as its own sidebar page.
+      setFutureSubView('aps');
+      setActivePage('future');
+      setMenuOpen(false);
+      return;
+    }
     setActivePage(id);
     if (id === 'library') setInnerPage('library');
+    if (id === 'future')  setFutureSubView(null);
     setMenuOpen(false);
   }
 
@@ -259,15 +269,18 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'aps'           && <ApsCalculatorPage session={session} />}
           {activePage === 'topic-tests'   && <StudentTopicTestsPage session={session} />}
           {activePage === 'future'        && (
             <Suspense fallback={<Spinner />}>
-              <MyFuturePage session={session} onNavigate={p => {
-                if (p === 'bursaries') { onNavigate('bursaries'); return; }
-                if (p === 'quiz')      { onNavigate('quiz');      return; }
-                setPage(p as ActivePage);
-              }} />
+              <MyFuturePage
+                session={session}
+                initialSubView={futureSubView}
+                onNavigate={p => {
+                  if (p === 'bursaries') { onNavigate('bursaries'); return; }
+                  if (p === 'quiz')      { onNavigate('quiz');      return; }
+                  setPage(p as ActivePage);
+                }}
+              />
             </Suspense>
           )}
           {activePage === 'library'       && (

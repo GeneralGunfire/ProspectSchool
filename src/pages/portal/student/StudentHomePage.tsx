@@ -7,7 +7,7 @@ import {
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
 import {
   fetchStudentEvents, fetchStudentCompletions, markHomeworkDone, unmarkHomeworkDone,
-  EVENT_COLORS, EVENT_LABELS, type SchoolEvent,
+  EVENT_LABELS, type SchoolEvent,
 } from '../../../lib/events';
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
@@ -317,17 +317,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     .filter(x => x.ts)
     .sort((a, b) => b.ts.localeCompare(a.ts))
     .slice(0, 5);
-
-  // Week strip
-  const weekDays: { label: string; num: number; dateStr: string; isToday: boolean }[] = [];
-  const startOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - today.getDay());
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(startOfWeek);
-    d.setDate(startOfWeek.getDate() + i);
-    const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    weekDays.push({ label: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'][i], num: d.getDate(), dateStr: ds, isToday: ds === todayStr });
-  }
 
   const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -822,8 +811,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
         </motion.div>
       </div>
 
-      {/* ── Academic Health + Calendar — two-col ────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* ── Academic Health ───────────────────────────────────── */}
+      <div>
 
         {/* Academic Health */}
         <motion.div
@@ -912,65 +901,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             className="mt-5 text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
             View detailed marks <ChevronRight className="w-3 h-3" />
           </button>
-        </motion.div>
-
-        {/* Calendar Overview */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Calendar Overview</p>
-            <button onClick={() => onNavigate('calendar')}
-              className="text-xs text-stone-500 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
-              Full Calendar <ChevronRight className="w-3 h-3" />
-            </button>
-          </div>
-
-          {/* Week strip */}
-          <div className="grid grid-cols-7 gap-1 mb-4">
-            {weekDays.map(day => (
-              <div key={day.dateStr} className="flex flex-col items-center gap-1">
-                <span className="text-[10px] font-black uppercase tracking-wide text-stone-500">{day.label}</span>
-                <span className={`w-7 h-7 flex items-center justify-center text-xs font-black rounded-full transition-colors ${
-                  day.isToday ? 'bg-brand-dark text-white' : 'text-stone-500'
-                }`}>{day.num}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-2">
-            {upcomingEvents.length === 0 ? (
-              <div className="flex items-center gap-2 py-3">
-                <CalendarDays className="w-8 h-8 text-stone-200" />
-                <p className="text-sm font-bold text-stone-400">No upcoming events</p>
-              </div>
-            ) : (
-              upcomingEvents.map((ev, i) => {
-                const c = EVENT_COLORS[ev.event_type];
-                const typeStyle: Record<string, string> = {
-                  homework: 'bg-blue-50 text-blue-700',
-                  assessment: 'bg-emerald-50 text-emerald-700',
-                  exam: 'bg-red-50 text-red-700',
-                  other: 'bg-stone-100 text-stone-600',
-                };
-                return (
-                  <motion.div key={ev.id}
-                    initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                    className="flex items-center gap-3">
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
-                    <p className="flex-1 text-sm font-bold text-stone-900 truncate">{ev.title}</p>
-                    <span className={`text-[10px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full shrink-0 ${typeStyle[ev.event_type]}`}>
-                      {EVENT_LABELS[ev.event_type]}
-                    </span>
-                    <span className="text-xs text-stone-500 shrink-0">{daysUntil(ev.event_date)}</span>
-                  </motion.div>
-                );
-              })
-            )}
-          </div>
         </motion.div>
       </div>
 

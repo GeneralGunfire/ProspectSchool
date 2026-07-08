@@ -4,184 +4,346 @@
   "graph": {},
   "nodes": [
     {
+      "label": "schools.ts",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L1",
+      "id": "src_lib_schools_ts",
+      "community": 147,
+      "norm_label": "schools.ts"
+    },
+    {
+      "label": "SchoolWithStats",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L6",
+      "id": "lib_schools_schoolwithstats",
+      "community": 147,
+      "norm_label": "schoolwithstats"
+    },
+    {
+      "label": "fetchAllSchools()",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L18",
+      "id": "lib_schools_fetchallschools",
+      "community": 147,
+      "norm_label": "fetchallschools()"
+    },
+    {
+      "label": "UpdateSchoolResult",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L46",
+      "id": "lib_schools_updateschoolresult",
+      "community": 147,
+      "norm_label": "updateschoolresult"
+    },
+    {
+      "label": "updateSchoolName()",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L50",
+      "id": "lib_schools_updateschoolname",
+      "community": 147,
+      "norm_label": "updateschoolname()"
+    },
+    {
+      "label": "SchoolStats",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L65",
+      "id": "lib_schools_schoolstats",
+      "community": 147,
+      "norm_label": "schoolstats"
+    },
+    {
+      "label": "fetchSchoolStats()",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L94",
+      "id": "lib_schools_fetchschoolstats",
+      "community": 147,
+      "norm_label": "fetchschoolstats()"
+    },
+    {
+      "label": "CreateSchoolInput",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L164",
+      "id": "lib_schools_createschoolinput",
+      "community": 147,
+      "norm_label": "createschoolinput"
+    },
+    {
+      "label": "CreateSchoolResult",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L174",
+      "id": "lib_schools_createschoolresult",
+      "community": 147,
+      "norm_label": "createschoolresult"
+    },
+    {
+      "label": "createSchoolWithAdmin()",
+      "file_type": "code",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L178",
+      "id": "lib_schools_createschoolwithadmin",
+      "community": 147,
+      "norm_label": "createschoolwithadmin()"
+    },
+    {
+      "label": "PlatformAdminDashboard.tsx",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L1",
+      "id": "src_pages_portal_platformadmindashboard_tsx",
+      "community": 147,
+      "norm_label": "platformadmindashboard.tsx"
+    },
+    {
+      "label": "PlatformAdminDashboardProps",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L14",
+      "id": "portal_platformadmindashboard_platformadmindashboardprops",
+      "community": 147,
+      "norm_label": "platformadmindashboardprops"
+    },
+    {
+      "label": "CreateSchoolForm",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L18",
+      "id": "portal_platformadmindashboard_createschoolform",
+      "community": 147,
+      "norm_label": "createschoolform"
+    },
+    {
+      "label": "EMPTY_CREATE_FORM",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L28",
+      "id": "portal_platformadmindashboard_empty_create_form",
+      "community": 147,
+      "norm_label": "empty_create_form"
+    },
+    {
+      "label": "PlatformTopBar()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L37",
+      "id": "portal_platformadmindashboard_platformtopbar",
+      "community": 147,
+      "norm_label": "platformtopbar()"
+    },
+    {
+      "label": "PlatformAdminDashboard()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L68",
+      "id": "portal_platformadmindashboard_platformadmindashboard",
+      "community": 147,
+      "norm_label": "platformadmindashboard()"
+    },
+    {
+      "label": "StatTile()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L395",
+      "id": "portal_platformadmindashboard_stattile",
+      "community": 147,
+      "norm_label": "stattile()"
+    },
+    {
+      "label": "SchoolDetail()",
+      "file_type": "code",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L408",
+      "id": "portal_platformadmindashboard_schooldetail",
+      "community": 147,
+      "norm_label": "schooldetail()"
+    },
+    {
       "label": "AdminLogin.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/AdminLogin.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_adminlogin_tsx",
       "community": 160,
-      "norm_label": "adminlogin.tsx"
+      "norm_label": "adminlogin.tsx",
+      "id": "src_pages_auth_adminlogin_tsx"
     },
     {
       "label": "AdminLogin()",
       "file_type": "code",
       "source_file": "src/pages/auth/AdminLogin.tsx",
       "source_location": "L11",
-      "id": "auth_adminlogin_adminlogin",
       "community": 160,
-      "norm_label": "adminlogin()"
+      "norm_label": "adminlogin()",
+      "id": "auth_adminlogin_adminlogin"
     },
     {
       "label": "ParentLogin.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/ParentLogin.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_parentlogin_tsx",
       "community": 160,
-      "norm_label": "parentlogin.tsx"
+      "norm_label": "parentlogin.tsx",
+      "id": "src_pages_auth_parentlogin_tsx"
     },
     {
       "label": "ParentLogin()",
       "file_type": "code",
       "source_file": "src/pages/auth/ParentLogin.tsx",
       "source_location": "L11",
-      "id": "auth_parentlogin_parentlogin",
       "community": 160,
-      "norm_label": "parentlogin()"
+      "norm_label": "parentlogin()",
+      "id": "auth_parentlogin_parentlogin"
     },
     {
       "label": "StudentLogin.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/StudentLogin.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_studentlogin_tsx",
       "community": 160,
-      "norm_label": "studentlogin.tsx"
+      "norm_label": "studentlogin.tsx",
+      "id": "src_pages_auth_studentlogin_tsx"
     },
     {
       "label": "StudentLogin()",
       "file_type": "code",
       "source_file": "src/pages/auth/StudentLogin.tsx",
       "source_location": "L11",
-      "id": "auth_studentlogin_studentlogin",
       "community": 160,
-      "norm_label": "studentlogin()"
+      "norm_label": "studentlogin()",
+      "id": "auth_studentlogin_studentlogin"
     },
     {
       "label": "TeacherLogin.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/TeacherLogin.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_teacherlogin_tsx",
       "community": 160,
-      "norm_label": "teacherlogin.tsx"
+      "norm_label": "teacherlogin.tsx",
+      "id": "src_pages_auth_teacherlogin_tsx"
     },
     {
       "label": "TeacherLogin()",
       "file_type": "code",
       "source_file": "src/pages/auth/TeacherLogin.tsx",
       "source_location": "L11",
-      "id": "auth_teacherlogin_teacherlogin",
       "community": 160,
-      "norm_label": "teacherlogin()"
+      "norm_label": "teacherlogin()",
+      "id": "auth_teacherlogin_teacherlogin"
     },
     {
       "label": "AuthShell.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/AuthShell.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_shared_authshell_tsx",
       "community": 160,
-      "norm_label": "authshell.tsx"
+      "norm_label": "authshell.tsx",
+      "id": "src_pages_auth_shared_authshell_tsx"
     },
     {
       "label": "AuthNavbar()",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/AuthShell.tsx",
       "source_location": "L9",
-      "id": "shared_authshell_authnavbar",
       "community": 160,
-      "norm_label": "authnavbar()"
+      "norm_label": "authnavbar()",
+      "id": "shared_authshell_authnavbar"
     },
     {
       "label": "AuthShell()",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/AuthShell.tsx",
       "source_location": "L28",
-      "id": "shared_authshell_authshell",
       "community": 160,
-      "norm_label": "authshell()"
+      "norm_label": "authshell()",
+      "id": "shared_authshell_authshell"
     },
     {
       "label": "AuthCard()",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/AuthShell.tsx",
       "source_location": "L34",
-      "id": "shared_authshell_authcard",
       "community": 160,
-      "norm_label": "authcard()"
+      "norm_label": "authcard()",
+      "id": "shared_authshell_authcard"
     },
     {
       "label": "CodeField.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/CodeField.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_shared_codefield_tsx",
       "community": 160,
-      "norm_label": "codefield.tsx"
+      "norm_label": "codefield.tsx",
+      "id": "src_pages_auth_shared_codefield_tsx"
     },
     {
       "label": "CodeFieldProps",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/CodeField.tsx",
       "source_location": "L3",
-      "id": "shared_codefield_codefieldprops",
       "community": 160,
-      "norm_label": "codefieldprops"
+      "norm_label": "codefieldprops",
+      "id": "shared_codefield_codefieldprops"
     },
     {
       "label": "CodeField()",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/CodeField.tsx",
       "source_location": "L17",
-      "id": "shared_codefield_codefield",
       "community": 160,
-      "norm_label": "codefield()"
+      "norm_label": "codefield()",
+      "id": "shared_codefield_codefield"
     },
     {
       "label": "PinInput.tsx",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/PinInput.tsx",
       "source_location": "L1",
-      "id": "src_pages_auth_shared_pininput_tsx",
       "community": 160,
-      "norm_label": "pininput.tsx"
+      "norm_label": "pininput.tsx",
+      "id": "src_pages_auth_shared_pininput_tsx"
     },
     {
       "label": "PinInputProps",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/PinInput.tsx",
       "source_location": "L6",
-      "id": "shared_pininput_pininputprops",
       "community": 160,
-      "norm_label": "pininputprops"
+      "norm_label": "pininputprops",
+      "id": "shared_pininput_pininputprops"
     },
     {
       "label": "PinInput()",
       "file_type": "code",
       "source_file": "src/pages/auth/shared/PinInput.tsx",
       "source_location": "L21",
-      "id": "shared_pininput_pininput",
       "community": 160,
-      "norm_label": "pininput()"
+      "norm_label": "pininput()",
+      "id": "shared_pininput_pininput"
     },
     {
       "label": "PremiumBackground.tsx",
       "file_type": "code",
       "source_file": "src/shared/components/PremiumBackground.tsx",
       "source_location": "L1",
-      "id": "src_shared_components_premiumbackground_tsx",
       "community": 163,
-      "norm_label": "premiumbackground.tsx"
+      "norm_label": "premiumbackground.tsx",
+      "id": "src_shared_components_premiumbackground_tsx"
     },
     {
       "label": "PremiumBackground()",
       "file_type": "code",
       "source_file": "src/shared/components/PremiumBackground.tsx",
       "source_location": "L9",
-      "id": "components_premiumbackground_premiumbackground",
       "community": 163,
-      "norm_label": "premiumbackground()"
+      "norm_label": "premiumbackground()",
+      "id": "components_premiumbackground_premiumbackground"
     },
     {
       "label": "Navbar.tsx",
@@ -1106,7 +1268,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L1",
-      "community": 70,
+      "community": 164,
       "norm_label": "teacherdashboard.tsx",
       "id": "src_pages_portal_teacherdashboard_tsx"
     },
@@ -1115,7 +1277,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L21",
-      "community": 70,
+      "community": 164,
       "norm_label": "activepage",
       "id": "portal_teacherdashboard_activepage"
     },
@@ -1124,7 +1286,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L23",
-      "community": 70,
+      "community": 164,
       "norm_label": "teacherdashboardprops",
       "id": "portal_teacherdashboard_teacherdashboardprops"
     },
@@ -1133,7 +1295,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/TeacherDashboard.tsx",
       "source_location": "L27",
-      "community": 70,
+      "community": 164,
       "norm_label": "teacherdashboard()",
       "id": "portal_teacherdashboard_teacherdashboard"
     },
@@ -1916,7 +2078,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth.ts",
       "source_location": "L5",
-      "community": 109,
+      "community": 68,
       "norm_label": "hashpin()",
       "id": "lib_auth_hashpin"
     },
@@ -1934,7 +2096,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth.ts",
       "source_location": "L27",
-      "community": 70,
+      "community": 164,
       "norm_label": "getteachersession()",
       "id": "lib_auth_getteachersession"
     },
@@ -1997,7 +2159,7 @@
       "file_type": "code",
       "source_file": "src/lib/auth.ts",
       "source_location": "L138",
-      "community": 49,
+      "community": 159,
       "norm_label": "getstudentsession()",
       "id": "lib_auth_getstudentsession"
     },
@@ -2303,7 +2465,7 @@
       "file_type": "code",
       "source_file": "src/lib/behaviour.ts",
       "source_location": "L65",
-      "community": 154,
+      "community": 145,
       "norm_label": "behaviourstudentsummary",
       "id": "lib_behaviour_behaviourstudentsummary"
     },
@@ -2384,7 +2546,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L25",
-      "community": 148,
+      "community": 70,
       "norm_label": "attendancestatus",
       "id": "lib_homeroom_attendancestatus"
     },
@@ -2393,7 +2555,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L27",
-      "community": 148,
+      "community": 70,
       "norm_label": "attendancerecord",
       "id": "lib_homeroom_attendancerecord"
     },
@@ -2429,7 +2591,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L79",
-      "community": 70,
+      "community": 15,
       "norm_label": "createcohort()",
       "id": "lib_homeroom_createcohort"
     },
@@ -2447,7 +2609,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L127",
-      "community": 70,
+      "community": 164,
       "norm_label": "fetchteacherhomerooms()",
       "id": "lib_homeroom_fetchteacherhomerooms"
     },
@@ -2465,7 +2627,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L158",
-      "community": 148,
+      "community": 70,
       "norm_label": "homeroomteacherinfo",
       "id": "lib_homeroom_homeroomteacherinfo"
     },
@@ -2474,7 +2636,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L164",
-      "community": 148,
+      "community": 70,
       "norm_label": "fetchcohorthomeroomteacher()",
       "id": "lib_homeroom_fetchcohorthomeroomteacher"
     },
@@ -2483,7 +2645,7 @@
       "file_type": "code",
       "source_file": "src/lib/homeroom.ts",
       "source_location": "L179",
-      "community": 148,
+      "community": 70,
       "norm_label": "fetchstudentattendancehistory()",
       "id": "lib_homeroom_fetchstudentattendancehistory"
     },
@@ -2609,7 +2771,7 @@
       "file_type": "code",
       "source_file": "src/lib/parents.ts",
       "source_location": "L82",
-      "community": 109,
+      "community": 146,
       "norm_label": "createparent()",
       "id": "lib_parents_createparent"
     },
@@ -3050,7 +3212,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L1",
-      "community": 133,
+      "community": 8,
       "norm_label": "parentannouncementspage.tsx",
       "id": "src_pages_portal_parent_parentannouncementspage_tsx"
     },
@@ -3068,7 +3230,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L13",
-      "community": 133,
+      "community": 8,
       "norm_label": "timeago()",
       "id": "parent_parentannouncementspage_timeago"
     },
@@ -3077,7 +3239,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAnnouncementsPage.tsx",
       "source_location": "L25",
-      "community": 133,
+      "community": 8,
       "norm_label": "parentannouncementspage()",
       "id": "parent_parentannouncementspage_parentannouncementspage"
     },
@@ -3086,7 +3248,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAttendancePage.tsx",
       "source_location": "L1",
-      "community": 148,
+      "community": 133,
       "norm_label": "parentattendancepage.tsx",
       "id": "src_pages_portal_parent_parentattendancepage_tsx"
     },
@@ -3095,7 +3257,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAttendancePage.tsx",
       "source_location": "L6",
-      "community": 148,
+      "community": 133,
       "norm_label": "parentattendancepageprops",
       "id": "parent_parentattendancepage_parentattendancepageprops"
     },
@@ -3104,7 +3266,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAttendancePage.tsx",
       "source_location": "L8",
-      "community": 148,
+      "community": 133,
       "norm_label": "status_config",
       "id": "parent_parentattendancepage_status_config"
     },
@@ -3113,7 +3275,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentAttendancePage.tsx",
       "source_location": "L16",
-      "community": 148,
+      "community": 133,
       "norm_label": "parentattendancepage()",
       "id": "parent_parentattendancepage_parentattendancepage"
     },
@@ -3203,7 +3365,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L1",
-      "community": 133,
+      "community": 52,
       "norm_label": "parenthomeworkpage.tsx",
       "id": "src_pages_portal_parent_parenthomeworkpage_tsx"
     },
@@ -3221,7 +3383,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L13",
-      "community": 133,
+      "community": 52,
       "norm_label": "formatdate()",
       "id": "parent_parenthomeworkpage_formatdate"
     },
@@ -3230,7 +3392,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/parent/ParentHomeworkPage.tsx",
       "source_location": "L17",
-      "community": 133,
+      "community": 52,
       "norm_label": "parenthomeworkpage()",
       "id": "parent_parenthomeworkpage_parenthomeworkpage"
     },
@@ -3293,7 +3455,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentBehaviourPage.tsx",
       "source_location": "L1",
-      "community": 145,
+      "community": 144,
       "norm_label": "studentbehaviourpage.tsx",
       "id": "src_pages_portal_student_studentbehaviourpage_tsx"
     },
@@ -3311,7 +3473,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentBehaviourPage.tsx",
       "source_location": "L8",
-      "community": 145,
+      "community": 144,
       "norm_label": "studentbehaviourpage()",
       "id": "student_studentbehaviourpage_studentbehaviourpage"
     },
@@ -3320,7 +3482,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomeroomPage.tsx",
       "source_location": "L1",
-      "community": 148,
+      "community": 70,
       "norm_label": "studenthomeroompage.tsx",
       "id": "src_pages_portal_student_studenthomeroompage_tsx"
     },
@@ -3329,7 +3491,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomeroomPage.tsx",
       "source_location": "L9",
-      "community": 148,
+      "community": 144,
       "norm_label": "studenthomeroompageprops",
       "id": "student_studenthomeroompage_studenthomeroompageprops"
     },
@@ -3338,7 +3500,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomeroomPage.tsx",
       "source_location": "L11",
-      "community": 148,
+      "community": 70,
       "norm_label": "status_config",
       "id": "student_studenthomeroompage_status_config"
     },
@@ -3347,7 +3509,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentHomeroomPage.tsx",
       "source_location": "L19",
-      "community": 148,
+      "community": 70,
       "norm_label": "studenthomeroompage()",
       "id": "student_studenthomeroompage_studenthomeroompage"
     },
@@ -4000,78 +4162,6 @@
       "id": "prospect_teacher_portal_features_cross_cutting_notes"
     },
     {
-      "label": "schools.ts",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L1",
-      "community": 147,
-      "norm_label": "schools.ts",
-      "id": "src_lib_schools_ts"
-    },
-    {
-      "label": "SchoolWithStats",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L6",
-      "community": 147,
-      "norm_label": "schoolwithstats",
-      "id": "lib_schools_schoolwithstats"
-    },
-    {
-      "label": "fetchAllSchools()",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L18",
-      "community": 147,
-      "norm_label": "fetchallschools()",
-      "id": "lib_schools_fetchallschools"
-    },
-    {
-      "label": "UpdateSchoolResult",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L46",
-      "community": 147,
-      "norm_label": "updateschoolresult",
-      "id": "lib_schools_updateschoolresult"
-    },
-    {
-      "label": "updateSchoolName()",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L50",
-      "community": 147,
-      "norm_label": "updateschoolname()",
-      "id": "lib_schools_updateschoolname"
-    },
-    {
-      "label": "CreateSchoolInput",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L65",
-      "community": 147,
-      "norm_label": "createschoolinput",
-      "id": "lib_schools_createschoolinput"
-    },
-    {
-      "label": "CreateSchoolResult",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L75",
-      "community": 147,
-      "norm_label": "createschoolresult",
-      "id": "lib_schools_createschoolresult"
-    },
-    {
-      "label": "createSchoolWithAdmin()",
-      "file_type": "code",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L79",
-      "community": 147,
-      "norm_label": "createschoolwithadmin()",
-      "id": "lib_schools_createschoolwithadmin"
-    },
-    {
       "label": "students.ts",
       "file_type": "code",
       "source_file": "src/lib/students.ts",
@@ -4211,7 +4301,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L131",
-      "community": 109,
+      "community": 68,
       "norm_label": "admincreatestudent()",
       "id": "lib_students_admincreatestudent"
     },
@@ -4220,7 +4310,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L217",
-      "community": 109,
+      "community": 68,
       "norm_label": "createstudent()",
       "id": "lib_students_createstudent"
     },
@@ -4238,7 +4328,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L330",
-      "community": 109,
+      "community": 68,
       "norm_label": "updatestudent()",
       "id": "lib_students_updatestudent"
     },
@@ -4319,7 +4409,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L594",
-      "community": 68,
+      "community": 146,
       "norm_label": "directorystudent",
       "id": "lib_students_directorystudent"
     },
@@ -4373,7 +4463,7 @@
       "file_type": "code",
       "source_file": "src/lib/students.ts",
       "source_location": "L698",
-      "community": 109,
+      "community": 68,
       "norm_label": "adminupdatestudent()",
       "id": "lib_students_adminupdatestudent"
     },
@@ -4583,51 +4673,6 @@
       "community": 5,
       "norm_label": "platformlogin()",
       "id": "auth_platformlogin_platformlogin"
-    },
-    {
-      "label": "PlatformAdminDashboard.tsx",
-      "file_type": "code",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L1",
-      "community": 147,
-      "norm_label": "platformadmindashboard.tsx",
-      "id": "src_pages_portal_platformadmindashboard_tsx"
-    },
-    {
-      "label": "PlatformAdminDashboardProps",
-      "file_type": "code",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L10",
-      "community": 147,
-      "norm_label": "platformadmindashboardprops",
-      "id": "portal_platformadmindashboard_platformadmindashboardprops"
-    },
-    {
-      "label": "CreateSchoolForm",
-      "file_type": "code",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L14",
-      "community": 147,
-      "norm_label": "createschoolform",
-      "id": "portal_platformadmindashboard_createschoolform"
-    },
-    {
-      "label": "EMPTY_CREATE_FORM",
-      "file_type": "code",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L24",
-      "community": 147,
-      "norm_label": "empty_create_form",
-      "id": "portal_platformadmindashboard_empty_create_form"
-    },
-    {
-      "label": "PlatformAdminDashboard()",
-      "file_type": "code",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L29",
-      "community": 147,
-      "norm_label": "platformadmindashboard()",
-      "id": "portal_platformadmindashboard_platformadmindashboard"
     },
     {
       "label": "StudentDetailModal.tsx",
@@ -5255,7 +5300,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L1",
-      "community": 39,
+      "community": 31,
       "norm_label": "lessonenrichment.tsx",
       "id": "src_components_lessonenrichment_tsx"
     },
@@ -5264,7 +5309,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L8",
-      "community": 39,
+      "community": 31,
       "norm_label": "ease",
       "id": "components_lessonenrichment_ease"
     },
@@ -5273,7 +5318,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L9",
-      "community": 39,
+      "community": 31,
       "norm_label": "labels",
       "id": "components_lessonenrichment_labels"
     },
@@ -5282,7 +5327,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L12",
-      "community": 39,
+      "community": 31,
       "norm_label": "learningoutcomesprops",
       "id": "components_lessonenrichment_learningoutcomesprops"
     },
@@ -5291,7 +5336,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L14",
-      "community": 34,
+      "community": 44,
       "norm_label": "learningoutcomes()",
       "id": "components_lessonenrichment_learningoutcomes"
     },
@@ -5300,7 +5345,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L42",
-      "community": 39,
+      "community": 31,
       "norm_label": "knowledgecheckprops",
       "id": "components_lessonenrichment_knowledgecheckprops"
     },
@@ -5309,7 +5354,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L49",
-      "community": 43,
+      "community": 62,
       "norm_label": "knowledgecheck()",
       "id": "components_lessonenrichment_knowledgecheck"
     },
@@ -5318,7 +5363,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L152",
-      "community": 39,
+      "community": 31,
       "norm_label": "examtipprops",
       "id": "components_lessonenrichment_examtipprops"
     },
@@ -5327,7 +5372,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L154",
-      "community": 39,
+      "community": 31,
       "norm_label": "examtip()",
       "id": "components_lessonenrichment_examtip"
     },
@@ -5336,7 +5381,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L173",
-      "community": 39,
+      "community": 31,
       "norm_label": "summarycardprops",
       "id": "components_lessonenrichment_summarycardprops"
     },
@@ -5345,7 +5390,7 @@
       "file_type": "code",
       "source_file": "src/components/LessonEnrichment.tsx",
       "source_location": "L175",
-      "community": 38,
+      "community": 39,
       "norm_label": "summarycard()",
       "id": "components_lessonenrichment_summarycard"
     },
@@ -5363,7 +5408,7 @@
       "file_type": "code",
       "source_file": "src/components/QuizBlock.tsx",
       "source_location": "L10",
-      "community": 36,
+      "community": 16,
       "norm_label": "quizquestion",
       "id": "components_quizblock_quizquestion"
     },
@@ -5687,7 +5732,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L1",
-      "community": 44,
+      "community": 16,
       "norm_label": "accountingequation.tsx",
       "id": "src_features_study_pages_learning_accounting_grade10_term1_accountingequation_tsx"
     },
@@ -5696,7 +5741,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L10",
-      "community": 44,
+      "community": 16,
       "norm_label": "topicstatus",
       "id": "term1_accountingequation_topicstatus"
     },
@@ -5705,7 +5750,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L11",
-      "community": 44,
+      "community": 16,
       "norm_label": "viewstate",
       "id": "term1_accountingequation_viewstate"
     },
@@ -5714,7 +5759,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L12",
-      "community": 44,
+      "community": 16,
       "norm_label": "question",
       "id": "term1_accountingequation_question"
     },
@@ -5723,7 +5768,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L14",
-      "community": 44,
+      "community": 16,
       "norm_label": "topic",
       "id": "term1_accountingequation_topic"
     },
@@ -5732,7 +5777,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L123",
-      "community": 44,
+      "community": 16,
       "norm_label": "speechbubble()",
       "id": "term1_accountingequation_speechbubble"
     },
@@ -5741,7 +5786,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L139",
-      "community": 44,
+      "community": 16,
       "norm_label": "interactivelesson()",
       "id": "term1_accountingequation_interactivelesson"
     },
@@ -5750,7 +5795,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L201",
-      "community": 44,
+      "community": 16,
       "norm_label": "scratchpadmodal()",
       "id": "term1_accountingequation_scratchpadmodal"
     },
@@ -5759,7 +5804,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L282",
-      "community": 44,
+      "community": 16,
       "norm_label": "guidedpracticemodule()",
       "id": "term1_accountingequation_guidedpracticemodule"
     },
@@ -5768,7 +5813,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L351",
-      "community": 44,
+      "community": 16,
       "norm_label": "practicemodule()",
       "id": "term1_accountingequation_practicemodule"
     },
@@ -5777,7 +5822,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L427",
-      "community": 44,
+      "community": 16,
       "norm_label": "feedbackmodule()",
       "id": "term1_accountingequation_feedbackmodule"
     },
@@ -5786,7 +5831,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation.tsx",
       "source_location": "L463",
-      "community": 44,
+      "community": 16,
       "norm_label": "accountingequationpage()",
       "id": "term1_accountingequation_accountingequationpage"
     },
@@ -9341,7 +9386,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/PhysicalSciences/Grade10/Term1/PeriodicTableTrends.tsx",
       "source_location": "L186",
-      "community": 23,
+      "community": 127,
       "norm_label": "loadtopicprogress()",
       "id": "term1_periodictabletrends_loadtopicprogress"
     },
@@ -9485,7 +9530,7 @@
       "file_type": "code",
       "source_file": "src/features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight.tsx",
       "source_location": "L190",
-      "community": 127,
+      "community": 23,
       "norm_label": "savetopicprogress()",
       "id": "term1_wavessoundlight_savetopicprogress"
     },
@@ -9638,7 +9683,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L73",
-      "community": 9,
+      "community": 48,
       "norm_label": "event_colors",
       "id": "lib_events_event_colors"
     },
@@ -9647,7 +9692,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L80",
-      "community": 9,
+      "community": 48,
       "norm_label": "event_labels",
       "id": "lib_events_event_labels"
     },
@@ -9674,7 +9719,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L120",
-      "community": 9,
+      "community": 27,
       "norm_label": "fetchschoolevents()",
       "id": "lib_events_fetchschoolevents"
     },
@@ -9692,7 +9737,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L157",
-      "community": 133,
+      "community": 52,
       "norm_label": "fetchstudentevents()",
       "id": "lib_events_fetchstudentevents"
     },
@@ -9773,7 +9818,7 @@
       "file_type": "code",
       "source_file": "src/lib/events.ts",
       "source_location": "L349",
-      "community": 133,
+      "community": 52,
       "norm_label": "fetchstudentcompletions()",
       "id": "lib_events_fetchstudentcompletions"
     },
@@ -9980,7 +10025,7 @@
       "file_type": "code",
       "source_file": "src/lib/marks.ts",
       "source_location": "L342",
-      "community": 27,
+      "community": 52,
       "norm_label": "studentresult",
       "id": "lib_marks_studentresult"
     },
@@ -10052,7 +10097,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L1",
-      "community": 27,
+      "community": 52,
       "norm_label": "studentmarkspage.tsx",
       "id": "src_pages_portal_student_studentmarkspage_tsx"
     },
@@ -10061,7 +10106,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L16",
-      "community": 27,
+      "community": 52,
       "norm_label": "pct()",
       "id": "student_studentmarkspage_pct"
     },
@@ -10070,7 +10115,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L21",
-      "community": 27,
+      "community": 52,
       "norm_label": "pctnum()",
       "id": "student_studentmarkspage_pctnum"
     },
@@ -10079,7 +10124,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L25",
-      "community": 27,
+      "community": 52,
       "norm_label": "gradelabel()",
       "id": "student_studentmarkspage_gradelabel"
     },
@@ -10088,7 +10133,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L36",
-      "community": 27,
+      "community": 52,
       "norm_label": "barcolor()",
       "id": "student_studentmarkspage_barcolor"
     },
@@ -10097,7 +10142,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L45",
-      "community": 27,
+      "community": 52,
       "norm_label": "formatdate()",
       "id": "student_studentmarkspage_formatdate"
     },
@@ -10106,7 +10151,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L49",
-      "community": 27,
+      "community": 52,
       "norm_label": "shorttitle()",
       "id": "student_studentmarkspage_shorttitle"
     },
@@ -10115,7 +10160,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L54",
-      "community": 27,
+      "community": 52,
       "norm_label": "counter()",
       "id": "student_studentmarkspage_counter"
     },
@@ -10124,7 +10169,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L73",
-      "community": 27,
+      "community": 52,
       "norm_label": "ring()",
       "id": "student_studentmarkspage_ring"
     },
@@ -10133,7 +10178,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L94",
-      "community": 27,
+      "community": 52,
       "norm_label": "charttooltip()",
       "id": "student_studentmarkspage_charttooltip"
     },
@@ -10142,7 +10187,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L107",
-      "community": 27,
+      "community": 52,
       "norm_label": "zones",
       "id": "student_studentmarkspage_zones"
     },
@@ -10151,7 +10196,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentMarksPage.tsx",
       "source_location": "L115",
-      "community": 27,
+      "community": 52,
       "norm_label": "performancezonebar()",
       "id": "student_studentmarkspage_performancezonebar"
     },
@@ -10493,7 +10538,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L1",
-      "community": 69,
+      "community": 27,
       "norm_label": "riskenginepage.tsx",
       "id": "src_pages_portal_teacher_riskenginepage_tsx"
     },
@@ -10502,7 +10547,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L16",
-      "community": 69,
+      "community": 27,
       "norm_label": "rowdata",
       "id": "teacher_riskenginepage_rowdata"
     },
@@ -10511,7 +10556,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L29",
-      "community": 69,
+      "community": 27,
       "norm_label": "risk_order",
       "id": "teacher_riskenginepage_risk_order"
     },
@@ -10520,7 +10565,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L31",
-      "community": 69,
+      "community": 27,
       "norm_label": "risk_style",
       "id": "teacher_riskenginepage_risk_style"
     },
@@ -10529,7 +10574,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L38",
-      "community": 69,
+      "community": 27,
       "norm_label": "type_label",
       "id": "teacher_riskenginepage_type_label"
     },
@@ -10538,7 +10583,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L44",
-      "community": 69,
+      "community": 27,
       "norm_label": "reason_label",
       "id": "teacher_riskenginepage_reason_label"
     },
@@ -10547,7 +10592,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L52",
-      "community": 69,
+      "community": 27,
       "norm_label": "initials()",
       "id": "teacher_riskenginepage_initials"
     },
@@ -10556,7 +10601,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L56",
-      "community": 69,
+      "community": 27,
       "norm_label": "formatdate()",
       "id": "teacher_riskenginepage_formatdate"
     },
@@ -10565,7 +10610,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L60",
-      "community": 69,
+      "community": 27,
       "norm_label": "riskenginepageprops",
       "id": "teacher_riskenginepage_riskenginepageprops"
     },
@@ -10574,7 +10619,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L64",
-      "community": 69,
+      "community": 27,
       "norm_label": "riskenginepage()",
       "id": "teacher_riskenginepage_riskenginepage"
     },
@@ -10583,7 +10628,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/teacher/RiskEnginePage.tsx",
       "source_location": "L360",
-      "community": 69,
+      "community": 27,
       "norm_label": "riskrow()",
       "id": "teacher_riskenginepage_riskrow"
     },
@@ -11123,7 +11168,7 @@
       "file_type": "code",
       "source_file": "src/lib/announcements.ts",
       "source_location": "L79",
-      "community": 133,
+      "community": 8,
       "norm_label": "fetchstudentannouncements()",
       "id": "lib_announcements_fetchstudentannouncements"
     },
@@ -11159,7 +11204,7 @@
       "file_type": "code",
       "source_file": "src/lib/announcements.ts",
       "source_location": "L176",
-      "community": 8,
+      "community": 153,
       "norm_label": "trackannouncementviews()",
       "id": "lib_announcements_trackannouncementviews"
     },
@@ -11402,7 +11447,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentResourcesPage.tsx",
       "source_location": "L18",
-      "community": 144,
+      "community": 12,
       "norm_label": "studentresourcespageprops",
       "id": "student_studentresourcespage_studentresourcespageprops"
     },
@@ -12221,7 +12266,7 @@
       "file_type": "code",
       "source_file": "src/lib/teacherAnalytics.ts",
       "source_location": "L831",
-      "community": 130,
+      "community": 20,
       "norm_label": "fetchbestinterventiontype()",
       "id": "lib_teacheranalytics_fetchbestinterventiontype"
     },
@@ -12689,7 +12734,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L1",
-      "community": 8,
+      "community": 153,
       "norm_label": "studentannouncementspage.tsx",
       "id": "src_pages_portal_student_studentannouncementspage_tsx"
     },
@@ -12698,7 +12743,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L8",
-      "community": 8,
+      "community": 153,
       "norm_label": "timeago()",
       "id": "student_studentannouncementspage_timeago"
     },
@@ -12707,7 +12752,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L20",
-      "community": 8,
+      "community": 153,
       "norm_label": "detectcategory()",
       "id": "student_studentannouncementspage_detectcategory"
     },
@@ -12716,7 +12761,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L29",
-      "community": 8,
+      "community": 153,
       "norm_label": "category_colors",
       "id": "student_studentannouncementspage_category_colors"
     },
@@ -12725,7 +12770,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L37",
-      "community": 8,
+      "community": 153,
       "norm_label": "studentannouncementspageprops",
       "id": "student_studentannouncementspage_studentannouncementspageprops"
     },
@@ -12734,7 +12779,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L41",
-      "community": 8,
+      "community": 153,
       "norm_label": "studentannouncementspage()",
       "id": "student_studentannouncementspage_studentannouncementspage"
     },
@@ -12743,7 +12788,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentAnnouncementsPage.tsx",
       "source_location": "L229",
-      "community": 8,
+      "community": 153,
       "norm_label": "announcementcard()",
       "id": "student_studentannouncementspage_announcementcard"
     },
@@ -13022,7 +13067,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L1",
-      "community": 9,
+      "community": 48,
       "norm_label": "studentcalendarpage.tsx",
       "id": "src_pages_portal_student_studentcalendarpage_tsx"
     },
@@ -13031,7 +13076,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L19",
-      "community": 9,
+      "community": 48,
       "norm_label": "months",
       "id": "student_studentcalendarpage_months"
     },
@@ -13040,7 +13085,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L20",
-      "community": 9,
+      "community": 48,
       "norm_label": "days",
       "id": "student_studentcalendarpage_days"
     },
@@ -13049,7 +13094,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L22",
-      "community": 9,
+      "community": 48,
       "norm_label": "todatestr()",
       "id": "student_studentcalendarpage_todatestr"
     },
@@ -13058,7 +13103,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L25",
-      "community": 9,
+      "community": 48,
       "norm_label": "formattime()",
       "id": "student_studentcalendarpage_formattime"
     },
@@ -13067,7 +13112,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L31",
-      "community": 9,
+      "community": 48,
       "norm_label": "formatdate()",
       "id": "student_studentcalendarpage_formatdate"
     },
@@ -13076,7 +13121,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L35",
-      "community": 9,
+      "community": 48,
       "norm_label": "formatdayfull()",
       "id": "student_studentcalendarpage_formatdayfull"
     },
@@ -13085,7 +13130,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L40",
-      "community": 9,
+      "community": 48,
       "norm_label": "type_pill",
       "id": "student_studentcalendarpage_type_pill"
     },
@@ -13094,7 +13139,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L46",
-      "community": 9,
+      "community": 48,
       "norm_label": "type_cell_bg",
       "id": "student_studentcalendarpage_type_cell_bg"
     },
@@ -13103,7 +13148,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L53",
-      "community": 9,
+      "community": 48,
       "norm_label": "ease",
       "id": "student_studentcalendarpage_ease"
     },
@@ -13121,7 +13166,7 @@
       "file_type": "code",
       "source_file": "src/pages/portal/student/StudentCalendarPage.tsx",
       "source_location": "L60",
-      "community": 9,
+      "community": 48,
       "norm_label": "studentcalendarpage()",
       "id": "student_studentcalendarpage_studentcalendarpage"
     },
@@ -13256,7 +13301,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L1",
-      "community": 143,
+      "community": 148,
       "norm_label": "quizpage.tsx",
       "id": "src_features_careers_pages_quizpage_tsx"
     },
@@ -13265,7 +13310,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L12",
-      "community": 143,
+      "community": 148,
       "norm_label": "quizanswer",
       "id": "pages_quizpage_quizanswer"
     },
@@ -13274,7 +13319,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L19",
-      "community": 143,
+      "community": 148,
       "norm_label": "likertoptions",
       "id": "pages_quizpage_likertoptions"
     },
@@ -13283,7 +13328,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L64",
-      "community": 143,
+      "community": 148,
       "norm_label": "riaseccolors",
       "id": "pages_quizpage_riaseccolors"
     },
@@ -13292,7 +13337,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L73",
-      "community": 143,
+      "community": 148,
       "norm_label": "riaseclabels",
       "id": "pages_quizpage_riaseclabels"
     },
@@ -13301,7 +13346,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L84",
-      "community": 143,
+      "community": 148,
       "norm_label": "quizphase()",
       "id": "pages_quizpage_quizphase"
     },
@@ -13310,7 +13355,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L395",
-      "community": 143,
+      "community": 148,
       "norm_label": "resultsphase()",
       "id": "pages_quizpage_resultsphase"
     },
@@ -13319,7 +13364,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/pages/QuizPage.tsx",
       "source_location": "L741",
-      "community": 143,
+      "community": 148,
       "norm_label": "quizpage()",
       "id": "pages_quizpage_quizpage"
     },
@@ -16406,7 +16451,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/CareersTab.tsx",
       "source_location": "L1",
-      "community": 52,
+      "community": 51,
       "norm_label": "careerstab.tsx",
       "id": "src_features_careers_components_careerstab_tsx"
     },
@@ -16415,7 +16460,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/CareersTab.tsx",
       "source_location": "L8",
-      "community": 52,
+      "community": 51,
       "norm_label": "careerstabprops",
       "id": "components_careerstab_careerstabprops"
     },
@@ -16424,7 +16469,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/CareersTab.tsx",
       "source_location": "L14",
-      "community": 52,
+      "community": 51,
       "norm_label": "careerstab()",
       "id": "components_careerstab_careerstab"
     },
@@ -16460,7 +16505,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/InsightsTab.tsx",
       "source_location": "L1",
-      "community": 17,
+      "community": 69,
       "norm_label": "insightstab.tsx",
       "id": "src_features_careers_components_insightstab_tsx"
     },
@@ -16469,7 +16514,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/InsightsTab.tsx",
       "source_location": "L15",
-      "community": 17,
+      "community": 69,
       "norm_label": "insightstabprops",
       "id": "components_insightstab_insightstabprops"
     },
@@ -16478,7 +16523,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/InsightsTab.tsx",
       "source_location": "L20",
-      "community": 17,
+      "community": 69,
       "norm_label": "statcard()",
       "id": "components_insightstab_statcard"
     },
@@ -16487,7 +16532,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/InsightsTab.tsx",
       "source_location": "L30",
-      "community": 17,
+      "community": 69,
       "norm_label": "sectionheader()",
       "id": "components_insightstab_sectionheader"
     },
@@ -16496,7 +16541,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/InsightsTab.tsx",
       "source_location": "L39",
-      "community": 17,
+      "community": 69,
       "norm_label": "insightstab()",
       "id": "components_insightstab_insightstab"
     },
@@ -16613,7 +16658,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L1",
-      "community": 143,
+      "community": 148,
       "norm_label": "skippedquestionspanel.tsx",
       "id": "src_features_careers_components_skippedquestionspanel_tsx"
     },
@@ -16622,7 +16667,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L4",
-      "community": 143,
+      "community": 148,
       "norm_label": "skippedquestionspanelprops",
       "id": "components_skippedquestionspanel_skippedquestionspanelprops"
     },
@@ -16631,7 +16676,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/SkippedQuestionsPanel.tsx",
       "source_location": "L11",
-      "community": 143,
+      "community": 148,
       "norm_label": "skippedquestionspanel()",
       "id": "components_skippedquestionspanel_skippedquestionspanel"
     },
@@ -16640,7 +16685,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/TVETCareerCard.tsx",
       "source_location": "L1",
-      "community": 48,
+      "community": 1,
       "norm_label": "tvetcareercard.tsx",
       "id": "src_features_careers_components_tvetcareercard_tsx"
     },
@@ -16649,7 +16694,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/TVETCareerCard.tsx",
       "source_location": "L5",
-      "community": 48,
+      "community": 1,
       "norm_label": "tvetcareercardprops",
       "id": "components_tvetcareercard_tvetcareercardprops"
     },
@@ -16658,7 +16703,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/TVETCareerCard.tsx",
       "source_location": "L11",
-      "community": 48,
+      "community": 1,
       "norm_label": "demandconfig",
       "id": "components_tvetcareercard_demandconfig"
     },
@@ -16667,7 +16712,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/components/TVETCareerCard.tsx",
       "source_location": "L33",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetcareercard()",
       "id": "components_tvetcareercard_tvetcareercard"
     },
@@ -16802,7 +16847,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/careers400Final.ts",
       "source_location": "L637",
-      "community": 48,
+      "community": 42,
       "norm_label": "allcareerscomplete",
       "id": "data_careers400final_allcareerscomplete"
     },
@@ -16838,7 +16883,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/careersFullData.ts",
       "source_location": "L1",
-      "community": 48,
+      "community": 42,
       "norm_label": "careersfulldata.ts",
       "id": "src_features_careers_data_careersfulldata_ts"
     },
@@ -16856,7 +16901,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/careersTypes.ts",
       "source_location": "L1",
-      "community": 52,
+      "community": 1,
       "norm_label": "careerfull",
       "id": "data_careerstypes_careerfull"
     },
@@ -17108,7 +17153,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/quizScoringLogic.ts",
       "source_location": "L31",
-      "community": 143,
+      "community": 159,
       "norm_label": "quizresults",
       "id": "data_quizscoringlogic_quizresults"
     },
@@ -17306,7 +17351,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_business.ts",
       "source_location": "L1",
-      "community": 159,
+      "community": 1,
       "norm_label": "batch_business.ts",
       "id": "src_features_careers_data_batches_batch_business_ts"
     },
@@ -17315,7 +17360,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_business.ts",
       "source_location": "L3",
-      "community": 159,
+      "community": 1,
       "norm_label": "businesscareers",
       "id": "batches_batch_business_businesscareers"
     },
@@ -17324,7 +17369,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_business2.ts",
       "source_location": "L1",
-      "community": 52,
+      "community": 1,
       "norm_label": "batch_business2.ts",
       "id": "src_features_careers_data_batches_batch_business2_ts"
     },
@@ -17333,7 +17378,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_business2.ts",
       "source_location": "L3",
-      "community": 52,
+      "community": 1,
       "norm_label": "business2careers",
       "id": "batches_batch_business2_business2careers"
     },
@@ -17432,7 +17477,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_education_creative.ts",
       "source_location": "L1",
-      "community": 52,
+      "community": 1,
       "norm_label": "batch_education_creative.ts",
       "id": "src_features_careers_data_batches_batch_education_creative_ts"
     },
@@ -17441,7 +17486,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_education_creative.ts",
       "source_location": "L3",
-      "community": 52,
+      "community": 1,
       "norm_label": "educationcreativecareers",
       "id": "batches_batch_education_creative_educationcreativecareers"
     },
@@ -17540,7 +17585,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_healthcare4.ts",
       "source_location": "L1",
-      "community": 52,
+      "community": 1,
       "norm_label": "batch_healthcare4.ts",
       "id": "src_features_careers_data_batches_batch_healthcare4_ts"
     },
@@ -17549,7 +17594,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_healthcare4.ts",
       "source_location": "L3",
-      "community": 52,
+      "community": 1,
       "norm_label": "healthcare4careers",
       "id": "batches_batch_healthcare4_healthcare4careers"
     },
@@ -17576,7 +17621,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_media_comms.ts",
       "source_location": "L1",
-      "community": 52,
+      "community": 1,
       "norm_label": "batch_media_comms.ts",
       "id": "src_features_careers_data_batches_batch_media_comms_ts"
     },
@@ -17585,7 +17630,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/data/batches/batch_media_comms.ts",
       "source_location": "L3",
-      "community": 52,
+      "community": 1,
       "norm_label": "mediacommscareers",
       "id": "batches_batch_media_comms_mediacommscareers"
     },
@@ -17846,7 +17891,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L56",
-      "community": 17,
+      "community": 69,
       "norm_label": "countcareersinprovince()",
       "id": "services_mapservice_countcareersinprovince"
     },
@@ -17864,7 +17909,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L72",
-      "community": 17,
+      "community": 69,
       "norm_label": "getaveragesalarybyprovince()",
       "id": "services_mapservice_getaveragesalarybyprovince"
     },
@@ -17873,7 +17918,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L89",
-      "community": 17,
+      "community": 69,
       "norm_label": "getindustrybreakdown()",
       "id": "services_mapservice_getindustrybreakdown"
     },
@@ -17882,7 +17927,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L95",
-      "community": 17,
+      "community": 69,
       "norm_label": "gettopemployersbyprovince()",
       "id": "services_mapservice_gettopemployersbyprovince"
     },
@@ -17891,7 +17936,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L102",
-      "community": 17,
+      "community": 51,
       "norm_label": "gethighdemandcareers()",
       "id": "services_mapservice_gethighdemandcareers"
     },
@@ -17900,7 +17945,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L109",
-      "community": 17,
+      "community": 69,
       "norm_label": "getcostoflivingbycity()",
       "id": "services_mapservice_getcostoflivingbycity"
     },
@@ -17909,7 +17954,7 @@
       "file_type": "code",
       "source_file": "src/features/careers/services/mapService.ts",
       "source_location": "L115",
-      "community": 17,
+      "community": 69,
       "norm_label": "getbursariesbyprovince()",
       "id": "services_mapservice_getbursariesbyprovince"
     },
@@ -18980,7 +19025,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/components/TVETSubNav.tsx",
       "source_location": "L1",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetsubnav.tsx",
       "id": "src_features_tvet_components_tvetsubnav_tsx"
     },
@@ -18989,7 +19034,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/components/TVETSubNav.tsx",
       "source_location": "L4",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetsubnavprops",
       "id": "components_tvetsubnav_tvetsubnavprops"
     },
@@ -18998,7 +19043,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/components/TVETSubNav.tsx",
       "source_location": "L9",
-      "community": 48,
+      "community": 42,
       "norm_label": "links",
       "id": "components_tvetsubnav_links"
     },
@@ -19007,7 +19052,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/components/TVETSubNav.tsx",
       "source_location": "L19",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetsubnav()",
       "id": "components_tvetsubnav_tvetsubnav"
     },
@@ -19088,7 +19133,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/pages/TVETCareersPage.tsx",
       "source_location": "L1",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetcareerspage.tsx",
       "id": "src_features_tvet_pages_tvetcareerspage_tsx"
     },
@@ -19097,7 +19142,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/pages/TVETCareersPage.tsx",
       "source_location": "L10",
-      "community": 48,
+      "community": 42,
       "norm_label": "tradetypes",
       "id": "pages_tvetcareerspage_tradetypes"
     },
@@ -19106,7 +19151,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/pages/TVETCareersPage.tsx",
       "source_location": "L23",
-      "community": 48,
+      "community": 42,
       "norm_label": "demandconfig",
       "id": "pages_tvetcareerspage_demandconfig"
     },
@@ -19115,7 +19160,7 @@
       "file_type": "code",
       "source_file": "src/features/tvet/pages/TVETCareersPage.tsx",
       "source_location": "L31",
-      "community": 48,
+      "community": 42,
       "norm_label": "tvetcareerspage()",
       "id": "pages_tvetcareerspage_tvetcareerspage"
     },
@@ -19268,7 +19313,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L1",
-      "community": 49,
+      "community": 159,
       "norm_label": "myfuture.ts",
       "id": "src_lib_myfuture_ts"
     },
@@ -19277,7 +19322,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L7",
-      "community": 49,
+      "community": 159,
       "norm_label": "storedquizresult",
       "id": "lib_myfuture_storedquizresult"
     },
@@ -19286,7 +19331,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L18",
-      "community": 49,
+      "community": 159,
       "norm_label": "storedapsscore",
       "id": "lib_myfuture_storedapsscore"
     },
@@ -19295,7 +19340,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L29",
-      "community": 49,
+      "community": 159,
       "norm_label": "savequizresults()",
       "id": "lib_myfuture_savequizresults"
     },
@@ -19304,7 +19349,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L50",
-      "community": 49,
+      "community": 159,
       "norm_label": "fetchquizresults()",
       "id": "lib_myfuture_fetchquizresults"
     },
@@ -19313,7 +19358,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L66",
-      "community": 49,
+      "community": 159,
       "norm_label": "saveapsscore()",
       "id": "lib_myfuture_saveapsscore"
     },
@@ -19322,7 +19367,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L85",
-      "community": 49,
+      "community": 159,
       "norm_label": "fetchapsscore()",
       "id": "lib_myfuture_fetchapsscore"
     },
@@ -19331,7 +19376,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L101",
-      "community": 49,
+      "community": 159,
       "norm_label": "togglesavedbursary()",
       "id": "lib_myfuture_togglesavedbursary"
     },
@@ -19349,7 +19394,7 @@
       "file_type": "code",
       "source_file": "src/lib/myFuture.ts",
       "source_location": "L146",
-      "community": 49,
+      "community": 159,
       "norm_label": "isbursarysaved()",
       "id": "lib_myfuture_isbursarysaved"
     },
@@ -19358,7 +19403,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L1",
-      "community": 9,
+      "community": 48,
       "norm_label": "studenttasks.ts",
       "id": "src_lib_studenttasks_ts"
     },
@@ -19367,7 +19412,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L7",
-      "community": 9,
+      "community": 48,
       "norm_label": "studenttask",
       "id": "lib_studenttasks_studenttask"
     },
@@ -19376,7 +19421,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L19",
-      "community": 9,
+      "community": 48,
       "norm_label": "newstudenttask",
       "id": "lib_studenttasks_newstudenttask"
     },
@@ -19385,7 +19430,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L22",
-      "community": 9,
+      "community": 48,
       "norm_label": "fetchstudenttasks()",
       "id": "lib_studenttasks_fetchstudenttasks"
     },
@@ -19394,7 +19439,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L37",
-      "community": 9,
+      "community": 48,
       "norm_label": "createstudenttask()",
       "id": "lib_studenttasks_createstudenttask"
     },
@@ -19403,7 +19448,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L60",
-      "community": 9,
+      "community": 48,
       "norm_label": "updatetaskdone()",
       "id": "lib_studenttasks_updatetaskdone"
     },
@@ -19412,7 +19457,7 @@
       "file_type": "code",
       "source_file": "src/lib/studentTasks.ts",
       "source_location": "L74",
-      "community": 9,
+      "community": 48,
       "norm_label": "deletestudenttask()",
       "id": "lib_studenttasks_deletestudenttask"
     },
@@ -19421,7 +19466,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L1",
-      "community": 69,
+      "community": 18,
       "norm_label": "studyprogress.ts",
       "id": "src_lib_studyprogress_ts"
     },
@@ -19430,7 +19475,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L5",
-      "community": 69,
+      "community": 18,
       "norm_label": "masterylevel",
       "id": "lib_studyprogress_masterylevel"
     },
@@ -19439,7 +19484,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L7",
-      "community": 27,
+      "community": 136,
       "norm_label": "studyprogress",
       "id": "lib_studyprogress_studyprogress"
     },
@@ -19457,7 +19502,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L44",
-      "community": 127,
+      "community": 28,
       "norm_label": "savetopicprogress()",
       "id": "lib_studyprogress_savetopicprogress"
     },
@@ -19466,7 +19511,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L73",
-      "community": 136,
+      "community": 18,
       "norm_label": "fetchstudentprogress()",
       "id": "lib_studyprogress_fetchstudentprogress"
     },
@@ -19475,7 +19520,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L89",
-      "community": 69,
+      "community": 27,
       "norm_label": "studentprogresssummary",
       "id": "lib_studyprogress_studentprogresssummary"
     },
@@ -19484,7 +19529,7 @@
       "file_type": "code",
       "source_file": "src/lib/studyProgress.ts",
       "source_location": "L103",
-      "community": 69,
+      "community": 27,
       "norm_label": "fetchteacherstudentprogress()",
       "id": "lib_studyprogress_fetchteacherstudentprogress"
     },
@@ -19493,7 +19538,7 @@
       "file_type": "code",
       "source_file": "src/lib/supabase.ts",
       "source_location": "L1",
-      "community": 8,
+      "community": 153,
       "norm_label": "supabase.ts",
       "id": "src_lib_supabase_ts"
     },
@@ -19511,7 +19556,7 @@
       "file_type": "code",
       "source_file": "src/lib/supabase.ts",
       "source_location": "L22",
-      "community": 8,
+      "community": 12,
       "norm_label": "supabaseadmin",
       "id": "lib_supabase_supabaseadmin"
     },
@@ -19646,7 +19691,7 @@
       "file_type": "code",
       "source_file": "src/providers/StudySessionContext.tsx",
       "source_location": "L1",
-      "community": 44,
+      "community": 43,
       "norm_label": "studysessioncontext.tsx",
       "id": "src_providers_studysessioncontext_tsx"
     },
@@ -19655,7 +19700,7 @@
       "file_type": "code",
       "source_file": "src/providers/StudySessionContext.tsx",
       "source_location": "L14",
-      "community": 44,
+      "community": 43,
       "norm_label": "studysessiondata",
       "id": "providers_studysessioncontext_studysessiondata"
     },
@@ -19664,7 +19709,7 @@
       "file_type": "code",
       "source_file": "src/providers/StudySessionContext.tsx",
       "source_location": "L19",
-      "community": 44,
+      "community": 43,
       "norm_label": "studysessioncontext",
       "id": "providers_studysessioncontext_studysessioncontext"
     },
@@ -19682,7 +19727,7 @@
       "file_type": "code",
       "source_file": "src/providers/StudySessionContext.tsx",
       "source_location": "L35",
-      "community": 44,
+      "community": 38,
       "norm_label": "usestudysession()",
       "id": "providers_studysessioncontext_usestudysession"
     },
@@ -19727,7 +19772,7 @@
       "file_type": "code",
       "source_file": "src/shared/hooks/usePillVisible.ts",
       "source_location": "L1",
-      "community": 48,
+      "community": 42,
       "norm_label": "usepillvisible.ts",
       "id": "src_shared_hooks_usepillvisible_ts"
     },
@@ -19736,7 +19781,7 @@
       "file_type": "code",
       "source_file": "src/shared/hooks/usePillVisible.ts",
       "source_location": "L3",
-      "community": 48,
+      "community": 42,
       "norm_label": "usepillvisible()",
       "id": "hooks_usepillvisible_usepillvisible"
     },
@@ -20219,6 +20264,331 @@
     }
   ],
   "links": [
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_auth_hashpin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_createschoolinput"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L75",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_createschoolresult"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L79",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_createschoolwithadmin"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_fetchallschools"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_fetchschoolstats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L65",
+      "weight": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_schoolstats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_schoolwithstats"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_updateschoolname"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_schools_updateschoolresult"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "lib_supabase_supabaseadmin"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_schools_ts",
+      "target": "src_lib_auth_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "src_lib_schools_ts"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_schoolwithstats"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_fetchallschools"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_updateschoolname"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_schoolstats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_fetchschoolstats",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/schools.ts",
+      "source_location": "L110",
+      "weight": 1.0,
+      "source": "lib_schools_createschoolwithadmin",
+      "target": "lib_auth_hashpin"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_schools_createschoolwithadmin"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_auth_getplatformsession"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_auth_platformlogout"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "lib_auth_platformsession"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_createschoolform"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_empty_create_form"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_platformadmindashboard"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_platformadmindashboardprops"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_platformtopbar",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L408",
+      "weight": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_schooldetail",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L395",
+      "weight": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "portal_platformadmindashboard_stattile",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_pages_portal_platformadmindashboard_tsx",
+      "target": "src_lib_auth_ts"
+    },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
@@ -20775,9 +21145,9 @@
       "source_file": "src/shared/components/PremiumBackground.tsx",
       "source_location": "L9",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_shared_components_premiumbackground_tsx",
-      "target": "components_premiumbackground_premiumbackground",
-      "confidence_score": 1.0
+      "target": "components_premiumbackground_premiumbackground"
     },
     {
       "relation": "imports_from",
@@ -25028,17 +25398,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "src_lib_auth_ts"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/lib/students.ts",
       "source_location": "L2",
       "weight": 1.0,
@@ -25198,17 +25557,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_pages_portal_parent_parentmarkspage_tsx",
-      "target": "src_lib_auth_ts"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
       "target": "src_lib_auth_ts"
     },
     {
@@ -25513,17 +25861,6 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L110",
-      "weight": 1.0,
-      "source": "lib_schools_createschoolwithadmin",
-      "target": "lib_auth_hashpin"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "src/lib/students.ts",
       "source_location": "L170",
       "weight": 1.0,
@@ -25594,17 +25931,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_lib_parents_ts",
-      "target": "lib_auth_hashpin"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
       "target": "lib_auth_hashpin"
     },
     {
@@ -26411,28 +26737,6 @@
       "target": "lib_auth_clearadminsession"
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_auth_platformsession"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_auth_getplatformsession"
-    },
-    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -26442,17 +26746,6 @@
       "confidence_score": 1.0,
       "source": "lib_auth_platformlogin",
       "target": "lib_auth_setplatformsession"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_auth_platformlogout"
     },
     {
       "relation": "imports",
@@ -30243,142 +30536,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L65",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_createschoolinput"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L75",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_createschoolresult"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L79",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_createschoolwithadmin"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L18",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_fetchallschools"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L6",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_schoolwithstats"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L50",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_updateschoolname"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L46",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_schools_updateschoolresult"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/schools.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_lib_schools_ts",
-      "target": "lib_supabase_supabaseadmin"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "src_lib_schools_ts"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_schools_schoolwithstats"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_schools_fetchallschools"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_schools_updateschoolname"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L5",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "lib_schools_createschoolwithadmin"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "src/lib/students.ts",
       "source_location": "L422",
       "weight": 1.0,
@@ -31454,46 +31611,6 @@
       "confidence_score": 1.0,
       "source": "src_pages_auth_platformlogin_tsx",
       "target": "auth_platformlogin_platformlogin"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L14",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "portal_platformadmindashboard_createschoolform"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L24",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "portal_platformadmindashboard_empty_create_form"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L29",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "portal_platformadmindashboard_platformadmindashboard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/portal/PlatformAdminDashboard.tsx",
-      "source_location": "L10",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_pages_portal_platformadmindashboard_tsx",
-      "target": "portal_platformadmindashboard_platformadmindashboardprops"
     },
     {
       "relation": "contains",
@@ -61301,5 +61418,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ffe864d97443291a8c87d084c7edff552fba5ab0"
+  "built_at_commit": "63c7691772a99402887d459d154a9d0d5114c865"
 }

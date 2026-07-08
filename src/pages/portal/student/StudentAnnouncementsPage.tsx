@@ -26,12 +26,12 @@ function detectCategory(a: Announcement): string {
   return 'General';
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  Exam:     'bg-red-50 text-red-600 border-red-100',
-  Homework: 'bg-blue-50 text-blue-600 border-blue-100',
-  Urgent:   'bg-amber-50 text-amber-600 border-amber-100',
-  Event:    'bg-violet-50 text-violet-600 border-violet-100',
-  General:  'bg-stone-100 text-stone-500 border-brand-border',
+const CATEGORY_ACCENTS: Record<string, string> = {
+  Exam:     'bg-red-400',
+  Homework: 'bg-blue-400',
+  Urgent:   'bg-amber-400',
+  Event:    'bg-violet-400',
+  General:  'bg-stone-200',
 };
 
 interface StudentAnnouncementsPageProps {
@@ -237,75 +237,75 @@ function AnnouncementCard({
   isExpanded: boolean;
   onExpand: () => void;
 }) {
-  const categoryColor = CATEGORY_COLORS[a.category] ?? CATEGORY_COLORS.General;
+  const accentColor = CATEGORY_ACCENTS[a.category] ?? CATEGORY_ACCENTS.General;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.04, duration: 0.18 }}
-      className={`bg-white rounded-2xl border transition-colors ${
+      className={`relative flex bg-white rounded-2xl border overflow-hidden transition-colors ${
         a.pinned ? 'border-amber-200' : isRead ? 'border-brand-border' : 'border-stone-300'
       }`}
     >
-      <button
-        onClick={onExpand}
-        className="w-full text-left px-5 py-4"
-      >
-        <div className="flex items-start gap-3">
-          {/* Unread dot */}
-          <div className="shrink-0 mt-1.5">
-            {!isRead
-              ? <span className="w-2 h-2 rounded-full bg-brand-dark block" />
-              : <span className="w-2 h-2 rounded-full bg-transparent block" />
-            }
-          </div>
+      {/* Quiet category-colored left edge accent — replaces the old type pill */}
+      <span className={`w-1 shrink-0 ${accentColor}`} />
 
-          <div className="flex-1 min-w-0">
-            {/* Top row: title + badges */}
-            <div className="flex items-start justify-between gap-2 mb-1">
-              <p className={`text-sm leading-snug ${isRead ? 'font-bold text-stone-600' : 'font-black text-stone-900'}`}>
-                {a.title}
-              </p>
-              <div className="flex items-center gap-1.5 shrink-0">
-                {a.pinned && <Pin className="w-3 h-3 text-amber-500" />}
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${categoryColor}`}>
-                  {a.category}
-                </span>
+      <div className="flex-1 min-w-0">
+        <button
+          onClick={onExpand}
+          className="w-full text-left px-4 py-4"
+        >
+          <div className="flex items-start gap-3">
+            {/* Unread dot */}
+            <div className="shrink-0 mt-1.5">
+              {!isRead
+                ? <span className="w-2 h-2 rounded-full bg-brand-dark block" />
+                : <span className="w-2 h-2 rounded-full bg-transparent block" />
+              }
+            </div>
+
+            <div className="flex-1 min-w-0">
+              {/* Top row: title + pin */}
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <p className={`text-sm leading-snug ${isRead ? 'font-bold text-stone-600' : 'font-black text-stone-900'}`}>
+                  {a.title}
+                </p>
+                {a.pinned && <Pin className="w-3 h-3 text-amber-500 shrink-0 mt-0.5" />}
               </div>
+
+              {/* Body preview when collapsed */}
+              {!isExpanded && a.body && (
+                <p className="text-xs text-stone-500 line-clamp-1 mb-1">{a.body}</p>
+              )}
+
+              {/* Meta */}
+              <p className="text-[10px] text-stone-400">
+                {a.author_name} {a.author_surname}
+                {a.author_role === 'admin' && <span className="ml-1 text-violet-400 font-bold">(Admin)</span>}
+                {' · '}{timeAgo(a.created_at)}
+              </p>
             </div>
-
-            {/* Body preview when collapsed */}
-            {!isExpanded && a.body && (
-              <p className="text-xs text-stone-500 line-clamp-1 mb-1">{a.body}</p>
-            )}
-
-            {/* Meta */}
-            <p className="text-[10px] text-stone-400">
-              {a.author_name} {a.author_surname}
-              {a.author_role === 'admin' && <span className="ml-1 text-violet-400 font-bold">(Admin)</span>}
-              {' · '}{timeAgo(a.created_at)}
-            </p>
           </div>
-        </div>
-      </button>
+        </button>
 
-      {/* Expanded body */}
-      <AnimatePresence initial={false}>
-        {isExpanded && a.body && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="px-5 pb-5 pt-0 border-t border-brand-border/60 mt-0">
-              <p className="text-sm text-stone-600 leading-relaxed pt-4 whitespace-pre-line">{a.body}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* Expanded body */}
+        <AnimatePresence initial={false}>
+          {isExpanded && a.body && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="px-4 pb-5 pt-0 border-t border-brand-border/60 mt-0">
+                <p className="text-sm text-stone-600 leading-relaxed pt-4 whitespace-pre-line">{a.body}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </motion.div>
   );
 }

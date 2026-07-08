@@ -115,7 +115,7 @@ export function CareerDetailModal({
           >
 
             {/* ── Sticky header ── */}
-            <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-100 px-5 py-4 md:px-8 md:py-5 flex justify-between items-start gap-4 z-10">
+            <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-slate-100 px-5 py-4 md:px-8 md:py-5 flex justify-between items-start gap-4 z-20">
               <div className="flex-1 min-w-0">
                 {/* Category + demand row */}
                 <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -394,9 +394,33 @@ export function CareerDetailModal({
               {/* Career progression — horizontal steps */}
               <section>
                 <SectionLabel>Career Growth Path</SectionLabel>
-                <div className="grid grid-cols-3 gap-4 relative">
+
+                {/* Mobile — vertical timeline */}
+                <div className="sm:hidden relative space-y-6 pl-2">
+                  <div className="absolute top-5 bottom-5 left-[19px] w-px bg-slate-200" />
+                  {[
+                    { stage: 'Entry',      role: career.careerProgression.entryRole },
+                    { stage: 'Mid-career', role: career.careerProgression.midRole },
+                    { stage: 'Senior',     role: career.careerProgression.seniorRole },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-start gap-4 relative">
+                      <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-black text-sm shrink-0 relative z-10">
+                        {i + 1}
+                      </div>
+                      <div className="pt-1.5">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">
+                          {item.stage}
+                        </p>
+                        <p className="text-xs font-bold text-slate-900 leading-snug">{item.role}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop / tablet — horizontal steps */}
+                <div className="hidden sm:grid grid-cols-3 gap-4 relative">
                   {/* Connector line */}
-                  <div className="absolute top-5 left-[calc(16.67%+8px)] right-[calc(16.67%+8px)] h-px bg-slate-200 hidden sm:block" />
+                  <div className="absolute top-5 left-[calc(16.67%+8px)] right-[calc(16.67%+8px)] h-px bg-slate-200" />
                   {[
                     { stage: 'Entry',      role: career.careerProgression.entryRole },
                     { stage: 'Mid-career', role: career.careerProgression.midRole },
