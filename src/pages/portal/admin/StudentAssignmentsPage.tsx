@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, Check, AlertCircle, Trash2, Search, UserPlus, BookOpen } from 'lucide-react';
+import { X, ArrowRight, Check, AlertCircle, Trash2, Search, UserPlus, BookOpen, ChevronDown } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
 import {
   fetchSchoolAssignments, adminAssignTeacherToStudent, adminRemoveAssignment,
@@ -9,6 +9,10 @@ import {
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 
 interface StudentAssignmentsPageProps { session: AdminSession; }
+
+function initials(name: string, surname: string) {
+  return `${surname[0] ?? ''}${name[0] ?? ''}`.toUpperCase();
+}
 
 export default function StudentAssignmentsPage({ session }: StudentAssignmentsPageProps) {
   const [rows, setRows] = useState<AssignmentRow[]>([]);
@@ -26,6 +30,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
 
   const [confirmRemove, setConfirmRemove] = useState<AssignmentRow | null>(null);
   const [removing, setRemoving] = useState(false);
+  const [expandedId, setExpandedId] = useState<number | null>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -163,39 +168,86 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
           <p className="text-sm text-stone-500">Links appear once teachers add or assign students.</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {filteredStudentIds.map((studentId) => {
+        <div className="space-y-2.5">
+          {filteredStudentIds.map((studentId, i) => {
             const group = byStudent.get(studentId)!;
             const first = group[0];
+            const isExpanded = expandedId === studentId;
+            const subjectPreview = group.slice(0, 3).map((r) => r.subject_label);
+            const extraCount = group.length - subjectPreview.length;
+
             return (
-              <div key={studentId} className="card-premium bg-white border border-brand-border rounded-2xl overflow-hidden">
-                <div className="px-5 py-3 border-b border-brand-border/60 flex items-center justify-between">
-                  <div>
-                    <p className="font-bold text-brand-dark">{first.student_surname}, {first.student_name}</p>
-                    <p className="text-xs text-stone-500 font-mono tracking-widest">{first.student_code} · Gr {first.student_grade}</p>
+              <motion.div
+                key={studentId}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i * 0.02, 0.15), duration: 0.18 }}
+                className={`card-premium bg-white rounded-2xl overflow-hidden border transition-colors ${
+                  isExpanded ? 'border-stone-300 shadow-sm' : 'border-brand-border hover:border-stone-300'
+                }`}
+              >
+                {/* Collapsed header — always visible, click to expand/collapse */}
+                <button
+                  onClick={() => setExpandedId(isExpanded ? null : studentId)}
+                  className="w-full flex items-center gap-3 px-5 py-3.5 text-left"
+                >
+                  <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-black text-stone-600">{initials(first.student_name, first.student_surname)}</span>
                   </div>
-                  <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-stone-100 text-stone-600">
+
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-brand-dark truncate">{first.student_surname}, {first.student_name}</p>
+                    <p className="text-xs text-stone-500 mt-0.5">
+                      {first.student_code} · Gr {first.student_grade}
+                      {!isExpanded && (
+                        <span className="text-stone-400">
+                          {' · '}
+                          {subjectPreview.join(', ')}
+                          {extraCount > 0 && ` +${extraCount} more`}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+
+                  <span className="text-[11px] font-black px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 shrink-0">
                     {group.length} link{group.length !== 1 ? 's' : ''}
                   </span>
-                </div>
-                <div className="divide-y divide-stone-50">
-                  {group.map((r) => (
-                    <div key={r.assignment_id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-stone-50 transition-colors">
-                      <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-sm font-bold text-brand-dark">{r.teacher_surname}, {r.teacher_name}</span>
-                        <span className="text-[10px] font-mono text-stone-400 tracking-widest">{r.teacher_code}</span>
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-600 text-xs font-bold rounded-lg">
-                          <BookOpen className="w-2.5 h-2.5" />{r.subject_label}
-                        </span>
+                  <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                </button>
+
+                {/* Expanded — full teacher/subject link list */}
+                <AnimatePresence initial={false}>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-brand-border/60 divide-y divide-stone-50">
+                        {group.map((r) => (
+                          <div key={r.assignment_id} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 transition-colors">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-bold text-brand-dark">{r.teacher_surname}, {r.teacher_name}</span>
+                                <span className="text-[10px] font-mono text-stone-400 tracking-widest">{r.teacher_code}</span>
+                              </div>
+                              <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-blue-50 text-blue-700 text-[11px] font-bold rounded-lg">
+                                <BookOpen className="w-2.5 h-2.5" />{r.subject_label}
+                              </span>
+                            </div>
+                            <button onClick={(e) => { e.stopPropagation(); setConfirmRemove(r); }}
+                              className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                      <button onClick={() => setConfirmRemove(r)}
-                        className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>
