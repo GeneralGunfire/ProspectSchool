@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
 } from 'recharts';
+import { Shimmer } from './StudentHomePage';
 import { fetchStudentResults, computeFinalMark, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
@@ -41,6 +42,8 @@ function barColor(p: number): string {
   if (p >= 40) return '#f97316';
   return '#ef4444';
 }
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 function formatDate(s: string) {
   return new Date(s).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -146,6 +149,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   const goals = getStudentGoals(session.student_id);
   const [results, setResults]         = useState<StudentResult[]>([]);
   const [loading, setLoading]         = useState(true);
+  const [imgLoaded, setImgLoaded]     = useState(false);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
   const [typeFilter, setTypeFilter]   = useState<Record<string, string>>({});
   const [drawerResult, setDrawerResult] = useState<StudentResult | null>(null);
@@ -320,46 +324,94 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   }
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
-      <div className="mb-7">
-        <span className="eyebrow">Results</span>
-        <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>My Marks</h1>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-marks.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-end justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Results</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                My Marks
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                How you're tracking across your subjects.
+              </p>
+            </div>
+            {overallAvg !== null && (
+              <div className="shrink-0 flex items-center gap-3 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5">
+                <div className="relative shrink-0">
+                  <Ring pct={Math.round(overallAvg)} size={40} stroke={4} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-white leading-none">{Math.round(overallAvg)}%</span>
+                  </div>
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Overall</p>
+                  <p className="text-[12px] font-bold text-white">{markedResults.length} tracked</p>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
       </div>
 
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full" />
+        <div className="space-y-5">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.06 }}
+            className="paper-card rounded p-5 sm:p-6 flex items-center gap-5">
+            <Shimmer className="w-16 h-16 rounded-full shrink-0" />
+            <div className="flex-1 space-y-2">
+              <Shimmer className="h-3 w-1/3" />
+              <Shimmer className="h-5 w-1/2" />
+            </div>
+          </motion.div>
+          <div className="space-y-2.5">
+            {[0, 1, 2].map(i => (
+              <motion.div key={i}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.12 + i * 0.05, ease }}
+                className="paper-card rounded p-5 flex items-center gap-4"
+              >
+                <div className="flex-1 space-y-2">
+                  <Shimmer className="h-4" style={{ width: `${50 - i * 6}%` }} />
+                  <Shimmer className="h-3 w-1/4" />
+                </div>
+                <Shimmer className="h-8 w-14 rounded" />
+              </motion.div>
+            ))}
+          </div>
         </div>
       ) : results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <ClipboardList className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-500">No results yet.</p>
-          <p className="text-xs text-stone-400 mt-1">Your marks will appear here once your teacher has recorded them.</p>
+        <div className="paper-card rounded p-5 sm:p-7 flex flex-col items-center justify-center py-20 text-center">
+          <ClipboardList className="w-9 h-9 text-stone-200 mb-4" />
+          <p className="text-[16px] font-semibold text-brand-dark">No results yet.</p>
+          <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Your marks will appear here once your teacher has recorded them.</p>
         </div>
       ) : (
         <>
-          {/* Overall summary — hero card with a real progress ring */}
-          {overallAvg !== null && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-              className="card-premium-dark bg-brand-dark text-white rounded-[28px] p-6 mb-5 relative overflow-hidden border border-white/6">
-              <div className="absolute -top-20 -right-16 w-64 h-64 rounded-full pointer-events-none blur-3xl opacity-25"
-                style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-              <div className="relative z-10 flex items-center gap-5 flex-wrap">
-                <div className="relative shrink-0">
-                  <Ring pct={Math.round(overallAvg)} size={72} stroke={6} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-black leading-none"><Counter value={Math.round(overallAvg)} suffix="%" /></span>
-                  </div>
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500 mb-1">Overall Average</p>
-                  <p className="text-xl font-black tracking-tight">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''} tracked</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
           {/* Subject Risk section — from intelligence engine */}
           {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').length > 0 && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -369,7 +421,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Subject Risk</p>
               <div className="space-y-2">
                 {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
-                  <div key={risk.subject} className={`rounded-2xl border p-4 ${
+                  <div key={risk.subject} className={`rounded border p-4 ${
                     risk.risk === 'high'
                       ? 'bg-red-50 border-red-200'
                       : 'bg-amber-50 border-amber-200'
@@ -452,7 +504,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             return (
               <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-5"
+                className="paper-card rounded p-5 mb-5"
               >
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Performance Journey</p>
                 <div className="flex items-center gap-4 mb-4">
@@ -510,7 +562,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               </p>
               <div className="space-y-3">
                 {actionItems.map((item, i) => (
-                  <div key={i} className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+                  <div key={i} className="paper-card rounded overflow-hidden">
                     <div className="px-5 pt-5 pb-4 border-b border-brand-border/60">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                         {item.headline}
@@ -566,12 +618,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             const worst = valid[valid.length - 1];
             return best.subject !== worst.subject ? (
               <div className="grid grid-cols-2 gap-3 mb-6 sm:gap-4">
-                <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
+                <div className="bg-emerald-50 border border-emerald-100 rounded p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
                   <p className="font-black text-stone-900 text-sm leading-tight truncate">{best.subject}</p>
                   <p className="text-emerald-600 font-black text-2xl mt-1">{best.avg.toFixed(0)}%</p>
                 </div>
-                <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
+                <div className="bg-amber-50 border border-amber-100 rounded p-4">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
                   <p className="font-black text-stone-900 text-sm leading-tight truncate">{worst.subject}</p>
                   <p className="text-amber-600 font-black text-2xl mt-1">{worst.avg.toFixed(0)}%</p>
@@ -672,7 +724,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 <motion.div key={subject}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: gi * 0.05 }}
-                  className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden"
+                  className="paper-card rounded overflow-hidden"
                 >
                   {/* Panel header */}
                   <button
@@ -948,7 +1000,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Focus Area card */}
                           {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
-                            <div className="mx-5 mb-4 bg-stone-50 rounded-2xl p-4 border border-brand-border/60">
+                            <div className="mx-5 mb-4 bg-stone-50 rounded p-4 border border-brand-border/60">
                               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Focus Area</p>
                               <p className="text-sm font-bold text-stone-900 mb-1">
                                 Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
@@ -1135,6 +1187,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
           </div>
         </>
       )}
+      </div>
 
       {/* Assessment Detail Drawer */}
       <AnimatePresence>
@@ -1203,7 +1256,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                   {/* Score hero */}
                   {p !== null ? (
-                    <div className={`rounded-2xl p-5 mb-5 ${g.bg}`}>
+                    <div className={`rounded p-5 mb-5 ${g.bg}`}>
                       <div className="flex items-end gap-3">
                         <p className={`font-black leading-none ${g.color}`} style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)' }}>
                           {p}%
@@ -1215,7 +1268,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-stone-100 rounded-2xl p-5 mb-5 text-center">
+                    <div className="bg-stone-100 rounded p-5 mb-5 text-center">
                       <p className="font-black text-stone-500 text-lg">Pending</p>
                       <p className="text-xs text-stone-500 mt-1">Mark not yet recorded</p>
                     </div>
@@ -1223,7 +1276,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                   {/* Insight */}
                   {insight && (
-                    <div className="bg-brand-dark text-white rounded-2xl px-4 py-3 mb-5 flex items-start gap-3">
+                    <div className="bg-brand-dark text-white rounded px-4 py-3 mb-5 flex items-start gap-3">
                       <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                       <p className="text-sm font-bold leading-relaxed">{insight}</p>
                     </div>
@@ -1231,7 +1284,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                   {/* Leading trend mini chart */}
                   {leadingIn.length > 0 && (
-                    <div className="bg-stone-50 rounded-2xl p-4 mb-5">
+                    <div className="bg-stone-50 rounded p-4 mb-5">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                         Trend Leading In
                       </p>
@@ -1273,7 +1326,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                   {/* Teacher note */}
                   {r.note && (
-                    <div className="border border-amber-200 bg-amber-50 rounded-2xl p-4">
+                    <div className="border border-amber-200 bg-amber-50 rounded p-4">
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Teacher Note</p>
                       <p className="text-sm text-stone-700 leading-relaxed">{r.note}</p>
                     </div>

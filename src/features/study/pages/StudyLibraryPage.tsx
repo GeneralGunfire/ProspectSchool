@@ -9,6 +9,8 @@ import {
 import { subjects } from '../data/subjects';
 import QuizBlock, { type QuizQuestion } from '../../../components/QuizBlock';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 type Step = 'subject' | 'grade' | 'content';
 
 interface SubjectMeta {
@@ -20,17 +22,17 @@ interface SubjectMeta {
 }
 
 const SUBJECT_META: Record<string, SubjectMeta> = {
-  'algebra':           { Icon: Calculator,  color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'geometry':          { Icon: Calculator,  color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'phys-sci':          { Icon: Atom,        color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'life-sci':          { Icon: FlaskConical,color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'accounting':        { Icon: Calculator,  color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'business-studies':  { Icon: Briefcase,   color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'economics':         { Icon: TrendingUp,  color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'cat':               { Icon: Monitor,     color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'egd':               { Icon: Pencil,      color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'english-hl':        { Icon: Languages,   color: 'text-slate-700', bg: 'bg-slate-100', border: 'border-slate-200', pill: 'bg-slate-100 text-slate-700' },
-  'default':           { Icon: BookOpen,    color: 'text-slate-400', bg: 'bg-slate-100', border: 'border-slate-100', pill: 'bg-slate-100 text-slate-500' },
+  'algebra':           { Icon: Calculator,  color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'geometry':          { Icon: Calculator,  color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'phys-sci':          { Icon: Atom,        color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'life-sci':          { Icon: FlaskConical,color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'accounting':        { Icon: Calculator,  color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'business-studies':  { Icon: Briefcase,   color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'economics':         { Icon: TrendingUp,  color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'cat':               { Icon: Monitor,     color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'egd':               { Icon: Pencil,      color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'english-hl':        { Icon: Languages,   color: 'text-stone-700', bg: 'bg-stone-100', border: 'border-stone-200', pill: 'bg-stone-100 text-stone-700' },
+  'default':           { Icon: BookOpen,    color: 'text-stone-400', bg: 'bg-stone-100', border: 'border-stone-100', pill: 'bg-stone-100 text-stone-500' },
 };
 
 const subjectsWithContent = new Set(['algebra', 'phys-sci', 'life-sci', 'accounting', 'business-studies', 'economics', 'cat', 'egd']);
@@ -183,6 +185,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
   if (returnCtx) sessionStorage.removeItem('library_return');
 
   const [step, setStep] = useState<Step>(returnCtx ? 'content' : 'subject');
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(returnCtx?.subjectId ?? null);
   const [selectedGrade, setSelectedGrade] = useState<number | null>(returnCtx?.grade ?? null);
   const [selectedTerm, setSelectedTerm] = useState<number | null>(returnCtx?.term ?? null);
@@ -202,144 +205,146 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
 
   return (
-    <div className="min-h-screen relative">
-      {/* Ambient background glow — warm stone tones, matching the landing page's hero glow */}
-      <div className="pointer-events-none absolute -top-32 -right-24 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-60"
-        style={{ background: 'radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(37,99,235,0.14) 0%, rgba(37,99,235,0.05) 50%, transparent 80%)' }} />
-      <div className="pointer-events-none absolute top-1/3 -left-32 w-96 h-96 rounded-full blur-3xl opacity-50"
-        style={{ background: 'radial-gradient(50% 50% at 50% 50%, rgba(37,99,235,0.08) 0%, transparent 100%)' }} />
+    <div className="student-home min-h-full pb-16">
 
-      <div className="pt-4 pb-24 max-w-5xl mx-auto px-4 sm:px-6 relative">
+      {step === 'subject' && (
+        <>
+          {/* ═══ Hero — full-width crested banner ═══════════════════ */}
+          <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+            <div className="absolute inset-0 pointer-events-none">
+              <motion.img src="/images/nizamiye-library.png" alt=""
+                onLoad={() => setImgLoaded(true)}
+                initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+                transition={{ duration: 0.6, ease }}
+                className="w-full h-full object-cover" />
+              <div className="absolute inset-0"
+                style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+              <div className="absolute inset-0"
+                style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+            </div>
+            <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+              style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
 
-        <AnimatePresence mode="wait">
-
-          {/* ── Subject selection ── */}
-          {step === 'subject' && (
-            <motion.div
-              key="subject"
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-            >
-              {/* Hero */}
-              <div className="pt-6 mb-10">
-                <motion.p initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  className="text-[10px] font-black uppercase tracking-[0.28em] text-stone-400 mb-4 flex items-center gap-2">
-                  <span className="w-4 h-px bg-stone-300" /> Study Library
-                </motion.p>
-                <motion.h1
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                  className="font-black text-[#1e293b]"
-                  style={{ fontSize: 'clamp(2rem, 5vw, 3rem)', letterSpacing: '-0.04em', lineHeight: 1.05 }}
-                >
-                  What are you<br /> studying?
-                </motion.h1>
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.12 }}
-                  className="text-[14px] text-stone-400 mt-3 max-w-sm leading-relaxed">
+            <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease }}
+              >
+                <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Study Library</p>
+                <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                  What are you studying?
+                </h1>
+                <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
                   Lessons, worked examples and quizzes for every topic — pick a subject to get started.
-                </motion.p>
-              </div>
-
-              {/* Search */}
-              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.16 }}
-                className="relative mb-8 max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Search subjects…"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white border border-stone-200 rounded-2xl pl-11 pr-4 py-3.5 text-[15px] text-stone-900 placeholder:text-stone-400 outline-none focus:border-[#1e293b] focus:ring-4 focus:ring-[#1e293b]/5 transition-all shadow-sm"
-                  style={{ fontSize: '16px' }}
-                />
+                </p>
               </motion.div>
+            </div>
+          </div>
 
-              {filteredSubjects.length === 0 ? (
-                <div className="py-20 text-center">
-                  <p className="text-[15px] font-black text-stone-900 mb-1">No subjects found</p>
-                  <p className="text-[13px] text-stone-400">Try a different search term.</p>
-                </div>
-              ) : (() => {
-                const available = filteredSubjects.filter(s => subjectsWithContent.has(s.id));
-                const comingSoon = filteredSubjects.filter(s => !subjectsWithContent.has(s.id));
+          <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8 pb-10">
 
-                const SubjectCard = ({ subject, index }: { subject: typeof filteredSubjects[0]; index: number }) => {
-                  const hasContent = subjectsWithContent.has(subject.id);
-                  const meta = SUBJECT_META[subject.id] ?? SUBJECT_META['default'];
-                  const Icon = meta.Icon;
-                  return (
-                    <motion.button
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: Math.min(index * 0.035, 0.3), duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-                      onClick={() => { if (!hasContent) return; setSelectedSubject(subject.id); setStep('grade'); }}
-                      disabled={!hasContent}
-                      whileHover={hasContent ? { y: -3 } : {}}
-                      whileTap={hasContent ? { scale: 0.98 } : {}}
-                      className={`card-premium relative flex flex-col items-start gap-4 p-5 rounded-2xl border text-left ${
-                        hasContent
-                          ? 'bg-white border-stone-200 hover:border-[#1e293b]/20 cursor-pointer group'
-                          : 'bg-stone-50/60 border-stone-100 cursor-default'
-                      }`}
-                    >
-                      {/* Icon */}
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                        hasContent ? 'bg-[#1e293b] group-hover:scale-105 group-hover:-rotate-3' : 'bg-stone-100'
-                      }`}>
-                        <Icon className={`w-5 h-5 ${hasContent ? 'text-white' : 'text-stone-300'}`} />
-                      </div>
-
-                      {/* Name */}
-                      <div className="flex-1 min-w-0 w-full">
-                        <p className={`text-[15px] font-black leading-snug ${hasContent ? 'text-[#1e293b]' : 'text-stone-300'}`} style={{ letterSpacing: '-0.01em' }}>
-                          {subject.name}
-                        </p>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-end w-full">
-                        {!hasContent && (
-                          <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-stone-300 mr-auto">
-                            <Lock className="w-2.5 h-2.5" /> Soon
-                          </span>
-                        )}
-                        {hasContent && (
-                          <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1e293b] group-hover:translate-x-0.5 transition-all" />
-                        )}
-                      </div>
-                    </motion.button>
-                  );
-                };
-
-                return (
-                  <div className="space-y-10">
-                    {available.length > 0 && (
-                      <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-4">
-                          Available Now
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {available.map((s, i) => <SubjectCard key={s.id} subject={s} index={i} />)}
-                        </div>
-                      </section>
-                    )}
-                    {comingSoon.length > 0 && (
-                      <section>
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-300 mb-4 flex items-center gap-2">
-                          <Lock className="w-2.5 h-2.5" /> Coming Soon
-                        </p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {comingSoon.map((s, i) => <SubjectCard key={s.id} subject={s} index={available.length + i} />)}
-                        </div>
-                      </section>
-                    )}
-                  </div>
-                );
-              })()}
+            {/* Search */}
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06, ease }}
+              className="relative max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search subjects…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 rounded border text-[15px] text-brand-dark placeholder:text-stone-400 outline-none transition-all"
+                style={{ borderColor: 'var(--color-brand-border)', background: '#fff', fontSize: '16px' }}
+              />
             </motion.div>
-          )}
+
+            {filteredSubjects.length === 0 ? (
+              <div className="paper-card rounded p-5 sm:p-7 py-20 text-center">
+                <p className="text-[16px] font-semibold text-brand-dark mb-1">No subjects found</p>
+                <p className="text-[13px] text-[rgba(31,36,33,0.4)]">Try a different search term.</p>
+              </div>
+            ) : (() => {
+              const available = filteredSubjects.filter(s => subjectsWithContent.has(s.id));
+              const comingSoon = filteredSubjects.filter(s => !subjectsWithContent.has(s.id));
+
+              const SubjectCard = ({ subject, index }: { subject: typeof filteredSubjects[0]; index: number }) => {
+                const hasContent = subjectsWithContent.has(subject.id);
+                const meta = SUBJECT_META[subject.id] ?? SUBJECT_META['default'];
+                const Icon = meta.Icon;
+                return (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(index * 0.035, 0.3) + 0.1, duration: 0.3, ease }}
+                    onClick={() => { if (!hasContent) return; setSelectedSubject(subject.id); setStep('grade'); }}
+                    disabled={!hasContent}
+                    whileTap={hasContent ? { scale: 0.98 } : {}}
+                    className={`paper-card relative flex flex-col items-start gap-4 p-5 rounded text-left ${
+                      hasContent ? 'cursor-pointer group' : 'cursor-default opacity-50'
+                    }`}
+                  >
+                    {/* Icon */}
+                    <div className={`w-11 h-11 rounded flex items-center justify-center shrink-0 transition-transform duration-300 ${
+                      hasContent ? 'group-hover:scale-105' : ''
+                    }`}
+                    style={hasContent ? { background: 'var(--color-accent)' } : { background: 'var(--color-paper-raise)' }}>
+                      <Icon className={`w-5 h-5 ${hasContent ? 'text-white' : 'text-stone-300'}`} />
+                    </div>
+
+                    {/* Name */}
+                    <div className="flex-1 min-w-0 w-full">
+                      <p className={`text-[15px] font-semibold leading-snug ${hasContent ? 'text-brand-dark' : 'text-stone-300'}`} style={{ letterSpacing: '-0.01em' }}>
+                        {subject.name}
+                      </p>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="flex items-center justify-end w-full">
+                      {!hasContent && (
+                        <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-stone-300 mr-auto">
+                          <Lock className="w-2.5 h-2.5" /> Soon
+                        </span>
+                      )}
+                      {hasContent && (
+                        <ChevronRight className="w-4 h-4 text-stone-300 group-hover:translate-x-0.5 transition-all" style={{ color: 'var(--color-accent)' }} />
+                      )}
+                    </div>
+                  </motion.button>
+                );
+              };
+
+              return (
+                <div className="space-y-8">
+                  {available.length > 0 && (
+                    <section>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-4">
+                        Available Now
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {available.map((s, i) => <SubjectCard key={s.id} subject={s} index={i} />)}
+                      </div>
+                    </section>
+                  )}
+                  {comingSoon.length > 0 && (
+                    <section>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.3)] mb-4 flex items-center gap-2">
+                        <Lock className="w-2.5 h-2.5" /> Coming Soon
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {comingSoon.map((s, i) => <SubjectCard key={s.id} subject={s} index={available.length + i} />)}
+                      </div>
+                    </section>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+        </>
+      )}
+
+      {/* ── Grade / topic steps — narrow content column ─────────── */}
+      {step !== 'subject' && (
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 pb-16">
+      <AnimatePresence mode="wait">
 
           {/* ── Grade selection ── */}
           {step === 'grade' && (
@@ -354,7 +359,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-stone-400 hover:text-stone-900 transition-colors mb-8 group"
+                className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-stone-400 hover:text-stone-800 transition-colors mb-6 group"
               >
                 <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> All Subjects
               </button>
@@ -362,22 +367,26 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               {/* Subject hero */}
               <motion.div
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 mb-8 flex items-center gap-4 relative overflow-hidden"
+                className="rounded p-6 mb-6 flex items-center gap-4 relative overflow-hidden"
+                style={{
+                  background: 'var(--color-brand-dark)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+                }}
               >
-                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-20 pointer-events-none"
-                  style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 relative z-10">
+                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl opacity-25 pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+                <div className="w-12 h-12 rounded bg-white/10 flex items-center justify-center shrink-0 relative z-10">
                   <currentMeta.Icon className="w-6 h-6 text-white" />
                 </div>
                 <div className="relative z-10">
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Selected subject</p>
-                  <p className="text-xl font-black text-white" style={{ letterSpacing: '-0.02em' }}>{currentSubjectName}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 mb-0.5">Selected subject</p>
+                  <p className="text-xl font-bold text-white" style={{ letterSpacing: '-0.02em' }}>{currentSubjectName}</p>
                 </div>
               </motion.div>
 
-              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
-                <h2 className="text-2xl font-black text-[#1e293b]" style={{ letterSpacing: '-0.03em' }}>Select your grade</h2>
-                <p className="text-[13px] text-stone-400 mt-1">Grade 10 fully available · Grades 11 & 12 coming soon</p>
+              <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-5">
+                <h2 className="text-[20px] font-semibold text-brand-dark" style={{ letterSpacing: '-0.02em' }}>Select your grade</h2>
+                <p className="text-[13px] text-stone-500 mt-1">Grade 10 fully available · Grades 11 & 12 coming soon</p>
               </motion.div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -388,21 +397,18 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                       key={grade}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.08 + i * 0.05, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                      transition={{ delay: 0.08 + i * 0.05, duration: 0.3, ease }}
                       onClick={() => { if (!isAvailable) return; setSelectedGrade(grade); setSelectedTerm(1); setStep('content'); }}
                       disabled={!isAvailable}
-                      whileHover={isAvailable ? { y: -3 } : {}}
                       whileTap={isAvailable ? { scale: 0.97 } : {}}
-                      className={`card-premium flex flex-col items-center justify-center gap-1.5 py-8 rounded-2xl border ${
-                        isAvailable
-                          ? 'bg-white border-stone-200 hover:border-[#1e293b]/20 cursor-pointer group'
-                          : 'bg-stone-50/60 border-stone-100 cursor-default'
+                      className={`paper-card flex flex-col items-center justify-center gap-1.5 py-8 rounded ${
+                        isAvailable ? 'cursor-pointer group' : 'cursor-default opacity-50'
                       }`}
                     >
-                      <p className={`text-[32px] font-black leading-none transition-colors ${isAvailable ? 'text-[#1e293b]' : 'text-stone-200'}`} style={{ letterSpacing: '-0.04em' }}>
+                      <p className={`text-[32px] font-black leading-none transition-colors ${isAvailable ? 'text-brand-dark' : 'text-stone-200'}`} style={{ letterSpacing: '-0.04em' }}>
                         {grade}
                       </p>
-                      <p className={`text-[10px] font-black uppercase tracking-widest ${isAvailable ? 'text-stone-400' : 'text-stone-200'}`}>
+                      <p className={`text-[10px] font-bold uppercase tracking-widest ${isAvailable ? 'text-stone-400' : 'text-stone-200'}`}>
                         {isAvailable ? 'Grade' : 'Soon'}
                       </p>
                     </motion.button>
@@ -425,7 +431,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
               {/* Back */}
               <button
                 onClick={goBack}
-                className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-700 transition-colors mb-8 group"
+                className="flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-stone-400 hover:text-stone-800 transition-colors mb-6 group"
               >
                 <ChevronLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" /> Grade {selectedGrade}
               </button>
@@ -437,27 +443,31 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
                 if (topicNames.length > 0) {
                   return (
-                    <div className="space-y-6">
+                    <div className="space-y-5">
                       {/* Hero header — dark card */}
                       <motion.div
                         initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                        className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 relative overflow-hidden"
+                        className="rounded p-6 relative overflow-hidden"
+                        style={{
+                          background: 'var(--color-brand-dark)',
+                          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+                        }}
                       >
-                        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
-                          style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
+                        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-25 pointer-events-none"
+                          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
                         <div className="flex items-start justify-between gap-4 relative z-10">
                           <div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 mb-2">
                               Grade {selectedGrade} · Term {selectedTerm}
                             </p>
-                            <h2 className="text-2xl font-black text-white leading-tight" style={{ letterSpacing: '-0.03em' }}>
+                            <h2 className="text-[22px] font-semibold text-white leading-tight" style={{ letterSpacing: '-0.02em' }}>
                               {currentSubjectName}
                             </h2>
-                            <p className="text-[13px] text-stone-400 mt-1">
+                            <p className="text-[13px] text-white/50 mt-1">
                               {topicNames.length} topic{topicNames.length !== 1 ? 's' : ''} · Lesson, worked example & quiz per topic
                             </p>
                           </div>
-                          <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-white/10">
+                          <div className="w-12 h-12 rounded flex items-center justify-center shrink-0 bg-white/10">
                             <currentMeta.Icon className="w-6 h-6 text-white" />
                           </div>
                         </div>
@@ -470,26 +480,26 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                             key={i}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.05 + i * 0.045, duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+                            transition={{ delay: 0.05 + i * 0.045, duration: 0.3, ease }}
                             onClick={() => onNavigate(topicPages[i])}
-                            whileHover={{ x: 4 }}
                             whileTap={{ scale: 0.98 }}
-                            className="card-premium w-full flex items-center gap-4 px-5 py-5 bg-white border border-stone-200 rounded-2xl hover:border-[#1e293b]/20 text-left group"
+                            className="paper-card w-full flex items-center gap-4 px-5 py-5 rounded text-left group"
                           >
-                            <div className="w-10 h-10 rounded-xl bg-[#1e293b] flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105">
-                              <span className="text-[14px] font-black text-white">{i + 1}</span>
+                            <div className="w-10 h-10 rounded flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105"
+                              style={{ background: 'var(--color-accent)' }}>
+                              <span className="text-[14px] font-bold text-white">{i + 1}</span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[15px] font-black text-[#1e293b] leading-snug" style={{ letterSpacing: '-0.01em' }}>{name}</p>
+                              <p className="text-[15px] font-semibold text-brand-dark leading-snug" style={{ letterSpacing: '-0.01em' }}>{name}</p>
                               <div className="flex items-center gap-1.5 mt-1">
                                 {['Lesson', 'Worked example', 'Practice'].map((tag, t) => (
-                                  <span key={t} className="text-[10px] font-black uppercase tracking-[0.12em] text-stone-400">
+                                  <span key={t} className="text-[10px] font-bold uppercase tracking-[0.1em] text-stone-400">
                                     {t > 0 && <span className="mr-1.5 text-stone-200">·</span>}{tag}
                                   </span>
                                 ))}
                               </div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-[#1e293b] group-hover:translate-x-0.5 transition-all shrink-0" />
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-all shrink-0" style={{ color: 'var(--color-accent)' }} />
                           </motion.button>
                         ))}
                       </div>
@@ -510,19 +520,23 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                 }
 
                 return (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                      className="card-premium-dark bg-[#1e293b] rounded-2xl p-6 relative overflow-hidden">
-                      <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
-                        style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.9), transparent 70%)' }} />
+                      className="rounded p-6 relative overflow-hidden"
+                      style={{
+                        background: 'var(--color-brand-dark)',
+                        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+                      }}>
+                      <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-25 pointer-events-none"
+                        style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
                       <div className="relative z-10">
-                        <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40 mb-2">
                           {currentSubjectName} · Grade {selectedGrade}
                         </p>
-                        <h2 className="text-2xl font-black text-white" style={{ letterSpacing: '-0.03em' }}>
+                        <h2 className="text-[22px] font-semibold text-white" style={{ letterSpacing: '-0.02em' }}>
                           Coming soon
                         </h2>
-                        <p className="text-[13px] text-stone-400 mt-2">
+                        <p className="text-[13px] text-white/50 mt-2">
                           Study materials for Grade {selectedGrade} are in development. Check back soon.
                         </p>
                       </div>
@@ -530,13 +544,13 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
                     <motion.button
                       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 }}
                       onClick={() => setStep('subject')}
-                      className="card-premium w-full flex items-center justify-between px-5 py-4 bg-white border border-stone-200 rounded-2xl hover:border-[#1e293b]/20 transition-all group text-left"
+                      className="paper-card w-full flex items-center justify-between px-5 py-4 rounded transition-all group text-left"
                     >
                       <div>
-                        <p className="text-[14px] font-black text-stone-900">Browse other subjects</p>
-                        <p className="text-[11px] text-stone-400 mt-0.5 font-medium">See what's already available</p>
+                        <p className="text-[14px] font-semibold text-brand-dark">Browse other subjects</p>
+                        <p className="text-[12px] text-[rgba(31,36,33,0.4)] mt-0.5 font-medium">See what's already available</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-stone-700 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-stone-300 group-hover:translate-x-0.5 transition-all" style={{ color: 'var(--color-accent)' }} />
                     </motion.button>
                   </div>
                 );
@@ -546,6 +560,7 @@ function StudyLibraryPage({ onNavigate }: { onNavigate: (page: any) => void }) {
 
         </AnimatePresence>
       </div>
+      )}
     </div>
   );
 }

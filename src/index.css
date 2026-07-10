@@ -693,3 +693,128 @@ html {
 .badge-error   { background: #fee2e2; color: #b91c1c; }
 .badge-info    { background: #dbeafe; color: #1d4ed8; }
 .badge-neutral { background: #f1f5f9; color: #475569; }
+
+/* ─── Student Home — "premium paper" scoped reskin ───
+   Warm off-white / charcoal-text / deep-midnight-navy palette scoped to
+   the student dashboard home page only. Overrides the themable tokens
+   locally via CSS custom properties, so `bg-brand-dark`, `text-accent`,
+   `border-brand-border` etc. resolve to this palette inside
+   .student-home while the rest of the app (landing page, other
+   portals) keeps its own tokens untouched.
+   The page reads as one continuous warm-paper surface — cards are thick
+   tactile tiles lit from the top-left, not flat rectangles on a blank
+   background. One card recipe (.paper-card) is used everywhere; there
+   is no separate "dark" card variant — emphasis comes from a left
+   accent border or a small dot, never a different fill. */
+.student-home {
+  --color-accent: #0a0e1a;              /* deep midnight navy — sparingly, for CTAs/priority */
+  --color-accent-soft: #2a3350;         /* lighter navy for hover states on dark surfaces */
+  --color-accent-foreground: #ffffff;
+  --color-brand-dark: #1f2421;          /* warm charcoal text, not pure black */
+  --color-brand-border: rgba(15, 23, 21, 0.07);   /* hairline on paper surfaces */
+  --color-brand-bg: #f7f6f2;
+  --color-paper-raise: #f1efe9;         /* raised chip surface on cards */
+  background:
+    radial-gradient(1200px 700px at 50% 0%, rgba(10, 14, 26, 0.035), transparent 62%),
+    #eeece5;
+  background-attachment: fixed;
+  color-scheme: light;
+}
+
+/* Extremely faint dot grid across the page — premium paper texture, not
+   a digital gradient. Sits behind everything, barely perceptible. */
+.student-home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  background-image: radial-gradient(rgba(31, 36, 33, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Grain texture for the hero band (untouched per instruction — this class
+   is applied there and must keep working). Single tiled SVG noise. */
+.student-home .grain-surface {
+  position: relative;
+}
+.student-home .grain-surface::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* One card recipe for the whole page — thick matte tile, lit from the
+   top-left. Layering: (1) 1px near-white top edge = light catching the
+   surface, (2) soft warm ambient shadow that spreads and fades like
+   natural window light rather than a sharp digital drop-shadow, (3) a
+   whisper-faint top-to-bottom gradient to suggest thickness/roundness. */
+.student-home .paper-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
+  border: 1px solid var(--color-brand-border);
+  border-radius: 10px;
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 18, 15, 0.10),
+    0 10px 24px -6px rgba(15, 18, 15, 0.20),
+    0 32px 56px -20px rgba(15, 18, 15, 0.28);
+  transition: border-color 0.3s ease, box-shadow 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+.student-home .paper-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 2px 4px rgba(15, 18, 15, 0.12),
+    0 18px 36px -8px rgba(15, 18, 15, 0.28),
+    0 48px 80px -24px rgba(15, 18, 15, 0.36);
+}
+.student-home .paper-card:active { transform: translateY(-1px) scale(0.997); }
+
+/* Emphasis without a different fill — a 3px navy left border for the
+   one card that needs to stand out (Today's Focus), applied via class
+   rather than swapping backgrounds. */
+.student-home .paper-card.focus-emphasis {
+  border-left: 3px solid var(--color-accent);
+  background:
+    linear-gradient(90deg, rgba(10,14,26,0.025) 0%, transparent 12%),
+    linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
+}
+
+/* Primary CTA — filled navy, soft inner glow at rest, deeper press
+   shadow on active, like a real button being pushed rather than a flat
+   color chip changing shade. */
+.student-home .edge-glow {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 1px 2px rgba(10, 14, 26, 0.2),
+    0 8px 18px -6px rgba(10, 14, 26, 0.4),
+    0 18px 32px -16px rgba(10, 14, 26, 0.35);
+  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.23,1,0.32,1), background-color 0.2s ease;
+}
+.student-home .edge-glow:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 1px 2px rgba(10, 14, 26, 0.25),
+    0 12px 26px -6px rgba(10, 14, 26, 0.5),
+    0 26px 44px -16px rgba(10, 14, 26, 0.42);
+}
+.student-home .edge-glow:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15), 0 1px 2px rgba(10,14,26,0.2);
+}
+
+/* Metal-embossed emblem treatment for the hero crest */
+.student-home .emblem-plate {
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,0.08)) drop-shadow(0 8px 24px rgba(0,0,0,0.55));
+}
+
+/* Hide scrollbar on the mobile stat carousel without killing scroll */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }

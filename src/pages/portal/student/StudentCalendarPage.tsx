@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, Calendar, List, Clock, Paperclip, X, CheckCircle2, Circle,
 } from 'lucide-react';
+import { Shimmer } from './StudentHomePage';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
   fetchStudentEvents, getAttachmentDownloadUrl,
@@ -64,6 +65,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
   const [month, setMonth]   = useState(today.getMonth() + 1);
   const [events, setEvents] = useState<SchoolEvent[]>([]);
   const [loading, setLoading]   = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [monthKey, setMonthKey] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [subjectIds, setSubjectIds] = useState<number[]>([]);
@@ -287,73 +289,102 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
   }[];
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto pb-20 md:pb-8">
+    <div className="student-home min-h-full pb-16">
 
-      {/* ── Header ──────────────────────────────────────────── */}
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-calendar.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Calendar</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              My Schedule
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+              Homework, assessments and events for {MONTHS[month - 1]} {year}.
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8 pb-20 md:pb-0">
+
+      {/* ── Control bar: today / month nav / grid-list toggle ── */}
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease }}
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
+        className="flex items-center gap-2 flex-wrap"
       >
-        <div>
-          <span className="eyebrow">Calendar</span>
-          <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
-            My Schedule
-          </h1>
+        {/* Today button */}
+        <button
+          onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); setSelectedDay(todayStr); }}
+          className="px-3.5 py-2 text-[13px] font-bold text-stone-600 rounded transition-colors border"
+          style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}
+        >
+          Today
+        </button>
+
+        {/* Month nav */}
+        <div className="flex items-center rounded border overflow-hidden" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
+          <button onClick={prevMonth} className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderRight: '1px solid var(--color-brand-border)' }}>
+            <ChevronLeft className="w-4 h-4 text-stone-600" />
+          </button>
+          <div className="relative overflow-hidden min-w-36 text-center px-1">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.span
+                key={monthKey}
+                initial={{ y: direction > 0 ? 16 : -16, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
+                transition={{ duration: 0.22, ease: 'easeOut' }}
+                className="block text-[14px] font-bold text-brand-dark py-1.5"
+              >
+                {MONTHS[month - 1]} {year}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+          <button onClick={nextMonth} className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderLeft: '1px solid var(--color-brand-border)' }}>
+            <ChevronRight className="w-4 h-4 text-stone-600" />
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Today button */}
+        {/* Grid/List toggle */}
+        <div className="flex items-center rounded border p-0.5 gap-0.5" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
           <button
-            onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); setSelectedDay(todayStr); }}
-            className="px-3 py-1.5 text-xs font-black text-stone-600 bg-white border border-brand-border rounded-xl hover:border-stone-400 transition-colors"
+            onClick={() => setViewMode('grid')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
+              viewMode === 'grid' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
+            }`}
+            style={viewMode === 'grid' ? { background: 'var(--color-accent)' } : undefined}
           >
-            Today
+            <Calendar className="w-3.5 h-3.5" /> Grid
           </button>
-
-          {/* Month nav */}
-          <div className="flex items-center bg-white border border-brand-border rounded-xl overflow-hidden">
-            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
-              <ChevronLeft className="w-4 h-4 text-stone-600" />
-            </button>
-            <div className="relative overflow-hidden min-w-36 text-center px-1">
-              <AnimatePresence mode="popLayout" initial={false}>
-                <motion.span
-                  key={monthKey}
-                  initial={{ y: direction > 0 ? 16 : -16, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
-                  transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="block text-sm font-black text-brand-dark py-1.5"
-                >
-                  {MONTHS[month - 1]} {year}
-                </motion.span>
-              </AnimatePresence>
-            </div>
-            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-brand-border">
-              <ChevronRight className="w-4 h-4 text-stone-600" />
-            </button>
-          </div>
-
-          {/* Grid/List toggle */}
-          <div className="flex items-center bg-white border border-brand-border rounded-xl p-0.5 gap-0.5">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'grid' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
-              }`}
-            >
-              <Calendar className="w-3.5 h-3.5" /> Grid
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'list' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
-              }`}
-            >
-              <List className="w-3.5 h-3.5" /> List
-            </button>
-          </div>
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
+              viewMode === 'list' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
+            }`}
+            style={viewMode === 'list' ? { background: 'var(--color-accent)' } : undefined}
+          >
+            <List className="w-3.5 h-3.5" /> List
+          </button>
         </div>
       </motion.div>
 
@@ -362,7 +393,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 mb-4 relative overflow-hidden border border-white/[0.06]"
+          className="card-premium-dark bg-brand-dark rounded p-5 mb-4 relative overflow-hidden border border-white/[0.06]"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
@@ -408,7 +439,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               <motion.div key={ev!.id}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                className={`rounded-2xl border p-4 ${urgencyColor}`}
+                className={`rounded border p-4 ${urgencyColor}`}
               >
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                   {ev!.event_type === 'exam' ? 'Next Exam' : 'Next Assessment'}
@@ -432,7 +463,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4"
+          className="paper-card rounded p-5 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Priority Deadlines</p>
           <div className="space-y-2">
@@ -464,7 +495,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4"
+          className="bg-amber-50 border border-amber-200 rounded p-4 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Schedule Warning</p>
           {conflictDays.filter(d => d.date >= todayStr).map(d => (
@@ -483,7 +514,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.14, ease: [0.23, 1, 0.32, 1] }}
-          className="bg-stone-50 border border-brand-border rounded-2xl p-4 mb-4"
+          className="bg-stone-50 border border-brand-border rounded p-4 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">Suggested Study Time</p>
           <p className="text-sm font-bold text-stone-700">
@@ -500,7 +531,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.16, ease: [0.23, 1, 0.32, 1] }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4"
+          className="paper-card rounded p-5 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">
             {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical Revision' : 'Recommended Revision'}
@@ -555,7 +586,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-4 mb-4"
+          className="paper-card rounded p-4 mb-4"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Your Goals</p>
           <div className="flex flex-wrap gap-2">
@@ -668,7 +699,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+                <div className="paper-card rounded overflow-hidden">
                   {/* Day headers */}
                   <div className="grid grid-cols-7 border-b border-brand-border/60">
                     {DAYS.map(d => (
@@ -759,7 +790,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden"
+                className="paper-card rounded overflow-hidden"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border/60">
                   <div>
@@ -867,7 +898,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3, ease }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
+                className="paper-card rounded p-4"
               >
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
@@ -936,7 +967,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.15 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
+            className="paper-card rounded p-4"
           >
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Legend</p>
             <div className="space-y-2">
@@ -959,7 +990,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.2 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
+            className="paper-card rounded p-4"
           >
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">Sync Calendar</p>
             <p className="text-xs text-stone-500 mb-3">Connect your school calendar to Google Calendar or Apple Calendar.</p>
@@ -968,6 +999,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             </button>
           </motion.div>
         </div>
+      </div>
       </div>
     </div>
   );

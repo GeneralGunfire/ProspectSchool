@@ -10,12 +10,6 @@ const CareersPageNew     = lazy(() => import('./features/careers/pages/CareersPa
 const BursariesPage      = lazy(() => import('./features/careers/pages/BursariesPage'));
 const BursaryDetailPage  = lazy(() => import('./features/careers/pages/BursaryDetailPage'));
 const QuizPage           = lazy(() => import('./features/careers/pages/QuizPage'));
-const MapPage            = lazy(() => import('./features/careers/pages/MapPage'));
-const TVETPage           = lazy(() => import('./features/tvet/pages/TVETPage'));
-const TVETCareersPage    = lazy(() => import('./features/tvet/pages/TVETCareersPage'));
-const TVETCollegesPage   = lazy(() => import('./features/tvet/pages/TVETCollegesPage'));
-const TVETFundingPage    = lazy(() => import('./features/tvet/pages/TVETFundingPage'));
-const TVETRequirementsPage = lazy(() => import('./features/tvet/pages/TVETRequirementsPage'));
 const LinearEquationsPage = lazy(() => import('./features/study/pages/learning/Algebra/Grade10/Term1/LinearEquations'));
 const SimultaneousEquationsPage = lazy(() => import('./features/study/pages/learning/Algebra/Grade10/Term1/SimultaneousEquations'));
 const WavesSoundLightPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight'));
@@ -64,8 +58,7 @@ const PlatformAdminDashboard = lazy(() => import('./pages/portal/PlatformAdminDa
 
 
 type Page =
-  | 'home' | 'careers' | 'quiz' | 'bursaries' | 'bursary' | 'map'
-  | 'tvet' | 'tvet-careers' | 'tvet-colleges' | 'tvet-funding' | 'tvet-requirements'
+  | 'home' | 'careers' | 'quiz' | 'bursaries' | 'bursary'
   | 'learning-algebra-g10-t1-linear-equations' | 'learning-algebra-g10-t1-simultaneous'
   | 'learning-physci-g10-t1-waves' | 'learning-physci-g10-t1-atoms'
   | 'learning-physci-g10-t1-classification' | 'learning-physci-g10-t1-periodic-table'
@@ -96,8 +89,6 @@ const FREE_TOOLS = [
   { label: 'Career Quiz',    page: 'quiz'      as Page },
   { label: 'Career Browser', page: 'careers'   as Page },
   { label: 'Bursaries',      page: 'bursaries' as Page },
-  { label: 'TVET',           page: 'tvet'      as Page },
-  { label: 'Job Map',        page: 'map'       as Page },
 ];
 
 const FreeToolsNav = ({ onNavigate, activePage }: { onNavigate: (page: Page) => void; activePage: Page }) => (
@@ -165,8 +156,7 @@ function pageFromHash(hash: string): Page | null {
   const key = hash.replace(/^#/, '') as Page;
   // Validate: only accept known page keys (avoids injecting garbage into state)
   const knownPages: Page[] = [
-    'home', 'careers', 'quiz', 'bursaries', 'bursary', 'map',
-    'tvet', 'tvet-careers', 'tvet-colleges', 'tvet-funding', 'tvet-requirements',
+    'home', 'careers', 'quiz', 'bursaries', 'bursary',
     'library',
     'portal',
     'learning-algebra-g10-t1-linear-equations', 'learning-algebra-g10-t1-simultaneous',
@@ -248,12 +238,6 @@ export default function App() {
       case 'quiz':       return <PageTransition pageKey="quiz"><FreeToolsNav onNavigate={navigate} activePage={page} /><QuizPage {...pp} /></PageTransition>;
       case 'bursaries':  return <PageTransition pageKey="bursaries"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursariesPage {...pp} /></PageTransition>;
       case 'bursary':    return <PageTransition pageKey="bursary"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursaryDetailPage {...pp} /></PageTransition>;
-      case 'map':        return <PageTransition pageKey="map"><FreeToolsNav onNavigate={navigate} activePage={page} /><MapPage {...pp} /></PageTransition>;
-      case 'tvet':       return <PageTransition pageKey="tvet"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETPage {...pp} /></PageTransition>;
-      case 'tvet-careers':      return <PageTransition pageKey="tvet-careers"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETCareersPage {...pp} /></PageTransition>;
-      case 'tvet-colleges':     return <PageTransition pageKey="tvet-colleges"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETCollegesPage {...pp} /></PageTransition>;
-      case 'tvet-funding':      return <PageTransition pageKey="tvet-funding"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETFundingPage {...pp} /></PageTransition>;
-      case 'tvet-requirements': return <PageTransition pageKey="tvet-requirements"><FreeToolsNav onNavigate={navigate} activePage={page} /><TVETRequirementsPage {...pp} /></PageTransition>;
       case 'library':           return <PageTransition pageKey="library"><StudyLibraryPage {...pp} /></PageTransition>;
 
       // Portal

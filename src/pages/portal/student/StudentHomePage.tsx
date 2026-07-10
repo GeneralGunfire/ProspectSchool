@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'motion/react';
+import { useEffect, useState, type CSSProperties } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   CalendarDays, ClipboardList, Megaphone, CheckCircle2, Circle,
-  ChevronRight, BookOpen, TrendingUp, Activity,
+  ChevronRight, BookOpen, TrendingUp, Activity, ArrowUpRight, Sparkles,
 } from 'lucide-react';
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
 import {
@@ -104,6 +104,105 @@ function subjectIcon(label: string) {
   return '◆';
 }
 
+// Shimmer block — a moving highlight sweep rather than a flat gray box,
+// used everywhere below in place of a full-page spinner so the hero
+// (and its crest image) mount and start loading immediately instead of
+// only appearing once data resolves.
+export function Shimmer({ className = '', style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <div className={`relative overflow-hidden rounded ${className}`} style={{ background: 'var(--color-paper-raise)', ...style }}>
+      <motion.div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent)' }}
+        animate={{ x: ['-100%', '100%'] }}
+        transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
+      />
+    </div>
+  );
+}
+
+const easeOut = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
+// Skeleton shown while the dashboard's data loads. Renders the same hero
+// band (with the real crest image, so it starts downloading immediately
+// on mount) plus shimmer placeholders shaped like the real card grid, so
+// there's no jarring swap from "blank/spinner" to "fully populated" —
+// the layout is stable and only the content fades/slides in once ready.
+function StudentHomeSkeleton({ session }: { session: StudentSession }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+  return (
+    <div className="student-home min-h-full pb-16 relative">
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-emblem.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease: easeOut }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}
+            className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">
+                {new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}
+              </p>
+              <p className="text-[11px] text-white/60 mt-1.5 font-medium truncate">
+                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+              </p>
+            </div>
+          </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut, delay: 0.06 }}
+            className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-5 leading-[1.1]"
+            style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+            {(() => {
+              const h = new Date().getHours();
+              return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+            })()}, {session.name}.
+          </motion.h1>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.1 }}
+          className="paper-card rounded p-5 sm:p-6">
+          <Shimmer className="h-3 w-24 mb-4" />
+          <Shimmer className="h-6 w-2/3 mb-2" />
+          <Shimmer className="h-4 w-1/3" />
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.16 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className={`paper-card rounded p-5 h-full min-h-[160px] ${i >= 2 ? 'col-span-2 lg:col-span-2' : ''}`}>
+              <Shimmer className="h-3 w-16 mb-4" />
+              <Shimmer className="h-8 w-1/2 mb-2" />
+              <Shimmer className="h-3 w-2/3" />
+            </div>
+          ))}
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.22 }}
+          className="paper-card rounded p-5 sm:p-7">
+          <Shimmer className="h-3 w-20 mb-6" />
+          <div className="flex items-center gap-8">
+            <Shimmer className="w-32 h-32 rounded-full shrink-0" />
+            <div className="flex-1 space-y-3">
+              <Shimmer className="h-3 w-full" />
+              <Shimmer className="h-3 w-5/6" />
+              <Shimmer className="h-3 w-2/3" />
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
 interface StudentHomePageProps {
   session: StudentSession;
   onNavigate: (page: string) => void;
@@ -115,6 +214,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [announcementExpanded, setAnnouncementExpanded] = useState(false);
+  const [expandedSubject, setExpandedSubject] = useState<string | null>(null);
+  const [ringMetricIndex, setRingMetricIndex] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<SchoolEvent[]>([]);
   const [pendingHomework, setPendingHomework] = useState<SchoolEvent[]>([]);
   const [recentMarks, setRecentMarks] = useState<StudentResult[]>([]);
@@ -216,11 +318,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
-      </div>
-    );
+    return <StudentHomeSkeleton session={session} />;
   }
 
   // ── Derived data ──────────────────────────────────────────────────────────
@@ -483,975 +581,1039 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     );
   }
 
+  // ── Render ────────────────────────────────────────────────────────────────
+  // "Institutional charcoal" — a crested ink hero with the Nizamiye emblem
+  // embossed into the surface, flowing into a flat charcoal page. Sharp,
+  // hairline-bordered cards replace soft/bubbly shadow-lift; sapphire is
+  // reserved for CTAs and priority signals only.
+
+  const heroDate = today.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' });
+  const greeting = (() => {
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  })();
+
+  const tap = { scale: 0.97 };
+
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto pb-10 space-y-5 sm:space-y-6">
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* ── Page header ─────────────────────────────────────────── */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease }}
-        className="flex items-start justify-between gap-4"
-      >
-        <div className="min-w-0">
-          <span className="eyebrow">Dashboard</span>
-          <h1 className="font-display font-black text-brand-dark text-2xl sm:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
-            {(() => {
-              const h = new Date().getHours();
-              const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-              return <>{greeting}, <em className="font-serif-accent text-accent">{session.name}</em>.</>;
-            })()}
-          </h1>
-          <p className="text-sm text-stone-500 mt-1.5">
-            {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-          </p>
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+
+        {/* Full-bleed emblem strip — the fabric/crest photo run edge-to-edge
+            behind a light charcoal scrim, so the crest itself stays
+            genuinely visible rather than buried under a near-opaque wash */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img src="/images/nizamiye-emblem.png" alt=""
+            className="w-full h-full object-cover opacity-[0.62]" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        {apsScore !== null && (
-          <div className="shrink-0 card-premium bg-white border border-brand-border rounded-[24px] px-4 py-3 text-center hidden sm:block">
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">APS</p>
-            <p className="font-black text-accent text-2xl leading-none">{apsScore}</p>
-          </div>
-        )}
-        {goals.targetCareer && !apsScore && (
-          <div className="shrink-0 card-premium bg-white border border-brand-border rounded-[24px] px-4 py-3 text-center hidden sm:block">
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">Goal</p>
-            <p className="font-black text-brand-dark text-sm leading-tight max-w-[120px] truncate">{goals.targetCareer}</p>
-          </div>
-        )}
-      </motion.div>
-
-      {/* ── Daily Focus Card ─────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-        className="card-premium-dark bg-brand-dark rounded-[28px] p-6 md:p-8 relative overflow-hidden border border-white/[0.06]"
-      >
-        {/* Soft gold glow, top-right — same recipe as the landing hero glow */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none blur-3xl opacity-30"
+        {/* Faint sapphire wash, low + far corner — institutional, not glowy */}
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
           style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(245,240,232,0.07) 0%, transparent 65%)' }} />
 
-        <div className="relative z-10 flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Today's Focus</p>
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
 
-            {focusItem ? (
-              <>
-                {/* Urgency badge */}
-                <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest mb-4 ${
-                  focusItem.type === 'urgent' ? 'bg-red-500/20 text-red-300'
-                  : focusItem.type === 'soon'   ? 'bg-amber-500/20 text-amber-300'
-                  : focusItem.type === 'exam'   ? 'bg-violet-500/20 text-violet-300'
-                  :                               'bg-stone-700 text-stone-500'
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${
-                    focusItem.type === 'urgent' ? 'bg-red-400'
-                    : focusItem.type === 'soon'   ? 'bg-amber-400'
-                    : focusItem.type === 'exam'   ? 'bg-violet-400'
-                    :                               'bg-stone-500'
-                  }`} />
-                  {focusItem.label} · {daysUntil(focusItem.event.event_date)}
-                </div>
+          {/* Date row */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-start justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">{heroDate}</p>
+              <p className="text-[11px] text-white/60 mt-1.5 font-medium truncate">
+                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+              </p>
+            </div>
 
-                <h2 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-3"
-                  style={{ letterSpacing: '-0.02em' }}>
-                  {focusItem.event.title}
-                </h2>
+            {apsScore !== null ? (
+              <div className="shrink-0 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 text-center">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">APS</p>
+                <p className="font-black text-xl leading-none mt-1 text-white">{apsScore}</p>
+              </div>
+            ) : goals.targetCareer ? (
+              <div className="shrink-0 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 text-center max-w-[140px]">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Goal</p>
+                <p className="font-black text-white text-xs leading-tight mt-1 truncate">{goals.targetCareer}</p>
+              </div>
+            ) : null}
+          </motion.div>
 
-                {/* Meta row */}
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                  <span className="text-stone-500 text-sm font-medium">
-                    {formatDate(focusItem.event.event_date)}
-                  </span>
-                </div>
+          {/* Greeting */}
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-5 leading-[1.1]"
+            style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
+          >
+            {greeting}, {session.name}.
+          </motion.h1>
+        </div>
+      </div>
 
-                {/* Subject context — show matching subject average if available */}
-                {(() => {
-                  const eventTitle = focusItem.event.title.toLowerCase();
-                  const matchingSubject = subjectProgress.find(s =>
-                    eventTitle.includes(s.label.toLowerCase().split(' ')[0]) ||
-                    s.label.toLowerCase().split(' ')[0].includes(eventTitle.split(' ')[0])
-                  );
-                  if (!matchingSubject) return null;
-                  return (
-                    <p className="text-stone-500 text-sm mt-1">
-                      {matchingSubject.label} average:{' '}
-                      <span className={
-                        matchingSubject.pct >= 70 ? 'text-emerald-400 font-bold' :
-                        matchingSubject.pct >= 50 ? 'text-amber-400 font-bold' :
-                                                    'text-red-400 font-bold'
-                      }>{matchingSubject.pct}%</span>
-                    </p>
-                  );
-                })()}
+      {/* ═══ Body — white page ═══════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
-                {/* Secondary tasks */}
-                {pendingHomework.length > 1 && (
-                  <div className="mt-4 pt-4 border-t border-stone-800 space-y-1.5">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-600 mb-2">Also pending</p>
-                    {pendingHomework.slice(1, 4).map(hw => (
-                      <div key={hw.id} className="flex items-center gap-2 text-stone-500 text-sm">
-                        <span className="w-1 h-1 rounded-full bg-stone-700 shrink-0" />
-                        <span className="truncate">{hw.title}</span>
-                        <span className="text-stone-700 shrink-0 text-xs ml-auto">{daysUntil(hw.event_date)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <h2 className="font-display font-black text-white text-xl md:text-2xl leading-tight mb-2"
-                  style={{ letterSpacing: '-0.02em' }}>
-                  You're all caught up.
-                </h2>
-                <p className="text-stone-500 text-sm">No urgent tasks. Use this time to study ahead.</p>
-              </>
-            )}
+        {/* Today's Focus — moved out of the hero into its own card so the
+            banner stays a clean crest strip and this reads as a distinct,
+            actionable module */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease, delay: 0.08 }}
+          className="paper-card focus-emphasis rounded p-5 sm:p-6"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Today's Focus</p>
+            <span className="flex-1 h-px" style={{ background: 'var(--color-brand-border)' }} />
+            <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold text-[rgba(31,36,33,0.4)] hidden sm:inline-flex">
+              <CalendarDays className="w-3 h-3" />
+              {heroDate}
+            </span>
           </div>
 
-          {/* CTA buttons */}
-          <div className="flex flex-col gap-2.5 shrink-0 md:min-w-40 relative z-10">
-            {focusItem ? (
-              <>
-                {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
-                  <button onClick={() => onNavigate('calendar')}
-                    className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
-                    <CalendarDays className="w-4 h-4" />
-                    View Calendar
-                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
-                )}
-                {focusItem.type === 'exam' && (
-                  <button onClick={() => onNavigate('pastpapers')}
-                    className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
-                    <BookOpen className="w-4 h-4" />
-                    Practice Papers
-                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
-                )}
-                <button onClick={() => onNavigate('library')}
-                  className="group flex items-center justify-center gap-2 bg-white/10 text-white font-bold text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:bg-white/20 hover:border-accent/40 transition-all duration-300 border border-white/10">
-                  <BookOpen className="w-4 h-4" />
-                  Open Library
-                  <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                </button>
-              </>
-            ) : (
-              <button onClick={() => onNavigate('library')}
-                className="group flex items-center justify-center gap-2 bg-white text-brand-dark font-black text-sm px-5 py-3 rounded-full active:scale-[0.96] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-6px_rgba(255,255,255,0.35)] transition-all duration-300">
-                <BookOpen className="w-4 h-4" />
-                Start Studying
-                <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-            )}
+          <div className="grid md:grid-cols-[1fr_auto] gap-5 md:gap-8 md:items-center">
+            <div className="min-w-0 md:border-r md:border-[var(--color-brand-border)] md:pr-8">
+              {focusItem ? (
+                <>
+                  <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-[0.14em] mb-3 border ${
+                    focusItem.type === 'urgent' ? 'border-red-200 bg-red-50 text-red-600'
+                    : focusItem.type === 'soon' ? 'border-amber-200 bg-amber-50 text-amber-700'
+                    : focusItem.type === 'exam' ? 'border-violet-200 bg-violet-50 text-violet-700'
+                    :                             'border-brand-border bg-[var(--color-paper-raise)] text-stone-500'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      focusItem.type === 'urgent' ? 'bg-red-500'
+                      : focusItem.type === 'soon' ? 'bg-amber-500'
+                      : focusItem.type === 'exam' ? 'bg-violet-500'
+                      :                             'bg-stone-400'
+                    }`} />
+                    {focusItem.label} · {daysUntil(focusItem.event.event_date)}
+                  </div>
 
-            {/* Homework completion ring — real data, quiet footer element */}
-            {totalHomework > 0 && (
-              <div className="flex items-center gap-3 mt-1 pt-3 border-t border-white/[0.08]">
+                  <h2 className="font-display font-bold text-brand-dark text-xl sm:text-2xl leading-tight" style={{ letterSpacing: '-0.01em' }}>
+                    {focusItem.event.title}
+                  </h2>
+                  <p className="text-stone-400 text-sm mt-1.5">{formatDate(focusItem.event.event_date)}</p>
+
+                  {(() => {
+                    const eventTitle = focusItem.event.title.toLowerCase();
+                    const matching = subjectProgress.find(s =>
+                      eventTitle.includes(s.label.toLowerCase().split(' ')[0]) ||
+                      s.label.toLowerCase().split(' ')[0].includes(eventTitle.split(' ')[0])
+                    );
+                    if (!matching) return null;
+                    return (
+                      <p className="text-stone-400 text-sm mt-1">
+                        {matching.label} average:{' '}
+                        <span className={`font-bold ${
+                          matching.pct >= 70 ? 'text-emerald-600' : matching.pct >= 50 ? 'text-amber-600' : 'text-red-600'
+                        }`}>{matching.pct}%</span>
+                      </p>
+                    );
+                  })()}
+
+                  {pendingHomework.length > 1 && (
+                    <div className="mt-4 border border-brand-border bg-[var(--color-paper-raise)] rounded px-4 py-3 space-y-1.5 max-w-md">
+                      <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-stone-400 mb-1">Also pending</p>
+                      {pendingHomework.slice(1, 4).map(hw => (
+                        <div key={hw.id} className="flex items-center gap-2 text-stone-500 text-[13px]">
+                          <span className="w-1 h-1 rounded-full bg-stone-300 shrink-0" />
+                          <span className="truncate">{hw.title}</span>
+                          <span className="text-stone-300 shrink-0 text-[11px] ml-auto">{daysUntil(hw.event_date)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div>
+                  <h2 className="font-display font-semibold text-brand-dark text-lg leading-tight" style={{ letterSpacing: '-0.01em' }}>
+                    You're all caught up.
+                  </h2>
+                  <p className="text-[rgba(31,36,33,0.55)] text-[13px] mt-0.5 leading-relaxed">No urgent tasks — a good moment to study ahead.</p>
+                </div>
+              )}
+            </div>
+
+            {/* CTA column */}
+            <div className="flex flex-col gap-2.5 shrink-0 md:min-w-44">
+              {focusItem ? (
+                <>
+                  {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
+                    <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('calendar')}
+                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                      <CalendarDays className="w-4 h-4" />
+                      View Calendar
+                      <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                    </motion.button>
+                  )}
+                  {focusItem.type === 'exam' && (
+                    <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('pastpapers')}
+                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                      <BookOpen className="w-4 h-4" />
+                      Practice Papers
+                      <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                    </motion.button>
+                  )}
+                  <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('library')}
+                    className="group flex items-center justify-center gap-2 bg-[var(--color-paper-raise)] text-brand-dark font-semibold text-sm px-5 py-3 rounded hover:bg-brand-border transition-colors duration-200 border border-brand-border shadow-[0_1px_2px_rgba(21,23,28,0.06),0_6px_16px_-8px_rgba(21,23,28,0.2)]">
+                    <BookOpen className="w-4 h-4" />
+                    Open Library
+                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                  </motion.button>
+                </>
+              ) : (
+                <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('library')}
+                  className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                  <BookOpen className="w-4 h-4" />
+                  Start Studying
+                  <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                </motion.button>
+              )}
+
+              {totalHomework > 0 && (
+                <div className="flex items-center gap-3 mt-1 pt-3 border-t border-brand-border">
+                  <div className="relative shrink-0">
+                    <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(21,23,28,0.08)" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-[10px] font-black text-brand-dark leading-none"><Counter value={hwCompletionPct} />%</span>
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 leading-none">Homework</p>
+                    <p className="text-[11px] font-bold text-stone-500 mt-1">{completions.size}/{totalHomework} done</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Stat strip — asymmetric rhythm instead of 4 identical tiles.
+            Average mark is the widest (2 cols) since it's the metric a
+            student checks most. Every card shares the same paper-card
+            surface — emphasis (Next Up, when it has content) comes from
+            a teal left border and a small icon, never a different fill.
+            Announcements expands in place on click instead of just
+            linking out, so there's a real interaction beyond navigation. */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+
+          {/* Upcoming event */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.12 }}
+            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] relative overflow-hidden"
+            style={upcomingEvents[0] ? { borderLeft: '3px solid var(--color-accent)' } : undefined}
+          >
+            <div className="relative flex items-center gap-2">
+              <CalendarDays className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Next up</p>
+            </div>
+            {upcomingEvents[0] ? (() => {
+              const ev = upcomingEvents[0];
+              const typeColors: Record<string, string> = {
+                homework: 'text-blue-600', assessment: 'text-emerald-600', exam: 'text-red-600', other: 'text-[rgba(31,36,33,0.5)]',
+              };
+              return (
+                <>
+                  <p className="relative font-semibold text-brand-dark text-[16px] leading-snug mt-3 flex-1">{ev.title}</p>
+                  <div className="relative flex items-center justify-between mt-2">
+                    <span className={`text-[11px] font-bold uppercase tracking-wide ${typeColors[ev.event_type] ?? typeColors.other}`}>
+                      {EVENT_LABELS[ev.event_type]}
+                    </span>
+                    <span className="text-[rgba(31,36,33,0.45)] text-[12px] font-semibold">{formatDate(ev.event_date)}</span>
+                  </div>
+                  <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
+                    className="relative self-stretch mt-3 pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
+                    style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
+                    Open calendar <ArrowUpRight className="w-3.5 h-3.5" />
+                  </motion.button>
+                </>
+              );
+            })() : (
+              <>
+                <div className="relative flex-1 flex flex-col items-start justify-center gap-1.5 py-2">
+                  <p className="text-[rgba(31,36,33,0.7)] text-[16px] font-semibold">Nothing scheduled</p>
+                  <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug">Your upcoming events will appear here.</p>
+                </div>
+                <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
+                  className="relative self-stretch mt-1 pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
+                  style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
+                  Open calendar <ArrowUpRight className="w-3.5 h-3.5" />
+                </motion.button>
+              </>
+            )}
+          </motion.div>
+
+          {/* Homework — ring-led, blue identity to match its ring color */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.16 }}
+            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px]"
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Homework</p>
+            {pendingHomework.length === 0 ? (
+              <div className="flex-1 flex flex-col justify-center py-2">
+                <p className="text-brand-dark font-semibold text-[16px]">All caught up</p>
+                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">Nothing due this week.</p>
+              </div>
+            ) : (
+              <div className="flex-1 flex items-center gap-3.5">
                 <div className="relative shrink-0">
-                  <Ring pct={hwCompletionPct} size={40} stroke={4} />
+                  <Ring pct={hwCompletionPct} size={56} stroke={5} trackColor="rgba(10,14,26,0.08)" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-black text-white leading-none"><Counter value={hwCompletionPct} />%</span>
+                    <span className="font-black text-lg text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
                   </div>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-500 leading-none">Homework</p>
-                  <p className="text-[11px] font-bold text-stone-400 mt-1">{completions.size}/{totalHomework} done</p>
+                  {hwToday.length > 0
+                    ? <p className="text-red-600 font-black text-[13px] leading-snug">{hwToday.length} due today</p>
+                    : <p className="text-[rgba(31,36,33,0.55)] text-[13px] font-semibold leading-snug">tasks<br />remaining</p>}
                 </div>
               </div>
             )}
-          </div>
+            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
+              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
+              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
+              View all <ArrowUpRight className="w-3.5 h-3.5" />
+            </motion.button>
+          </motion.div>
+
+          {/* Average mark — the anchor tile, spans 2 cols so it doesn't
+              read as "one of four interchangeable boxes"; stripe color
+              tracks the mark's own status color for at-a-glance signal */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.2 }}
+            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] col-span-2 lg:col-span-2"
+          >
+            <div className="flex items-start justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Average</p>
+              {recentSorted.length >= 2 && (
+                <div className="flex items-end gap-[3px] h-6" title="Last 6 assessments">
+                  {recentSorted.slice(0, 6).reverse().map((m, i) => {
+                    const p = Math.round((m.mark! / m.total) * 100);
+                    return (
+                      <motion.div key={i}
+                        className={`w-[3px] rounded-full ${p >= 70 ? 'bg-emerald-400' : p >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                        initial={{ height: 0 }} animate={{ height: `${Math.max(15, p)}%` }}
+                        whileHover={{ scaleY: 1.15 }}
+                        transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                        style={{ maxHeight: '100%', transformOrigin: 'bottom' }}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+            {avgMark !== null ? (
+              <div className="flex-1 flex items-center justify-between gap-4">
+                <div>
+                  <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}><Counter value={avgMark} suffix="%" /></p>
+                  {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
+                    <p className="text-[11px] text-[rgba(31,36,33,0.5)] mt-1 leading-snug">
+                      Best <span className="text-[rgba(31,36,33,0.75)] font-bold">{highestSubject.label.split(' ')[0]}</span>
+                      {' · '}
+                      Weakest <span className="text-[rgba(31,36,33,0.75)] font-bold">{lowestSubject.label.split(' ')[0]}</span>
+                    </p>
+                  ) : (
+                    <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${avgStatus?.colorClass ?? 'text-[rgba(31,36,33,0.4)]'}`}>
+                      {avgStatus?.label} · {allMarks.length} assessment{allMarks.length !== 1 ? 's' : ''}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col justify-center py-2">
+                <p className="text-brand-dark font-semibold text-[16px]">No marks yet</p>
+                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">Your average appears once your first assessment is marked.</p>
+              </div>
+            )}
+            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('marks')}
+              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
+              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
+              My marks <ArrowUpRight className="w-3.5 h-3.5" />
+            </motion.button>
+          </motion.div>
+
+          {/* Announcements — expands in place on click to preview the
+              latest message body, a real interaction rather than just a
+              count-and-link tile. Shares the same paper-card surface as
+              every other tile; the unread count uses the teal accent. */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            layout
+            transition={{ duration: 0.45, ease, delay: 0.24 }}
+            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] col-span-2 lg:col-span-2 cursor-pointer"
+            onClick={() => announcements.length > 0 && setAnnouncementExpanded(v => !v)}
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Announcements</p>
+              {announcements.length > 0 && (
+                <motion.span animate={{ rotate: announcementExpanded ? 90 : 0 }} transition={{ duration: 0.25 }}>
+                  <ChevronRight className="w-4 h-4 text-[rgba(31,36,33,0.35)]" />
+                </motion.span>
+              )}
+            </div>
+            {announcements.length === 0 ? (
+              <div className="flex-1 flex flex-col justify-center py-2">
+                <p className="text-brand-dark font-semibold text-[16px]">Nothing new</p>
+                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">School announcements will land here.</p>
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col justify-center min-w-0 py-1">
+                <div className="flex items-baseline gap-2">
+                  <p className="font-black text-2xl text-brand-dark leading-none"><Counter value={announcements.length} /></p>
+                  <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>unread</p>
+                </div>
+                <p className="text-[rgba(31,36,33,0.8)] text-[15px] font-bold mt-1.5 truncate">{announcements[0]?.title}</p>
+                <p className="text-[rgba(31,36,33,0.45)] text-[12px] mt-0.5">{timeAgo(announcements[0].created_at)}</p>
+                <AnimatePresence initial={false}>
+                  {announcementExpanded && announcements[0]?.body && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
+                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                      transition={{ duration: 0.25, ease }}
+                      className="text-[rgba(31,36,33,0.6)] text-[13px] leading-relaxed overflow-hidden"
+                      onClick={e => e.stopPropagation()}
+                    >
+                      {announcements[0].body}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={e => { e.stopPropagation(); onNavigate('announcements'); }}
+              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
+              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
+              Read all <ArrowUpRight className="w-3.5 h-3.5" />
+            </motion.button>
+          </motion.div>
         </div>
-      </motion.div>
 
-      {/* ── Stat cards row ───────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-        {/* Upcoming Event — dark, matches hero */}
+        {/* ═══ Progress — the one consolidated panel ═══════════════ */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 flex flex-col justify-between min-h-[150px] relative overflow-hidden border border-white/[0.06]"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease, delay: 0.26 }}
+          className="paper-card rounded p-5 sm:p-7"
         >
-          <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full pointer-events-none blur-2xl opacity-20"
-            style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-          <p className="relative text-[10px] font-black uppercase tracking-[0.18em] text-stone-500 mb-2">Upcoming Event</p>
-          {upcomingEvents[0] ? (() => {
-            const ev = upcomingEvents[0];
-            const typeColors: Record<string, string> = {
-              homework: 'bg-blue-500/20 text-blue-300',
-              assessment: 'bg-emerald-500/20 text-emerald-300',
-              exam: 'bg-red-500/20 text-red-300',
-              other: 'bg-stone-500/20 text-stone-500',
-            };
-            return (
-              <>
-                <span className={`relative self-start text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${typeColors[ev.event_type] ?? typeColors.other}`}>
-                  {EVENT_LABELS[ev.event_type]}
-                </span>
-                <div className="relative">
-                  <p className="font-black text-white text-base leading-tight mt-2 mb-1">{ev.title}</p>
-                  <p className="text-stone-500 text-xs">{formatDate(ev.event_date)}</p>
+          <div className="flex items-center gap-2.5 mb-6">
+            <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Progress</p>
+            <span className="flex-1 h-px bg-brand-border" />
+            {markTrend !== null && (
+              <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2.5 py-1 rounded ${
+                markTrend >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
+              }`}>
+                <TrendingUp className={`w-3 h-3 ${markTrend < 0 ? 'rotate-180' : ''}`} />
+                {markTrend >= 0 ? '+' : ''}{markTrend.toFixed(1)}%
+              </span>
+            )}
+          </div>
+
+          <div className="grid lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-start">
+
+            {/* Big ring — tap to cycle through average mark / homework% / APS,
+                so the centrepiece is an interactive dial rather than a
+                static readout. Dots below show which metric is active. */}
+            <div className="flex lg:flex-col items-center gap-5 lg:gap-3 lg:pr-2">
+              {(() => {
+                const metrics = [
+                  { key: 'avg' as const, pct: avgMark, label: 'average', show: avgMark !== null,
+                    color: avgStatus?.colorClass ?? 'text-brand-dark', display: avgMark !== null ? `${avgMark}%` : '—' },
+                  { key: 'hw' as const, pct: hwCompletionPct, label: 'homework', show: totalHomework > 0,
+                    color: hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500',
+                    display: `${hwCompletionPct}%` },
+                  { key: 'aps' as const, pct: apsScore !== null ? Math.round((apsScore / 42) * 100) : 0, label: 'APS score', show: apsScore !== null,
+                    color: 'text-accent', display: apsScore !== null ? `${apsScore}` : '—' },
+                ].filter(m => m.show);
+                const active = metrics[ringMetricIndex % Math.max(1, metrics.length)] ?? metrics[0];
+                return (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => metrics.length > 1 && setRingMetricIndex(i => (i + 1) % metrics.length)}
+                      className={`relative shrink-0 rounded-full ${metrics.length > 1 ? 'cursor-pointer' : 'cursor-default'}`}
+                      aria-label="Cycle progress metric"
+                    >
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={active?.key ?? 'empty'}
+                          initial={{ opacity: 0, scale: 0.92 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.92 }}
+                          transition={{ duration: 0.28, ease }}
+                        >
+                          <Ring pct={active?.pct ?? 0} size={128} stroke={10} trackColor="rgba(21,23,28,0.07)" />
+                        </motion.div>
+                      </AnimatePresence>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        {active ? (
+                          <AnimatePresence mode="wait">
+                            <motion.div key={active.key}
+                              initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                              transition={{ duration: 0.22 }}
+                              className="flex flex-col items-center"
+                            >
+                              <span className={`font-black text-3xl leading-none ${active.color}`}>{active.display}</span>
+                              <span className="text-[9px] font-black uppercase tracking-[0.16em] text-stone-400 mt-1">{active.label}</span>
+                            </motion.div>
+                          </AnimatePresence>
+                        ) : (
+                          <span className="text-[13px] font-semibold text-stone-500 text-center px-5">No marks yet</span>
+                        )}
+                      </div>
+                    </button>
+                    {metrics.length > 1 && (
+                      <div className="flex items-center gap-1.5">
+                        {metrics.map((m, i) => (
+                          <button key={m.key} type="button" onClick={() => setRingMetricIndex(i)}
+                            aria-label={`Show ${m.label}`}
+                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === ringMetricIndex % metrics.length ? 'bg-brand-dark w-4' : 'bg-stone-200 hover:bg-stone-300'}`} />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+              {academicStory.previousAvg !== null && academicStory.change !== null && academicStory.overallAvg !== null && (
+                <div className="text-center">
+                  <p className="text-[11px] text-stone-500">
+                    was <span className="font-black text-stone-600">{academicStory.previousAvg}%</span>
+                    <span className={`font-black ml-1.5 ${academicStory.change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {academicStory.change >= 0 ? '↑' : '↓'} {Math.abs(academicStory.change)}%
+                    </span>
+                  </p>
+                  <p className="text-[10px] text-stone-400 mt-0.5">{academicStory.totalAssessments} assessments</p>
                 </div>
-                <button onClick={() => onNavigate('calendar')}
-                  className="relative self-start mt-2 text-[11px] font-black text-white/60 hover:text-accent transition-colors border border-white/10 hover:border-accent/40 rounded-lg px-2.5 py-1">
-                  View in Calendar
-                </button>
-              </>
-            );
-          })() : (
-            <p className="relative text-stone-600 text-sm font-bold mt-auto">No upcoming events</p>
-          )}
+              )}
+            </div>
+
+            {/* Right column — story, week stats, bars */}
+            <div className="min-w-0 space-y-5">
+
+              {/* Story bullets */}
+              {(academicStory.strongestGrowth || academicStory.mostConsistent || academicStory.needsAttention) && (
+                <div className="flex flex-wrap gap-2">
+                  {academicStory.strongestGrowth && (
+                    <motion.span whileHover={{ y: -1 }} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-700 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      Growing: {academicStory.strongestGrowth}
+                    </motion.span>
+                  )}
+                  {academicStory.mostConsistent && academicStory.mostConsistent !== academicStory.strongestGrowth && (
+                    <motion.span whileHover={{ y: -1 }} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-700 bg-blue-50 border border-blue-100 rounded px-3 py-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                      Consistent: {academicStory.mostConsistent}
+                    </motion.span>
+                  )}
+                  {academicStory.needsAttention && academicStory.needsAttention !== academicStory.strongestGrowth && (
+                    <motion.span whileHover={{ y: -1 }} className="inline-flex items-center gap-1.5 text-[11px] font-bold text-stone-700 bg-amber-50 border border-amber-100 rounded px-3 py-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                      Needs attention: {academicStory.needsAttention}
+                    </motion.span>
+                  )}
+                </div>
+              )}
+
+              {/* This week — compact stat row */}
+              {hasMomentum && (
+                <div className="grid grid-cols-3 gap-2.5">
+                  {[
+                    { label: 'HW done', value: completions.size, on: completions.size > 0 },
+                    { label: 'Topics studied', value: thisWeekStarted, on: thisWeekStarted > 0 },
+                    { label: 'Mastered', value: thisWeekMastered, on: thisWeekMastered > 0 },
+                  ].map(s => (
+                    <motion.div key={s.label} whileHover={{ y: -2 }} transition={{ duration: 0.2 }}
+                      className="rounded px-3 py-2.5 text-center border"
+                      style={{ background: s.on ? 'var(--color-paper-raise)' : 'transparent', borderColor: 'var(--color-brand-border)' }}>
+                      <p className={`font-black text-lg leading-none ${s.on ? 'text-brand-dark' : 'text-stone-300'}`}>{s.value}</p>
+                      <p className="text-[9px] font-bold text-stone-400 uppercase tracking-wider mt-1">{s.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Bars: homework, library, APS */}
+              <div className="space-y-3.5">
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[14px] font-semibold text-stone-700">Homework completion</span>
+                    <span className={`text-[14px] font-bold ${hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{hwCompletionPct}%</span>
+                  </div>
+                  <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
+                </div>
+                {studyProgress.length > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-[13px] font-bold text-stone-600">Library — {topicsMastered} mastered, {topicsStarted - topicsMastered} in progress</span>
+                      <span className="text-[13px] font-black text-stone-600">{topicsStarted}/{studyProgress.length}</span>
+                    </div>
+                    <HealthBar pct={libraryPct} color="bg-brand-dark" />
+                  </div>
+                )}
+                {apsScore !== null && (
+                  <div>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-[13px] font-bold text-stone-600">APS score</span>
+                      <span className="text-[13px] font-black text-accent">{apsScore}</span>
+                    </div>
+                    <HealthBar pct={Math.min(100, Math.round((apsScore / 42) * 100))} color="bg-accent" />
+                    <p className="text-[11px] text-stone-400 mt-1">
+                      {apsScore >= 35 ? 'Strong — qualifies for most programmes'
+                       : apsScore >= 28 ? 'Good — qualifies for many programmes'
+                       : apsScore >= 20 ? 'Building — keep improving marks'
+                       : 'Getting started — every mark counts'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Workload line */}
+              <p className="text-[13px] text-stone-600 pt-3 border-t leading-relaxed" style={{ borderColor: 'var(--color-brand-border)' }}>
+                <span className={`font-bold ${upcomingAssessmentCount >= 3 ? 'text-red-500' : upcomingAssessmentCount >= 1 ? 'text-amber-600' : 'text-emerald-600'}`}>
+                  {upcomingAssessmentCount}
+                </span>{' '}
+                upcoming assessment{upcomingAssessmentCount !== 1 ? 's' : ''} —{' '}
+                {upcomingAssessmentCount === 0 ? 'nothing scheduled'
+                  : upcomingAssessmentCount >= 3 ? 'high workload, plan your revision'
+                  : 'manageable, stay on top of prep'}
+              </p>
+            </div>
+          </div>
         </motion.div>
 
-        {/* Pending Homework — ring instead of flat number */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
-        >
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Pending Homework</p>
-          {pendingHomework.length === 0 ? (
-            <div>
-              <p className="font-black text-4xl text-brand-dark"><Counter value={0} /></p>
-              <p className="text-emerald-600 font-bold text-xs mt-1">All caught up</p>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <div className="relative shrink-0">
-                <Ring pct={hwCompletionPct} size={52} stroke={5} trackColor="rgba(28,25,23,0.08)" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="font-black text-lg text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
-                </div>
-              </div>
-              <div className="min-w-0">
-                {hwToday.length > 0
-                  ? <p className="text-red-500 font-black text-xs">{hwToday.length} due today</p>
-                  : <p className="text-stone-500 text-xs font-bold">tasks remaining</p>
-                }
-              </div>
-            </div>
-          )}
-          <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
-            View Homework
-          </button>
-        </motion.div>
+        {/* ═══ Homework + Subjects ═════════════════════════════════ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
 
-        {/* Average Mark — sparkline trend from real recent marks */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
-        >
-          <div className="flex items-start justify-between">
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Average Mark</p>
-            {recentSorted.length >= 2 && (
-              <div className="flex items-end gap-0.5 h-6">
-                {recentSorted.slice(0, 6).reverse().map((m, i) => {
-                  const p = Math.round((m.mark! / m.total) * 100);
+          {pendingHomework.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease, delay: 0.3 }}
+              className="paper-card rounded p-5 sm:p-6"
+            >
+              <div className="flex items-center gap-2.5 mb-3">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Pending Homework</p>
+                <span className="flex-1 h-px bg-brand-border" />
+                <span className="text-[11px] font-bold text-stone-400">{completions.size} done</span>
+              </div>
+              <div className="h-1 rounded-full overflow-hidden mb-4" style={{ background: 'var(--color-paper-raise)' }}>
+                <motion.div
+                  initial={{ width: 0 }} animate={{ width: `${hwCompletionPct}%` }}
+                  transition={{ duration: 0.8, ease }}
+                  className="h-full bg-accent rounded-full"
+                />
+              </div>
+              <HomeworkGroup label="Due Today" items={hwToday} urgency="high" />
+              <HomeworkGroup label="Due Tomorrow" items={hwTomorrow} urgency="mid" />
+              <HomeworkGroup label="This Week" items={hwLater} urgency="low" />
+            </motion.div>
+          )}
+
+          {subjectProgress.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease, delay: 0.34 }}
+              className="paper-card rounded p-5 sm:p-6"
+            >
+              <div className="flex items-center gap-2.5 mb-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Subjects</p>
+                <span className="flex-1 h-px bg-brand-border" />
+                <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors">
+                  All marks <ArrowUpRight className="w-3 h-3" />
+                </motion.button>
+              </div>
+              <div className="space-y-1">
+                {subjectProgress.map(s => {
+                  const isOpen = expandedSubject === s.label;
+                  const subjectMarks = allMarks
+                    .filter(m => (m.subject_label || 'Other') === s.label)
+                    .sort((a, b) => b.created_at.localeCompare(a.created_at));
                   return (
-                    <motion.div key={i}
-                      className={`w-1 rounded-full ${p >= 70 ? 'bg-emerald-400' : p >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
-                      initial={{ height: 0 }} animate={{ height: `${Math.max(15, p)}%` }}
-                      transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                      style={{ maxHeight: '100%' }}
-                    />
+                    <div key={s.label} className="border-b border-brand-border last:border-0">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedSubject(isOpen ? null : s.label)}
+                        className="w-full text-left py-2 group"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-black text-stone-500 transition-colors group-hover:text-accent"
+                              style={{ background: 'var(--color-paper-raise)' }}>
+                              {subjectIcon(s.label)}
+                            </span>
+                            <span className="text-sm font-bold text-stone-700">{s.label}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] text-stone-400">{s.count} assessed</span>
+                            <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                              {s.pct}%
+                            </span>
+                            <motion.span animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
+                              <ChevronRight className="w-3 h-3 text-stone-300" />
+                            </motion.span>
+                          </div>
+                        </div>
+                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--color-paper-raise)' }}>
+                          <motion.div
+                            initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
+                            transition={{ duration: 0.8, ease }}
+                            className={`h-full rounded-full ${s.pct >= 70 ? 'bg-emerald-500' : s.pct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                          />
+                        </div>
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {isOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25, ease }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pb-3 pl-7 space-y-1.5">
+                              {subjectMarks.slice(0, 5).map((m, i) => (
+                                <div key={i} className="flex items-center justify-between text-[12px]">
+                                  <span className="text-stone-500 truncate">{m.sheet_title}</span>
+                                  <span className="font-bold text-stone-600 shrink-0 ml-2">{m.mark}/{m.total}</span>
+                                </div>
+                              ))}
+                              {subjectMarks.length === 0 && (
+                                <p className="text-[12px] text-stone-400">No individual marks recorded</p>
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* ═══ Academic Coaching (+ history) ═══════════════════════ */}
+        {(activeInterventions.length > 0 || interventionOutcomes.length > 0) && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.36 }}
+            className="paper-card rounded p-5 sm:p-6"
+          >
+            <div className="flex items-start gap-2.5 mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Coaching</p>
+              <span className="flex-1 h-px bg-brand-border mt-1" />
+              {interventionImpact.totalCompleted > 0 && (
+                <div className="text-right">
+                  <p className="text-[11px] font-black text-stone-600">{interventionImpact.totalCompleted} completed · {interventionImpact.successRate}% success</p>
+                  {interventionImpact.avgImprovement > 0 && (
+                    <p className="text-[10px] font-bold text-emerald-600">avg +{interventionImpact.avgImprovement}%</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {interventionImpact.bestType && interventionImpact.bestTypeGain > 0 && interventionImpact.typeEffectiveness.length >= 2 && (
+              <div className="rounded px-3.5 py-2.5 mb-4 flex items-center gap-2 border border-amber-100 bg-amber-50">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <p className="text-[11px] text-amber-800">
+                  <span className="font-black">Most effective for you:</span>{' '}
+                  {interventionImpact.bestType === 'past_paper' ? 'Past Papers' :
+                   interventionImpact.bestType === 'library_topic' ? 'Library Study' :
+                   interventionImpact.bestType === 'revision' ? 'Revision Sessions' : 'Resource Review'}
+                  {' '}(avg +{interventionImpact.bestTypeGain}%)
+                </p>
+              </div>
+            )}
+
+            {/* Active interventions */}
+            {activeInterventions.length > 0 && (
+              <div className="space-y-3">
+                {activeInterventions.slice(0, 3).map((inv) => {
+                  const isStarted = inv.status === 'started';
+                  return (
+                    <div key={inv.id} className={`rounded border p-4 ${
+                      inv.reason === 'exam_soon' || inv.reason === 'below_pass'
+                        ? 'bg-red-50 border-red-100'
+                        : inv.reason === 'high_risk' || inv.reason === 'declining_trend'
+                        ? 'bg-amber-50 border-amber-100'
+                        : 'border-brand-border'
+                    }`} style={inv.reason !== 'exam_soon' && inv.reason !== 'below_pass' && inv.reason !== 'high_risk' && inv.reason !== 'declining_trend'
+                        ? { background: 'var(--color-paper-raise)' } : undefined}>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <p className="font-black text-stone-800 text-sm">{inv.subject}</p>
+                            <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
+                              inv.reason === 'exam_soon' ? 'bg-red-100 text-red-700' :
+                              inv.reason === 'below_pass' ? 'bg-red-100 text-red-700' :
+                              inv.reason === 'high_risk' ? 'bg-amber-100 text-amber-700' :
+                              'bg-stone-100 text-stone-500'
+                            }`}>
+                              {inv.reason === 'exam_soon' ? 'Exam Soon' :
+                               inv.reason === 'below_pass' ? 'Below Pass' :
+                               inv.reason === 'high_risk' ? 'High Risk' :
+                               inv.reason === 'declining_trend' ? 'Declining' : 'APS Gap'}
+                            </span>
+                            {isStarted && (
+                              <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
+                                In Progress
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-stone-500">{inv.description}</p>
+                          {inv.rationale && (
+                            <p className="text-[10px] text-stone-400 mt-1 italic">{inv.rationale}</p>
+                          )}
+
+                          {isStarted && templates.get(inv.type) && (
+                            <div className="mt-2.5 space-y-1.5">
+                              {templates.get(inv.type)!.checklist.map((step, stepIdx) => {
+                                const progress = inv.checklistProgress ?? templates.get(inv.type)!.checklist.map(() => false);
+                                const done = progress[stepIdx] ?? false;
+                                return (
+                                  <button
+                                    key={stepIdx}
+                                    onClick={async () => {
+                                      const next = [...progress];
+                                      next[stepIdx] = !done;
+                                      setActiveInterventions(prev =>
+                                        prev.map(i => i.id === inv.id ? { ...i, checklistProgress: next } : i)
+                                      );
+                                      await updateChecklistProgress(session.student_id, inv.id, next);
+                                    }}
+                                    className="flex items-start gap-2 text-left w-full group"
+                                  >
+                                    {done
+                                      ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                                      : <Circle className="w-3.5 h-3.5 text-stone-300 shrink-0 mt-0.5 group-hover:text-stone-400" />}
+                                    <span className={`text-[11px] ${done ? 'text-stone-400 line-through' : 'text-stone-600'}`}>
+                                      {step}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <motion.button whileTap={tap}
+                          onClick={async () => {
+                            await startIntervention(session.student_id, inv.id);
+                            setActiveInterventions(prev =>
+                              prev.map(i => i.id === inv.id ? { ...i, status: 'started' as const } : i)
+                            );
+                            onNavigate(inv.page);
+                          }}
+                          className="flex-1 py-2 rounded bg-brand-dark text-white text-[11px] font-black hover:opacity-90 transition-opacity"
+                        >
+                          {isStarted ? 'Continue' : 'Start'}
+                        </motion.button>
+                        <motion.button whileTap={tap}
+                          onClick={async () => {
+                            await completeIntervention(session.student_id, inv.id);
+                            setActiveInterventions(prev => prev.filter(i => i.id !== inv.id));
+                            const updated = await getCompletedInterventions(session.student_id);
+                            setCompletedInterventions(updated);
+                          }}
+                          className="px-3 py-2 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black hover:bg-emerald-100 transition-colors"
+                        >
+                          Done
+                        </motion.button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
             )}
-          </div>
-          {avgMark !== null ? (
-            <div>
-              <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}><Counter value={avgMark} suffix="%" /></p>
-              {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
-                <p className="text-[11px] text-stone-500 mt-1 leading-snug">
-                  Best: <span className="text-stone-600 font-bold">{highestSubject.label.split(' ')[0]}</span>
-                  {' · '}
-                  Weakest: <span className="text-stone-600 font-bold">{lowestSubject.label.split(' ')[0]}</span>
-                </p>
-              ) : (
-                <p className={`text-[10px] font-black uppercase tracking-widest mt-1 ${avgStatus?.colorClass ?? 'text-stone-500'}`}>
-                  {avgStatus?.label} · {allMarks.length} assessment{allMarks.length !== 1 ? 's' : ''}
-                </p>
-              )}
-              {apsScore !== null && (
-                <p className="text-[10px] text-accent font-bold mt-0.5">APS {apsScore}</p>
-              )}
-            </div>
-          ) : (
-            <p className="text-stone-500 font-bold text-sm mt-auto">No marks yet</p>
-          )}
-          <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
-            View Marks
-          </button>
-        </motion.div>
 
-        {/* Announcements */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5 flex flex-col justify-between min-h-[150px]"
-        >
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-500">Announcements</p>
-          {announcements.length === 0 ? (
-            <p className="text-stone-500 font-bold text-sm mt-auto">No announcements</p>
-          ) : (
-            <div>
-              <p className="font-black text-4xl text-brand-dark"><Counter value={announcements.length} /></p>
-              <p className="text-stone-500 text-sm mt-0.5 truncate">{announcements[0]?.title}</p>
-            </div>
-          )}
-          <button onClick={() => onNavigate('announcements')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors mt-2">
-            View All
-          </button>
-        </motion.div>
-      </div>
-
-      {/* ── Academic Health ───────────────────────────────────── */}
-      <div>
-
-        {/* Academic Health */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.2 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          <div className="flex items-center gap-2 mb-5">
-            <Activity className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Health</p>
-          </div>
-
-          <div className="space-y-4">
-            {/* Homework completion */}
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-sm font-bold text-stone-700">Homework Completion</span>
-                <span className={`text-sm font-black ${hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500'}`}>
-                  {hwCompletionPct}%
-                </span>
-              </div>
-              <p className="text-[11px] text-stone-500 mb-1">{completions.size} of {totalHomework} tasks done</p>
-              <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
-            </div>
-
-            {/* Average mark */}
-            {avgMark !== null && (
-              <div>
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-sm font-bold text-stone-700">Average Mark</span>
-                  <span className={`text-sm font-black ${avgStatus?.colorClass ?? 'text-stone-700'}`}>{avgMark}%</span>
+            {/* Folded-in history */}
+            {interventionOutcomes.length > 0 && (
+              <div className={activeInterventions.length > 0 ? 'mt-5 pt-4 border-t border-brand-border' : ''}>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-400 mb-2.5">History</p>
+                <div className="space-y-1.5">
+                  {interventionOutcomes.slice(-4).reverse().map(o => (
+                    <motion.div key={o.interventionId} whileHover={{ x: 2 }} className="flex items-center gap-3 rounded px-3 py-2"
+                      style={{ background: 'var(--color-paper-raise)' }}>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                        o.result === 'improved' ? 'bg-emerald-500' : o.result === 'declined' ? 'bg-red-400' : 'bg-stone-300'
+                      }`} />
+                      <p className="flex-1 min-w-0 text-xs font-bold text-stone-700 truncate">
+                        {o.subject} <span className="text-stone-400 font-medium">{o.previousAvg}% → {o.newAvg}%</span>
+                      </p>
+                      <span className={`text-xs font-black shrink-0 ${
+                        o.result === 'improved' ? 'text-emerald-600' : o.result === 'declined' ? 'text-red-500' : 'text-stone-400'
+                      }`}>
+                        {o.improvement > 0 ? `+${o.improvement}%` : `${o.improvement}%`}
+                      </span>
+                    </motion.div>
+                  ))}
                 </div>
-                <p className="text-[11px] text-stone-500 mb-1">{avgStatus?.label} · {allMarks.length} assessments</p>
-                <HealthBar pct={avgMark} color={avgMark >= 70 ? 'bg-emerald-500' : avgMark >= 50 ? 'bg-amber-400' : 'bg-red-400'} />
               </div>
             )}
-
-            {/* Library progress */}
-            {studyProgress.length > 0 && (
-              <div>
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-sm font-bold text-stone-700">Library Progress</span>
-                  <span className="text-sm font-black text-stone-700">{topicsStarted}/{studyProgress.length}</span>
-                </div>
-                <p className="text-[11px] text-stone-500 mb-1">{topicsMastered} mastered · {topicsStarted - topicsMastered} in progress</p>
-                <HealthBar pct={libraryPct} color="bg-brand-dark" />
-              </div>
-            )}
-
-            {/* Upcoming assessments / workload */}
-            <div>
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-sm font-bold text-stone-700">Upcoming Assessments</span>
-                <span className={`text-sm font-black ${upcomingAssessmentCount >= 3 ? 'text-red-500' : upcomingAssessmentCount >= 1 ? 'text-amber-600' : 'text-emerald-600'}`}>
-                  {upcomingAssessmentCount}
-                </span>
-              </div>
-              <p className="text-[11px] text-stone-500">
-                {upcomingAssessmentCount === 0
-                  ? 'No assessments or exams scheduled'
-                  : upcomingAssessmentCount >= 3
-                    ? 'High workload — plan your revision'
-                    : 'Manageable — stay on top of prep'}
-              </p>
-            </div>
-
-            {/* APS Score bar */}
-            {apsScore !== null && (
-              <div>
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-sm font-bold text-stone-700">APS Score</span>
-                  <span className="text-sm font-black text-stone-700">{apsScore}</span>
-                </div>
-                <p className="text-[11px] text-stone-500 mb-1">
-                  {apsScore >= 35 ? 'Strong — qualifies for most programmes'
-                   : apsScore >= 28 ? 'Good — qualifies for many programmes'
-                   : apsScore >= 20 ? 'Building — keep improving marks'
-                   : 'Getting started — every mark counts'}
-                </p>
-                <HealthBar pct={Math.min(100, Math.round((apsScore / 42) * 100))} color="bg-accent" />
-              </div>
-            )}
-          </div>
-
-          <button onClick={() => onNavigate('marks')}
-            className="mt-5 text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
-            View detailed marks <ChevronRight className="w-3 h-3" />
-          </button>
-        </motion.div>
-      </div>
-
-      {/* ── Homework + Subject Progress — two-col ────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-        {/* Homework grouped */}
-        {pendingHomework.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.28 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Pending Homework</p>
-              <span className="text-[11px] font-bold text-stone-500">{completions.size} done</span>
-            </div>
-
-            {/* Progress bar */}
-            <div className="h-1 bg-stone-100 rounded-full overflow-hidden mb-4">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${hwCompletionPct}%` }}
-                transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                className="h-full bg-brand-dark rounded-full"
-              />
-            </div>
-
-            <HomeworkGroup label="Due Today" items={hwToday} urgency="high" />
-            <HomeworkGroup label="Due Tomorrow" items={hwTomorrow} urgency="mid" />
-            <HomeworkGroup label="This Week" items={hwLater} urgency="low" />
           </motion.div>
         )}
 
-        {/* Subject Progress */}
-        {subjectProgress.length > 0 && (
+        {/* ═══ Recommended actions ═════════════════════════════════ */}
+        {dedupedQueue.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.32 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.38 }}
+            className="paper-card rounded p-5 sm:p-6"
           >
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Subject Breakdown</p>
-              <button onClick={() => onNavigate('marks')}
-                className="text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
-                All Marks <ChevronRight className="w-3 h-3" />
-              </button>
+            <div className="flex items-center gap-2.5 mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Recommended</p>
+              <span className="flex-1 h-px bg-brand-border" />
             </div>
-            <div className="space-y-3">
-              {subjectProgress.map(s => (
-                <div key={s.label}>
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 bg-stone-100 rounded-md flex items-center justify-center text-[10px] font-black text-stone-600">
-                        {subjectIcon(s.label)}
-                      </span>
-                      <span className="text-sm font-bold text-stone-800">{s.label}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-stone-500">{s.count} assessed</span>
-                      <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
-                        {s.pct}%
-                      </span>
-                    </div>
+            <div className="space-y-1">
+              {dedupedQueue.map((item, i) => (
+                <motion.button whileTap={tap}
+                  key={i}
+                  onClick={() => onNavigate(item.page)}
+                  className="w-full flex items-center gap-3 p-3 rounded border border-transparent transition-all text-left group hover:bg-blue-50/40 hover:border-blue-100"
+                >
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${
+                    item.priority === 'high' ? 'bg-red-500' :
+                    item.priority === 'mid'  ? 'bg-amber-500' :
+                                               'bg-stone-300'
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-stone-800 truncate">{item.label}</p>
+                    <p className="text-xs text-stone-400 truncate">{item.sublabel}</p>
                   </div>
-                  <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${s.pct}%` }}
-                      transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                      className={`h-full rounded-full ${s.pct >= 70 ? 'bg-emerald-500' : s.pct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
-                    />
-                  </div>
-                </div>
+                  <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-accent group-hover:translate-x-0.5 transition-all shrink-0" />
+                </motion.button>
               ))}
             </div>
           </motion.div>
         )}
-      </div>
 
-      {/* ── Academic Story Card ──────────────────────────────────── */}
-      {academicStory.totalAssessments >= 3 && academicStory.overallAvg !== null && (
+        {/* ═══ Recent activity + quick actions ═════════════════════ */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.33 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease, delay: 0.42 }}
+          className="paper-card rounded p-5 sm:p-6"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">
-            Academic Story
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Recent Activity</p>
+            <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-stone-500 hover:text-accent transition-colors">
+              My marks <ArrowUpRight className="w-3.5 h-3.5" />
+            </motion.button>
+          </div>
 
-          {/* Main stat row */}
-          <div className="flex items-end gap-3 mb-4">
-            {academicStory.previousAvg !== null && academicStory.change !== null ? (
+          {activity.length === 0 ? (
+            <div className="flex items-center gap-3 py-3">
+              <TrendingUp className="w-8 h-8 text-stone-200" />
+              <p className="text-[15px] font-semibold text-stone-500">No recent activity</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {activity.map((item, i) => (
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease, delay: 0.45 + i * 0.04 }}
+                  className="flex items-start gap-3">
+                  {item.kind === 'mark' ? (
+                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
+                      <ClipboardList className="w-4 h-4 text-blue-600" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded bg-amber-50 flex items-center justify-center shrink-0">
+                      <Megaphone className="w-4 h-4 text-amber-600" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    {item.kind === 'mark' ? (
+                      <>
+                        <p className="text-[14px] font-semibold text-stone-800 truncate">
+                          {item.data.subject_label}: {item.data.mark}/{item.data.total}
+                        </p>
+                        <p className="text-[12px] text-stone-500 mt-0.5">
+                          {Math.round((item.data.mark! / item.data.total) * 100)}% · {gradeLabel(item.data.mark!, item.data.total).label}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[14px] font-semibold text-stone-800 truncate">{item.data.title}</p>
+                        <p className="text-[12px] text-stone-500 mt-0.5">{timeAgo(item.ts)}</p>
+                      </>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* Contextual quick actions */}
+          <div className="mt-4 pt-4 border-t border-brand-border flex flex-wrap gap-2">
+            {isStruggling ? (
               <>
-                <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Earlier</p>
-                  <p className="font-black text-stone-500 text-2xl leading-none">{academicStory.previousAvg}%</p>
-                </div>
-                <div className={`font-black text-2xl pb-1 ${academicStory.change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                  {academicStory.change >= 0 ? '↑' : '↓'}
-                </div>
-                <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                  <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Now</p>
-                  <p className={`font-black text-2xl leading-none ${
-                    academicStory.overallAvg >= 70 ? 'text-emerald-600' :
-                    academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
-                  }`}>{academicStory.overallAvg}%</p>
-                </div>
-                <div className={`ml-1 px-3 py-1.5 rounded-xl text-sm font-black ${
-                  academicStory.change >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'
-                }`}>
-                  {academicStory.change >= 0 ? '+' : ''}{academicStory.change}%
-                </div>
+                <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <ClipboardList className="w-4 h-4" /> Review Marks
+                </motion.button>
+                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <BookOpen className="w-4 h-4" /> Open Library
+                </motion.button>
+                {lowestSubjectName && (
+                  <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                    className="flex items-center gap-1.5 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[13px] font-bold transition-colors border border-red-100">
+                    <TrendingUp className="w-4 h-4" /> {lowestSubjectName.split(' ')[0]} Resources
+                  </motion.button>
+                )}
+              </>
+            ) : hasExamSoon ? (
+              <>
+                <motion.button whileTap={tap} onClick={() => onNavigate('pastpapers')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <BookOpen className="w-4 h-4" /> Practice Papers
+                </motion.button>
+                <motion.button whileTap={tap} onClick={() => onNavigate('calendar')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <CalendarDays className="w-4 h-4" /> Exam Calendar
+                </motion.button>
+                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <BookOpen className="w-4 h-4" /> Revise Topics
+                </motion.button>
               </>
             ) : (
-              <div className="text-center bg-stone-50 rounded-xl px-4 py-2.5">
-                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">Average</p>
-                <p className={`font-black text-2xl leading-none ${
-                  academicStory.overallAvg >= 70 ? 'text-emerald-600' :
-                  academicStory.overallAvg >= 50 ? 'text-amber-600' : 'text-red-500'
-                }`}>{academicStory.overallAvg}%</p>
-              </div>
+              <>
+                <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <ClipboardList className="w-4 h-4" /> My Marks
+                </motion.button>
+                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <BookOpen className="w-4 h-4" /> Library
+                </motion.button>
+                <motion.button whileTap={tap} onClick={() => onNavigate('future')}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
+                  style={{ background: 'var(--color-paper-raise)' }}>
+                  <TrendingUp className="w-4 h-4" /> My Future
+                </motion.button>
+              </>
             )}
           </div>
-
-          {/* Story bullets */}
-          <div className="space-y-2">
-            {academicStory.strongestGrowth && (
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                <p className="text-sm text-stone-600">
-                  Strongest growth: <span className="font-black text-stone-900">{academicStory.strongestGrowth}</span>
-                </p>
-              </div>
-            )}
-            {academicStory.mostConsistent && academicStory.mostConsistent !== academicStory.strongestGrowth && (
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                <p className="text-sm text-stone-600">
-                  Most consistent: <span className="font-black text-stone-900">{academicStory.mostConsistent}</span>
-                </p>
-              </div>
-            )}
-            {academicStory.needsAttention && academicStory.needsAttention !== academicStory.strongestGrowth && (
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                <p className="text-sm text-stone-600">
-                  Needs attention: <span className="font-black text-stone-900">{academicStory.needsAttention}</span>
-                </p>
-              </div>
-            )}
-            <p className="text-[11px] text-stone-500 pt-1">
-              Based on {academicStory.totalAssessments} assessment{academicStory.totalAssessments !== 1 ? 's' : ''}
-            </p>
-          </div>
         </motion.div>
-      )}
-
-      {/* ── Academic Coaching Card ───────────────────────────────── */}
-      {activeInterventions.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.335 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          {/* Header with impact stats */}
-          <div className="flex items-start justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Coaching</p>
-            {interventionImpact.totalCompleted > 0 && (
-              <div className="text-right">
-                <p className="text-[11px] font-black text-stone-700">{interventionImpact.totalCompleted} completed</p>
-                <p className="text-[10px] font-bold text-stone-500">{interventionImpact.successRate}% success rate</p>
-                {interventionImpact.avgImprovement > 0 && (
-                  <p className="text-[10px] font-bold text-emerald-500">avg +{interventionImpact.avgImprovement}%</p>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Impact analytics row — shown once enough data exists */}
-          {interventionImpact.totalCompleted >= 2 && (
-            <div className="grid grid-cols-3 gap-2.5 mb-5">
-              <div className="bg-stone-50 rounded-xl p-2.5 text-center">
-                <p className="text-base font-black text-stone-900">{interventionImpact.totalCompleted}</p>
-                <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">Completed</p>
-              </div>
-              <div className="bg-emerald-50 rounded-xl p-2.5 text-center">
-                <p className="text-base font-black text-emerald-700">{interventionImpact.successRate}%</p>
-                <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-wider mt-0.5">Success</p>
-              </div>
-              <div className={`rounded-xl p-2.5 text-center ${interventionImpact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
-                <p className={`text-base font-black ${interventionImpact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-500'}`}>
-                  {interventionImpact.avgImprovement > 0 ? `+${interventionImpact.avgImprovement}%` : '—'}
-                </p>
-                <p className={`text-[9px] font-bold uppercase tracking-wider mt-0.5 ${interventionImpact.avgImprovement > 0 ? 'text-blue-400' : 'text-stone-500'}`}>Avg Gain</p>
-              </div>
-            </div>
-          )}
-
-          {/* Best action type — shown when data suggests a pattern */}
-          {interventionImpact.bestType && interventionImpact.bestTypeGain > 0 && interventionImpact.typeEffectiveness.length >= 2 && (
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 mb-4 flex items-center gap-2">
-              <span className="text-sm">⭐</span>
-              <p className="text-[11px] text-amber-800">
-                <span className="font-black">Most effective for you:</span>{' '}
-                {interventionImpact.bestType === 'past_paper' ? 'Past Papers' :
-                 interventionImpact.bestType === 'library_topic' ? 'Library Study' :
-                 interventionImpact.bestType === 'revision' ? 'Revision Sessions' : 'Resource Review'}
-                {' '}(avg +{interventionImpact.bestTypeGain}%)
-              </p>
-            </div>
-          )}
-
-          {/* Active intervention cards */}
-          <div className="space-y-3">
-            {activeInterventions.slice(0, 3).map((inv) => {
-              const isStarted = inv.status === 'started';
-              return (
-                <div key={inv.id} className={`rounded-xl border p-4 ${
-                  inv.reason === 'exam_soon' || inv.reason === 'below_pass'
-                    ? 'bg-red-50 border-red-200'
-                    : inv.reason === 'high_risk' || inv.reason === 'declining_trend'
-                    ? 'bg-amber-50 border-amber-200'
-                    : 'bg-stone-50 border-brand-border'
-                }`}>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                        <p className="font-black text-stone-900 text-sm">{inv.subject}</p>
-                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                          inv.reason === 'exam_soon' ? 'bg-red-100 text-red-700' :
-                          inv.reason === 'below_pass' ? 'bg-red-100 text-red-700' :
-                          inv.reason === 'high_risk' ? 'bg-amber-100 text-amber-700' :
-                          'bg-stone-100 text-stone-500'
-                        }`}>
-                          {inv.reason === 'exam_soon' ? 'Exam Soon' :
-                           inv.reason === 'below_pass' ? 'Below Pass' :
-                           inv.reason === 'high_risk' ? 'High Risk' :
-                           inv.reason === 'declining_trend' ? 'Declining' : 'APS Gap'}
-                        </span>
-                        {isStarted && (
-                          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
-                            In Progress
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-stone-500">{inv.description}</p>
-                      {inv.rationale && (
-                        <p className="text-[10px] text-stone-500 mt-1 italic">{inv.rationale}</p>
-                      )}
-
-                      {/* Checklist — only shown once the student has started, so
-                          the card stays compact until they've committed to it */}
-                      {isStarted && templates.get(inv.type) && (
-                        <div className="mt-2.5 space-y-1.5">
-                          {templates.get(inv.type)!.checklist.map((step, stepIdx) => {
-                            const progress = inv.checklistProgress ?? templates.get(inv.type)!.checklist.map(() => false);
-                            const done = progress[stepIdx] ?? false;
-                            return (
-                              <button
-                                key={stepIdx}
-                                onClick={async () => {
-                                  const next = [...progress];
-                                  next[stepIdx] = !done;
-                                  setActiveInterventions(prev =>
-                                    prev.map(i => i.id === inv.id ? { ...i, checklistProgress: next } : i)
-                                  );
-                                  await updateChecklistProgress(session.student_id, inv.id, next);
-                                }}
-                                className="flex items-start gap-2 text-left w-full group"
-                              >
-                                {done
-                                  ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                                  : <Circle className="w-3.5 h-3.5 text-stone-400 shrink-0 mt-0.5 group-hover:text-stone-500" />}
-                                <span className={`text-[11px] ${done ? 'text-stone-500 line-through' : 'text-stone-600'}`}>
-                                  {step}
-                                </span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={async () => {
-                        await startIntervention(session.student_id, inv.id);
-                        setActiveInterventions(prev =>
-                          prev.map(i => i.id === inv.id ? { ...i, status: 'started' as const } : i)
-                        );
-                        onNavigate(inv.page);
-                      }}
-                      className="flex-1 py-2 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors"
-                    >
-                      {isStarted ? 'Continue' : 'Start'}
-                    </button>
-                    <button
-                      onClick={async () => {
-                        await completeIntervention(session.student_id, inv.id);
-                        setActiveInterventions(prev => prev.filter(i => i.id !== inv.id));
-                        const updated = await getCompletedInterventions(session.student_id);
-                        setCompletedInterventions(updated);
-                      }}
-                      className="px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-black hover:bg-emerald-100 transition-colors"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Intervention History Card ─────────────────────────────── */}
-      {interventionOutcomes.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Improvement History</p>
-          <div className="space-y-2">
-            {interventionOutcomes.slice(-6).reverse().map(o => (
-              <div key={o.interventionId} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
-                o.result === 'improved' ? 'bg-emerald-50 border-emerald-100' :
-                o.result === 'declined' ? 'bg-red-50 border-red-100' :
-                'bg-stone-50 border-brand-border/60'
-              }`}>
-                <span className={`text-base shrink-0 ${
-                  o.result === 'improved' ? '' : o.result === 'declined' ? '' : ''
-                }`}>
-                  {o.result === 'improved' ? '✓' : o.result === 'declined' ? '↓' : '→'}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-stone-900">{o.subject}</p>
-                  <p className="text-[10px] text-stone-500">
-                    {o.previousAvg}% → {o.newAvg}%
-                  </p>
-                </div>
-                <span className={`text-xs font-black shrink-0 ${
-                  o.result === 'improved' ? 'text-emerald-600' :
-                  o.result === 'declined' ? 'text-red-500' : 'text-stone-500'
-                }`}>
-                  {o.improvement > 0 ? `+${o.improvement}%` : `${o.improvement}%`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Momentum Section ─────────────────────────────────────── */}
-      {hasMomentum && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">This Week</p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-            {[
-              {
-                label: 'Homework Done',
-                value: completions.size,
-                color: completions.size > 0 ? 'text-emerald-600' : 'text-stone-500',
-              },
-              {
-                label: 'Topics Studied',
-                value: thisWeekStarted,
-                color: thisWeekStarted > 0 ? 'text-blue-600' : 'text-stone-500',
-              },
-              {
-                label: 'Topics Mastered',
-                value: thisWeekMastered,
-                color: thisWeekMastered > 0 ? 'text-accent' : 'text-stone-500',
-              },
-              {
-                label: 'Mark Trend',
-                value: markTrend !== null
-                  ? `${markTrend >= 0 ? '+' : ''}${markTrend.toFixed(1)}%`
-                  : '—',
-                color: markTrend === null ? 'text-stone-500'
-                     : markTrend >= 0 ? 'text-emerald-600'
-                     : 'text-red-500',
-              },
-            ].map(stat => (
-              <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-3 text-center">
-                <p className={`font-black text-xl leading-none ${stat.color}`}>{stat.value}</p>
-                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {markTrend !== null && (
-            <p className={`text-sm font-bold ${markTrend >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-              {markTrend >= 2
-                ? `Average trend is up ${markTrend.toFixed(1)}% — keep going.`
-                : markTrend >= 0
-                ? 'Average is stable — consistent effort is paying off.'
-                : `Average trend is down ${Math.abs(markTrend).toFixed(1)}% — worth reviewing recent work.`}
-            </p>
-          )}
-        </motion.div>
-      )}
-
-      {/* ── Action Queue ─────────────────────────────────────────── */}
-      {dedupedQueue.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease, delay: 0.36 }}
-          className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-        >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Recommended Actions</p>
-          <div className="space-y-2">
-            {dedupedQueue.map((item, i) => (
-              <button
-                key={i}
-                onClick={() => onNavigate(item.page)}
-                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-stone-50 transition-colors text-left group"
-              >
-                <span className={`w-2 h-2 rounded-full shrink-0 ${
-                  item.priority === 'high' ? 'bg-red-500' :
-                  item.priority === 'mid'  ? 'bg-amber-500' :
-                                             'bg-stone-300'
-                }`} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-stone-900 truncate">{item.label}</p>
-                  <p className="text-xs text-stone-500 truncate">{item.sublabel}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors shrink-0" />
-              </button>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Recent Activity + Quick Actions ──────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease, delay: 0.4 }}
-        className="card-premium bg-white rounded-[24px] border border-brand-border p-5"
-      >
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Activity</p>
-          <button onClick={() => onNavigate('marks')}
-            className="text-xs text-stone-500 hover:text-stone-600 transition-colors font-bold flex items-center gap-0.5">
-            View Marks <ChevronRight className="w-3 h-3" />
-          </button>
-        </div>
-
-        {activity.length === 0 ? (
-          <div className="flex items-center gap-2 py-3">
-            <TrendingUp className="w-8 h-8 text-stone-200" />
-            <p className="text-sm font-bold text-stone-400">No recent activity</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {activity.map((item, i) => (
-              <motion.div key={i}
-                initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease, delay: i * 0.04 }}
-                className="flex items-start gap-3">
-                {item.kind === 'mark' ? (
-                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                    <ClipboardList className="w-4 h-4 text-blue-600" />
-                  </div>
-                ) : (
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
-                    <Megaphone className="w-4 h-4 text-amber-600" />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  {item.kind === 'mark' ? (
-                    <>
-                      <p className="text-sm font-bold text-stone-900 truncate">
-                        {item.data.subject_label}: {item.data.mark}/{item.data.total}
-                      </p>
-                      <p className="text-xs text-stone-500">
-                        {Math.round((item.data.mark! / item.data.total) * 100)}% · {gradeLabel(item.data.mark!, item.data.total).label}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-sm font-bold text-stone-900 truncate">{item.data.title}</p>
-                      <p className="text-xs text-stone-500">{timeAgo(item.ts)}</p>
-                    </>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-
-        {/* Contextual quick actions */}
-        <div className="mt-4 pt-4 border-t border-brand-border/60 flex flex-wrap gap-2">
-          {isStruggling ? (
-            <>
-              <button onClick={() => onNavigate('marks')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <ClipboardList className="w-3.5 h-3.5" /> Review Marks
-              </button>
-              <button onClick={() => onNavigate('library')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <BookOpen className="w-3.5 h-3.5" /> Open Library
-              </button>
-              {lowestSubjectName && (
-                <button onClick={() => onNavigate('library')}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg text-[12px] font-bold transition-colors">
-                  <TrendingUp className="w-3.5 h-3.5" /> {lowestSubjectName.split(' ')[0]} Resources
-                </button>
-              )}
-            </>
-          ) : hasExamSoon ? (
-            <>
-              <button onClick={() => onNavigate('pastpapers')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <BookOpen className="w-3.5 h-3.5" /> Practice Papers
-              </button>
-              <button onClick={() => onNavigate('calendar')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <CalendarDays className="w-3.5 h-3.5" /> Exam Calendar
-              </button>
-              <button onClick={() => onNavigate('library')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <BookOpen className="w-3.5 h-3.5" /> Revise Topics
-              </button>
-            </>
-          ) : (
-            <>
-              <button onClick={() => onNavigate('marks')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <ClipboardList className="w-3.5 h-3.5" /> My Marks
-              </button>
-              <button onClick={() => onNavigate('library')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <BookOpen className="w-3.5 h-3.5" /> Library
-              </button>
-              <button onClick={() => onNavigate('future')}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg text-[12px] font-bold transition-colors">
-                <TrendingUp className="w-3.5 h-3.5" /> My Future
-              </button>
-            </>
-          )}
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
