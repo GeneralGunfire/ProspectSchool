@@ -1,6 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, ChevronLeft, type LucideIcon } from 'lucide-react';
+import { Shimmer } from './StudentHomePage';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
 import { computeQuizResults, type QuizResults } from '../../../features/careers/data/quizScoringLogic';
@@ -24,6 +25,8 @@ interface MyFuturePageProps {
 }
 
 // ── Small shared components ───────────────────────────────────────────────────
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -57,19 +60,23 @@ function CtaCard({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button whileTap={{ scale: 0.99 }}
       onClick={onClick}
-      className="w-full text-left card-premium-dark bg-brand-dark rounded-[24px] px-6 py-5 flex items-center gap-4 transition-colors group relative overflow-hidden border border-white/[0.06]"
+      className="w-full text-left rounded px-6 py-5 flex items-center gap-4 transition-colors group relative overflow-hidden"
+      style={{
+        background: 'var(--color-brand-dark)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+      }}
     >
-      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+      <div className="w-10 h-10 rounded bg-white/10 flex items-center justify-center shrink-0">
         <Icon className="w-5 h-5 text-white" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white font-black text-sm">{title}</p>
-        <p className="text-white/50 text-xs mt-0.5">{subtitle}</p>
+        <p className="text-white font-semibold text-[14px]">{title}</p>
+        <p className="text-white/50 text-[12px] mt-0.5">{subtitle}</p>
       </div>
       <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
-    </button>
+    </motion.button>
   );
 }
 
@@ -81,6 +88,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   const [apsData,         setApsData]         = useState<{ aps: number; subjects: { code: string; percent: number }[] } | null>(null);
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
+  const [imgLoaded,       setImgLoaded]       = useState(false);
   const [subView,         setSubView]         = useState<SubView>(initialSubView);
   const [completedInv,    setCompletedInv]    = useState<import('../../../lib/interventions').Intervention[]>([]);
   const [interventionOutcomes, setInterventionOutcomes] = useState<import('../../../lib/interventions').Outcome[]>([]);
@@ -203,8 +211,20 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-32">
-        <div className="w-6 h-6 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+      <div className="student-home min-h-full pb-16">
+        <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]" />
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 space-y-5">
+          {[0, 1, 2].map(i => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.06, ease }}
+              className="paper-card rounded p-5"
+            >
+              <Shimmer className="h-3 w-24 mb-3" />
+              <Shimmer className="h-5 w-2/3" />
+            </motion.div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -217,73 +237,96 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       </div>
     );
     return (
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={subView}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-        >
-          {/* Back to My Future */}
-          <div className="px-5 pt-5 pb-2">
-            <button
-              onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-              className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 hover:text-stone-900 transition-colors"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" /> My Future
-            </button>
-          </div>
+      <div className="student-home min-h-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={subView}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25, ease }}
+          >
+            {/* Back to My Future */}
+            <div className="px-5 pt-5 pb-2">
+              <button
+                onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500 hover:text-stone-900 transition-colors"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> My Future
+              </button>
+            </div>
 
-          <Suspense fallback={<SubSpinner />}>
-            {subView === 'quiz'      && <QuizPage     onNavigate={handleSubNavigate} />}
-            {subView === 'careers'   && <CareersPage  onNavigate={handleSubNavigate} />}
-            {subView === 'bursaries' && <BursariesPage onNavigate={handleSubNavigate} />}
-            {subView === 'aps'       && <ApsCalculatorPage session={session} />}
-          </Suspense>
-        </motion.div>
-      </AnimatePresence>
+            <Suspense fallback={<SubSpinner />}>
+              {subView === 'quiz'      && <QuizPage     onNavigate={handleSubNavigate} />}
+              {subView === 'careers'   && <CareersPage  onNavigate={handleSubNavigate} />}
+              {subView === 'bursaries' && <BursariesPage onNavigate={handleSubNavigate} />}
+              {subView === 'aps'       && <ApsCalculatorPage session={session} />}
+            </Suspense>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     );
   }
 
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto space-y-6 pb-16">
+    <div className="student-home min-h-full pb-16">
 
-      {/* ── Section 1: Profile Hero ─────────────────────────────────────────── */}
-      <Section delay={0}>
-        <div className="rounded-3xl px-7 py-6 flex flex-col sm:flex-row sm:items-center gap-5 bg-brand-dark">
-          <div className="flex-1 min-w-0">
-            <p className="text-white/40 text-[11px] font-black uppercase tracking-[0.22em] mb-1">
-              {session.school_name}
-            </p>
-            <h1 className="text-white font-display font-black text-2xl md:text-3xl leading-tight" style={{ letterSpacing: '-0.03em' }}>
-              {session.name} {session.surname}
-            </h1>
-            <p className="text-white/50 text-sm mt-0.5">
-              Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2 sm:shrink-0">
-            {[
-              { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
-              { value: String(topicsMastered),              label: 'Mastered' },
-              { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
-            ].map(stat => (
-              <div key={stat.label} className="flex flex-col items-center bg-white/10 rounded-2xl px-4 py-3 min-w-18">
-                <span className="text-white font-black text-xl leading-none">{stat.value}</span>
-                <span className="text-white/40 text-[10px] font-bold uppercase tracking-wider mt-1">{stat.label}</span>
-              </div>
-            ))}
-          </div>
+      {/* ═══ Hero — full-width crested banner ═══════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-myfuture.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-      </Section>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5"
+          >
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">{session.school_name}</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                {session.name} {session.surname}
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 shrink-0">
+              {[
+                { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
+                { value: String(topicsMastered),              label: 'Mastered' },
+                { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
+              ].map(stat => (
+                <div key={stat.label} className="flex flex-col items-center border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 min-w-18">
+                  <span className="text-white font-black text-xl leading-none">{stat.value}</span>
+                  <span className="text-white/45 text-[9px] font-bold uppercase tracking-wider mt-1">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-6 sm:pt-8 space-y-6">
 
       {/* ── Goals section ── */}
       <Section delay={0.02}>
         {!editingGoals ? (
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5">
+          <div className="paper-card rounded p-5">
             <div className="flex items-center justify-between mb-1">
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Goals</p>
               <button
@@ -331,7 +374,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           </div>
         ) : (
           /* Edit mode */
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5">
+          <div className="paper-card rounded p-5">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Set Your Goals</p>
 
             <div className="space-y-4">
@@ -421,7 +464,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           {/* Career Quiz */}
           <button
             onClick={() => handleSubNavigate('quiz')}
-            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
+            className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
@@ -440,7 +483,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           {/* Career Browser */}
           <button
             onClick={() => handleSubNavigate('careers')}
-            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
+            className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
@@ -459,7 +502,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           {/* Bursary Finder */}
           <button
             onClick={() => handleSubNavigate('bursaries')}
-            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
+            className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
@@ -478,7 +521,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           {/* APS Calculator */}
           <button
             onClick={() => handleSubNavigate('aps')}
-            className="card-premium bg-white border border-brand-border rounded-[24px] p-5 text-left hover:border-stone-400 transition-colors group"
+            className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
@@ -516,7 +559,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                  className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4"
+                  className="paper-card rounded px-5 py-4 flex items-center gap-4"
                 >
                   <div className="shrink-0 bg-brand-dark text-white rounded-xl px-3 py-1.5 text-center min-w-16">
                     <p className="font-black text-sm leading-none">{career.compatibilityScore}%</p>
@@ -560,7 +603,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
         <Eyebrow>APS &amp; University Readiness</Eyebrow>
 
         {apsData ? (
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-5">
+          <div className="paper-card rounded px-6 py-5">
             <div className="flex items-end gap-3 mb-5">
               <span className="font-black text-stone-900 leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
                 {apsData.aps}
@@ -616,7 +659,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
         <Eyebrow>Study Progress</Eyebrow>
 
         {progress.length === 0 ? (
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-6 text-center">
+          <div className="paper-card rounded px-6 py-6 text-center">
             <p className="text-stone-500 text-sm mb-4">
               You haven't started any lessons yet. Open the Library to begin.
             </p>
@@ -636,13 +679,13 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                 { label: 'Mastered',       value: topicsMastered,     color: 'text-emerald-600' },
                 { label: 'Needs Practice', value: topicsNeedPractice, color: 'text-amber-600' },
               ].map(stat => (
-                <div key={stat.label} className="card-premium bg-white rounded-[24px] border border-brand-border px-4 py-4 text-center">
+                <div key={stat.label} className="paper-card rounded px-4 py-4 text-center">
                   <p className={`font-black text-2xl ${stat.color}`}>{stat.value}</p>
                   <p className="text-xs text-stone-500 font-bold mt-0.5">{stat.label}</p>
                 </div>
               ))}
             </div>
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100">
+            <div className="paper-card rounded divide-y divide-stone-100">
               {Object.entries(bySubject).map(([subject, topics]) => {
                 const total    = topics.length;
                 const mastered = topics.filter(t => t.mastery_level === 'mastered').length;
@@ -671,7 +714,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
         <Eyebrow>Saved Bursaries</Eyebrow>
 
         {savedBursaries.length > 0 ? (
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border">
+          <div className="paper-card rounded">
             <div className="divide-y divide-stone-100">
               {savedBursaries.slice(0, 3).map(b => (
                 <div key={b.id} className="flex items-center gap-4 px-5 py-3.5">
@@ -696,7 +739,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             </div>
           </div>
         ) : (
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border px-6 py-5">
+          <div className="paper-card rounded px-6 py-5">
             <p className="text-stone-500 text-sm">
               No bursaries saved yet.{' '}
               <button
@@ -714,7 +757,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       {/* ── Section 7: Academic Journey Milestones ───────────────────────────── */}
       <Section delay={0.34}>
         <Eyebrow>Academic Journey</Eyebrow>
-        <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+        <div className="paper-card rounded overflow-hidden">
 
           {/* Learner status header */}
           <div className={`px-5 py-4 border-b border-brand-border/60 flex items-center justify-between ${learnerStatus.bg}`}>
@@ -786,7 +829,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       {growthTimeline.length > 0 && (
         <Section delay={0.35}>
           <Eyebrow>Academic Journey</Eyebrow>
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+          <div className="paper-card rounded overflow-hidden">
             <div className="px-5 pt-4 pb-2">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Your Story So Far</p>
               <div className="relative">
@@ -829,6 +872,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
         </Section>
       )}
 
+      </div>
     </div>
   );
 }

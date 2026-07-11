@@ -12,15 +12,18 @@
   --font-brand-body: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   /* ── Landing page brand tokens ──
-     Blue palette: near-white bg, deep slate-blue dark surface, cool blue
-     accent. Scoped to the landing page only — nothing outside
+     Warm navy palette — matches the student dashboard's .student-home
+     "premium paper" reskin (deep midnight navy accent, warm charcoal text,
+     cream bg) so the marketing site and the real product feel like the same
+     brand. Scoped to the landing page only — nothing outside
      src/features/landing/new/* and its shared helpers reads these. */
-  --color-brand-bg: #F0F5FA;
-  --color-brand-dark: #0B1D33;
-  --color-brand-border: #D7E3EF;
-  --color-brand-eyebrow: #5B7A99;
-  --color-brand-slate: #6E8CAA;
-  --color-brand-pale: #C7DCEE;
+  --color-brand-bg: #F7F6F2;
+  --color-brand-dark: #1F2421;
+  --color-brand-border: rgba(15, 23, 21, 0.09);
+  --color-brand-eyebrow: #6B7280;
+  --color-brand-slate: #4B5563;
+  --color-brand-pale: #E8E6DE;
+  --color-accent-soft: #2A3350;
 
   /* ── Dashboard-only background ──
      Same cream family as brand-bg but a shade deeper — the portal packs many
@@ -693,6 +696,19 @@ html {
 .badge-error   { background: #fee2e2; color: #b91c1c; }
 .badge-info    { background: #dbeafe; color: #1d4ed8; }
 .badge-neutral { background: #f1f5f9; color: #475569; }
+
+/* ─── Landing page — scoped accent override ───
+   Repoints the shared --color-accent token (globally the bright blue used
+   by shadcn defaults) to the same deep midnight navy the student dashboard
+   uses, so the marketing site's CTAs/highlights read as the same brand as
+   the real product. Scoped to .landing-page only — the rest of the app
+   (portals, admin) keeps the original blue accent. */
+.landing-page {
+  --color-accent: #0a0e1a;
+  --color-accent-soft: #2a3350;
+  --color-accent-foreground: #ffffff;
+  --color-paper-raise: #f1efe9;
+}
 
 /* ─── Student Home — "premium paper" scoped reskin ───
    Warm off-white / charcoal-text / deep-midnight-navy palette scoped to

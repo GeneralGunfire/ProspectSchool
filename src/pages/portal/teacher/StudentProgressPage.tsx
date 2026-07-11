@@ -35,6 +35,8 @@ import {
 } from '../../../lib/interventions';
 import RecordOutcomeModal, { type OutcomeTarget } from './RecordOutcomeModal';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 // ── Types ─────────────────────────────────────────────────────
 
 type View = 'list' | 'profile';
@@ -103,6 +105,7 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'mastered' | 'struggling' | 'active'>('name');
   const [filterCohort, setFilterCohort] = useState<string>('');
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Profile state
   const [activeTab, setActiveTab] = useState<ProfileTab>('progress');
@@ -295,13 +298,31 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
-      {/* Header */}
-      <div className="mb-6">
-        <span className="eyebrow">LIBRARY</span>
-        <h1 className="text-2xl font-black text-brand-dark">Students</h1>
-        <p className="text-sm text-stone-500 mt-1">Click any student to view their full profile.</p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Library</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Students</h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">Click any student to view their full profile.</p>
+          </motion.div>
+        </div>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -319,18 +340,18 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
       ) : (
         <>
           {/* Summary stats */}
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-6">
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="paper-card rounded p-4">
               <p className="text-2xl font-black text-brand-dark leading-none">{students.length}</p>
               <p className="text-[11px] font-bold text-stone-500 mt-1">Total Students</p>
             </div>
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+            <div className="paper-card rounded p-4">
               <p className="text-2xl font-black text-emerald-600 leading-none">
                 {students.reduce((s, st) => s + st.topics_mastered, 0)}
               </p>
               <p className="text-[11px] font-bold text-stone-500 mt-1">Topics Mastered</p>
             </div>
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+            <div className="paper-card rounded p-4">
               <p className="text-2xl font-black text-amber-600 leading-none">
                 {students.filter(st => st.topics_struggling > 0).length}
               </p>
@@ -498,6 +519,7 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
@@ -728,7 +750,7 @@ function ProgressTab({
           {Array.from(groups.entries()).map(([subject, rows]) => (
             <div key={subject}>
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">{subject}</p>
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
+              <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
                 {rows.map(row => {
                   const mastery = row.mastery_level;
                   const dotColor = mastery === 'mastered' ? 'bg-emerald-500' : mastery === 'needs_practice' ? 'bg-amber-500' : 'bg-stone-300';
@@ -820,7 +842,7 @@ function TopicTestStruggles({
       </div>
 
       {visible.length === 0 ? (
-        <div className="card-premium bg-emerald-50/60 border border-emerald-100 rounded-[24px] p-6 text-center">
+        <div className="paper-card rounded bg-emerald-50/60 p-6 text-center">
           <p className="text-sm font-bold text-emerald-800">No flagged sub-skills right now — last attempt on every sub-skill was correct.</p>
         </div>
       ) : (
@@ -828,7 +850,7 @@ function TopicTestStruggles({
           {Array.from(groups.entries()).map(([key, rows]) => {
             const [subjectLabel, topicLabel] = key.split('::');
             return (
-              <div key={key} className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+              <div key={key} className="paper-card rounded overflow-hidden">
                 <div className="px-4 py-3 border-b border-stone-100 flex items-center justify-between gap-2">
                   <div className="min-w-0">
                     <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">{subjectLabel}</p>
@@ -887,7 +909,7 @@ function MarksTab({ marks }: { marks: StudentResult[] | null }) {
       {Array.from(groups.entries()).map(([subject, rows]) => (
         <div key={subject}>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">{subject}</p>
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
+          <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             {rows.map(row => {
               const gl = row.mark !== null ? gradeLabel(row.mark, row.total) : null;
               return (
@@ -948,7 +970,7 @@ function HomeworkTab({
       {pending.length > 0 && (
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Pending</p>
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
+          <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             {pending.map(e => (
               <div key={e.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
@@ -967,7 +989,7 @@ function HomeworkTab({
       {completed.length > 0 && (
         <div>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Completed</p>
-          <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
+          <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             {completed.map(e => (
               <div key={e.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
@@ -1000,7 +1022,7 @@ function AnnouncementsTab({ announcements }: { announcements: Announcement[] | n
   return (
     <div className="space-y-3">
       {announcements.map(a => (
-        <div key={a.id} className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4">
+        <div key={a.id} className="paper-card rounded px-5 py-4">
           <div className="flex items-start gap-2">
             {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />}
             <p className="text-sm font-black text-stone-900">{a.title}</p>
@@ -1067,7 +1089,7 @@ function InterventionsTab({
 
       {/* ── Impact summary card ─────────────────────────── */}
       {completed.length > 0 && (
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-5">
+        <div className="paper-card rounded p-5">
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Intervention Impact</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {[
@@ -1287,7 +1309,7 @@ function ContactsTab({
   return (
     <div className="space-y-5">
       {/* Log new contact */}
-      <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5">
+      <div className="paper-card rounded p-5">
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Log Parent Contact</p>
 
         <div className="flex gap-1.5 flex-wrap mb-3">
@@ -1331,7 +1353,7 @@ function ContactsTab({
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">History</p>
           <div className="space-y-2">
             {contacts.map(c => (
-              <div key={c.id} className="card-premium bg-white rounded-[24px] border border-brand-border px-4 py-3 flex items-start gap-3">
+              <div key={c.id} className="paper-card rounded px-4 py-3 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-stone-900">{CONTACT_METHOD_LABELS[c.method]}</span>

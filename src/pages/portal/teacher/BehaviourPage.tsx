@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, Plus, Minus, X as XIcon, Trash2, AlertCircle, ListTree, Pencil, Check } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherStudents } from '../../../lib/students';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import {
   awardBehaviour, fetchBehaviourSummary, fetchStudentBehaviour, deleteBehaviourEntry,
   fetchAllBehaviourEntries, updateBehaviourEntry,
@@ -11,6 +12,8 @@ import {
 } from '../../../lib/behaviour';
 import type { Student } from '../../../lib/students';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface BehaviourPageProps { session: TeacherSession; }
 
 export default function BehaviourPage({ session }: BehaviourPageProps) {
@@ -18,6 +21,7 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
   const [summary, setSummary] = useState<Map<number, BehaviourStudentSummary>>(new Map());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const [awardTarget, setAwardTarget] = useState<Student | null>(null);
   const [timelineTarget, setTimelineTarget] = useState<Student | null>(null);
@@ -48,90 +52,134 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
     setSummary(s);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-      <div className="mb-6 flex items-start justify-between gap-4">
-        <div>
-          <span className="eyebrow">Behaviour</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Merits & Demerits</h1>
-          <p className="text-sm text-stone-500 mt-1">Award behaviour points and view each student's timeline.</p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-behaviour.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <button
-          onClick={() => setShowAllEntries(true)}
-          className="shrink-0 flex items-center gap-2 text-xs font-black text-stone-600 bg-white border border-brand-border px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors"
-        >
-          <ListTree className="w-3.5 h-3.5" /> View All Entries
-        </button>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-end justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Behaviour</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                Merits & Demerits
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                Award behaviour points and view each student's timeline.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAllEntries(true)}
+              className="shrink-0 flex items-center gap-2 text-xs font-black text-white border border-white/15 bg-white/[0.05] px-4 py-2.5 rounded hover:bg-white/[0.1] transition-colors"
+            >
+              <ListTree className="w-3.5 h-3.5" /> View All Entries
+            </button>
+          </motion.div>
+        </div>
       </div>
 
-      <div className="relative mb-4">
-        <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search students..."
-          className="w-full pl-11 pr-4 py-3 rounded-xl border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
-        />
-      </div>
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
-      <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="font-bold text-brand-dark mb-1">No students found</p>
-            <p className="text-sm text-stone-500">Students you teach will appear here.</p>
+        <div className="relative">
+          <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search students..."
+            className="w-full pl-11 pr-4 py-3 rounded border text-sm font-medium focus:outline-none transition-colors"
+            style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}
+          />
+        </div>
+
+        {loading ? (
+          <div className="paper-card rounded overflow-hidden">
+            <div className="px-5 py-4 space-y-3" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+              <Shimmer className="h-4 w-24" />
+            </div>
+            <div className="p-5 space-y-4">
+              {[0, 1, 2, 3].map(i => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="flex-1 space-y-2">
+                    <Shimmer className="h-3.5" style={{ width: `${50 - i * 5}%` }} />
+                    <Shimmer className="h-3 w-1/4" />
+                  </div>
+                  <Shimmer className="h-8 w-16 rounded" />
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-brand-border/60">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Class</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Net Points</th>
-                <th className="text-right px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((s, i) => {
-                const sum = summary.get(s.id);
-                return (
-                  <tr key={s.id} className={`border-b border-stone-50 ${i === filtered.length - 1 ? 'border-0' : ''}`}>
-                    <td className="px-5 py-3.5">
-                      <button onClick={() => setTimelineTarget(s)} className="font-bold text-brand-dark hover:underline text-left">
-                        {s.surname}, {s.name}
-                      </button>
-                    </td>
-                    <td className="px-5 py-3.5 text-stone-500">{s.cohort?.name ?? '—'}</td>
-                    <td className="px-5 py-3.5">
-                      {sum ? (
-                        <span className={`text-xs font-black px-2 py-0.5 rounded-lg ${
-                          sum.net_points > 0 ? 'bg-green-50 text-green-700' : sum.net_points < 0 ? 'bg-red-50 text-red-700' : 'bg-stone-100 text-stone-500'
-                        }`}>
-                          {sum.net_points > 0 ? '+' : ''}{sum.net_points}
-                        </span>
-                      ) : '—'}
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <motion.button
-                        whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                        onClick={() => setAwardTarget(s)}
-                        className="text-xs font-black text-white bg-brand-dark px-4 py-2 rounded-xl hover:bg-brand-dark/90 transition-colors"
-                      >
-                        Award
-                      </motion.button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+        <div className="paper-card rounded overflow-hidden">
+          {filtered.length === 0 ? (
+            <div className="p-12 text-center">
+              <p className="text-[16px] font-semibold text-brand-dark mb-1">No students found</p>
+              <p className="text-[13px] text-stone-500">Students you teach will appear here.</p>
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
+                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Class</th>
+                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Net Points</th>
+                  <th className="text-right px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((s, i) => {
+                  const sum = summary.get(s.id);
+                  return (
+                    <tr key={s.id} style={i === filtered.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
+                      <td className="px-5 py-3.5">
+                        <button onClick={() => setTimelineTarget(s)} className="font-bold text-brand-dark hover:underline text-left">
+                          {s.surname}, {s.name}
+                        </button>
+                      </td>
+                      <td className="px-5 py-3.5 text-stone-500">{s.cohort?.name ?? '—'}</td>
+                      <td className="px-5 py-3.5">
+                        {sum ? (
+                          <span className={`text-xs font-black px-2 py-0.5 rounded-lg ${
+                            sum.net_points > 0 ? 'bg-green-50 text-green-700' : sum.net_points < 0 ? 'bg-red-50 text-red-700' : 'bg-stone-100 text-stone-500'
+                          }`}>
+                            {sum.net_points > 0 ? '+' : ''}{sum.net_points}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <motion.button
+                          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                          onClick={() => setAwardTarget(s)}
+                          className="text-xs font-black text-white bg-brand-dark px-4 py-2 rounded-xl hover:bg-brand-dark/90 transition-colors"
+                        >
+                          Award
+                        </motion.button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
         )}
       </div>
 

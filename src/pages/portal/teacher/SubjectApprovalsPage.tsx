@@ -8,6 +8,8 @@ import {
   type StudentSelectionRow, type SubjectChoices,
 } from '../../../lib/subjectSelection';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface SubjectApprovalsPageProps { session: TeacherSession; }
 
 function currentIntakeYear(): number {
@@ -42,6 +44,7 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
   const [error, setError] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<number | null>(null);
   const [rejectComment, setRejectComment] = useState('');
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const year = currentIntakeYear();
 
@@ -84,94 +87,117 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
     setBusyId(null);
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!cohort) {
-    return (
-      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-        <span className="eyebrow">Homeroom</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight mb-4">Subject Selection</h1>
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
-          <p className="font-bold text-brand-dark mb-1">You're not a homeroom teacher yet</p>
-          <p className="text-sm text-stone-500">Ask your school admin to assign you to a class.</p>
-        </div>
-      </div>
-    );
-  }
-
   const submittedCount = rows.filter((r) => r.status === 'submitted').length;
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
-      <div className="mb-6">
-        <span className="eyebrow">Homeroom · {cohort.name}</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight">Subject Selection Approvals</h1>
-        <p className="text-sm text-stone-500 mt-1">
-          {submittedCount > 0 ? `${submittedCount} awaiting your review` : 'Review Grade 10 subject choices before they go to admin.'}
-        </p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">
+              {loading ? 'Homeroom' : cohort ? `Homeroom · ${cohort.name}` : 'Homeroom'}
+            </p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Subject Selection Approvals
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+              {loading ? ' ' : submittedCount > 0 ? `${submittedCount} awaiting your review` : 'Review Grade 10 subject choices before they go to admin.'}
+            </p>
+          </motion.div>
+        </div>
       </div>
 
-      {error && (
-        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
-          <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <p className="text-sm font-bold text-red-700">{error}</p>
-        </div>
-      )}
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
-      <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
-        {rows.length === 0 ? (
-          <div className="p-12 text-center">
-            <p className="font-bold text-brand-dark mb-1">No students in this class</p>
-          </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-brand-border/60">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Choices</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => {
-                const { label, className } = STATUS_LABEL[r.status];
-                const canAct = r.status === 'submitted';
-                return (
-                  <tr key={r.student_id} className={`border-b border-stone-50 ${i === rows.length - 1 ? 'border-0' : ''}`}>
-                    <td className="px-5 py-3.5 font-bold text-brand-dark">{r.surname}, {r.name}</td>
-                    <td className="px-5 py-3.5 text-stone-600">{formatChoices(r.choices)}</td>
-                    <td className="px-5 py-3.5">
-                      <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${className}`}>{label}</span>
-                    </td>
-                    <td className="px-5 py-3.5">
-                      {canAct && (
-                        <div className="flex items-center gap-2 justify-end">
-                          <motion.button whileTap={{ scale: 0.95 }} disabled={busyId === r.student_id}
-                            onClick={() => handleApprove(r.student_id)}
-                            className="flex items-center gap-1.5 text-xs font-black text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
-                            <Check className="w-3.5 h-3.5" /> Approve
-                          </motion.button>
-                          <motion.button whileTap={{ scale: 0.95 }} disabled={busyId === r.student_id}
-                            onClick={() => openReject(r.student_id)}
-                            className="flex items-center gap-1.5 text-xs font-black text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
-                            <XIcon className="w-3.5 h-3.5" /> Reject
-                          </motion.button>
-                        </div>
-                      )}
-                    </td>
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        </div>
+      ) : !cohort ? (
+        <div className="paper-card rounded p-12 text-center">
+          <p className="font-bold text-brand-dark mb-1">You're not a homeroom teacher yet</p>
+          <p className="text-sm text-stone-500">Ask your school admin to assign you to a class.</p>
+        </div>
+      ) : (
+        <>
+          {error && (
+            <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm font-bold text-red-700">{error}</p>
+            </div>
+          )}
+
+          <div className="paper-card rounded overflow-hidden">
+            {rows.length === 0 ? (
+              <div className="p-12 text-center">
+                <p className="font-bold text-brand-dark mb-1">No students in this class</p>
+              </div>
+            ) : (
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
+                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Choices</th>
+                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
+                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500"></th>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
+                </thead>
+                <tbody>
+                  {rows.map((r, i) => {
+                    const { label, className } = STATUS_LABEL[r.status];
+                    const canAct = r.status === 'submitted';
+                    return (
+                      <tr key={r.student_id} style={i === rows.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
+                        <td className="px-5 py-3.5 font-bold text-brand-dark">{r.surname}, {r.name}</td>
+                        <td className="px-5 py-3.5 text-stone-600">{formatChoices(r.choices)}</td>
+                        <td className="px-5 py-3.5">
+                          <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${className}`}>{label}</span>
+                        </td>
+                        <td className="px-5 py-3.5">
+                          {canAct && (
+                            <div className="flex items-center gap-2 justify-end">
+                              <motion.button whileTap={{ scale: 0.95 }} disabled={busyId === r.student_id}
+                                onClick={() => handleApprove(r.student_id)}
+                                className="flex items-center gap-1.5 text-xs font-black text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
+                                <Check className="w-3.5 h-3.5" /> Approve
+                              </motion.button>
+                              <motion.button whileTap={{ scale: 0.95 }} disabled={busyId === r.student_id}
+                                onClick={() => openReject(r.student_id)}
+                                className="flex items-center gap-1.5 text-xs font-black text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
+                                <XIcon className="w-3.5 h-3.5" /> Reject
+                              </motion.button>
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </>
+      )}
       </div>
 
       {rejectingId !== null && (

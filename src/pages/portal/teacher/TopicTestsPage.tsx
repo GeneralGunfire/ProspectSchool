@@ -5,6 +5,7 @@ import {
   CheckCircle2, AlertCircle, BarChart3, ArrowLeft, ArrowRight, PenLine, Pencil, BookOpenCheck,
 } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import {
   fetchTeacherTopicTests, seedCatalogTest, createTopicTest, deleteTopicTest,
@@ -16,6 +17,8 @@ import {
   type TopicTestAssignment, type TopicOverviewData, type QuestionType,
   type GradingMode, type PendingMarkingAttempt, type AttemptDetail,
 } from '../../../lib/topicTests';
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface TopicTestsPageProps {
   session: TeacherSession;
@@ -50,6 +53,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTestId, setSelectedTestId] = useState<number | null>(initialTestId ?? null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     if (initialTestId) {
@@ -112,33 +116,58 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
-      <div className="flex items-center justify-between mb-7 gap-4">
-        <div>
-          <span className="eyebrow">Portal</span>
-          <h1 className="text-2xl font-bold text-brand-dark tracking-tight">Topic Tests</h1>
-          <p className="text-sm text-stone-500 mt-1 leading-relaxed">
-            Short, timed tests that pinpoint exactly what a student is struggling with — invisible to students until you assign them.
-          </p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-topictests.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button onClick={() => setShowCustomCreate(true)}
-            className="flex items-center gap-2 bg-white border border-stone-200 text-brand-dark text-sm font-medium px-4 py-2.5 rounded-xl hover:border-stone-300 transition-colors duration-150 active:scale-[0.98]">
-            <Pencil className="w-4 h-4" /> Build Custom Test
-          </button>
-          <button onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-stone-800 transition-colors duration-150 active:scale-[0.98]">
-            <Plus className="w-4 h-4" /> Assign Test
-          </button>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Topic Tests</h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
+              Short, timed tests that pinpoint exactly what a student is struggling with — invisible to students until you assign them.
+            </p>
+          </motion.div>
+          <div className="flex items-center gap-2 shrink-0">
+            <motion.button onClick={() => setShowCustomCreate(true)} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-black px-5 py-2.5 rounded backdrop-blur-sm hover:bg-white/15 transition-colors">
+              <Pencil className="w-4 h-4" /> Build Custom Test
+            </motion.button>
+            <motion.button onClick={() => setShowCreate(true)} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+              <Plus className="w-4 h-4" /> Assign Test
+            </motion.button>
+          </div>
         </div>
       </div>
 
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-stone-200 border-t-brand-dark rounded-full animate-spin" />
+        <div className="space-y-2.5 max-w-2xl">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="paper-card rounded p-4 flex items-center gap-3">
+              <Shimmer className="w-9 h-9 rounded shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-4" style={{ width: `${50 - i * 6}%` }} />
+                <Shimmer className="h-3 w-1/3" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : allTests.length === 0 ? (
-        <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center">
+        <div className="paper-card rounded p-12 text-center">
           <div className="w-11 h-11 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <ClipboardCheck className="w-5 h-5 text-stone-500" />
           </div>
@@ -171,6 +200,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
           ))}
         </div>
       )}
+      </div>
 
       {/* Create test modal (predefined/CAPS catalog) */}
       <AnimatePresence>
@@ -266,7 +296,7 @@ function TestCard({ test, onAssign, onOverview, onDelete }: {
   test: TopicTest; onAssign: () => void; onOverview: () => void; onDelete: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+    <div className="paper-card rounded overflow-hidden">
       <div className="px-5 py-4 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
           <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
@@ -821,7 +851,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
       </div>
 
       {/* Sub-skill breakdown */}
-      <div className="rounded-2xl border border-stone-200 bg-white p-6 mb-5">
+      <div className="paper-card rounded p-6 mb-5">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500 mb-4">Class-wide sub-skill breakdown</p>
         {overview.subskills.every((s) => s.totalCount === 0) ? (
           <p className="text-sm text-stone-500">No attempts submitted yet.</p>
@@ -855,7 +885,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
 
       {/* Misconception patterns */}
       {overview.misconceptions.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 mb-5">
+        <div className="paper-card rounded p-6 mb-5">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500 mb-1">Misconception patterns</p>
           <p className="text-xs text-stone-400 mb-4">Wrong answers that reveal a specific, recognisable error — not just "incorrect."</p>
           <div className="space-y-2.5">
@@ -876,7 +906,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
       )}
 
       {/* Per-student results */}
-      <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden mb-5">
+      <div className="paper-card rounded overflow-hidden mb-5">
         <div className="px-6 py-4 border-b border-stone-100">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Individual results</p>
         </div>
@@ -917,7 +947,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
       </AnimatePresence>
 
       {/* Questions */}
-      <div className="rounded-2xl border border-stone-200 bg-white p-6">
+      <div className="paper-card rounded p-6">
         <div className="flex items-center justify-between mb-4">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-stone-500">Questions in this test</p>
           <button onClick={() => setShowAddQuestion(true)}
@@ -1322,7 +1352,7 @@ function MarkingScreen({ topicTestId, onBack }: { topicTestId: number; onBack: (
       </div>
 
       {pending.length === 0 ? (
-        <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center">
+        <div className="paper-card rounded p-12 text-center">
           <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
@@ -1332,7 +1362,7 @@ function MarkingScreen({ topicTestId, onBack }: { topicTestId: number; onBack: (
       ) : (
         <div className="space-y-5">
           {pending.map((row) => (
-            <div key={row.attempt.id} className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+            <div key={row.attempt.id} className="paper-card rounded overflow-hidden">
               <div className="px-6 py-4 border-b border-stone-100">
                 <p className="text-sm font-semibold text-brand-dark">{row.student_surname}, {row.student_name}</p>
                 <p className="text-xs text-stone-500 mt-0.5">

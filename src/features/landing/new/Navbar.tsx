@@ -16,7 +16,7 @@ export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           <div className="w-full flex justify-between items-center">
             {/* Logo */}
             <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer">
-              <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+              <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
               <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
             </button>
 
@@ -26,7 +26,7 @@ export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
                 <a
                   key={label}
                   href={href}
-                  className="text-[12px] font-bold text-slate-500 hover:text-brand-dark transition-colors"
+                  className="text-[12px] font-bold text-brand-slate hover:text-brand-dark transition-colors"
                 >
                   {label}
                 </a>
@@ -36,7 +36,7 @@ export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
             {/* CTA */}
             <button
               onClick={() => onNavigate('portal')}
-              className="rounded-full px-5 py-2 text-[12px] font-bold tracking-wide active:scale-[0.97] transition-all cursor-pointer bg-brand-dark text-white hover:bg-slate-800"
+              className="rounded-full px-5 py-2 text-[12px] font-bold tracking-wide active:scale-[0.97] transition-all cursor-pointer bg-brand-dark text-white hover:bg-brand-dark/90"
             >
               Portal Login
             </button>

@@ -5,11 +5,14 @@ import {
   RefreshCw, CheckCircle2, Sparkles, Search, Info, ArrowRight, Gauge,
 } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchTeacherStudentProgress, type StudentProgressSummary } from '../../../lib/studyProgress';
 import { fetchStudentResults } from '../../../lib/marks';
 import { fetchSchoolEvents } from '../../../lib/events';
 import { getInterventions, getOutcomes, syncInterventionsFromRisk, type Intervention, type Outcome } from '../../../lib/interventions';
 import { computeStudentInsights, type SubjectRisk, type RevisionRecommendation, type RiskLevel } from '../../../lib/studentInsights';
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 // ── Row state ──────────────────────────────────────────────────
 
@@ -68,6 +71,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
   const [search, setSearch] = useState('');
   const [filterRisk, setFilterRisk] = useState<RiskLevel | ''>('');
   const [showHow, setShowHow] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -205,22 +209,40 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
-      {/* Header */}
-      <div className="mb-4">
-        <span className="eyebrow">EARLY WARNING</span>
-        <h1 className="text-2xl font-black text-brand-dark">At-Risk Students</h1>
-        <p className="text-sm text-stone-500 mt-1">
-          Live risk scoring from marks, trends and exam proximity. Expand a student to see exactly why they're flagged.
-        </p>
-        <button
-          onClick={() => setShowHow(v => !v)}
-          className="mt-2.5 flex items-center gap-1.5 text-[11px] font-black text-blue-600 hover:text-blue-800 transition-colors"
-        >
-          <Info className="w-3.5 h-3.5" />
-          {showHow ? 'Hide how this works' : 'How does this work?'}
-        </button>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Early Warning</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>At-Risk Students</h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
+              Live risk scoring from marks, trends and exam proximity. Expand a student to see exactly why they're flagged.
+            </p>
+            <button
+              onClick={() => setShowHow(v => !v)}
+              className="mt-2.5 flex items-center gap-1.5 text-[11px] font-black text-white/70 hover:text-white transition-colors"
+            >
+              <Info className="w-3.5 h-3.5" />
+              {showHow ? 'Hide how this works' : 'How does this work?'}
+            </button>
+          </motion.div>
+        </div>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       <AnimatePresence>
         {showHow && (
@@ -231,7 +253,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden mb-6"
           >
-            <div className="bg-stone-50 border border-brand-border rounded-[24px] p-5">
+            <div className="paper-card rounded p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">The Pipeline</p>
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-stretch mb-4">
@@ -289,12 +311,17 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
       </AnimatePresence>
 
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full"
-          />
+        <div className="space-y-2">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="paper-card rounded p-3 flex items-center gap-3">
+              <Shimmer className="w-8 h-8 rounded-full shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-3" style={{ width: `${40 - i * 4}%` }} />
+                <Shimmer className="h-2.5 w-1/4" />
+              </div>
+              <Shimmer className="h-5 w-16 rounded-full shrink-0" />
+            </div>
+          ))}
         </div>
       ) : allRows.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -312,8 +339,8 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
                 <button
                   key={level}
                   onClick={() => setFilterRisk(active ? '' : level)}
-                  className={`card-premium rounded-[24px] border p-4 text-left transition-all ${
-                    active ? `${style.bg} ${style.border}` : 'bg-white border-brand-border hover:border-stone-300'
+                  className={`paper-card rounded p-4 text-left transition-all ${
+                    active ? `${style.bg} ${style.border}` : ''
                   }`}
                 >
                   <p className={`text-2xl font-black leading-none ${style.text}`}>{counts[level]}</p>
@@ -351,6 +378,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }

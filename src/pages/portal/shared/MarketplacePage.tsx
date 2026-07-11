@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, X, Trash2, ShoppingBag, CheckCircle2, ImagePlus, Heart, Tag, Users, ChevronLeft, ChevronRight, HandHeart, BookOpen,
 } from 'lucide-react';
+import { Shimmer } from '../student/StudentHomePage';
 import {
   fetchActiveListings, fetchMyListings, createListing, markListingSold, deleteListing,
   toggleInterest, isInterested, fetchInterestedUsers, getListingImageUrl,
@@ -31,6 +32,8 @@ const CONDITIONS: { id: ListingCondition; label: string }[] = [
 function formatPrice(n: number) {
   return `R${n.toLocaleString('en-ZA', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 }
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface MarketplacePageProps {
   sellerType: SellerType;
@@ -65,6 +68,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
   const [guideItems, setGuideItems]         = useState<SupplyGuideItem[]>([]);
   const [removedIds, setRemovedIds]         = useState<Set<number>>(new Set());
   const [loading, setLoading]               = useState(true);
+  const [imgLoaded, setImgLoaded]           = useState(false);
   const [imageUrls, setImageUrls]           = useState<Map<string, string>>(new Map());
   const [interestedMap, setInterestedMap]   = useState<Map<number, boolean>>(new Map());
   const [toast, setToast]                   = useState<string | null>(null);
@@ -307,7 +311,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
   const wantedList = tab === 'wanted' ? openWanted : myWanted;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
+    <div className="student-home min-h-full pb-16">
 
       {/* Toast */}
       <AnimatePresence>
@@ -315,49 +319,84 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           <motion.div
             initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 text-white text-sm font-bold px-5 py-3 rounded shadow-xl"
+            style={{ background: 'var(--color-brand-dark)' }}
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <span className="eyebrow">School Supplies</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Marketplace</h1>
+      {/* ═══ Hero — full-width crested banner ═══════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-marketplace.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        {(tab === 'browse' || tab === 'mine') && (
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { closeSellForm(); setTab('sell'); }}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-end justify-between gap-4"
           >
-            <Plus className="w-4 h-4" /> Sell an Item
-          </motion.button>
-        )}
-        {(tab === 'wanted' || tab === 'my-wanted') && (
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { closeWantedForm(); setTab('post-wanted'); }}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Post a Request
-          </motion.button>
-        )}
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">School Supplies</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                Marketplace
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                Buy, sell and request textbooks and supplies with your school community.
+              </p>
+            </div>
+            {(tab === 'browse' || tab === 'mine') && (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { closeSellForm(); setTab('sell'); }}
+                className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
+                style={{ background: 'var(--color-accent)' }}
+              >
+                <Plus className="w-4 h-4" /> Sell an Item
+              </motion.button>
+            )}
+            {(tab === 'wanted' || tab === 'my-wanted') && (
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { closeWantedForm(); setTab('post-wanted'); }}
+                className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
+                style={{ background: 'var(--color-accent)' }}
+              >
+                <Plus className="w-4 h-4" /> Post a Request
+              </motion.button>
+            )}
+          </motion.div>
+        </div>
       </div>
 
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-6 sm:pt-8">
+
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-6 bg-stone-100 rounded-xl p-1 w-fit flex-wrap">
+      <div className="flex items-center gap-1 mb-6 rounded p-1 w-fit flex-wrap" style={{ background: 'var(--color-paper-raise)' }}>
         {(['browse', 'mine', 'wanted', 'my-wanted', 'guide'] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 rounded-lg text-sm font-black transition-colors ${
+            className={`px-4 py-2 rounded text-[13px] font-bold transition-colors ${
               tab === t || (tab === 'sell' && (t === 'browse')) || (tab === 'post-wanted' && t === 'wanted')
-                ? 'bg-white text-brand-dark shadow-sm' : 'text-stone-500 hover:text-stone-700'
+                ? 'bg-white text-brand-dark' : 'text-stone-500 hover:text-stone-700'
             }`}
+            style={(tab === t || (tab === 'sell' && (t === 'browse')) || (tab === 'post-wanted' && t === 'wanted'))
+              ? { boxShadow: '0 1px 3px rgba(0,0,0,0.08)' } : undefined}
           >
             {t === 'browse' ? 'Browse' : t === 'mine' ? 'My Listings' : t === 'wanted' ? 'Wanted' : t === 'my-wanted' ? 'My Requests' : 'Supply Guide'}
           </button>
@@ -365,7 +404,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
       </div>
 
       {tab === 'sell' ? (
-        <div className="card-premium bg-white rounded-[24px] border border-brand-border p-6 space-y-4">
+        <div className="paper-card rounded p-6 space-y-4">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
             <input
@@ -516,7 +555,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           </div>
         </div>
       ) : tab === 'post-wanted' ? (
-        <div className="card-premium bg-white rounded-[24px] border border-brand-border p-6 space-y-4">
+        <div className="paper-card rounded p-6 space-y-4">
           <div>
             <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">What are you looking for? *</label>
             <input
@@ -583,12 +622,21 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           </div>
         </div>
       ) : loading ? (
-        <div className="flex items-center justify-center py-24">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full"
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[0, 1, 2, 3].map(i => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.05, ease }}
+              className="paper-card rounded overflow-hidden"
+            >
+              <Shimmer className="h-36 w-full rounded-none" />
+              <div className="p-4 space-y-2">
+                <Shimmer className="h-3 w-1/3" />
+                <Shimmer className="h-4 w-2/3" />
+                <Shimmer className="h-5 w-1/4" />
+              </div>
+            </motion.div>
+          ))}
         </div>
       ) : (tab === 'wanted' || tab === 'my-wanted') ? (
         wantedList.length === 0 ? (
@@ -610,7 +658,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                   key={w.id}
                   initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  className={`card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4 ${w.status === 'closed' ? 'opacity-60' : ''}`}
+                  className={`paper-card rounded px-5 py-4 flex items-center gap-4 ${w.status === 'closed' ? 'opacity-60' : ''}`}
                 >
                   <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
                     <HandHeart className="w-4 h-4 text-stone-600" />
@@ -675,7 +723,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           return (
             <div className="space-y-6">
               {sellerType === 'student' && (
-                <div className="card-premium bg-brand-dark rounded-[24px] px-6 py-5 flex items-center justify-between">
+                <div className="rounded px-6 py-5 flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-widest text-white/50">Shopping List</p>
                     <p className="text-2xl font-black text-white mt-0.5">{formatPrice(total)}</p>
@@ -694,7 +742,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                           key={item.id}
                           initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.03 }}
-                          className={`card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4 ${removed ? 'opacity-50' : ''}`}
+                          className={`paper-card rounded px-5 py-4 flex items-center gap-4 ${removed ? 'opacity-50' : ''}`}
                         >
                           {sellerType === 'student' && (
                             <button
@@ -759,7 +807,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                 key={l.id}
                 initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className={`card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden ${l.status === 'sold' ? 'opacity-60' : ''}`}
+                className={`paper-card rounded overflow-hidden ${l.status === 'sold' ? 'opacity-60' : ''}`}
               >
                 <div
                   onClick={() => { setDetailListing(l); setDetailImageIndex(0); }}
@@ -849,6 +897,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           })}
         </div>
       )}
+      </div>
 
       {/* ── Listing Detail Modal ──────────────────────────────── */}
       <AnimatePresence>

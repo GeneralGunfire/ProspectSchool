@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, X, Trash2, FileText, ExternalLink, FolderOpen, CheckCircle2, Paperclip,
 } from 'lucide-react';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import {
   fetchTeacherPastPapers, createPastPaper, deletePastPaper, getPastPaperDownloadUrl,
   type PastPaper,
@@ -19,6 +20,8 @@ function formatDate(s: string) {
   return new Date(s).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface PastPapersPageProps { session: TeacherSession; }
 
 const emptyForm = {
@@ -33,6 +36,7 @@ const emptyForm = {
 export default function PastPapersPage({ session }: PastPapersPageProps) {
   const [papers, setPapers]       = useState<PastPaper[]>([]);
   const [loading, setLoading]     = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [subjects, setSubjects]   = useState<Subject[]>([]);
   const [modal, setModal]         = useState(false);
   const [form, setForm]           = useState(emptyForm);
@@ -138,7 +142,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
+    <div className="student-home min-h-full pb-16">
 
       {/* Toast */}
       <AnimatePresence>
@@ -153,48 +157,86 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
         )}
       </AnimatePresence>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <span className="eyebrow">Past Papers</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Past Papers</h1>
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-pastpapers.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <motion.button
-          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); setFile(null); setMemoFile(null); }}
-          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" /> Upload Paper
-        </motion.button>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-end justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Past Papers</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                Past Papers
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                Upload papers for students to browse and practise with.
+              </p>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+              onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); setFile(null); setMemoFile(null); }}
+              className="shrink-0 flex items-center gap-2 text-white text-sm font-black px-4 py-2.5 rounded border border-white/15 bg-white/[0.05] hover:bg-white/[0.1] transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Upload Paper
+            </motion.button>
+          </motion.div>
+        </div>
       </div>
+
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {/* Content */}
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full"
-          />
+        <div className="space-y-2.5">
+          {[0, 1, 2, 3].map(i => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.05, ease }}
+              className="paper-card rounded p-4 flex items-center gap-3"
+            >
+              <Shimmer className="w-9 h-9 rounded shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-4" style={{ width: `${55 - i * 6}%` }} />
+                <Shimmer className="h-3 w-1/3" />
+              </div>
+            </motion.div>
+          ))}
         </div>
       ) : papers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-500">No past papers yet.</p>
-          <p className="text-xs text-stone-400 mt-1">Upload papers — students can browse and download them.</p>
+        <div className="paper-card rounded p-5 sm:p-7 flex flex-col items-center justify-center py-20 text-center">
+          <FolderOpen className="w-9 h-9 text-stone-200 mb-4" />
+          <p className="text-[16px] font-semibold text-brand-dark">No past papers yet.</p>
+          <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Upload papers — students can browse and download them.</p>
         </div>
       ) : (
         <div className="space-y-6">
           {Array.from(grouped.entries()).map(([subject, list]) => (
             <div key={subject}>
-              <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">{subject}</p>
-              <div className="space-y-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">{subject}</p>
+              <div className="space-y-2.5">
                 {list.map((p, i) => (
                   <motion.div
                     key={p.id}
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.03 }}
-                    className="card-premium bg-white rounded-[24px] border border-brand-border px-5 py-4 flex items-center gap-4"
+                    className="paper-card rounded px-5 py-4 flex items-center gap-4"
                   >
                     {/* Icon with memo dot */}
                     <div className="relative w-9 h-9 shrink-0">
@@ -267,6 +309,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
           ))}
         </div>
       )}
+      </div>
 
       {/* ── Upload Modal ──────────────────────────────────────── */}
       <AnimatePresence>

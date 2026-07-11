@@ -8,6 +8,8 @@ import {
 } from '../../../lib/students';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface StudentAssignmentsPageProps { session: AdminSession; }
 
 function initials(name: string, surname: string) {
@@ -31,6 +33,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
   const [confirmRemove, setConfirmRemove] = useState<AssignmentRow | null>(null);
   const [removing, setRemoving] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -122,23 +125,43 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
   };
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <span className="eyebrow">Admin</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Student Assignments</h1>
-          <p className="text-sm text-stone-500 mt-1">Manage which teachers teach which students, and for which subjects.</p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <motion.button onClick={openAssign} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
-          <UserPlus className="w-4 h-4" /> Assign Teacher
-        </motion.button>
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
+              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Student Assignments
+            </h1>
+            <p className="text-[11px] text-white/60 mt-1.5 font-medium">Manage which teachers teach which students, and for which subjects.</p>
+          </div>
+          <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            <UserPlus className="w-4 h-4" /> Assign Teacher
+          </motion.button>
+        </div>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {/* Search */}
       {!loading && rows.length > 0 && (
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3">
           <div className="flex-1 min-w-48 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
@@ -156,11 +179,11 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
 
       {/* List, grouped by student */}
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        <div className="paper-card rounded p-5 space-y-3">
+          {[0, 1, 2].map(i => <div key={i} className="h-10 w-full bg-stone-100 rounded animate-pulse" />)}
         </div>
       ) : rows.length === 0 ? (
-        <div className="card-premium bg-white border border-brand-border rounded-3xl p-12 text-center">
+        <div className="paper-card rounded p-12 text-center">
           <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <UserPlus className="w-5 h-5 text-stone-500" />
           </div>
@@ -182,8 +205,8 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.15), duration: 0.18 }}
-                className={`card-premium bg-white rounded-2xl overflow-hidden border transition-colors ${
-                  isExpanded ? 'border-stone-300 shadow-sm' : 'border-brand-border hover:border-stone-300'
+                className={`paper-card rounded overflow-hidden transition-colors ${
+                  isExpanded ? 'border-stone-300 shadow-sm' : 'hover:border-stone-300'
                 }`}
               >
                 {/* Collapsed header — always visible, click to expand/collapse */}
@@ -252,6 +275,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
           })}
         </div>
       )}
+      </div>
 
       {/* Assign modal */}
       <AnimatePresence>

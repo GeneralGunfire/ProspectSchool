@@ -40,4 +40,6 @@ export {
   Paperclip,
   ClipboardCheck,
   CalendarClock,
+  Star,
+  Play,
 } from 'lucide-react';

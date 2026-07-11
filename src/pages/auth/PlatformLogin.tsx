@@ -26,7 +26,7 @@ export default function PlatformLogin({ onNavigate }: { onNavigate: (page: strin
     >
       <div className="relative z-10 flex items-center justify-between px-8 h-16 border-b border-brand-border">
         <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
-          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+          <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
           <span className="text-brand-dark font-black text-sm tracking-tight">Prospect</span>
         </button>
         <button

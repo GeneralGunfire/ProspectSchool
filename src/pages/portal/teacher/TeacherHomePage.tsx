@@ -20,6 +20,7 @@ import { createIntervention } from '../../../lib/interventions';
 import { syncTeacherActions, dismissAction, riskKey, gapKey } from '../../../lib/actionCenter';
 import type { TeacherSession } from '../../../lib/auth';
 import { X } from 'lucide-react';
+import { Shimmer } from '../../../shared/components/Shimmer';
 
 function formatDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', {
@@ -89,6 +90,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   // and stays dismissed on the next visit instead of re-triaging every time.
   const [actionIdByKey, setActionIdByKey] = useState<Map<string, number>>(new Map());
   const [dismissed,     setDismissed]     = useState<Set<string>>(new Set());
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   function dismiss(key: string) {
     const id = actionIdByKey.get(key);
@@ -239,28 +241,51 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   const nextEvent = upcomingEvents[0] ?? null;
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:px-6 md:p-8 space-y-5 sm:space-y-6">
+    <div className="student-home min-h-full pb-16">
 
-      {/* ── Header ───────────────────────────────────────────────── */}
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
-        <span className="eyebrow">Overview</span>
-        <h1 className="font-display font-black text-brand-dark text-2xl sm:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
-          Welcome back, <em className="font-serif-accent text-accent">{session.name}</em>.
-        </h1>
-        <p className="text-sm text-stone-500 mt-1.5">{session.school_name}</p>
-      </motion.div>
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-emblem.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Overview</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Welcome back, {session.name}.
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">{session.school_name}</p>
+          </motion.div>
+        </div>
+      </div>
 
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className="paper-card rounded p-5">
+              <Shimmer className="h-3 w-2/3 mb-3" />
+              <Shimmer className="h-8 w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : (
+      <>
       {/* ── 4 stat cards ─────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -292,7 +317,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Students</p>
           <p className="font-black text-4xl text-brand-dark">{studentCount}</p>
@@ -306,7 +331,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Mark Sheets</p>
           <p className="font-black text-4xl text-brand-dark">
@@ -322,7 +347,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
           <p className="font-black text-4xl text-brand-dark">{upcomingEvents.length}</p>
@@ -338,7 +363,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.18 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -459,7 +484,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.20 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -519,7 +544,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.22 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
@@ -564,7 +589,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.24 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Academic Impact</p>
           <div className="grid grid-cols-3 gap-3 mb-3">
@@ -611,7 +636,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.26 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">What Works Best</p>
           <div className="space-y-2.5">
@@ -652,7 +677,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.28 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Class Health</p>
           <div className="space-y-3">
@@ -699,7 +724,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.30 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Homework Completion</p>
           <div className="space-y-3">
@@ -729,7 +754,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       <motion.div
         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease, delay: 0.32 }}
-        className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+        className="paper-card rounded p-5"
       >
         <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Quick Actions</p>
         <div className="grid grid-cols-2 gap-2">
@@ -756,7 +781,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.34 }}
-          className="card-premium bg-white border border-brand-border rounded-[24px] p-5"
+          className="paper-card rounded p-5"
         >
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Upcoming Events</p>
           <div className="space-y-2">
@@ -778,7 +803,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           </div>
         </motion.div>
       )}
-
+      </>
+      )}
+      </div>
     </div>
   );
 }

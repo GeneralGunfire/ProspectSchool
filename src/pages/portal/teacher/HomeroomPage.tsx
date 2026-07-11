@@ -8,6 +8,8 @@ import {
   type CohortWithHomeroom, type HomeroomStudent, type AttendanceRecord, type AttendanceStatus, type AttendanceSummary,
 } from '../../../lib/homeroom';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface HomeroomPageProps { session: TeacherSession; }
 
 // Per-student marking buttons — non_school_day is deliberately excluded here,
@@ -67,6 +69,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   const [markingHoliday, setMarkingHoliday] = useState(false);
   const [confirmHoliday, setConfirmHoliday] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -158,41 +161,59 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (!cohort) {
-    return (
-      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-        <span className="eyebrow">Homeroom</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight mb-4">Homeroom</h1>
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
-          <p className="font-bold text-brand-dark mb-1">You're not a homeroom teacher yet</p>
-          <p className="text-sm text-stone-500">Ask your school admin to assign you to a class.</p>
-        </div>
-      </div>
-    );
-  }
-
   const presentCount = [...attendance.values()].filter((a) => a.status === 'present').length;
   const isNonSchoolDay = roster.length > 0 && roster.every((s) => attendance.get(s.id)?.status === 'non_school_day');
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-        <div>
-          <span className="eyebrow">Homeroom</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">{cohort.name}</h1>
-          <p className="text-sm text-stone-500 mt-1">
-            {roster.length} students {isNonSchoolDay ? '· Not a school day' : `· ${presentCount} marked present`}
-          </p>
-        </div>
+    <div className="student-home min-h-full pb-16">
 
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-homeroom.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Homeroom</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              {loading ? 'Homeroom' : cohort ? cohort.name : 'Homeroom'}
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+              {loading ? ' ' : !cohort ? 'You\'re not a homeroom teacher yet.' : `${roster.length} students ${isNonSchoolDay ? '· Not a school day' : `· ${presentCount} marked present`}`}
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        </div>
+      ) : !cohort ? (
+        <div className="paper-card rounded p-12 text-center">
+          <p className="font-bold text-brand-dark mb-1">You're not a homeroom teacher yet</p>
+          <p className="text-sm text-stone-500">Ask your school admin to assign you to a class.</p>
+        </div>
+      ) : (
+        <>
+      <div className="flex items-center justify-end gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <button onClick={() => setDate((d) => addDays(d, -1))}
             className="p-2.5 rounded-xl border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors">
@@ -216,7 +237,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       </div>
 
       {saveError && (
-        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           <p className="text-sm font-bold text-red-700">{saveError}</p>
         </div>
@@ -224,7 +245,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
 
       {/* Legend — explains what each icon in the grid means */}
       {roster.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mb-4 px-1">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-1">
           {STATUS_ORDER.map((status) => {
             const { label, dotClass } = STATUS_CONFIG[status];
             return (
@@ -238,7 +259,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       )}
 
       {roster.length > 0 && (
-        <div className="flex justify-end gap-2 mb-3 flex-wrap">
+        <div className="flex justify-end gap-2 flex-wrap">
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => setConfirmHoliday(true)} disabled={markingHoliday}
@@ -262,7 +283,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       )}
 
       {isNonSchoolDay && (
-        <div className="flex items-center gap-2.5 mb-3 px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl">
           <CalendarOff className="w-4 h-4 text-stone-500 shrink-0" />
           <p className="text-sm font-bold text-stone-600">
             {displayDate} is marked as not a school day. It won't count toward attendance percentages.
@@ -270,7 +291,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
         </div>
       )}
 
-      <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
+      <div className="paper-card rounded overflow-hidden">
         {roster.length === 0 ? (
           <div className="p-12 text-center">
             <p className="font-bold text-brand-dark mb-1">No students in this class</p>
@@ -279,7 +300,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-brand-border/60">
+              <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
                 <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Month %</th>
@@ -292,7 +313,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                 const rowSummary = summary.get(s.id);
                 const pct = rowSummary ? attendancePercent(rowSummary) : null;
                 return (
-                  <tr key={s.id} className={`border-b border-stone-50 ${i === roster.length - 1 ? 'border-0' : ''}`}>
+                  <tr key={s.id} style={i === roster.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
                     <td className="px-5 py-3.5 font-bold text-brand-dark">{s.surname}, {s.name}</td>
                     <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{s.student_code}</td>
                     <td className="px-5 py-3.5">
@@ -336,6 +357,9 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
             </tbody>
           </table>
         )}
+      </div>
+      </>
+      )}
       </div>
 
       {/* Confirm "Not a School Day" — overwrites the whole class's attendance for the date */}

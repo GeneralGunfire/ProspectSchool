@@ -15,6 +15,8 @@ interface ClassDetailPageProps {
   onBack: () => void;
 }
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDetailPageProps) {
   const [cohort, setCohort] = useState<CohortWithHomeroom | null>(null);
   const [roster, setRoster] = useState<DirectoryStudent[]>([]);
@@ -24,6 +26,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
   const [search, setSearch] = useState('');
   const [addingId, setAddingId] = useState<number | null>(null);
   const [viewingStudentId, setViewingStudentId] = useState<number | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -61,37 +64,55 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
     `${s.name} ${s.surname} ${s.student_code}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1.5 text-sm font-bold text-stone-500 hover:text-brand-dark transition-colors mb-4">
-        <ArrowLeft className="w-4 h-4" /> Back to Classes
-      </button>
+    <div className="student-home min-h-full pb-16">
 
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <span className="eyebrow">Grade {cohort?.grade}</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">{cohort?.name ?? 'Class'}</h1>
-          <p className="text-sm text-stone-500 mt-1">
-            {roster.length} student{roster.length === 1 ? '' : 's'}
-            {cohort?.homeroom_teacher_name && ` · Homeroom: ${cohort.homeroom_teacher_name} ${cohort.homeroom_teacher_surname}`}
-          </p>
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
-          <Plus className="w-4 h-4" /> Add Student
-        </motion.button>
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-xs font-bold text-white/60 hover:text-white transition-colors mb-4">
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to Classes
+          </button>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Grade {cohort?.grade}</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
+                style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                {cohort?.name ?? 'Class'}
+              </h1>
+              <p className="text-[11px] text-white/60 mt-1.5 font-medium">
+                {roster.length} student{roster.length === 1 ? '' : 's'}
+                {cohort?.homeroom_teacher_name && ` · Homeroom: ${cohort.homeroom_teacher_name} ${cohort.homeroom_teacher_surname}`}
+              </p>
+            </div>
+            <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+              <Plus className="w-4 h-4" /> Add Student
+            </motion.button>
+          </div>
+        </div>
       </div>
 
-      {roster.length === 0 ? (
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
+      {loading ? (
+        <div className="paper-card rounded p-5 space-y-3">
+          {[0, 1, 2].map(i => <div key={i} className="h-10 w-full bg-stone-100 rounded animate-pulse" />)}
+        </div>
+      ) : roster.length === 0 ? (
+        <div className="paper-card rounded p-12 text-center">
           <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Users className="w-5 h-5 text-stone-500" />
           </div>
@@ -103,7 +124,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
           </button>
         </div>
       ) : (
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
+        <div className="paper-card rounded overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -128,6 +149,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
           </table>
         </div>
       )}
+      </div>
 
       {/* Add student modal */}
       <AnimatePresence>

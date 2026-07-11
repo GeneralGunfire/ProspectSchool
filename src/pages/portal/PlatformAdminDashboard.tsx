@@ -41,25 +41,35 @@ function PlatformTopBar({ session, crumb, onHome, onSignOut }: {
   onSignOut: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between px-6 md:px-10 h-16 bg-white border-b border-brand-border">
-      <div className="flex items-center gap-2 min-w-0">
-        <button onClick={onHome} className="flex items-center gap-2 cursor-pointer shrink-0">
-          <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
-          <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect Platform</span>
-        </button>
-        {crumb && (
-          <>
-            <span className="text-stone-300 shrink-0">/</span>
-            <span className="text-sm font-bold text-stone-600 truncate">{crumb}</span>
-          </>
-        )}
-      </div>
-      <div className="flex items-center gap-4 shrink-0">
-        <span className="text-sm font-bold text-stone-600 hidden sm:inline">{session.name}</span>
-        <button onClick={onSignOut}
-          className="flex items-center gap-1.5 text-sm font-bold text-red-500 hover:text-red-600 transition-colors">
-          <LogOut className="w-4 h-4" /> Sign Out
-        </button>
+    <div className="p-3 pb-0">
+      <div className="flex items-center justify-between px-6 md:px-10 h-16 rounded-[14px] bg-white"
+        style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+        <div className="flex items-center gap-2 min-w-0">
+          <button onClick={onHome} className="flex items-center gap-2 cursor-pointer shrink-0">
+            <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+            <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect Platform</span>
+          </button>
+          {crumb && (
+            <>
+              <span className="text-stone-300 shrink-0">/</span>
+              <span className="text-sm font-bold text-stone-600 truncate">{crumb}</span>
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
+          <div className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-[10px]">
+            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <span className="text-accent-foreground font-black text-[10px]">
+                {session.name.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
+            <span className="text-[13px] font-bold text-brand-dark">{session.name}</span>
+          </div>
+          <button onClick={onSignOut}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-[10px] text-sm font-bold text-red-500 hover:bg-red-50 transition-all">
+            <LogOut className="w-4 h-4" /> Sign Out
+          </button>
+        </div>
       </div>
     </div>
   );

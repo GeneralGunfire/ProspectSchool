@@ -9,6 +9,9 @@ import { AudienceSelector } from '../teacher/AnnouncementsPage';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { AdminSession } from '../../../lib/auth';
+import { Shimmer } from '../../../shared/components/Shimmer';
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -60,6 +63,7 @@ export default function AdminAnnouncementsPage({ session }: AdminAnnouncementsPa
   const [deleting, setDeleting]   = useState(false);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [form, setForm]           = useState(emptyForm);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     if (!session.school_id) return;
@@ -134,74 +138,98 @@ export default function AdminAnnouncementsPage({ session }: AdminAnnouncementsPa
   const unpinned = announcements.filter(a => !a.pinned);
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
+    <div className="student-home min-h-full pb-16">
 
-      {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <span className="eyebrow">Announcements</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Announcements</h1>
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-announcements-banner.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-          onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
-          className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-700 transition-colors">
-          <Plus className="w-4 h-4" /> Post Announcement
-        </motion.button>
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
+              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Announcements
+            </h1>
+          </div>
+          <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+            onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            <Plus className="w-4 h-4" /> Post Announcement
+          </motion.button>
+        </div>
       </div>
 
-      {/* List */}
-      {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-            className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full" />
-        </div>
-      ) : announcements.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <Megaphone className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-bold text-stone-500">No announcements yet.</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {pinned.length > 0 && (
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Pin className="w-3.5 h-3.5 text-amber-500" />
-                <p className="text-xs font-black uppercase tracking-widest text-stone-500">Pinned</p>
-              </div>
-              <div className="space-y-2">
-                {pinned.map((a, i) => (
-                  <AdminAnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
-                    toggling={togglingId === a.id}
-                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
-                ))}
-              </div>
-            </div>
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
+        {/* Toast */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              transition={{ duration: 0.22 }}
+              className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
+            </motion.div>
           )}
-          {unpinned.length > 0 && (
-            <div>
-              {pinned.length > 0 && <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">Recent</p>}
-              <div className="space-y-2">
-                {unpinned.map((a, i) => (
-                  <AdminAnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
-                    toggling={togglingId === a.id}
-                    onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
-                ))}
+        </AnimatePresence>
+
+        {/* List */}
+        {loading ? (
+          <div className="space-y-2">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="paper-card rounded p-4">
+                <Shimmer className="h-3 w-2/3 mb-3" />
+                <Shimmer className="h-3 w-1/3" />
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            ))}
+          </div>
+        ) : announcements.length === 0 ? (
+          <div className="paper-card rounded flex flex-col items-center justify-center py-24 text-center">
+            <Megaphone className="w-10 h-10 text-stone-200 mb-4" />
+            <p className="text-sm font-bold text-stone-500">No announcements yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {pinned.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Pin className="w-3.5 h-3.5 text-amber-500" />
+                  <p className="text-xs font-black uppercase tracking-widest text-stone-500">Pinned</p>
+                </div>
+                <div className="space-y-2">
+                  {pinned.map((a, i) => (
+                    <AdminAnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
+                      toggling={togglingId === a.id}
+                      onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
+                  ))}
+                </div>
+              </div>
+            )}
+            {unpinned.length > 0 && (
+              <div>
+                {pinned.length > 0 && <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">Recent</p>}
+                <div className="space-y-2">
+                  {unpinned.map((a, i) => (
+                    <AdminAnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
+                      toggling={togglingId === a.id}
+                      onPin={() => handleTogglePin(a)} onDelete={() => setDeleteTarget(a)} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* ── Create Modal ──────────────────────────────────────── */}
       <AnimatePresence>
@@ -308,7 +336,7 @@ function AdminAnnouncementCard({ a, i, subjects, toggling, onPin, onDelete }: {
   return (
     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.04, duration: 0.18 }}
-      className={`flex bg-white rounded-2xl border overflow-hidden ${a.pinned ? 'border-amber-200' : 'border-brand-border'}`}>
+      className={`paper-card flex rounded overflow-hidden ${a.pinned ? 'border-amber-200' : ''}`}>
       {/* Quiet accent — amber if pinned, otherwise neutral */}
       <span className={`w-1 shrink-0 ${a.pinned ? 'bg-amber-400' : 'bg-stone-200'}`} />
 

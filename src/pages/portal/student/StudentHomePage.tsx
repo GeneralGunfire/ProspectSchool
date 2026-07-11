@@ -132,7 +132,7 @@ function StudentHomeSkeleton({ session }: { session: StudentSession }) {
   const [imgLoaded, setImgLoaded] = useState(false);
   return (
     <div className="student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
         <div className="absolute inset-0 pointer-events-none">
           <motion.img src="/images/nizamiye-emblem.png" alt=""
             onLoad={() => setImgLoaded(true)}
@@ -599,7 +599,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     <div className="student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[150px] sm:min-h-[190px] lg:min-h-[210px]">
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
 
         {/* Full-bleed emblem strip — the fabric/crest photo run edge-to-edge
             behind a light charcoal scrim, so the crest itself stays

@@ -14,6 +14,7 @@ import {
 } from '../../../lib/events';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import type { TeacherSession } from '../../../lib/auth';
+import { Shimmer } from '../../../shared/components/Shimmer';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -70,6 +71,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   const [cohorts, setCohorts]   = useState<Cohort[]>([]);
   const [allStudents, setAllStudents] = useState<{ id: number; name: string; surname: string }[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Modal state
   const [modal, setModal] = useState<'create' | 'edit' | 'view' | null>(null);
@@ -365,22 +367,43 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   // ── Render ────────────────────────────────────────────────
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 sm:p-6 md:p-8">
+    <div className="student-home min-h-full pb-16">
 
-      {/* ── Header ──────────────────────────────────────────── */}
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-calendar.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Calendar</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              School Events
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">Track homework, assessments, and important dates.</p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
+      {/* ── Toolbar ─────────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease }}
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6"
+        className="flex items-center gap-2 flex-wrap justify-end"
       >
-        <div>
-          <span className="eyebrow">Calendar</span>
-          <h1 className="font-display font-black text-[#1C1917] text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
-            School Events
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
@@ -432,7 +455,6 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <List className="w-3.5 h-3.5" /> List
             </button>
           </div>
-        </div>
       </motion.div>
 
       <div className="flex flex-col xl:flex-row gap-5">
@@ -463,7 +485,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.03, duration: 0.2 }}
                           onClick={() => openView(ev)}
-                          className="bg-white rounded-xl border border-brand-border px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-stone-300 transition-colors"
+                          className="paper-card rounded px-4 py-3 flex items-center gap-3 cursor-pointer hover:border-stone-300 transition-colors"
                         >
                           <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                           <div className="flex-1 min-w-0">
@@ -489,7 +511,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}
               >
-                <div className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+                <div className="paper-card rounded overflow-hidden">
                   {/* Day headers */}
                   <div className="grid grid-cols-7 border-b border-brand-border/60">
                     {DAYS.map(d => (
@@ -569,7 +591,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.1 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
+            className="paper-card rounded p-4"
           >
             <div className="flex items-center justify-between mb-3">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming</p>
@@ -615,7 +637,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease, delay: 0.15 }}
-            className="card-premium bg-white rounded-[24px] border border-brand-border p-4"
+            className="paper-card rounded p-4"
           >
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Legend</p>
             <div className="space-y-2">
@@ -631,6 +653,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             </div>
           </motion.div>
         </div>
+      </div>
       </div>
 
       {/* ── View Modal ─────────────────────────────────────── */}

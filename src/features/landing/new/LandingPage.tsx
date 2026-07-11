@@ -28,7 +28,7 @@ interface LandingPageProps {
  */
 export default function LandingPage({ onNavigate }: LandingPageProps) {
   return (
-    <main className="relative min-h-screen">
+    <main className="relative min-h-screen landing-page">
       <PremiumBackground />
       <Navbar onNavigate={onNavigate} />
       <Hero onNavigate={onNavigate} />

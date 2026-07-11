@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
+import { motion } from 'motion/react';
 import { CalendarDays, Award, ClipboardList, Megaphone } from 'lucide-react';
 import type { ParentSession } from '../../../lib/auth';
 import type { ParentChild } from '../../../lib/parents';
 import { fetchAttendanceSummary, type AttendanceSummary } from '../../../lib/homeroom';
 import { fetchBehaviourSummary, type BehaviourStudentSummary } from '../../../lib/behaviour';
+import { Shimmer } from '../../../shared/components/Shimmer';
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface ParentHomePageProps {
   session: ParentSession;
@@ -32,6 +36,7 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
   const [attendance, setAttendance] = useState<AttendanceSummary | null>(null);
   const [behaviour, setBehaviour] = useState<BehaviourStudentSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -57,51 +62,82 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
   ];
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-      <div className="mb-6">
-        <span className="eyebrow">Overview</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight">
-          {child.name} {child.surname}
-        </h1>
-        <p className="text-sm text-stone-500 mt-1">
-          Grade {child.grade}{child.cohort_name ? ` · ${child.cohort_name}` : ''}
-        </p>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-emblem.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Overview</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              {child.name} {child.surname}
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+              Grade {child.grade}{child.cohort_name ? ` · ${child.cohort_name}` : ''}
+            </p>
+          </motion.div>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="card-premium bg-white border border-brand-border rounded-2xl p-5">
-            <p className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-1">Attendance (Month)</p>
-            <p className="text-2xl font-black text-brand-dark">{pct === null ? '—' : `${pct}%`}</p>
-          </div>
-          <div className="card-premium bg-white border border-brand-border rounded-2xl p-5">
-            <p className="text-[11px] font-black uppercase tracking-wider text-stone-500 mb-1">Behaviour (Net)</p>
-            <p className={`text-2xl font-black ${
-              !behaviour ? 'text-brand-dark' : behaviour.net_points > 0 ? 'text-green-700' : behaviour.net_points < 0 ? 'text-red-700' : 'text-brand-dark'
-            }`}>
-              {behaviour ? (behaviour.net_points > 0 ? `+${behaviour.net_points}` : behaviour.net_points) : '—'}
-            </p>
-          </div>
-        </div>
-      )}
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {quickLinks.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => onNavigate(id)}
-            className="card-premium bg-white border border-brand-border rounded-2xl p-4 flex flex-col items-center gap-2 hover:border-stone-300 hover:shadow-sm transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-brand-bg flex items-center justify-center">
-              <Icon className="w-4 h-4 text-brand-dark" />
+        {loading ? (
+          <div className="grid grid-cols-2 gap-3">
+            {[0, 1].map(i => (
+              <div key={i} className="paper-card rounded p-5">
+                <Shimmer className="h-3 w-28 mb-3" />
+                <Shimmer className="h-7 w-16" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+            className="grid grid-cols-2 gap-3">
+            <div className="paper-card rounded p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-1">Attendance (Month)</p>
+              <p className="text-2xl font-black text-brand-dark">{pct === null ? '—' : `${pct}%`}</p>
             </div>
-            <span className="text-xs font-black text-brand-dark">{label}</span>
-          </button>
-        ))}
+            <div className="paper-card rounded p-5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-1">Behaviour (Net)</p>
+              <p className={`text-2xl font-black ${
+                !behaviour ? 'text-brand-dark' : behaviour.net_points > 0 ? 'text-green-700' : behaviour.net_points < 0 ? 'text-red-700' : 'text-brand-dark'
+              }`}>
+                {behaviour ? (behaviour.net_points > 0 ? `+${behaviour.net_points}` : behaviour.net_points) : '—'}
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.1 }}
+          className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {quickLinks.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => onNavigate(id)}
+              className="paper-card rounded p-4 flex flex-col items-center gap-2 hover:bg-[var(--color-paper-raise)] transition-colors"
+            >
+              <div className="w-9 h-9 rounded flex items-center justify-center" style={{ background: 'var(--color-paper-raise)' }}>
+                <Icon className="w-4 h-4 text-brand-dark" />
+              </div>
+              <span className="text-xs font-bold text-brand-dark">{label}</span>
+            </button>
+          ))}
+        </motion.div>
       </div>
     </div>
   );

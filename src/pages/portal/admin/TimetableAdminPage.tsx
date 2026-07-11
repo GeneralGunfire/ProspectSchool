@@ -16,6 +16,8 @@ import {
   type TimetablePeriod, type TimetableEntryDetailed,
 } from '../../../lib/timetable';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 interface TimetableAdminPageProps { session: AdminSession; }
 
 const DEFAULT_PERIODS: { period_number: number; label: string; start_time: string | null; end_time: string | null }[] =
@@ -78,6 +80,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   // Mobile: one day shown at a time, switched via arrows/tabs — the grid
   // itself is desktop-only (hidden below md).
   const [mobileDay, setMobileDay] = useState<number>(1);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -339,52 +342,73 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
     onDuplicateTo: handleDuplicateTo, editMode };
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
-      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <span className="eyebrow">Admin</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Timetable</h1>
-          <p className="text-sm text-stone-500 mt-1 hidden sm:block">
-            {editMode
-              ? <>Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</>
-              : 'Click Edit Timetable to make changes.'}
-          </p>
-        </div>
+    <div className="student-home min-h-full pb-16">
 
-        {selectedCohort && !loading && (
-          <div className="flex items-center gap-2 shrink-0">
-            {editMode && (
-              <SaveStatusPill dirty={dirty} saving={saving} />
-            )}
-            {!editMode ? (
-              <button
-                onClick={startEditing}
-                className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors shadow-sm"
-              >
-                <PencilLine className="w-4 h-4" /> Edit Timetable
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={cancelEditing}
-                  disabled={saving}
-                  className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors disabled:opacity-50"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" /> Cancel
-                </button>
-                <button
-                  onClick={saveChanges}
-                  disabled={saving || !dirty}
-                  className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
-                >
-                  {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
-                  {saving ? 'Saving…' : 'Save Changes'}
-                </button>
-              </>
-            )}
+      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-timetable.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
+              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Timetable
+            </h1>
+            <p className="text-[11px] text-white/60 mt-1.5 font-medium hidden sm:block">
+              {editMode
+                ? <>Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</>
+                : 'Click Edit Timetable to make changes.'}
+            </p>
           </div>
-        )}
+
+          {selectedCohort && !loading && (
+            <div className="flex items-center gap-2 shrink-0">
+              {editMode && (
+                <SaveStatusPill dirty={dirty} saving={saving} />
+              )}
+              {!editMode ? (
+                <motion.button
+                  onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+                  className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]"
+                >
+                  <PencilLine className="w-4 h-4" /> Edit Timetable
+                </motion.button>
+              ) : (
+                <>
+                  <button
+                    onClick={cancelEditing}
+                    disabled={saving}
+                    className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors disabled:opacity-50"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" /> Cancel
+                  </button>
+                  <button
+                    onClick={saveChanges}
+                    disabled={saving || !dirty}
+                    className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
+                  >
+                    {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
+                    {saving ? 'Saving…' : 'Save Changes'}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {saveError && (
         <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
@@ -411,14 +435,14 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
           <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : cohorts.length === 0 ? (
-        <div className="glass-panel rounded-[24px] p-12 text-center">
+        <div className="paper-card rounded p-12 text-center">
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500">Create classes on the Classes page first.</p>
         </div>
       ) : (
         <>
           {/* Class selector — pill toolbar */}
-          <div className="glass-panel rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto mb-5">
+          <div className="paper-card rounded-2xl p-1.5 flex gap-1.5 overflow-x-auto mb-5">
             {cohorts.map((c) => (
               <button
                 key={c.id}
@@ -594,6 +618,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
           )}
         </>
       )}
+      </div>
 
       {/* Slot editor modal */}
       <AnimatePresence>
@@ -635,7 +660,7 @@ function EmptyTimetableState({ onStartEditing }: { onStartEditing: () => void })
     <motion.div
       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-      className="glass-panel rounded-[24px] p-12 text-center"
+      className="paper-card rounded p-12 text-center"
     >
       <div className="w-12 h-12 rounded-2xl bg-brand-bg flex items-center justify-center mx-auto mb-4">
         <CalendarDays className="w-5 h-5 text-stone-400" />

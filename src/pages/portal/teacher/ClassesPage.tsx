@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, TrendingUp, Phone, Clock, UserPlus } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import {
   fetchSubjects, createStudent, updateStudent,
   removeStudentFromTeacher, fetchTeacherStudents,
@@ -28,6 +29,7 @@ interface StudentForm {
 
 const GRADES = ['8', '9', '10', '11', '12'];
 const EMPTY: StudentForm = { name: '', surname: '', student_code: '', pin: '', cohort: '', grade: '', subjects: [] };
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 type ModalMode = 'add' | 'edit';
 
@@ -65,6 +67,8 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   const [groupByTier, setGroupByTier] = useState(false);
   const [tiers, setTiers] = useState<StudentTierSummary[]>([]);
   const [tiersLoading, setTiersLoading] = useState(false);
+
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Parent contact log
   const [lastContacts, setLastContacts]       = useState<Map<number, string>>(new Map());
@@ -334,24 +338,41 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   }, [students, search, filterGrade, filterCohort]);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <span className="eyebrow">Portal</span>
-          <h1 className="text-2xl font-black text-brand-dark tracking-tight">Classes</h1>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-library.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <div className="flex items-center gap-2">
-          <motion.button onClick={openAssign} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-white border border-brand-border text-brand-dark text-sm font-black px-5 py-2.5 rounded-xl hover:border-stone-300 transition-colors">
-            <UserPlus className="w-4 h-4" /> Assign Student
-          </motion.button>
-          <motion.button onClick={openAdd} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors">
-            <Plus className="w-4 h-4" /> Add Student
-          </motion.button>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Classes</h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">Manage your students and track their progress.</p>
+          </motion.div>
+          <div className="flex items-center gap-2">
+            <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-black px-5 py-2.5 rounded backdrop-blur-sm hover:bg-white/15 transition-colors">
+              <UserPlus className="w-4 h-4" /> Assign Student
+            </motion.button>
+            <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+              <Plus className="w-4 h-4" /> Add Student
+            </motion.button>
+          </div>
         </div>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {/* Class switcher — pill tabs, e.g. 10A / 10B, like the reference the student portal uses */}
       {!loading && cohortOptions.length > 0 && (
@@ -394,7 +415,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
       {/* Search + filter bar */}
       {!loading && students.length > 0 && (
-        <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <div className="paper-card rounded p-3 flex items-center gap-3 flex-wrap">
           <div className="flex-1 min-w-48 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
@@ -442,11 +463,19 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
       {/* List */}
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        <div className="space-y-2.5">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="paper-card rounded p-4 flex items-center gap-3">
+              <Shimmer className="w-9 h-9 rounded-full shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-4" style={{ width: `${45 - i * 5}%` }} />
+                <Shimmer className="h-3 w-1/4" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : students.length === 0 ? (
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+        <div className="paper-card rounded p-12 text-center">
           <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Plus className="w-5 h-5 text-stone-500" />
           </div>
@@ -468,7 +497,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         />
       ) : (
         // ── Flat table ─────────────────────────────────────────────
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] overflow-hidden">
+        <div className="paper-card rounded overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -541,6 +570,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           </table>
         </div>
       )}
+      </div>
 
       {/* Add / Edit Modal */}
 
@@ -978,7 +1008,7 @@ function TierGroupView({ students, tiers, filtered, onEdit, onDelete }: TierGrou
 
   if (populated.length === 0) {
     return (
-      <div className="card-premium bg-white border border-brand-border rounded-[24px] px-5 py-12 text-center">
+      <div className="paper-card rounded px-5 py-12 text-center">
         <p className="text-sm font-bold text-stone-500">No students match your search.</p>
       </div>
     );

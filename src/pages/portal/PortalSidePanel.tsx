@@ -216,7 +216,7 @@ export const PortalSidePanel = ({ eyebrow, headline, sub }: Props) => (
 
     {/* Logo */}
     <div className="relative flex items-center gap-2.5">
-      <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+      <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
       <span className="text-white font-black text-base tracking-tight">Prospect</span>
     </div>
 

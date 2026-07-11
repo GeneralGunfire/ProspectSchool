@@ -75,7 +75,7 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
         <nav className="max-w-3xl mx-auto bg-white/40 backdrop-blur-xl backdrop-saturate-150 border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
           <div className="h-13 flex items-center justify-between px-2.5">
             <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer">
-              <img src="/logo.jpg" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+              <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
               <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
             </button>
             <button

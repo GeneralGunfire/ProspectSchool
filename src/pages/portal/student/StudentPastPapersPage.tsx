@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft, ChevronDown } from 'lucide-react';
+import { Shimmer } from './StudentHomePage';
 import {
   fetchAllPastPapers, getPastPaperDownloadUrl, type PastPaper,
 } from '../../../lib/pastPapers';
@@ -10,6 +11,7 @@ import { getActiveInterventions, startIntervention, completeIntervention } from 
 
 const GRADES = [8, 9, 10, 11, 12];
 const TERMS  = [1, 2, 3, 4];
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface StudentPastPapersPageProps {
   session: StudentSession;
@@ -42,6 +44,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   const [papers, setPapers]       = useState<PastPaper[]>([]);
   const [subjects, setSubjects]   = useState<Subject[]>([]);
   const [loading, setLoading]     = useState(true);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [search, setSearch]       = useState('');
   const [filterSubject, setFilterSubject] = useState('');
   const [filterGrade, setFilterGrade]     = useState('');
@@ -311,7 +314,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 <p className="text-stone-500 text-sm mb-6">{paper.subject_label} · {paper.year}</p>
               )}
 
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4">
+              <div className="paper-card rounded p-5 mb-4">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                   Set Timer
                 </p>
@@ -420,7 +423,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     Enter your score to track your performance.
                   </p>
 
-                  <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 mb-4">
+                  <div className="paper-card rounded p-5 mb-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Your Score</p>
                     <div className="flex items-center gap-3 mb-4">
                       <input
@@ -481,7 +484,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               ) : (
                 /* Result screen */
                 <>
-                  <div className={`rounded-2xl p-6 text-center mb-5 ${
+                  <div className={`rounded p-6 text-center mb-5 ${
                     practice.selfScore / (paper.total ?? 150) >= 0.7 ? 'bg-emerald-50 border border-emerald-200' :
                     practice.selfScore / (paper.total ?? 150) >= 0.5 ? 'bg-amber-50 border border-amber-200' :
                     'bg-red-50 border border-red-200'
@@ -536,20 +539,42 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   }
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-5xl w-full mx-auto">
+    <div className="student-home min-h-full pb-16">
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-        className="mb-6"
-      >
-        <span className="eyebrow">Past Papers</span>
-        <h1 className="font-black text-brand-dark text-2xl md:text-3xl" style={{ letterSpacing: '-0.03em' }}>
-          Past Papers
-        </h1>
-        <p className="text-sm text-stone-500 mt-1">Exam papers uploaded by your school.</p>
-      </motion.div>
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-pastpapers.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Past Papers</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Past exam papers
+            </h1>
+            <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+              Practice with real papers uploaded by your school.
+            </p>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {!loading && papers.length > 0 && (
         <>
@@ -557,8 +582,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
           {recommended.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05, ease: [0.23, 1, 0.32, 1] }}
-              className="mb-6"
+              transition={{ delay: 0.05, ease }}
             >
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Recommended For You
@@ -567,7 +591,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 {recommended.map(p => {
                   const diff = difficultyLabel(p);
                   return (
-                    <div key={p.id} className="card-premium bg-white border border-brand-border rounded-[24px] p-4 hover:border-stone-400 hover:shadow-sm transition-all">
+                    <div key={p.id} className="paper-card rounded p-4 hover:border-stone-400 hover:shadow-sm transition-all">
                       <div className="flex items-start justify-between mb-3">
                         <div className="w-8 h-8 rounded-xl bg-stone-100 flex items-center justify-center">
                           <FileText className="w-4 h-4 text-stone-600" />
@@ -658,7 +682,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
                 Practice History
               </p>
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border divide-y divide-stone-100 overflow-hidden">
+              <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
                 {practiceHistory.slice(0, 5).map((r, i) => (
                   <div key={i} className="flex items-center gap-4 px-4 py-3">
                     <div className="flex-1 min-w-0">
@@ -735,7 +759,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   transition={{ ease: 'easeOut', duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="card-premium bg-white rounded-[24px] border border-brand-border p-5 space-y-5">
+                  <div className="paper-card rounded p-5 space-y-5">
 
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Subject</p>
@@ -832,14 +856,26 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
       {/* ── Paper list ── */}
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        <div className="space-y-2.5">
+          {[0, 1, 2, 3].map(i => (
+            <motion.div key={i}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: i * 0.05, ease }}
+              className="paper-card rounded p-4 flex items-center gap-3"
+            >
+              <Shimmer className="w-9 h-9 rounded shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Shimmer className="h-4" style={{ width: `${55 - i * 6}%` }} />
+                <Shimmer className="h-3 w-1/3" />
+              </div>
+            </motion.div>
+          ))}
         </div>
       ) : papers.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <FolderOpen className="w-10 h-10 text-stone-200 mb-4" />
-          <p className="text-sm font-black text-stone-500 mb-1">No past papers yet.</p>
-          <p className="text-xs text-stone-400">Papers uploaded by your teachers will appear here.</p>
+        <div className="paper-card rounded p-5 sm:p-7 flex flex-col items-center justify-center py-20 text-center">
+          <FolderOpen className="w-9 h-9 text-stone-200 mb-4" />
+          <p className="text-[16px] font-semibold text-brand-dark">No past papers yet.</p>
+          <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Papers uploaded by your teachers will appear here.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -862,7 +898,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(i * 0.02, 0.12), duration: 0.18 }}
-                className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden hover:border-stone-300 transition-colors"
+                className="paper-card rounded overflow-hidden hover:border-stone-300 transition-colors"
               >
                 {/* Collapsed row — icon, title, one meta line */}
                 <button
@@ -959,6 +995,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }

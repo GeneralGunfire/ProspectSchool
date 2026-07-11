@@ -4,6 +4,9 @@ import { ClipboardList, ChevronDown } from 'lucide-react';
 import { fetchStudentResults, computeFinalMark, type StudentResult } from '../../../lib/marks';
 import type { ParentSession } from '../../../lib/auth';
 import type { ParentChild } from '../../../lib/parents';
+import { Shimmer } from '../../../shared/components/Shimmer';
+
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface ParentMarksPageProps {
   session: ParentSession;
@@ -33,6 +36,7 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
   const [results, setResults] = useState<StudentResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -54,18 +58,57 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
     : null;
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
-      <div className="mb-6">
-        <span className="eyebrow">{child.name} {child.surname}</span>
-        <h1 className="text-2xl font-black text-brand-dark tracking-tight">Marks</h1>
+    <div className="student-home min-h-full pb-16">
+
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-marks.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">{child.name} {child.surname}</p>
+            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+              Marks
+            </h1>
+          </motion.div>
+        </div>
       </div>
 
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+
       {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
+        <div className="space-y-5">
+          <div className="paper-card rounded p-5 sm:p-6 space-y-2">
+            <Shimmer className="h-3 w-1/3" />
+            <Shimmer className="h-8 w-1/4" />
+          </div>
+          <div className="space-y-2.5">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="paper-card rounded p-5 flex items-center gap-4">
+                <div className="flex-1 space-y-2">
+                  <Shimmer className="h-4" style={{ width: `${50 - i * 6}%` }} />
+                  <Shimmer className="h-3 w-1/4" />
+                </div>
+                <Shimmer className="h-8 w-14 rounded" />
+              </div>
+            ))}
+          </div>
         </div>
       ) : results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="paper-card rounded flex flex-col items-center justify-center py-24 text-center">
           <ClipboardList className="w-10 h-10 text-stone-200 mb-4" />
           <p className="text-sm font-bold text-stone-500">No results yet.</p>
           <p className="text-xs text-stone-400 mt-1">Marks will appear here once teachers have recorded them.</p>
@@ -73,15 +116,20 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
       ) : (
         <>
           {overallAvg !== null && (
-            <div className="card-premium-dark bg-brand-dark text-white rounded-[24px] p-6 mb-5">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+              className="rounded p-6"
+              style={{
+                background: 'var(--color-brand-dark)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+              }}>
               <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-400 mb-1">Overall Average</p>
-              <p className="text-3xl font-black">{Math.round(overallAvg)}%</p>
+              <p className="text-3xl font-black text-white">{Math.round(overallAvg)}%</p>
               <p className="text-xs text-stone-400 mt-1">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''} recorded</p>
-            </div>
+            </motion.div>
           )}
 
           <div className="space-y-3">
-            {Array.from(grouped.entries()).map(([subject, items]) => {
+            {Array.from(grouped.entries()).map(([subject, items], gi) => {
               const markedItems = items.filter((r) => r.mark !== null);
               const subjectAvg = markedItems.length > 0
                 ? markedItems.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / markedItems.length
@@ -103,7 +151,10 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
                 .sort((a, b) => a.term - b.term);
 
               return (
-                <div key={subject} className="card-premium bg-white rounded-[24px] border border-brand-border overflow-hidden">
+                <motion.div key={subject}
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: gi * 0.05 }}
+                  className="paper-card rounded overflow-hidden">
                   <button
                     onClick={() => setOpenSubject(isOpen ? null : subject)}
                     className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-stone-50 transition-colors"
@@ -178,12 +229,13 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }
