@@ -59,7 +59,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     <div className="flex h-screen bg-dash-bg overflow-hidden">
 
       {/* ── Sidebar (desktop only) ─────────────────────────── */}
-      <aside className="hidden md:flex w-64 shrink-0 h-full flex-col gap-3 p-3" style={{ background: '#f3f4f6' }}>
+      <aside className="hidden md:flex w-64 shrink-0 h-full flex-col gap-3 p-3" style={{ background: '#eeece5' }}>
 
         {/* Logo card */}
         <div className="flex items-center justify-between gap-2 px-4 py-3 rounded-[14px] bg-white shrink-0"
@@ -91,15 +91,15 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
         </nav>
 
         {/* Profile + sign out card */}
-        <div className="p-2 space-y-1 shrink-0 rounded-[14px] bg-white"
+        <div className="p-2.5 shrink-0 rounded-[14px] bg-white"
           style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-          <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-[10px]">
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shrink-0">
-              <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
+          <div className="flex items-center gap-2.5 px-1 pb-2.5 mb-1 border-b border-brand-border">
+            <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <span className="text-accent-foreground font-black text-[11px]">{initials}</span>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-              <p className="text-[10px] text-stone-500 truncate capitalize">{session.role.replace('_', ' ')}</p>
+              <p className="text-[13px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
+              <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 truncate">{session.role.replace('_', ' ')}</p>
             </div>
           </div>
           <button onClick={() => { adminLogout(); onNavigate('portal'); }}
@@ -153,7 +153,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                 initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
                 transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
                 className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[82vw] flex flex-col gap-3 p-3"
-                style={{ background: '#f3f4f6' }}
+                style={{ background: '#eeece5' }}
               >
                 <div className="flex items-center justify-between gap-2 px-4 py-3 rounded-[14px] bg-white shrink-0"
                   style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
@@ -185,15 +185,15 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                   })}
                 </nav>
 
-                <div className="p-2 space-y-1 shrink-0 rounded-[14px] bg-white"
-                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)', paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}>
-                  <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-[10px]">
-                    <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center shrink-0">
-                      <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
+                <div className="p-2.5 shrink-0 rounded-[14px] bg-white"
+                  style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)', paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
+                  <div className="flex items-center gap-2.5 px-1 pb-2.5 mb-1 border-b border-brand-border">
+                    <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+                      <span className="text-accent-foreground font-black text-[11px]">{initials}</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[12px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-                      <p className="text-[10px] text-stone-500 truncate capitalize">{session.role.replace('_', ' ')}</p>
+                      <p className="text-[13px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 truncate">{session.role.replace('_', ' ')}</p>
                     </div>
                   </div>
                   <button onClick={() => { adminLogout(); onNavigate('portal'); }}
