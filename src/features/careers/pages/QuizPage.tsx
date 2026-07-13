@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight, CheckCircle2, RefreshCw, ArrowRight, SkipForward } from 'lucide-react';
 import { quizQuestions } from '../data/quizQuestions';
@@ -6,6 +6,7 @@ import { computeQuizResults, type QuizResults } from '../data/quizScoringLogic';
 import { SkippedQuestionsPanel } from '../components/SkippedQuestionsPanel';
 import { getStudentSession } from '../../../lib/auth';
 import { saveQuizResults } from '../../../lib/myFuture';
+import { ToastContext } from '../../../shared/components/toast';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -401,6 +402,7 @@ function ResultsPhase({
   onRetake: () => void;
   onNavigate: (page: string) => void;
 }) {
+  const toast = useContext(ToastContext);
   const topCareers = results.topCareerMatches.slice(0, 15);
 
   const subjectsByImportance = {
@@ -434,9 +436,9 @@ function ResultsPhase({
     const url = `${window.location.origin}?quiz-results=${encoded}`;
     try {
       await navigator.clipboard.writeText(url);
-      toast.success('Share link copied to clipboard.');
+      toast?.success('Share link copied to clipboard.');
     } catch {
-      toast.error('Could not copy link — try again.');
+      toast?.error('Could not copy link — try again.');
     }
   };
 
@@ -642,10 +644,10 @@ function ResultsPhase({
                       </div>
                       <span
                         className={`text-[10px] font-black px-2 py-0.5 rounded-full ${compatibilityStyle(
-                          career.compatibilityScore,
+                          career.compatibilityScore ?? 0,
                         )}`}
                       >
-                        {career.compatibilityScore}%
+                        {career.compatibilityScore ?? 0}%
                       </span>
                     </div>
                   </motion.div>

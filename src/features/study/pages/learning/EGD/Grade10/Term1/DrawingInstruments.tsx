@@ -65,88 +65,88 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'Which instrument is used to draw horizontal lines on a drawing board?',
+    { id: 'di-i1', question: 'Which instrument is used to draw horizontal lines on a drawing board?',
       options: ['Compass', 'Protractor', 'T-square', '45° set square'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'The T-square is used to draw horizontal lines.',
       explanation: 'The T-square is used to draw horizontal lines. Its head slides along the edge of the drawing board, keeping the blade perfectly horizontal. Set squares are placed on top of the T-square for angled lines.',
     },
-    {
-      question: 'A drawing is made at scale 1:2. What does this mean?',
+    { id: 'di-i2', question: 'A drawing is made at scale 1:2. What does this mean?',
       options: [
         'The drawing is twice as big as the real object',
         'The drawing is half the size of the real object',
         'The drawing is the same size as the real object',
         'The object is half the size of the drawing',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: '1:2 means 1 unit on the drawing equals 2 units on the real object.',
       explanation: '1:2 means 1 unit on the drawing equals 2 units on the real object — so the drawing is half size. Remember: drawing measurement : real object measurement.',
     },
-    {
-      question: 'Which pencil grade is BEST for drawing light construction lines in EGD?',
+    { id: 'di-i3', question: 'Which pencil grade is BEST for drawing light construction lines in EGD?',
       options: ['B', 'HB', '2H', '4B'],
-      answer: 2,
+      correctIndex: 2,
+      hint: '2H is a hard pencil that produces light, thin lines.',
       explanation: '2H is a hard pencil that produces light, thin lines — ideal for construction lines that may need to be erased or are not part of the final outline. Softer pencils (B, HB) produce darker lines used for final outlines.',
     },
-    {
-      question: 'Which instrument would you use to draw a 60° angle accurately?',
+    { id: 'di-i4', question: 'Which instrument would you use to draw a 60° angle accurately?',
       options: ['T-square alone', 'Compass', '30°/60° set square on a T-square', 'Scale rule'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'The 30°/60° set square placed on a T-square draws accurate 60° angles.',
       explanation: 'The 30°/60° set square placed on a T-square draws accurate 60° angles. The T-square provides the horizontal base, and the set square\'s 60° edge gives the exact angle. Never estimate angles freehand in technical drawing.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'What is the purpose of the T-square in technical drawing?',
+    { id: 'di-r1', question: 'What is the purpose of the T-square in technical drawing?',
       options: [
         'To measure and draw circles',
         'To provide a guide for drawing horizontal lines and supporting set squares',
         'To measure angles up to 360°',
         'To draw vertical lines only',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'The T-square draws horizontal lines by sliding its head along the drawing board edge.',
       explanation: 'The T-square draws horizontal lines by sliding its head along the drawing board edge. It also acts as a stable base for set squares, allowing accurate angled lines to be drawn.',
     },
-    {
-      question: 'A learner draws a circle with a compass. The pencil insert should be:',
+    { id: 'di-r2', question: 'A learner draws a circle with a compass. The pencil insert should be:',
       options: ['A soft B pencil for dark lines', 'A sharp H pencil for clean arcs', 'A felt-tip pen for visibility', 'A 4B pencil for emphasis'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'A sharp H pencil in the compass produces clean, accurate arcs.',
       explanation: 'A sharp H pencil in the compass produces clean, accurate arcs. Soft pencils smudge and make arcs too thick. The compass pencil must be sharpened to match the needle point length.',
     },
   ],
   hardQuestions: [
-    {
-      question: 'A machine part measures 450mm in real life. A drawing is made at scale 1:5. What length should be drawn on paper?',
+    { id: 'di-h1', question: 'A machine part measures 450mm in real life. A drawing is made at scale 1:5. What length should be drawn on paper?',
       options: ['2250mm', '90mm', '45mm', '455mm'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Scale 1:5 means the drawing is 1/5 of the real size.',
       explanation: 'Scale 1:5 means the drawing is 1/5 of the real size. 450mm ÷ 5 = 90mm. Always divide the real measurement by the scale factor for a reduction scale (1:n).',
     },
-    {
-      question: 'Which combination of set squares can produce a 75° angle?',
+    { id: 'di-h2', question: 'Which combination of set squares can produce a 75° angle?',
       options: [
         '45° set square alone',
         '30°/60° set square alone',
         '45° set square + 30°/60° set square combined (45° + 30°)',
         'T-square + protractor',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: '75° = 45° + 30°. By combining the 45° set square and the 30° angle of the.',
       explanation: '75° = 45° + 30°. By combining the 45° set square and the 30° angle of the 30°/60° set square, you can construct a 75° angle. This is a standard EGD technique for angles not directly on a single set square.',
     },
-    {
-      question: 'Why must the needle point and pencil lead of a compass be at the same length?',
+    { id: 'di-h3', question: 'Why must the needle point and pencil lead of a compass be at the same length?',
       options: [
         'So the compass looks symmetrical',
         'So the circle radius is accurate — unequal lengths tilt the compass and distort the arc',
         'So the compass stores more easily',
         'It does not matter as long as the pencil is sharp',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'If the needle and pencil are unequal lengths, the compass tilts when rotating,.',
       explanation: 'If the needle and pencil are unequal lengths, the compass tilts when rotating, making the arc elliptical instead of circular. Equal lengths keep the compass vertical, producing an accurate circle at the set radius.',
     },
-    {
-      question: 'A drawing at scale 2:1 shows a component 80mm long. What is the actual size of the component?',
+    { id: 'di-h4', question: 'A drawing at scale 2:1 shows a component 80mm long. What is the actual size of the component?',
       options: ['160mm', '40mm', '80mm', '20mm'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Scale 2:1 means the drawing is twice the real size.',
       explanation: 'Scale 2:1 means the drawing is twice the real size. Real size = drawing measurement ÷ 2 = 80mm ÷ 2 = 40mm. For enlargement scales (n:1), divide the drawing measurement by n to get the real size.',
     },
   ],
@@ -194,6 +194,18 @@ const TOPIC = {
 const SUBJECT = 'EGD'
 const GRADE = 10
 const TOPIC_ID = 'drawing-instruments'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_egd-instruments_'
 
 
@@ -250,14 +262,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -320,7 +332,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -331,7 +343,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -339,26 +351,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -366,7 +378,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -471,9 +483,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

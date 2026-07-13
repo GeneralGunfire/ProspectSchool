@@ -1296,13 +1296,13 @@ function ContactsTab({
     setSaving(false);
     if (contact) {
       setNote('');
-      onContactsChange([contact, ...contacts]);
+      onContactsChange([contact, ...(contacts ?? [])]);
     }
   }
 
   async function handleDelete(id: number) {
     await deleteParentContact(id, session.teacher_id);
-    const updated = contacts.filter(c => c.id !== id);
+    const updated = (contacts ?? []).filter(c => c.id !== id);
     onContactsChange(updated);
   }
 

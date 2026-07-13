@@ -414,7 +414,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
           {/* Month nav */}
           <div className="flex items-center bg-white border border-brand-border rounded-xl overflow-hidden">
-            <button onClick={prevMonth} className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
+            <button onClick={prevMonth} aria-label="Previous month" className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
               <ChevronLeft className="w-4 h-4 text-stone-600" />
             </button>
             <div className="relative overflow-hidden min-w-36 text-center px-1">
@@ -431,7 +431,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 </motion.span>
               </AnimatePresence>
             </div>
-            <button onClick={nextMonth} className="p-2 hover:bg-stone-50 transition-colors border-l border-brand-border">
+            <button onClick={nextMonth} aria-label="Next month" className="p-2 hover:bg-stone-50 transition-colors border-l border-brand-border">
               <ChevronRight className="w-4 h-4 text-stone-600" />
             </button>
           </div>
@@ -695,7 +695,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                     </span>
                     <h2 className="text-lg font-black text-stone-900 tracking-tight">{ev.title}</h2>
                   </div>
-                  <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors shrink-0">
+                  <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors shrink-0">
                     <X className="w-4 h-4 text-stone-500" />
                   </button>
                 </div>
@@ -965,7 +965,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <h2 className="text-base font-black text-stone-900">
                 {modal === 'create' ? `New Event — ${formatDate(form.event_date)}` : 'Edit Event'}
               </h2>
-              <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+              <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                 <X className="w-4 h-4 text-stone-500" />
               </button>
             </div>

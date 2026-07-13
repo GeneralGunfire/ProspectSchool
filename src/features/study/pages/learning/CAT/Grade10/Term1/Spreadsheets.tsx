@@ -65,78 +65,78 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'In Excel, a cell reference "B4" refers to:',
+    { id: 'ss-i1', question: 'In Excel, a cell reference "B4" refers to:',
       options: ['Row B, Column 4', 'Column B, Row 4', 'The 4th workbook, sheet B', 'A named range called B4'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Cell references are always Column then Row.',
       explanation: 'Cell references are always Column then Row. B4 = Column B, Row 4. This is the standard Excel notation used in all formulas and functions.',
     },
-    {
-      question: 'Which formula correctly calculates the SUM of cells A1 through A10?',
+    { id: 'ss-i2', question: 'Which formula correctly calculates the SUM of cells A1 through A10?',
       options: ['SUM(A1-A10)', '=SUM(A1:A10)', '=ADD(A1,A10)', '=TOTAL(A1 to A10)'],
-      answer: 1,
+      correctIndex: 1,
+      hint: '=SUM(A1:A10) is correct.',
       explanation: '=SUM(A1:A10) is correct. The colon (:) indicates a range from A1 to A10. All formulas start with =. SUM is the function name. The range goes inside brackets.',
     },
-    {
-      question: 'A learner copies the formula =A1*B1 from cell C1 to cell C2. What does the formula become in C2?',
+    { id: 'ss-i3', question: 'A learner copies the formula =A1*B1 from cell C1 to cell C2. What does the formula become in C2?',
       options: ['=A1*B1 (unchanged)', '=A2*B2', '=$A$1*$B$1', '=A1*B2'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Relative cell references update when copied.',
       explanation: 'Relative cell references update when copied. Moving one row down shifts all row numbers by 1. So =A1*B1 becomes =A2*B2 in C2. This is how relative referencing works.',
     },
-    {
-      question: 'Which chart type is BEST for showing how a learner\'s test scores changed over 5 terms?',
+    { id: 'ss-i4', question: 'Which chart type is BEST for showing how a learner\'s test scores changed over 5 terms?',
       options: ['Pie chart', 'Bar chart', 'Line chart', 'Scatter plot'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'A Line chart is best for showing trends over time.',
       explanation: 'A Line chart is best for showing trends over time. Each point represents a term\'s score, and the connecting line shows the upward or downward trend clearly. Pie charts show proportions; bar charts compare categories.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'What symbol must every Excel formula start with?',
+    { id: 'ss-r1', question: 'What symbol must every Excel formula start with?',
       options: ['+', '#', '=', '@'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Every Excel formula must start with = (equals sign).',
       explanation: 'Every Excel formula must start with = (equals sign). Without it, Excel treats the entry as text, not a formula. Example: =A1+B1 calculates; A1+B1 just shows the text "A1+B1".',
     },
-    {
-      question: 'A learner wants the formula to always reference cell B1 no matter where it is copied. Which reference should she use?',
+    { id: 'ss-r2', question: 'A learner wants the formula to always reference cell B1 no matter where it is copied. Which reference should she use?',
       options: ['B1', 'B$1', '$B1', '$B$1'],
-      answer: 3,
+      correctIndex: 3,
+      hint: '$B$1 is an absolute reference.',
       explanation: '$B$1 is an absolute reference — both the column (B) and row (1) are locked with $. No matter where you copy the formula, it will always refer to cell B$1. Press F4 to add $ signs automatically.',
     },
   ],
   hardQuestions: [
-    {
-      question: 'A learner enters =B2*$C$1 in cell D2, where $C$1 contains a VAT rate of 15%. She copies the formula to D3:D10. What happens?',
+    { id: 'ss-h1', question: 'A learner enters =B2*$C$1 in cell D2, where $C$1 contains a VAT rate of 15%. She copies the formula to D3:D10. What happens?',
       options: [
         'All cells in D3:D10 show the same value as D2',
         'B2 becomes B3, B4… etc. but $C$1 stays fixed — each row calculates its own VAT using the same rate',
         'The formula breaks because you cannot mix relative and absolute references',
         '$C$1 updates to $C$2, $C$3… making the formula incorrect',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Mixed references work correctly here.',
       explanation: 'Mixed references work correctly here. B2 is relative — it updates to B3, B4… as you copy down (each row\'s own value). $C$1 is absolute — it stays fixed at the VAT rate cell. This is the correct pattern for applying a constant rate to a variable list.',
     },
-    {
-      question: 'A school uses a spreadsheet to track 200 learners\' marks. The teacher wants to find how many learners scored above 50%. Which function is MOST appropriate?',
+    { id: 'ss-h2', question: 'A school uses a spreadsheet to track 200 learners\' marks. The teacher wants to find how many learners scored above 50%. Which function is MOST appropriate?',
       options: ['=COUNT(B2:B201)', '=COUNTIF(B2:B201,">50")', '=SUM(B2:B201)', '=AVERAGE(B2:B201)'],
-      answer: 1,
+      correctIndex: 1,
+      hint: '=COUNTIF counts cells that meet a condition.',
       explanation: '=COUNTIF counts cells that meet a condition. =COUNTIF(B2:B201,">50") counts all cells in the range where the value is greater than 50. COUNT counts all numbers, SUM adds them, AVERAGE finds the mean — none answer "how many above 50?".',
     },
-    {
-      question: 'Which of the following BEST explains why absolute references are important in a budget spreadsheet?',
+    { id: 'ss-h3', question: 'Which of the following BEST explains why absolute references are important in a budget spreadsheet?',
       options: [
         'They make formulas run faster',
         'They prevent the formula from being deleted accidentally',
         'They allow a single cell (e.g. tax rate, exchange rate) to be referenced consistently across many formulas without changing when copied',
         'They automatically format the cell as currency',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Absolute references ($A$1) are essential when one cell (like a tax rate or.',
       explanation: 'Absolute references ($A$1) are essential when one cell (like a tax rate or exchange rate) must be used in many formulas. Without $, copying a formula shifts the reference — causing errors. With $, the reference stays locked to the correct cell throughout the spreadsheet.',
     },
-    {
-      question: 'A learner\'s spreadsheet has: A1=10, A2=20, A3=30, A4="Total", A5=SUM(A1:A4). What does A5 display?',
+    { id: 'ss-h4', question: 'A learner\'s spreadsheet has: A1=10, A2=20, A3=30, A4="Total", A5=SUM(A1:A4). What does A5 display?',
       options: ['60', '60Total', 'Error — SUM cannot include text', '0'],
-      answer: 0,
+      correctIndex: 0,
+      hint: 'Excel\'s SUM function ignores text values in a range.',
       explanation: 'Excel\'s SUM function ignores text values in a range — it only adds numeric cells. So =SUM(A1:A4) adds 10+20+30 and ignores the text "Total", giving 60. This is important to know — SUM does not error on text, it simply skips it.',
     },
   ],
@@ -179,6 +179,18 @@ const TOPIC = {
 const SUBJECT = 'CAT'
 const GRADE = 10
 const TOPIC_ID = 'spreadsheets'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_cat-sheets_'
 
 
@@ -235,14 +247,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -305,7 +317,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -316,7 +328,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -324,26 +336,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -351,7 +363,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -456,9 +468,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

@@ -4,7 +4,9 @@ import type { StudentSession } from '../../../lib/auth';
 
 const StudyLibraryPage = lazy(() => import('../../../features/study/pages/StudyLibraryPage'));
 
-const pages: Record<string, React.LazyExoticComponent<any>> = {
+type LearningPageComponent = React.ComponentType<{ onNavigate: (page: string) => void }>;
+
+const pages: Record<string, React.LazyExoticComponent<LearningPageComponent>> = {
   'learning-algebra-g10-t1-linear-equations':    lazy(() => import('../../../features/study/pages/learning/Algebra/Grade10/Term1/LinearEquations')),
   'learning-algebra-g10-t1-simultaneous':         lazy(() => import('../../../features/study/pages/learning/Algebra/Grade10/Term1/SimultaneousEquations')),
   'learning-physci-g10-t1-waves':                lazy(() => import('../../../features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight')),

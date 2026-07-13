@@ -65,98 +65,98 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'Which keyboard shortcut is used to SAVE a document in Microsoft Word?',
+    { id: 'wp-i1', question: 'Which keyboard shortcut is used to SAVE a document in Microsoft Word?',
       options: ['Ctrl+P', 'Ctrl+S', 'Ctrl+Z', 'Ctrl+A'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Ctrl+S saves the current document.',
       explanation: 'Ctrl+S saves the current document. Ctrl+P prints, Ctrl+Z undoes the last action, Ctrl+A selects all text.',
     },
-    {
-      question: 'A learner wants text to have even edges on both the left and right sides of the page. Which alignment should she choose?',
+    { id: 'wp-i2', question: 'A learner wants text to have even edges on both the left and right sides of the page. Which alignment should she choose?',
       options: ['Left', 'Centre', 'Right', 'Justify'],
-      answer: 3,
+      correctIndex: 3,
+      hint: 'Justify alignment spaces words so both the left and right edges are even.',
       explanation: 'Justify alignment spaces words so both the left and right edges are even — like in a newspaper. Left alignment only aligns the left edge; Right only the right; Centre centres each line.',
     },
-    {
-      question: 'In Microsoft Word, where would you find the Bold, Italic, and Underline buttons?',
+    { id: 'wp-i3', question: 'In Microsoft Word, where would you find the Bold, Italic, and Underline buttons?',
       options: ['Insert tab', 'Layout tab', 'Home tab', 'View tab'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Bold, Italic, and Underline are in the Home tab under the Font group.',
       explanation: 'Bold, Italic, and Underline are in the Home tab under the Font group. The Home tab contains the most commonly used formatting tools.',
     },
-    {
-      question: 'What does "line spacing of 2.0" mean in a Word document?',
+    { id: 'wp-i4', question: 'What does "line spacing of 2.0" mean in a Word document?',
       options: [
         'Two characters fit on each line',
         'There is double the normal space between each line of text',
         'The font size is doubled',
         'The document has two columns',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Line spacing of 2.0 (double spacing) means there is twice the normal amount of.',
       explanation: 'Line spacing of 2.0 (double spacing) means there is twice the normal amount of space between lines. This makes documents easier to read and allows space for handwritten feedback.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'Which keyboard shortcut UNDOES the last action in Word?',
+    { id: 'wp-r1', question: 'Which keyboard shortcut UNDOES the last action in Word?',
       options: ['Ctrl+Y', 'Ctrl+U', 'Ctrl+Z', 'Ctrl+X'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Ctrl+Z undoes the last action.',
       explanation: 'Ctrl+Z undoes the last action. Ctrl+Y redoes (reverses an undo). Ctrl+U underlines selected text. Ctrl+X cuts selected text.',
     },
-    {
-      question: 'A learner changes her essay\'s font to "Comic Sans MS, 8pt". Her teacher asks her to fix it. What should the correct body text formatting be?',
+    { id: 'wp-r2', question: 'A learner changes her essay\'s font to "Comic Sans MS, 8pt". Her teacher asks her to fix it. What should the correct body text formatting be?',
       options: [
         'Comic Sans MS, 8pt — the learner is correct',
         'A readable font like Calibri or Arial, 11–12pt',
         'Times New Roman, 20pt for easy reading',
         'Any font at 6pt to fit more on the page',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Standard body text is a readable font (Calibri, Arial, or Times New Roman) at 11–12pt.',
       explanation: 'Standard body text is a readable font (Calibri, Arial, or Times New Roman) at 11–12pt. Comic Sans and very small fonts are unprofessional and difficult to read.',
     },
   ],
   hardQuestions: [
-    {
-      question: 'A learner uses "Format Painter" in Word. What does this tool do?',
+    { id: 'wp-h1', question: 'A learner uses "Format Painter" in Word. What does this tool do?',
       options: [
         'It changes the background colour of the entire page',
         'It copies formatting from one piece of text and applies it to another',
         'It inserts a pre-designed image into the document',
         'It automatically corrects spelling and grammar',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Format Painter (paintbrush icon in Home tab) copies all formatting (font, size,.',
       explanation: 'Format Painter (paintbrush icon in Home tab) copies all formatting (font, size, colour, bold, etc.) from selected text and applies it to other text you click or drag over. It\'s a time-saver for consistent formatting.',
     },
-    {
-      question: 'A teacher requires a report with: A4 page, 2.54cm margins, Calibri 12pt, 1.5 line spacing, page numbers at the bottom. Where would a learner insert page numbers?',
+    { id: 'wp-h2', question: 'A teacher requires a report with: A4 page, 2.54cm margins, Calibri 12pt, 1.5 line spacing, page numbers at the bottom. Where would a learner insert page numbers?',
       options: [
         'Home tab → Paragraph group',
         'Insert tab → Header & Footer group → Page Number',
         'Layout tab → Page Setup group',
         'View tab → Show group',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Page numbers are inserted via Insert tab → Header & Footer group → Page Number.',
       explanation: 'Page numbers are inserted via Insert tab → Header & Footer group → Page Number. You can choose position (top/bottom) and alignment. This is a common CAT practical requirement.',
     },
-    {
-      question: 'A learner accidentally selects all text and presses Delete. What is the quickest way to recover the text?',
+    { id: 'wp-h3', question: 'A learner accidentally selects all text and presses Delete. What is the quickest way to recover the text?',
       options: [
         'Close the document without saving and reopen the last saved version',
         'Press Ctrl+Z to undo the deletion',
         'Use File → Recent Documents to find the original',
         'Retype the entire document from memory',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Ctrl+Z immediately undoes the last action.',
       explanation: 'Ctrl+Z immediately undoes the last action — in this case, the deletion. Word keeps an undo history so multiple Ctrl+Z presses can undo several steps back. Always try Ctrl+Z first before any other recovery method.',
     },
-    {
-      question: 'Which of the following BEST describes the difference between a Word template (.dotx) and a regular Word document (.docx)?',
+    { id: 'wp-h4', question: 'Which of the following BEST describes the difference between a Word template (.dotx) and a regular Word document (.docx)?',
       options: [
         'A template cannot be edited; a document can',
         'A template provides a pre-formatted starting point for new documents without overwriting itself',
         'A .docx file is read-only; a .dotx file can be edited freely',
         'Templates are only used for spreadsheets, not word processing',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'A Word template (.dotx) is a reusable starting point.',
       explanation: 'A Word template (.dotx) is a reusable starting point — it contains pre-set formatting, styles, and sometimes placeholder text. When you open a template, Word creates a new untitled document based on it, leaving the template unchanged. This is useful for letterheads, reports, and forms.',
     },
   ],
@@ -204,6 +204,18 @@ const TOPIC = {
 const SUBJECT = 'CAT'
 const GRADE = 10
 const TOPIC_ID = 'word-processing'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_cat-word_'
 
 
@@ -260,14 +272,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -330,7 +342,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -341,7 +353,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -349,26 +361,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -376,7 +388,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -481,9 +493,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

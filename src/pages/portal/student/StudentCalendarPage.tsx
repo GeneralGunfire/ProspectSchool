@@ -343,7 +343,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
 
         {/* Month nav */}
         <div className="flex items-center rounded border overflow-hidden" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
-          <button onClick={prevMonth} className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderRight: '1px solid var(--color-brand-border)' }}>
+          <button onClick={prevMonth} aria-label="Previous month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderRight: '1px solid var(--color-brand-border)' }}>
             <ChevronLeft className="w-4 h-4 text-stone-600" />
           </button>
           <div className="relative overflow-hidden min-w-36 text-center px-1">
@@ -360,7 +360,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               </motion.span>
             </AnimatePresence>
           </div>
-          <button onClick={nextMonth} className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderLeft: '1px solid var(--color-brand-border)' }}>
+          <button onClick={nextMonth} aria-label="Next month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderLeft: '1px solid var(--color-brand-border)' }}>
             <ChevronRight className="w-4 h-4 text-stone-600" />
           </button>
         </div>
@@ -778,7 +778,125 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           </AnimatePresence>
         </div>
 
-        {/* ── Right sidebar ─────────────────────────────────────── */}
+        {/* ── Mobile/tablet day-detail sheet — the sidebar below is xl:only,
+             so under 1280px this is the only way to see a selected day's events. ── */}
+        <AnimatePresence>
+          {selectedDay && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
+                className="xl:hidden fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-40"
+              />
+              <motion.div
+                initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+                transition={{ duration: 0.28, ease }}
+                className="xl:hidden fixed inset-x-0 bottom-0 z-50 max-h-[75vh] flex flex-col rounded-t-2xl bg-white border-t border-brand-border overflow-hidden"
+                style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border/60 shrink-0">
+                  <div>
+                    <p className="text-xs font-black text-brand-dark">{formatDayFull(selectedDay)}</p>
+                    <p className="text-[10px] text-stone-500 font-bold mt-0.5">
+                      {dayEvents.length === 0 ? 'No events' : `${dayEvents.length} event${dayEvents.length > 1 ? 's' : ''}`}
+                    </p>
+                  </div>
+                  <button onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
+                    aria-label="Close"
+                    className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                    <X className="w-3.5 h-3.5 text-stone-500" />
+                  </button>
+                </div>
+                <div className="overflow-y-auto">
+                  {dayEvents.length === 0 ? (
+                    <div className="px-4 py-6 text-center">
+                      <p className="text-sm font-bold text-stone-400">Nothing on this day.</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-stone-100">
+                      {dayEvents.map((ev) => {
+                        const c = EVENT_COLORS[ev.event_type];
+                        const isOpen = selectedEvent?.id === ev.id;
+                        const isHomework = ev.event_type === 'homework';
+                        const done = completions.has(ev.id);
+                        const toggling = togglingId === ev.id;
+                        return (
+                          <div key={ev.id}>
+                            <div className="flex items-center">
+                              <button
+                                onClick={() => setSelectedEvent(isOpen ? null : ev)}
+                                className="flex-1 text-left px-4 py-3 hover:bg-stone-50 transition-colors"
+                              >
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
+                                  <span className={`text-[10px] font-black uppercase tracking-widest ${c.text}`}>
+                                    {EVENT_LABELS[ev.event_type]}
+                                  </span>
+                                </div>
+                                <p className={`text-sm font-bold truncate ${done ? 'line-through text-stone-500' : 'text-stone-900'}`}>
+                                  {ev.title}
+                                </p>
+                                {ev.start_time && (
+                                  <p className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
+                                    <Clock className="w-3 h-3" />
+                                    {formatTime(ev.start_time)}{ev.end_time ? ` – ${formatTime(ev.end_time)}` : ''}
+                                  </p>
+                                )}
+                              </button>
+                              {isHomework && (
+                                <button
+                                  onClick={(e) => handleToggleDone(ev, e)}
+                                  disabled={toggling}
+                                  aria-label={done ? 'Mark homework not done' : 'Mark homework done'}
+                                  className="px-3 py-3 hover:bg-stone-50 transition-colors disabled:opacity-40"
+                                >
+                                  {done
+                                    ? <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                    : <Circle className="w-5 h-5 text-stone-400" />
+                                  }
+                                </button>
+                              )}
+                            </div>
+                            <AnimatePresence>
+                              {isOpen && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className={`mx-3 mb-3 p-3 rounded-xl ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-50'}`}>
+                                    {ev.description && (
+                                      <p className="text-xs text-stone-600 leading-relaxed mb-2">{ev.description}</p>
+                                    )}
+                                    {ev.attachment_url && (
+                                      <button onClick={() => handleDownload(ev)} disabled={downloading}
+                                        className="flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-800 transition-colors disabled:opacity-50">
+                                        <Paperclip className="w-3.5 h-3.5" />
+                                        {downloading ? 'Opening…' : ev.attachment_name ?? 'Download'}
+                                      </button>
+                                    )}
+                                    {!ev.description && !ev.attachment_url && (
+                                      <p className="text-xs text-stone-500 italic">No additional details.</p>
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* ── Right sidebar (desktop) ───────────────────────────── */}
         <div className="hidden xl:block w-72 shrink-0 space-y-4">
 
           {/* Day detail or upcoming events */}

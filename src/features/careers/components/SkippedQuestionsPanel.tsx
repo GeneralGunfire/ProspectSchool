@@ -44,6 +44,7 @@ export function SkippedQuestionsPanel({
                 onClick={onClose}
                 className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
                 title="Close"
+                aria-label="Close"
               >
                 <X className="w-5 h-5 text-slate-900" />
               </button>

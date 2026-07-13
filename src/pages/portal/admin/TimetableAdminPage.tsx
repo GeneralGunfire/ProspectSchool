@@ -921,7 +921,7 @@ function SlotModal({
                 {typeof editingId === 'number' ? 'Editing a subject group in this slot.' : 'Add each subject group running in this slot.'}
               </p>
             </div>
-            <button onClick={onClose} className="p-1 text-stone-400 hover:text-stone-600 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-1 text-stone-400 hover:text-stone-600 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>

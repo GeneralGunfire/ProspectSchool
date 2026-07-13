@@ -265,7 +265,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
 
               <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                 <h2 className="text-base font-black text-brand-dark">Post Announcement</h2>
-                <button onClick={() => setModal(false)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                <button onClick={() => setModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
               </div>
@@ -520,10 +520,12 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
       <div className="flex items-start gap-1 shrink-0 p-3">
         <button onClick={onPin} disabled={toggling}
           className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
-          title={a.pinned ? 'Unpin' : 'Pin'}>
+          title={a.pinned ? 'Unpin' : 'Pin'}
+          aria-label={a.pinned ? 'Unpin announcement' : 'Pin announcement'}>
           {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
         </button>
         <button onClick={onDelete}
+          aria-label="Delete announcement"
           className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
           <Trash2 className="w-4 h-4" />
         </button>

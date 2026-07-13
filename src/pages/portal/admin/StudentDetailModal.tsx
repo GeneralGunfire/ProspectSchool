@@ -130,11 +130,11 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
             <h2 className="text-lg font-black text-brand-dark">{editing ? 'Edit Student' : 'Student Details'}</h2>
             <div className="flex items-center gap-1">
               {!editing && detail && (
-                <button onClick={openEdit} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                <button onClick={openEdit} aria-label="Edit student" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                   <Pencil className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+              <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>

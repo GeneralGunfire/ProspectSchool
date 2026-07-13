@@ -66,107 +66,107 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'What does the file extension ".xlsx" indicate?',
+    { id: 'fm-i1', question: 'What does the file extension ".xlsx" indicate?',
       options: ['A Word processing document', 'An Excel spreadsheet', 'An image file', 'An audio file'],
-      answer: 1,
+      correctIndex: 1,
+      hint: '.xlsx is the file extension for Microsoft Excel spreadsheets.',
       explanation:
         '.xlsx is the file extension for Microsoft Excel spreadsheets. .docx = Word, .jpg/.png = image, .mp3/.wav = audio, .pdf = PDF document.',
     },
-    {
-      question: 'What is the difference between "Copy + Paste" and "Cut + Paste"?',
+    { id: 'fm-i2', question: 'What is the difference between "Copy + Paste" and "Cut + Paste"?',
       options: [
         'They are the same — both move the file',
         'Copy + Paste duplicates the file; Cut + Paste moves it',
         'Cut + Paste duplicates the file; Copy + Paste moves it',
         'Copy + Paste deletes the original; Cut + Paste keeps it',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Copy + Paste creates a duplicate.',
       explanation:
         'Copy + Paste creates a duplicate — the original file stays in its location. Cut + Paste moves the file — the original is removed from its original location after pasting.',
     },
-    {
-      question: 'A learner saves a file as "C:\\School\\CAT\\Practical1.docx". What does this represent?',
+    { id: 'fm-i3', question: 'A learner saves a file as "C:\\School\\CAT\\Practical1.docx". What does this represent?',
       options: ['The file name only', 'The file extension only', 'The full file path showing the file\'s location', 'The folder name only'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'This is a full file path.',
       explanation:
         'This is a full file path. It shows: C:\\ (root drive) → School (folder) → CAT (subfolder) → Practical1.docx (file name with extension). The path tells you exactly where the file is stored.',
     },
-    {
-      question: 'When you delete a file on Windows, where does it go first?',
+    { id: 'fm-i4', question: 'When you delete a file on Windows, where does it go first?',
       options: ['It is permanently deleted immediately', 'It goes to the Recycle Bin', 'It is moved to the Downloads folder', 'It is compressed and archived'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Deleted files on Windows go to the Recycle Bin first.',
       explanation:
         'Deleted files on Windows go to the Recycle Bin first. They are not permanently deleted until you empty the Recycle Bin. This allows you to recover accidentally deleted files.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'Which of the following is the BEST file name for a CAT assignment?',
+    { id: 'fm-r1', question: 'Which of the following is the BEST file name for a CAT assignment?',
       options: ['my work.docx', 'CAT_Assignment2_Term1_2026.docx', 'document(1).docx', 'CATASSIGNMENT!!!.docx'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'CAT_Assignment2_Term1_2026.docx is descriptive, includes subject, task number,.',
       explanation:
         'CAT_Assignment2_Term1_2026.docx is descriptive, includes subject, task number, term, and year. It uses underscores instead of spaces and has no special characters — making it easy to find and sort.',
     },
-    {
-      question: 'A subfolder is:',
+    { id: 'fm-r2', question: 'A subfolder is:',
       options: [
         'A file stored inside another file',
         'A folder stored inside another folder',
         'A shortcut to a file on the desktop',
         'A compressed archive of multiple files',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'A subfolder is a folder that exists inside another folder.',
       explanation:
         'A subfolder is a folder that exists inside another folder. This creates a hierarchy — for example, School → CAT → Practicals, where "Practicals" is a subfolder of "CAT".',
     },
   ],
   hardQuestions: [
-    {
-      question: 'A school\'s file server stores learner files at: \\\\Server\\Grade10\\[Surname]\\[Subject]\\. Nomsa Dlamini\'s CAT file would be at:',
+    { id: 'fm-h1', question: 'A school\'s file server stores learner files at: \\\\Server\\Grade10\\[Surname]\\[Subject]\\. Nomsa Dlamini\'s CAT file would be at:',
       options: [
         '\\\\Server\\CAT\\Grade10\\Dlamini\\',
         '\\\\Server\\Grade10\\Dlamini\\CAT\\',
         '\\\\Server\\Dlamini\\Grade10\\CAT\\',
         '\\\\CAT\\Server\\Grade10\\Dlamini\\',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Following the path structure \\\\Server\\Grade10\\[Surname]\\[Subject]\\, Nomsa.',
       explanation:
         'Following the path structure \\\\Server\\Grade10\\[Surname]\\[Subject]\\, Nomsa Dlamini\'s CAT folder would be at \\\\Server\\Grade10\\Dlamini\\CAT\\. Reading file paths requires following the hierarchy from left to right.',
     },
-    {
-      question: 'A learner accidentally deletes an important file and empties the Recycle Bin. What is the MOST likely way to recover it?',
+    { id: 'fm-h2', question: 'A learner accidentally deletes an important file and empties the Recycle Bin. What is the MOST likely way to recover it?',
       options: [
         'Press Ctrl+Z to undo the deletion',
         'Restore from a backup if one exists',
         'The file can always be recovered from the hard drive',
         'Use the Search function to find it',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Once the Recycle Bin is emptied, Ctrl+Z no longer works.',
       explanation:
         'Once the Recycle Bin is emptied, Ctrl+Z no longer works. The best option is to restore from a backup (e.g. external drive, OneDrive, school server backup). This highlights why regular backups are essential — a key file management principle.',
     },
-    {
-      question: 'A CAT teacher asks learners to submit files named: Surname_Name_Grade_Subject_Task.extension. Which submission is CORRECTLY named?',
+    { id: 'fm-h3', question: 'A CAT teacher asks learners to submit files named: Surname_Name_Grade_Subject_Task.extension. Which submission is CORRECTLY named?',
       options: [
         'Thabo Mokoena CAT Practical 1.docx',
         'Mokoena_Thabo_10_CAT_Practical1.docx',
         'CAT_Practical1_Thabo.docx',
         'mokoena thabo grade10 cat.docx',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Mokoena_Thabo_10_CAT_Practical1.docx follows the required convention:.',
       explanation:
         'Mokoena_Thabo_10_CAT_Practical1.docx follows the required convention: Surname_Name_Grade_Subject_Task, uses underscores (no spaces), and includes all required fields. File naming conventions are important in CAT practicals.',
     },
-    {
-      question: 'Which statement about file organisation is MOST correct?',
+    { id: 'fm-h4', question: 'Which statement about file organisation is MOST correct?',
       options: [
         'Saving all files on the Desktop is the most efficient approach',
         'File extensions can be changed to rename a file type safely',
         'A well-structured folder hierarchy makes files easier to find, back up, and share',
         'Files should be stored only in the root C:\\ directory for quick access',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'A well-structured folder hierarchy is the foundation of good file management.',
       explanation:
         'A well-structured folder hierarchy is the foundation of good file management. It makes files easier to locate, ensures proper backups, and simplifies sharing. Storing files on the Desktop or root drive creates clutter and makes management difficult.',
     },
@@ -220,6 +220,18 @@ const TOPIC = {
 const SUBJECT = 'CAT'
 const GRADE = 10
 const TOPIC_ID = 'file-management'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_cat-files_'
 
 
@@ -276,14 +288,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -346,7 +358,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -357,7 +369,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -365,26 +377,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -392,7 +404,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -497,9 +509,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

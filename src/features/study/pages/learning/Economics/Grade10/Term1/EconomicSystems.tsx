@@ -66,69 +66,68 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'Which economic system relies on the "price mechanism" to allocate resources?',
+    { id: 'es-i1', question: 'Which economic system relies on the "price mechanism" to allocate resources?',
       options: ['Command economy', 'Market economy', 'Mixed economy', 'Traditional economy'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'In a market economy, prices signal where resources are needed.',
       explanation:
         'In a market economy, prices signal where resources are needed — high prices attract producers, low prices indicate oversupply. This is the price mechanism.',
     },
-    {
-      question: 'South Africa is best described as which type of economic system?',
+    { id: 'es-i2', question: 'South Africa is best described as which type of economic system?',
       options: ['Pure market economy', 'Command economy', 'Mixed economy', 'Traditional economy'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'South Africa combines private enterprise (JSE-listed firms) with state-owned.',
       explanation:
         'South Africa combines private enterprise (JSE-listed firms) with state-owned enterprises (Eskom, Transnet) and government regulation — a classic mixed economy.',
     },
-    {
-      question: 'In a command economy, who decides how resources are allocated?',
+    { id: 'es-i3', question: 'In a command economy, who decides how resources are allocated?',
       options: [
         'Individual consumers through spending choices',
         'The central government or state planners',
         'Stock market prices',
         'Multinational corporations',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Command economies give the government (central planners) authority over all.',
       explanation:
         'Command economies give the government (central planners) authority over all major production and distribution decisions.',
     },
-    {
-      question: 'What did Adam Smith mean by the "invisible hand"?',
+    { id: 'es-i4', question: 'What did Adam Smith mean by the "invisible hand"?',
       options: [
         'Government secretly controls markets',
         'Prices are set by hidden cartels',
         'Self-interest in a free market guides resources to their best use',
         'Technology automates production decisions',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Adam Smith argued that when individuals pursue their own self-interest in a.',
       explanation:
         'Adam Smith argued that when individuals pursue their own self-interest in a competitive market, they are guided as if by an "invisible hand" to promote the overall welfare of society.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'A country where the government owns all factories and sets all prices is an example of a:',
+    { id: 'es-r1', question: 'A country where the government owns all factories and sets all prices is an example of a:',
       options: ['Market economy', 'Mixed economy', 'Command economy', 'Open economy'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Full government ownership of production and price-setting is the defining.',
       explanation:
         'Full government ownership of production and price-setting is the defining feature of a command (planned) economy.',
     },
-    {
-      question: 'Which feature is common to BOTH market and mixed economies?',
+    { id: 'es-r2', question: 'Which feature is common to BOTH market and mixed economies?',
       options: [
         'Central government sets all prices',
         'Some degree of private ownership exists',
         'The state owns all means of production',
         'Tradition and custom guide production',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Both market and mixed economies allow private ownership.',
       explanation:
         'Both market and mixed economies allow private ownership. The difference is that mixed economies also include significant government intervention or state-owned enterprises.',
     },
   ],
   hardQuestions: [
-    {
-      question:
+    { id: 'es-h1', question:
         'A government imposes a minimum wage, regulates pollution, but allows private firms to operate freely otherwise. This policy mix is most consistent with:',
       options: [
         'A pure market economy, because firms still operate freely',
@@ -136,12 +135,12 @@ const TOPIC = {
         'A mixed economy, because private enterprise coexists with government regulation',
         'A traditional economy, because custom dictates wages',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Minimum wages and pollution rules are government interventions, but firms still.',
       explanation:
         'Minimum wages and pollution rules are government interventions, but firms still own capital and make most decisions. This combination defines a mixed economy.',
     },
-    {
-      question:
+    { id: 'es-h2', question:
         'Country X transitions from a command economy to a market economy. Which outcome is MOST likely in the short term?',
       options: [
         'Immediate equal distribution of income',
@@ -149,12 +148,12 @@ const TOPIC = {
         'Full employment guaranteed by the state',
         'Zero inflation due to competition',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'When price controls are removed, prices often rise to market levels, and income.',
       explanation:
         'When price controls are removed, prices often rise to market levels, and income inequality typically increases as some benefit from the transition more than others — a common experience in post-Soviet states.',
     },
-    {
-      question:
+    { id: 'es-h3', question:
         'Eskom is a state-owned enterprise that provides electricity in South Africa. Its existence in a market-driven economy best illustrates:',
       options: [
         'A command economy replacing the market',
@@ -162,19 +161,20 @@ const TOPIC = {
         'The invisible hand solving the energy problem',
         'Traditional economic systems at work',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Electricity is a natural monopoly.',
       explanation:
         'Electricity is a natural monopoly — a single provider is most efficient. Left to the market alone, supply may be inadequate or unaffordable. Government provision through Eskom illustrates the mixed economy response to market failure.',
     },
-    {
-      question: 'Which of the following is the BEST argument for a market economy over a command economy?',
+    { id: 'es-h4', question: 'Which of the following is the BEST argument for a market economy over a command economy?',
       options: [
         'It guarantees equal income for all citizens',
         'It eliminates business cycles and recessions',
         'Price signals efficiently coordinate millions of individual decisions without central planning',
         'The government can ensure strategic industries are always profitable',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Friedrich Hayek argued that no central planner can process all the information.',
       explanation:
         'Friedrich Hayek argued that no central planner can process all the information needed to allocate resources efficiently. The price mechanism aggregates and transmits this information automatically — the core argument for market economies.',
     },
@@ -228,6 +228,18 @@ const TOPIC = {
 const SUBJECT = 'Economics'
 const GRADE = 10
 const TOPIC_ID = 'economic-systems'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_econ-systems_'
 
 
@@ -284,14 +296,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -354,7 +366,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -365,7 +377,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -373,26 +385,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -400,7 +412,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -505,9 +517,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

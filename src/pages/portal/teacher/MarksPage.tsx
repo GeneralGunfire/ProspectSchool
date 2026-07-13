@@ -777,7 +777,7 @@ export default function MarksPage({ session }: MarksPageProps) {
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border/60">
                 <h2 className="text-base font-black text-brand-dark">New Mark Sheet</h2>
-                <button onClick={() => setCreateModal(false)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                <button onClick={() => setCreateModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
               </div>
@@ -800,7 +800,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                   <select
                     value={form.subject_id}
                     onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-base sm:text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
                   >
                     <option value="">Select subject…</option>
                     {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}

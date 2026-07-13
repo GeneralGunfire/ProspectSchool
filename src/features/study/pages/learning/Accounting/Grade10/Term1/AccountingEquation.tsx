@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useStudySession } from '../../../../../../../providers/StudySessionContext'
-import { loadTopicProgress as _loadProgress, saveTopicProgress as _saveProgress } from '../../../../../../../lib/studyProgress'
+import { loadTopicProgress as _loadProgress, saveTopicProgress as _saveProgress, fetchStudentProgress } from '../../../../../../../lib/studyProgress'
 import { motion, AnimatePresence } from 'motion/react'
 import {
   ChevronLeft, ChevronRight, ArrowRight, Lightbulb, RotateCcw,
@@ -116,6 +116,18 @@ const TOPIC = {
 const SUBJECT = 'Accounting'
 const GRADE = 10
 const TOPIC_ID = 'accounting-equation'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const NEXT_TOPIC_ID = 'double-entry-system'
 const STORAGE_KEY_PREFIX = 'scratchpad_accounting-equation_'
 
@@ -217,6 +229,7 @@ function ScratchpadModal({ stepKey, onClose }: { stepKey: string; onClose: () =>
 
   const getPos = (e: React.PointerEvent) => {
     const r = canvasRef.current!.getBoundingClientRect()
+    return { x: e.clientX - r.left, y: e.clientY - r.top }
   }
 
   const saveHistory = useCallback(() => {
@@ -265,10 +278,10 @@ function ScratchpadModal({ stepKey, onClose }: { stepKey: string; onClose: () =>
           <span className="font-semibold text-slate-800 text-sm">Scratchpad</span>
           <div className="flex items-center gap-2">
             <button onClick={() => setTool('pen')} className={`p-1.5 rounded-lg transition-colors ${tool === 'pen' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><PenLine className="w-4 h-4" /></button>
-            <button onClick={() => setTool('eraser')} className={`p-1.5 rounded-lg transition-colors ${tool === 'eraser' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Eraser className="w-4 h-4" /></button>
-            <button onClick={undo} disabled={!history.length} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 transition-colors"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clear} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"><Trash2 className="w-4 h-4" /></button>
-            <button onClick={onClose} className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"><X className="w-4 h-4" /></button>
+            <button onClick={() => setTool('eraser')} aria-label="Eraser tool" className={`p-1.5 rounded-lg transition-colors ${tool === 'eraser' ? 'bg-slate-900 text-white' : 'text-slate-500 hover:bg-slate-100'}`}><Eraser className="w-4 h-4" /></button>
+            <button onClick={undo} disabled={!history.length} aria-label="Undo" className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 transition-colors"><Undo2 className="w-4 h-4" /></button>
+            <button onClick={clear} aria-label="Clear canvas" className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <canvas ref={canvasRef} className="flex-1 w-full cursor-crosshair rounded-b-2xl touch-none"
@@ -393,6 +406,11 @@ function PracticeModule({ questions, onComplete, allowScratchpad = true }: { que
               else if (isCorrect) cls += 'border-slate-500 bg-slate-50 text-slate-800 font-medium'
               else if (isSelected) cls += 'border-slate-400 bg-slate-50 text-slate-800'
               else cls += 'border-slate-200 text-slate-400'
+              return (
+                <button key={i} type="button" className={cls} onClick={() => !confirmed && setSelected(i)}>
+                  {opt}
+                </button>
+              )
             })}
           </div>
 
@@ -469,9 +487,10 @@ function AccountingEquationPage({ onNavigate }: { onNavigate: (page: any) => voi
 
   useEffect(() => {
     const load = async () => {
-      if (!data) return
+      if (!session) return
+      const data = await fetchStudentProgress(session.student_id, session.school_id)
       for (const row of data) {
-        const st: TopicStatus = row.mastery_level === 'mastered' ? 'mastered' : row.mastery_level === 'needs-practice' ? 'needs-practice' : 'not-started'
+        const st: TopicStatus = row.mastery_level === 'mastered' ? 'mastered' : row.mastery_level === 'needs_practice' ? 'needs-practice' : 'not-started'
         if (row.topic === TOPIC_ID) setThisStatus(st)
         if (row.topic === NEXT_TOPIC_ID) setNextStatus(st)
       }
@@ -544,7 +563,7 @@ function AccountingEquationPage({ onNavigate }: { onNavigate: (page: any) => voi
               </div>
 
               {/* Next topic card */}
-              <button onClick={() => onNavigate('learning-accounting-g10-t1-double-entry' as AppPage)} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 text-left hover:border-slate-300 hover:shadow-sm transition-all group">
+              <button onClick={() => onNavigate('learning-accounting-g10-t1-double-entry')} className="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 text-left hover:border-slate-300 hover:shadow-sm transition-all group">
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">Next — Topic 3</p>
@@ -613,7 +632,7 @@ function AccountingEquationPage({ onNavigate }: { onNavigate: (page: any) => voi
               score={practiceScore}
               total={TOPIC.initialQuestions.length}
               onRetry={() => setView('practice')}
-              onContinue={() => onNavigate('learning-accounting-g10-t1-double-entry' as AppPage)}
+              onContinue={() => onNavigate('learning-accounting-g10-t1-double-entry')}
               nextTopicName="Double-Entry System"
             />
           </motion.div>

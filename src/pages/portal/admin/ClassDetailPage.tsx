@@ -166,7 +166,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[80vh]">
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
                   <h2 className="text-lg font-black text-brand-dark">Add Student to {cohort?.name}</h2>
-                  <button onClick={() => setShowAdd(false)} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>

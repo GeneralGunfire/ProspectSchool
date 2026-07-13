@@ -429,22 +429,22 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       <input
                         type="number"
                         min={0}
-                        max={paper.total ?? 150}
+                        max={150}
                         value={setupScore}
                         onChange={e => setSetupScore(e.target.value)}
                         placeholder="0"
                         className="w-24 text-center font-black text-2xl rounded-xl border border-brand-border py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10"
                       />
                       <span className="text-stone-500 font-bold text-lg">
-                        / {paper.total ?? 150}
+                        / {150}
                       </span>
                       {setupScore && (
                         <span className={`font-black text-xl ml-2 ${
-                          Math.round((Number(setupScore) / (paper.total ?? 150)) * 100) >= 70 ? 'text-emerald-600' :
-                          Math.round((Number(setupScore) / (paper.total ?? 150)) * 100) >= 50 ? 'text-amber-600' :
+                          Math.round((Number(setupScore) / (150)) * 100) >= 70 ? 'text-emerald-600' :
+                          Math.round((Number(setupScore) / (150)) * 100) >= 50 ? 'text-amber-600' :
                           'text-red-500'
                         }`}>
-                          {Math.round((Number(setupScore) / (paper.total ?? 150)) * 100)}%
+                          {Math.round((Number(setupScore) / (150)) * 100)}%
                         </span>
                       )}
                     </div>
@@ -463,7 +463,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   <button
                     onClick={() => {
                       const score = Number(setupScore);
-                      const total = paper.total ?? 150;
+                      const total = 150;
                       if (score >= 0 && score <= total) {
                         submitSelfMark(score, total);
                       }
@@ -485,19 +485,19 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 /* Result screen */
                 <>
                   <div className={`rounded p-6 text-center mb-5 ${
-                    practice.selfScore / (paper.total ?? 150) >= 0.7 ? 'bg-emerald-50 border border-emerald-200' :
-                    practice.selfScore / (paper.total ?? 150) >= 0.5 ? 'bg-amber-50 border border-amber-200' :
+                    practice.selfScore / (150) >= 0.7 ? 'bg-emerald-50 border border-emerald-200' :
+                    practice.selfScore / (150) >= 0.5 ? 'bg-amber-50 border border-amber-200' :
                     'bg-red-50 border border-red-200'
                   }`}>
                     <p className={`font-black leading-none mb-1 ${
-                      practice.selfScore / (paper.total ?? 150) >= 0.7 ? 'text-emerald-600' :
-                      practice.selfScore / (paper.total ?? 150) >= 0.5 ? 'text-amber-600' :
+                      practice.selfScore / (150) >= 0.7 ? 'text-emerald-600' :
+                      practice.selfScore / (150) >= 0.5 ? 'text-amber-600' :
                       'text-red-500'
                     }`} style={{ fontSize: 'clamp(3rem, 10vw, 5rem)' }}>
-                      {Math.round((practice.selfScore / (paper.total ?? 150)) * 100)}%
+                      {Math.round((practice.selfScore / (150)) * 100)}%
                     </p>
                     <p className="text-stone-600 font-bold text-sm">
-                      {practice.selfScore} / {paper.total ?? 150} marks
+                      {practice.selfScore} / {150} marks
                     </p>
                     <p className="text-stone-500 text-xs mt-1">
                       Completed in {formatTimer(elapsed)}
@@ -505,9 +505,9 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   </div>
 
                   <p className="text-center text-sm text-stone-500 mb-6">
-                    {Math.round((practice.selfScore / (paper.total ?? 150)) * 100) >= 70
+                    {Math.round((practice.selfScore / (150)) * 100) >= 70
                       ? 'Strong result — well done.'
-                      : Math.round((practice.selfScore / (paper.total ?? 150)) * 100) >= 50
+                      : Math.round((practice.selfScore / (150)) * 100) >= 50
                       ? 'On track — review the areas you struggled with.'
                       : 'Below pass mark — open the memo and work through the corrections.'}
                   </p>

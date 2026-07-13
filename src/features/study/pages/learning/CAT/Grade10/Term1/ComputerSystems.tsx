@@ -67,13 +67,16 @@ const TOPIC = {
   },
   initialQuestions: [
     {
+      id: 'cs-i1',
       question: 'Which component is known as the "brain" of the computer?',
       options: ['RAM', 'Hard Drive', 'CPU', 'Monitor'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'This component performs the fetch-decode-execute cycle.',
       explanation:
         'The CPU (Central Processing Unit) processes all instructions and controls the other components. It performs the fetch-decode-execute cycle for every operation the computer carries out.',
     },
     {
+      id: 'cs-i2',
       question: 'What happens to data stored in RAM when the computer is switched off?',
       options: [
         'It is saved automatically to the hard drive',
@@ -81,43 +84,53 @@ const TOPIC = {
         'It moves to ROM for safekeeping',
         'It stays in RAM until manually deleted',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'RAM needs constant power to hold data.',
       explanation:
         'RAM is volatile memory — it requires constant power to hold data. When the computer is switched off, all unsaved data in RAM is lost. This is why saving your work to storage is important.',
     },
     {
+      id: 'cs-i3',
       question: 'A student scans a printed photo into a computer. The scanner is an example of:',
       options: ['Output device', 'Storage device', 'Processing unit', 'Input device'],
-      answer: 3,
+      correctIndex: 3,
+      hint: 'A scanner sends data INTO the system.',
       explanation:
         'A scanner converts a physical image into digital data and sends it into the computer — making it an input device. Input devices bring data INTO the system.',
     },
     {
+      id: 'cs-i4',
       question: 'Which storage device has no moving parts and is faster than a traditional hard drive?',
       options: ['HDD (Hard Disk Drive)', 'DVD-ROM', 'SSD (Solid State Drive)', 'USB flash drive'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'This device uses flash memory chips instead of a spinning disk.',
       explanation:
         'An SSD (Solid State Drive) uses flash memory chips with no moving parts, making it significantly faster and more durable than an HDD. Most modern laptops use SSDs.',
     },
   ],
   remediationQuestions: [
     {
+      id: 'cs-r1',
       question: 'Which of the following is hardware?',
       options: ['Microsoft Word', 'Windows 11', 'The keyboard', 'An MP3 file'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Hardware is anything you can physically touch.',
       explanation:
         'Hardware is any physical component you can touch. The keyboard is a physical input device. Microsoft Word, Windows 11, and MP3 files are all software (programs or data).',
     },
     {
+      id: 'cs-r2',
       question: 'In the IPO model, what does "O" stand for?',
       options: ['Operation', 'Output', 'Online', 'Organisation'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'IPO stands for Input → Processing → ?',
       explanation:
         'IPO stands for Input → Processing → Output. Output is the result produced by the computer after processing — displayed on a monitor, printed, or played through speakers.',
     },
   ],
   hardQuestions: [
     {
+      id: 'cs-h1',
       question: 'A computer has a 2.4GHz quad-core CPU and 8GB RAM. Which upgrade would most improve performance when running many applications simultaneously?',
       options: [
         'Upgrade to a faster SSD',
@@ -125,11 +138,13 @@ const TOPIC = {
         'Add a second monitor',
         'Install a better graphics card',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Each open application uses RAM — think about what runs out first when multitasking.',
       explanation:
         'When running many applications simultaneously, RAM is the bottleneck — each open application uses RAM. Doubling RAM from 8GB to 16GB allows more applications to run without the system slowing down. The SSD helps with load times, not simultaneous multitasking.',
     },
     {
+      id: 'cs-h2',
       question: 'ROM stores the BIOS firmware on a computer. This means the BIOS:',
       options: [
         'Is deleted when the computer shuts down',
@@ -137,11 +152,13 @@ const TOPIC = {
         'Persists even without power and runs before the OS loads',
         'Is stored on the hard drive alongside the operating system',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'ROM is non-volatile memory.',
       explanation:
         'ROM is non-volatile — it retains data without power. The BIOS (Basic Input/Output System) is stored in ROM so it can run immediately when the computer is powered on, before the operating system loads from storage.',
     },
     {
+      id: 'cs-h3',
       question: 'A school has 30 computers all connected to one printer. When one learner prints, others must wait. This is an example of:',
       options: [
         'A hardware fault in the CPU',
@@ -149,11 +166,13 @@ const TOPIC = {
         'Insufficient RAM on the learner\'s computer',
         'A software virus blocking the printer',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'This is normal behaviour for a shared network device, not a fault.',
       explanation:
         'A shared network printer creates a print queue — jobs are processed one at a time in order received. This is normal network printing behaviour, not a fault. It illustrates how output devices can be shared across a network.',
     },
     {
+      id: 'cs-h4',
       question: 'Which statement best explains why SSDs are preferred over HDDs in modern laptops?',
       options: [
         'SSDs store more data than HDDs',
@@ -161,7 +180,8 @@ const TOPIC = {
         'SSDs are faster, more durable, and use less power due to no moving parts',
         'SSDs work without electricity unlike HDDs',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Think about what having no moving parts does for speed, durability, and power use.',
       explanation:
         'SSDs use flash memory (no moving parts), making them faster at reading/writing data, more resistant to physical shock, and more power-efficient — important for battery life in laptops. HDDs are still used where large, cheap storage is needed.',
     },
@@ -215,6 +235,18 @@ const TOPIC = {
 const SUBJECT = 'CAT'
 const GRADE = 10
 const TOPIC_ID = 'computer-systems'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_cat-systems_'
 
 
@@ -271,14 +303,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -341,7 +373,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -352,7 +384,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -360,26 +392,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -387,7 +419,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -492,9 +524,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

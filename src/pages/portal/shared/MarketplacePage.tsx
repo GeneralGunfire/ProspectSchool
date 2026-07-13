@@ -518,6 +518,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                   <img src={URL.createObjectURL(img)} alt="" className="w-full h-full object-cover" />
                   <button
                     onClick={() => setImages(prev => prev.filter((_, idx) => idx !== i))}
+                    aria-label="Remove image"
                     className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center"
                   >
                     <X className="w-3 h-3" />

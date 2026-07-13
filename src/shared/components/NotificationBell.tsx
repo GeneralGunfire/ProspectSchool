@@ -75,6 +75,7 @@ export default function NotificationBell({ userType, userId, dark = false }: Not
           dark ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
         }`}
         title="Notifications"
+        aria-label="Notifications"
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (

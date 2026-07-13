@@ -223,7 +223,7 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
                     <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
                     <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
                   </button>
-                  <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
+                  <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
                     <X className="w-5 h-5" />
                   </button>
                 </div>

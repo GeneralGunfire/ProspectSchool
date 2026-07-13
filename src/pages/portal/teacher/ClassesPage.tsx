@@ -590,7 +590,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Student' : 'Edit Student'}
                   </h2>
-                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -725,7 +725,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     <h2 className="text-lg font-black text-brand-dark">Assign Student</h2>
                     <p className="text-xs text-stone-500 mt-0.5">Link a student already in this school to your subjects</p>
                   </div>
-                  <button onClick={closeAssign} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -838,7 +838,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     <h2 className="text-base font-black text-brand-dark">Parent Contact Log</h2>
                     <p className="text-xs text-stone-500 mt-0.5">{contactModal.surname}, {contactModal.name}</p>
                   </div>
-                  <button onClick={closeContactModal} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
+                  <button onClick={closeContactModal} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>

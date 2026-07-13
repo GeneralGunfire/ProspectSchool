@@ -318,7 +318,7 @@ function TestCard({ test, onAssign, onOverview, onDelete }: {
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <button onClick={onDelete} className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors duration-150">
+          <button onClick={onDelete} aria-label="Delete test" className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors duration-150">
             <Trash2 className="w-3.5 h-3.5" />
           </button>
           <button onClick={onAssign}
@@ -397,7 +397,7 @@ function CreateTestModal({ session, subjects, onClose, onCreated }: {
               <h2 className="text-lg font-semibold text-brand-dark">Assign Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">Pick a ready-made CAPS topic test — questions are already set and auto-graded.</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -547,7 +547,7 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
               <h2 className="text-lg font-semibold text-brand-dark">Build Custom Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">Full control — set your own title, sub-skills, and question types.</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -716,7 +716,7 @@ function AssignModal({ session, test, onClose, onAssigned }: {
               <h2 className="text-lg font-semibold text-brand-dark">Assign Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">{test.title}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -1058,7 +1058,7 @@ function AddQuestionModal({ full, onClose, onAdded }: {
         <div className={MODAL_PANEL}>
           <div className={MODAL_HEADER}>
             <h2 className="text-lg font-semibold text-brand-dark">Add Question</h2>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -1199,7 +1199,7 @@ function AttemptDetailModal({ attemptId, onClose }: { attemptId: number; onClose
                 {!loading && detail && ` · ${detail.attempt.score_pct ?? 0}%${detail.attempt.grading_complete ? '' : ' (provisional — marking in progress)'}`}
               </p>
             </div>
-            <button onClick={onClose} className="p-1 text-stone-400 hover:text-stone-600 transition-colors duration-150 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-1 text-stone-400 hover:text-stone-600 transition-colors duration-150 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>

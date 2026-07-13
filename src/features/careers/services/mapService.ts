@@ -97,7 +97,13 @@ export function getTopEmployersByProvince(province: string): TopEmployer[] {
   return TOP_EMPLOYERS.filter((e) => e.province === province);
 }
 
-// ── High-demand careers ────────────────────────────────────────────────────
+// ── Careers ────────────────────────────────────────────────────────────────
+
+export function getCareersByProvince(_province: string) {
+  // Careers are national, not tied to a physical location — province filter
+  // is aspirational for now (same as getHighDemandCareers below).
+  return allCareersComplete;
+}
 
 export function getHighDemandCareers(province: string) {
   // Return careers with high demand — province filter is aspirational for now

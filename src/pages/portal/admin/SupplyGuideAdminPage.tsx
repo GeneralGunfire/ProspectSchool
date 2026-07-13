@@ -267,7 +267,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
             >
               <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                 <h2 className="text-base font-black text-stone-900">Add Supply Item</h2>
-                <button onClick={closeModal} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
               </div>

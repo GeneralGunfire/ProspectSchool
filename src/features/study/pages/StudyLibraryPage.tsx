@@ -62,15 +62,15 @@ const EGD_G10_TOPICS: Record<number, string[]> = {
   1: ['Drawing Instruments & Equipment'],
 };
 
-const PHYSCI_G10_T1_PAGES: AppPage[] = ['learning-physci-g10-t1-waves','learning-physci-g10-t1-atoms','learning-physci-g10-t1-classification','learning-physci-g10-t1-periodic-table','learning-physci-g10-t1-bonding'];
-const LIFESCI_G10_T1_PAGES: AppPage[] = ['learning-lifesci-g10-t1-biodiversity','learning-lifesci-g10-t1-five-kingdoms','learning-lifesci-g10-t1-taxonomy','learning-lifesci-g10-t1-species'];
-const ACCOUNTING_G10_T1_PAGES: AppPage[] = ['learning-accounting-g10-t1-intro','learning-accounting-g10-t1-equation','learning-accounting-g10-t1-double-entry','learning-accounting-g10-t1-source-documents','learning-accounting-g10-t1-journals','learning-accounting-g10-t1-ledger'];
-const BIZSTUDIES_G10_T1_PAGES: AppPage[] = ['learning-bizstudies-g10-t1-environment','learning-bizstudies-g10-t1-sectors','learning-bizstudies-g10-t1-stakeholders','learning-bizstudies-g10-t1-operations'];
-const ECONOMICS_G10_T1_PAGES: AppPage[] = ['learning-economics-g10-t1-problem','learning-economics-g10-t1-ppc','learning-economics-g10-t1-systems','learning-economics-g10-t1-circular-flow','learning-economics-g10-t1-factors'];
-const CAT_G10_T1_PAGES: AppPage[] = ['learning-cat-g10-t1-computer-systems','learning-cat-g10-t1-file-management','learning-cat-g10-t1-word-processing','learning-cat-g10-t1-spreadsheets'];
-const EGD_G10_T1_PAGES: AppPage[] = ['learning-egd-g10-t1-drawing-instruments'];
+const PHYSCI_G10_T1_PAGES: string[] = ['learning-physci-g10-t1-waves','learning-physci-g10-t1-atoms','learning-physci-g10-t1-classification','learning-physci-g10-t1-periodic-table','learning-physci-g10-t1-bonding'];
+const LIFESCI_G10_T1_PAGES: string[] = ['learning-lifesci-g10-t1-biodiversity','learning-lifesci-g10-t1-five-kingdoms','learning-lifesci-g10-t1-taxonomy','learning-lifesci-g10-t1-species'];
+const ACCOUNTING_G10_T1_PAGES: string[] = ['learning-accounting-g10-t1-intro','learning-accounting-g10-t1-equation','learning-accounting-g10-t1-double-entry','learning-accounting-g10-t1-source-documents','learning-accounting-g10-t1-journals','learning-accounting-g10-t1-ledger'];
+const BIZSTUDIES_G10_T1_PAGES: string[] = ['learning-bizstudies-g10-t1-environment','learning-bizstudies-g10-t1-sectors','learning-bizstudies-g10-t1-stakeholders','learning-bizstudies-g10-t1-operations'];
+const ECONOMICS_G10_T1_PAGES: string[] = ['learning-economics-g10-t1-problem','learning-economics-g10-t1-ppc','learning-economics-g10-t1-systems','learning-economics-g10-t1-circular-flow','learning-economics-g10-t1-factors'];
+const CAT_G10_T1_PAGES: string[] = ['learning-cat-g10-t1-computer-systems','learning-cat-g10-t1-file-management','learning-cat-g10-t1-word-processing','learning-cat-g10-t1-spreadsheets'];
+const EGD_G10_T1_PAGES: string[] = ['learning-egd-g10-t1-drawing-instruments'];
 
-function getTopicsAndPages(subjectId: string | null, grade: number | null, term: number | null): { names: string[]; pages: AppPage[] } {
+function getTopicsAndPages(subjectId: string | null, grade: number | null, term: number | null): { names: string[]; pages: string[] } {
   if (subjectId === 'algebra'          && grade === 10 && term === 1) return { names: ALGEBRA_G10_TOPICS[1],      pages: ['learning-algebra-g10-t1-linear-equations', 'learning-algebra-g10-t1-simultaneous'] };
   if (subjectId === 'phys-sci'         && grade === 10 && term === 1) return { names: PHYSCI_G10_TOPICS[1],       pages: PHYSCI_G10_T1_PAGES };
   if (subjectId === 'life-sci'         && grade === 10 && term === 1) return { names: LIFESCI_G10_TOPICS[1],      pages: LIFESCI_G10_T1_PAGES };

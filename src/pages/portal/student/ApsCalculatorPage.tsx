@@ -76,7 +76,7 @@ function SubjectRow({
         <select
           value={subject.code}
           onChange={e => onChange(index, { ...subject, code: e.target.value as SubjectCode })}
-          className="w-full appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-2 pr-7 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+          className="w-full appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-2 pr-7 text-base sm:text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
         >
           {Object.entries(grouped).map(([group, items]) => (
             <optgroup key={group} label={group}>
@@ -101,7 +101,7 @@ function SubjectRow({
             onChange(index, { ...subject, percent: val });
           }}
           placeholder="0"
-          className="w-16 bg-stone-50 border border-brand-border rounded-lg px-2 py-2 text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+          className="w-16 bg-stone-50 border border-brand-border rounded-lg px-2 py-2 text-base sm:text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
         />
         <span className="text-stone-500 text-xs">%</span>
       </div>
@@ -761,7 +761,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   <select
                     value={fieldFilter}
                     onChange={e => setFieldFilter(e.target.value as FieldOfStudy | 'All')}
-                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-base sm:text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Fields</option>
                     {FIELDS_OF_STUDY.map(f => (
@@ -776,7 +776,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   <select
                     value={uniFilter}
                     onChange={e => setUniFilter(e.target.value)}
-                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+                    className="appearance-none bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 pr-7 text-base sm:text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   >
                     <option value="All">All Universities</option>
                     {UNIVERSITIES.map(u => (

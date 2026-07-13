@@ -1,11 +1,10 @@
 import type { Key } from 'react';
 import { ArrowRight } from 'lucide-react';
-import type { Career } from '../data/careers';
 import type { CareerFull } from '../data/careersTypes';
 
 interface CareerCardProps {
   key?: Key;
-  career: Career | CareerFull;
+  career: CareerFull;
   onCardClick?: () => void;
 }
 
@@ -64,35 +63,25 @@ const riasecLabel: Record<string, string> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function getTopRiasec(career: Career | CareerFull): string[] {
-  if ('riasecMatch' in career) {
-    return Object.entries(career.riasecMatch)
-      .map(([code, score]) => ({ code: code[0].toUpperCase(), score }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 2)
-      .map((e) => e.code);
-  }
-  return (career as Career).riasec.slice(0, 2);
+function getTopRiasec(career: CareerFull): string[] {
+  return Object.entries(career.riasecMatch)
+    .map(([code, score]) => ({ code: code[0].toUpperCase(), score }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 2)
+    .map((e) => e.code);
 }
 
-function getSalary(career: Career | CareerFull): string {
-  if ('salary' in career && typeof (career as CareerFull).salary === 'object') {
-    const n = (career as CareerFull).salary.entryLevel;
-    return `R${(n / 1000).toFixed(0)}k`;
-  }
-  return (career as Career).salary || '';
+function getSalary(career: CareerFull): string {
+  const n = career.salary.entryLevel;
+  return `R${(n / 1000).toFixed(0)}k`;
 }
 
-function getAPS(career: Career | CareerFull): number {
-  if ('matricRequirements' in career) return (career as CareerFull).matricRequirements.minimumAps;
-  return (career as Career).aps || 0;
+function getAPS(career: CareerFull): number {
+  return career.matricRequirements.minimumAps;
 }
 
-function getDemand(career: Career | CareerFull): string | null {
-  if ('jobDemand' in career && typeof (career as CareerFull).jobDemand === 'object') {
-    return (career as CareerFull).jobDemand?.level ?? null;
-  }
-  return null;
+function getDemand(career: CareerFull): string | null {
+  return career.jobDemand?.level ?? null;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────

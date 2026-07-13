@@ -133,7 +133,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
               <h2 className="text-base font-black text-brand-dark">Record Outcome</h2>
               <p className="text-xs text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</p>
             </div>
-            <button onClick={onClose} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>

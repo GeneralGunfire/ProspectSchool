@@ -245,7 +245,7 @@ export default function AdminAnnouncementsPage({ session }: AdminAnnouncementsPa
 
               <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
                 <h2 className="text-base font-black text-brand-dark">Post Announcement</h2>
-                <button onClick={() => setModal(false)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
+                <button onClick={() => setModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
               </div>
@@ -375,6 +375,7 @@ function AdminAnnouncementCard({ a, i, subjects, toggling, onPin, onDelete }: {
           {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
         </button>
         <button onClick={onDelete}
+          aria-label="Delete announcement"
           className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
           <Trash2 className="w-4 h-4" />
         </button>

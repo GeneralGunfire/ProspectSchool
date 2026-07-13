@@ -66,97 +66,97 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'A farmer owns land, uses a tractor (capital), employs workers (labour), and runs the farm himself. What is the reward for his entrepreneurship?',
+    { id: 'fop-i1', question: 'A farmer owns land, uses a tractor (capital), employs workers (labour), and runs the farm himself. What is the reward for his entrepreneurship?',
       options: ['Rent', 'Wages', 'Interest', 'Profit'],
-      answer: 3,
+      correctIndex: 3,
+      hint: 'The entrepreneur organises the other factors of production and bears the risk.',
       explanation:
         'The entrepreneur organises the other factors of production and bears the risk. Their reward is PROFIT (which could be a loss if the business fails). Rent = land, Wages = labour, Interest = capital.',
     },
-    {
-      question: 'Which of the following is an example of CAPITAL as a factor of production?',
+    { id: 'fop-i2', question: 'Which of the following is an example of CAPITAL as a factor of production?',
       options: ['A coal deposit in Mpumalanga', 'A factory assembly line', 'A software engineer\'s coding skills', 'R1 million in a bank account'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Capital is man-made resources used in production.',
       explanation:
         'Capital is man-made resources used in production. A factory assembly line is a manufactured tool for production. Coal deposits are land (natural resources). Coding skills are labour. Money in a bank is financial capital — NOT a factor of production in economics.',
     },
-    {
-      question: 'South Africa\'s platinum mines extract platinum ore for global markets. Which factor of production does the platinum ore represent?',
+    { id: 'fop-i3', question: 'South Africa\'s platinum mines extract platinum ore for global markets. Which factor of production does the platinum ore represent?',
       options: ['Capital', 'Entrepreneurship', 'Land', 'Labour'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Platinum ore is a natural resource.',
       explanation:
         'Platinum ore is a natural resource — it falls under LAND as a factor of production. Land includes all natural resources such as minerals, forests, water bodies, and soil.',
     },
-    {
-      question: 'The reward paid to the owners of capital is:',
+    { id: 'fop-i4', question: 'The reward paid to the owners of capital is:',
       options: ['Wages', 'Rent', 'Profit', 'Interest'],
-      answer: 3,
+      correctIndex: 3,
+      hint: 'The four factor rewards are: Land → Rent; Labour → Wages; Capital → Interest;.',
       explanation:
         'The four factor rewards are: Land → Rent; Labour → Wages; Capital → Interest; Entrepreneurship → Profit. Capital owners (investors, lenders) receive interest as compensation for using their capital in production.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'Which factor of production takes the risk of business failure?',
+    { id: 'fop-r1', question: 'Which factor of production takes the risk of business failure?',
       options: ['Land', 'Labour', 'Capital', 'Entrepreneurship'],
-      answer: 3,
+      correctIndex: 3,
+      hint: 'The entrepreneur is the risk-taker.',
       explanation:
         'The entrepreneur is the risk-taker. They organise land, labour, and capital, and bear the risk of loss if the business fails. In return, they receive profit.',
     },
-    {
-      question: 'A teacher\'s knowledge and classroom skills are best classified as which factor of production?',
+    { id: 'fop-r2', question: 'A teacher\'s knowledge and classroom skills are best classified as which factor of production?',
       options: ['Capital', 'Land', 'Labour', 'Entrepreneurship'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Human effort — both physical and mental.',
       explanation:
         'Human effort — both physical and mental — is LABOUR. A teacher\'s skills and knowledge are human capital embedded in labour. The reward is wages or a salary.',
     },
   ],
   hardQuestions: [
-    {
-      question: 'South Africa has an abundance of natural resources (land) but high unemployment (underutilised labour). What does this suggest about resource allocation?',
+    { id: 'fop-h1', question: 'South Africa has an abundance of natural resources (land) but high unemployment (underutilised labour). What does this suggest about resource allocation?',
       options: [
         'The economy is operating outside the PPC — beyond its production frontier',
         'All four factors are being fully employed at the efficiency frontier',
         'The economy is operating inside the PPC — factors are underutilised',
         'Entrepreneurship is the binding constraint, not labour',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'High unemployment means labour (a factor of production) is not being fully utilised.',
       explanation:
         'High unemployment means labour (a factor of production) is not being fully utilised. This places the economy inside the PPC — producing less than its potential. Connecting factors of production to PPC analysis is a key exam skill.',
     },
-    {
-      question: 'Technology replaces 10 000 factory workers with automated machines. In factor-of-production terms, this represents:',
+    { id: 'fop-h2', question: 'Technology replaces 10 000 factory workers with automated machines. In factor-of-production terms, this represents:',
       options: [
         'Land substituting for capital',
         'Capital substituting for labour',
         'Entrepreneurship replacing land',
         'Labour becoming more productive',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Automation (man-made machines = capital) replaces human workers (labour).',
       explanation:
         'Automation (man-made machines = capital) replaces human workers (labour). This is capital substituting for labour — a key dynamic in the Fourth Industrial Revolution (4IR) affecting South Africa\'s labour market.',
     },
-    {
-      question: 'Elon Musk was born in South Africa. He used his intellect (labour) and personal savings (capital) to start companies that are now worth hundreds of billions. His role in these companies is BEST described as:',
+    { id: 'fop-h3', question: 'Elon Musk was born in South Africa. He used his intellect (labour) and personal savings (capital) to start companies that are now worth hundreds of billions. His role in these companies is BEST described as:',
       options: [
         'Pure labour — he worked hard to build the companies',
         'Pure capital — he invested his savings',
         'Entrepreneurship — he organised factors, innovated, and bore risk',
         'Land — he owned the intellectual property as a natural resource',
       ],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'While Musk contributed labour and capital, his defining role is ENTREPRENEUR.',
       explanation:
         'While Musk contributed labour and capital, his defining role is ENTREPRENEUR — he identified opportunities, organised the factors of production, innovated, and bore significant personal and financial risk. Entrepreneurs transform the other factors into valuable goods and services.',
     },
-    {
-      question: 'A new government policy subsidises TVET colleges to train artisans. In factor-of-production terms, this policy is designed to improve:',
+    { id: 'fop-h4', question: 'A new government policy subsidises TVET colleges to train artisans. In factor-of-production terms, this policy is designed to improve:',
       options: [
         'The quantity and quality of the land factor',
         'The quality (human capital) of the labour factor',
         'The stock of capital goods in the economy',
         'The entrepreneurship factor by reducing risk',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Training artisans improves the skill level (quality) of the labour factor.',
       explanation:
         'Training artisans improves the skill level (quality) of the labour factor — this is called investment in human capital. Better-trained workers are more productive, shifting the PPC outward over time. This is a key argument for education spending in Economics.',
     },
@@ -200,6 +200,18 @@ const TOPIC = {
 const SUBJECT = 'Economics'
 const GRADE = 10
 const TOPIC_ID = 'factors-of-production'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_econ-factors_'
 
 
@@ -256,14 +268,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -326,7 +338,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -337,7 +349,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -345,26 +357,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -372,7 +384,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -477,9 +489,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

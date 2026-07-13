@@ -341,7 +341,7 @@ export default function ParentsAdminPage({ session }: ParentsAdminPageProps) {
                   <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Parent' : 'Edit Parent'}
                   </h2>
-                  <button onClick={closeForm} className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>

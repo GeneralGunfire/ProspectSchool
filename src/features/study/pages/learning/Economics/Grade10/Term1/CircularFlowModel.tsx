@@ -66,107 +66,107 @@ const TOPIC = {
     ],
   },
   initialQuestions: [
-    {
-      question: 'In the circular flow model, the factor market is where:',
+    { id: 'cfm-i1', question: 'In the circular flow model, the factor market is where:',
       options: [
         'Firms sell goods and services to households',
         'Households supply labour and other factors to firms',
         'The government collects taxes from households',
         'Banks provide loans to firms',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'The factor (resource) market is where households supply the factors of.',
       explanation:
         'The factor (resource) market is where households supply the factors of production (labour, land, capital) to firms, and receive income (wages, rent, interest, profit) in return.',
     },
-    {
-      question: 'Which of the following is a LEAKAGE from the circular flow?',
+    { id: 'cfm-i2', question: 'Which of the following is a LEAKAGE from the circular flow?',
       options: ['Government spending on roads', 'Export earnings from mining', 'Household savings in a bank', 'Business investment in new machinery'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'Savings are a leakage.',
       explanation:
         'Savings are a leakage — money that leaves the circular flow. Government spending, exports, and investment are injections that put money back into the flow.',
     },
-    {
-      question: 'The circular flow is in equilibrium when:',
+    { id: 'cfm-i3', question: 'The circular flow is in equilibrium when:',
       options: [
         'Household income equals household expenditure exactly',
         'Total leakages equal total injections',
         'The government budget is balanced',
         'Imports equal exports',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Equilibrium in the circular flow requires that total leakages (savings + tax +.',
       explanation:
         'Equilibrium in the circular flow requires that total leakages (savings + tax + imports) equal total injections (investment + government spending + exports). Individual components need not balance.',
     },
-    {
-      question: 'A South African company exports R500 million worth of platinum to Japan. In the circular flow, this represents:',
+    { id: 'cfm-i4', question: 'A South African company exports R500 million worth of platinum to Japan. In the circular flow, this represents:',
       options: ['A leakage, because money leaves South Africa', 'An injection, because foreign money enters the circular flow', 'A transfer payment with no effect on the flow', 'A factor payment to households'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Exports bring foreign spending into the domestic circular flow.',
       explanation:
         'Exports bring foreign spending into the domestic circular flow — this is an injection. Conversely, imports are a leakage as South Africans spend money outside the domestic economy.',
     },
   ],
   remediationQuestions: [
-    {
-      question: 'Households receive wages, rent, and interest from firms. In the circular flow, this flow belongs to the:',
+    { id: 'cfm-r1', question: 'Households receive wages, rent, and interest from firms. In the circular flow, this flow belongs to the:',
       options: ['Product market', 'Factor market', 'Money market', 'Capital market'],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Wages, rent, and interest are payments for factors of production (labour, land, capital).',
       explanation:
         'Wages, rent, and interest are payments for factors of production (labour, land, capital). These flows occur in the factor (resource) market, not the product market.',
     },
-    {
-      question: 'If total injections into the circular flow are greater than total leakages, the economy will:',
+    { id: 'cfm-r2', question: 'If total injections into the circular flow are greater than total leakages, the economy will:',
       options: ['Contract — national income will fall', 'Stay the same — the model is always in equilibrium', 'Expand — national income will rise', 'Experience hyperinflation immediately'],
-      answer: 2,
+      correctIndex: 2,
+      hint: 'When injections > leakages, more money is being added to the circular flow than.',
       explanation:
         'When injections > leakages, more money is being added to the circular flow than is being withdrawn. This causes the economy to expand — national income and output increase.',
     },
   ],
   hardQuestions: [
-    {
-      question: 'During a recession, the South African government increases its spending on infrastructure. Using the circular flow model, this policy:',
+    { id: 'cfm-h1', question: 'During a recession, the South African government increases its spending on infrastructure. Using the circular flow model, this policy:',
       options: [
         'Is a leakage that will shrink the circular flow further',
         'Is an injection that will stimulate national income and output',
         'Has no effect because government is not part of the two-sector model',
         'Will reduce household income by increasing taxes',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Government spending is an injection in the three-sector circular flow.',
       explanation:
         'Government spending is an injection in the three-sector circular flow. During a recession, injections < leakages. Increasing government spending raises injections, stimulating the economy — this is Keynesian fiscal policy.',
     },
-    {
-      question: 'South Africa\'s household savings rate is very low. What is the most likely consequence for the circular flow?',
+    { id: 'cfm-h2', question: 'South Africa\'s household savings rate is very low. What is the most likely consequence for the circular flow?',
       options: [
         'Higher leakages, leading to economic contraction',
         'Lower leakages, meaning more money circulates — but less is available for business investment',
         'No effect, because savings do not enter the circular flow',
         'Higher injections, because savings fund government projects directly',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Low savings means fewer leakages from the product market, so more money.',
       explanation:
         'Low savings means fewer leakages from the product market, so more money circulates immediately. However, banks have less to lend to firms for investment — reducing a key injection. The net effect depends on whether the reduced investment injection outweighs the reduced savings leakage.',
     },
-    {
-      question: 'In the full five-sector circular flow (adding financial sector and foreign sector), which combination correctly pairs leakages with their corresponding injections?',
+    { id: 'cfm-h3', question: 'In the full five-sector circular flow (adding financial sector and foreign sector), which combination correctly pairs leakages with their corresponding injections?',
       options: [
         'Savings ↔ Taxation; Imports ↔ Government Spending; Tax ↔ Exports',
         'Savings ↔ Investment; Tax ↔ Government Spending; Imports ↔ Exports',
         'Savings ↔ Exports; Tax ↔ Investment; Imports ↔ Government Spending',
         'Savings ↔ Government Spending; Imports ↔ Investment; Tax ↔ Exports',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'Savings are channelled back as investment (via financial institutions), tax is.',
       explanation:
         'Savings are channelled back as investment (via financial institutions), tax is returned as government spending, and import payments are offset by export earnings. These three pairs form the leakage-injection framework of the complete circular flow.',
     },
-    {
-      question: 'A sudden depreciation of the rand makes South African exports cheaper and imports more expensive. What is the MOST LIKELY effect on the circular flow?',
+    { id: 'cfm-h4', question: 'A sudden depreciation of the rand makes South African exports cheaper and imports more expensive. What is the MOST LIKELY effect on the circular flow?',
       options: [
         'Leakages increase and injections decrease — economy contracts',
         'Leakages decrease (fewer imports) and injections increase (more exports) — economy expands',
         'No effect because exchange rates only affect the financial sector',
         'Households earn higher wages because firms export more',
       ],
-      answer: 1,
+      correctIndex: 1,
+      hint: 'A weaker rand raises the cost of imports (reducing import leakage) and makes.',
       explanation:
         'A weaker rand raises the cost of imports (reducing import leakage) and makes exports more competitive (increasing the export injection). Both effects push toward expansion — though the timing depends on the Marshall-Lerner condition and supply capacity.',
     },
@@ -220,6 +220,18 @@ const TOPIC = {
 const SUBJECT = 'Economics'
 const GRADE = 10
 const TOPIC_ID = 'circular-flow-model'
+
+async function loadTopicProgress(studentId: number): Promise<TopicStatus> {{
+  const m = await _loadProgress(studentId, SUBJECT, GRADE, TOPIC_ID)
+  if (m === 'mastered') return 'mastered'
+  if (m === 'needs_practice') return 'needs-practice'
+  return 'not-started'
+}}
+
+async function saveTopicProgress(studentId: number, schoolId: number, status: TopicStatus, correct: number, total: number, attempts: number) {{
+  const ml = status === 'mastered' ? 'mastered' : status === 'needs-practice' ? 'needs_practice' : 'not_started'
+  await _saveProgress(studentId, schoolId, SUBJECT, GRADE, TOPIC_ID, ml, correct, total, attempts)
+}}
 const STORAGE_KEY_PREFIX = 'scratchpad_econ-circular_'
 
 
@@ -276,14 +288,14 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
           className="bg-white rounded-2xl border border-stone-200 shadow-sm"
         >
           <div className="px-6 pt-6 pb-5">
-            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.title}</h3>
-            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.content}</p>
+            <h3 className="text-lg font-black text-[#1e293b] leading-tight">{step.label}</h3>
+            <p className="text-[15px] text-stone-500 leading-relaxed mt-2">{step.explanation}</p>
           </div>
           <div className="mx-4 mb-4 bg-[#EEF2F7] rounded-xl px-4 pt-4 pb-6">
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-6">Tap an element to learn more</p>
             <div className="flex items-center justify-center gap-2 flex-wrap" style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
-              {step.math.map((token, i) => {
-                const bubble = step.bubbles.find((b: any) => b.target === token)
+              {step.tokens.map((token, i) => {
+                const bubble = (step as any).bubbles?.find((b: any) => b.target === token)
                 const isActive = activeBubble === `${current}-${token}-${i}`
                 return (
                   <div key={i} className="relative">
@@ -346,7 +358,7 @@ const InteractiveLesson = ({ onComplete }: { onComplete: () => void }) => {
 const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
   const [stepIdx, setStepIdx] = useState(0)
   const [revealed, setRevealed] = useState(false)
-  const { steps, problem } = TOPIC.guidedItem
+  const { steps, scenario } = TOPIC.guidedItem
   const isLast = stepIdx === steps.length - 1
   const step = steps[stepIdx]
 
@@ -357,7 +369,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
           <Lightbulb className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400 mb-1">Worked Example</p>
-            <p className="text-sm text-stone-300 leading-relaxed">{problem}</p>
+            <p className="text-sm text-stone-300 leading-relaxed">{scenario}</p>
           </div>
         </div>
       </div>
@@ -365,26 +377,26 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {steps.map((s: any, i: number) => (
           <button
-            key={s.id}
+            key={i}
             onClick={() => { setStepIdx(i); setRevealed(false) }}
             className={`shrink-0 px-4 py-1.5 rounded-full text-[11px] font-black transition-colors ${i === stepIdx ? 'bg-[#1e293b] text-white' : i < stepIdx ? 'bg-stone-200 text-stone-600 font-bold' : 'bg-stone-100 text-stone-400 font-bold'}`}
           >
-            Step {s.id}
+            Step {i + 1}
           </button>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={step.id}
+          key={stepIdx}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           className="bg-white rounded-2xl border border-stone-200 p-6 space-y-4"
         >
-          <p className="font-black text-stone-900 text-base leading-snug">{step.instruction}</p>
+          <p className="font-black text-stone-900 text-base leading-snug">{step.title}</p>
           <div className="bg-[#EEF2F7] rounded-xl px-5 py-4 border border-stone-200/60">
-            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.math}</p>
+            <p className="font-mono text-[15px] text-stone-800 font-bold leading-relaxed wrap-break-word">{step.description}</p>
           </div>
           {!revealed ? (
             <button onClick={() => setRevealed(true)} className="w-full py-3 border-2 border-dashed border-stone-200 rounded-xl text-sm font-bold text-stone-400 hover:border-stone-400 hover:text-stone-600 transition-colors">
@@ -392,7 +404,7 @@ const GuidedPracticeModule = ({ onComplete }: { onComplete: () => void }) => {
             </button>
           ) : (
             <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="bg-[#EEF2F7] border border-stone-200/60 rounded-xl p-4">
-              <p className="text-[13px] text-stone-700 leading-relaxed">{step.explanation}</p>
+              <p className="text-[13px] text-stone-700 leading-relaxed">{step.insight}</p>
             </motion.div>
           )}
         </motion.div>
@@ -497,9 +509,9 @@ const ScratchpadModal = ({ storageKey, onClose }: { storageKey: string; onClose:
           </div>
           <div className="flex items-center gap-1">
             <button onClick={undo} disabled={!history.length} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 disabled:opacity-20 transition-all"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={clearAll} className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
+            <button onClick={clearAll} aria-label="Clear all answers" className="p-2 rounded-lg text-stone-500 hover:text-red-400 hover:bg-white/10 transition-all"><Trash2 className="w-4 h-4" /></button>
             <div className="w-px h-4 bg-stone-700 mx-1" />
-            <button onClick={onClose} className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded-lg text-stone-500 hover:text-white hover:bg-white/10 transition-all"><X className="w-4 h-4" /></button>
           </div>
         </div>
         <div className="relative flex-1 bg-[#FAFAF9]">

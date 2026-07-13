@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, CheckCircle2, XCircle, FileText, PenTool, ExternalLink, Bookmark, AlertCircle, ArrowRight } from 'lucide-react';
 import { bursaries } from '../data/bursaries';
@@ -8,13 +8,6 @@ function BursaryDetailPage({ onNavigate }: { onNavigate: (page: any) => void }) 
   const bursary   = bursaryId ? bursaries.find((b) => b.id === bursaryId) : null;
   const [eligibilityAnswers, setEligibilityAnswers] = useState<Record<string, boolean>>({});
   const [savedBursaries, setSavedBursaries] = useState<string[]>([]);
-
-  useEffect(() => {
-    const load = async () => {
-      setSavedBursaries(bookmarks.bursaries);
-    };
-    load();
-  }, [user.id]);
 
   if (!bursary) {
     return (
@@ -31,11 +24,11 @@ function BursaryDetailPage({ onNavigate }: { onNavigate: (page: any) => void }) 
 
   const isSaved = savedBursaries.includes(bursary.id);
 
-  const toggleSave = async () => {
+  const toggleSave = () => {
     if (isSaved) {
-      if (ok) setSavedBursaries((prev) => prev.filter((s) => s !== bursary.id));
+      setSavedBursaries((prev) => prev.filter((s) => s !== bursary.id));
     } else {
-      if (ok) setSavedBursaries((prev) => [...prev, bursary.id]);
+      setSavedBursaries((prev) => [...prev, bursary.id]);
     }
   };
 
