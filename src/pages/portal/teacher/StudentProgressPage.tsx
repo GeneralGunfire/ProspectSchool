@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronRight, BookOpen, AlertTriangle,
   CheckCircle2, Users, ClipboardList, CalendarDays,
-  Megaphone, Pin, Phone, Trash2,
+  Megaphone, Pin, Phone, Trash2, Award, CalendarCheck,
 } from 'lucide-react';
 import {
   fetchTeacherStudentProgress,
@@ -29,6 +29,8 @@ import {
   CONTACT_METHOD_LABELS,
   type ParentContact, type ContactMethod,
 } from '../../../lib/parentContacts';
+import { fetchStudentBehaviour, type BehaviourEntry } from '../../../lib/behaviour';
+import { fetchStudentAttendanceHistory, type AttendanceRecord, type AttendanceStatus } from '../../../lib/homeroom';
 import {
   getInterventions, getOutcomes, computeInterventionImpact,
   type Intervention, type Outcome,
@@ -40,7 +42,7 @@ const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 // ── Types ─────────────────────────────────────────────────────
 
 type View = 'list' | 'profile';
-type ProfileTab = 'progress' | 'marks' | 'homework' | 'announcements' | 'interventions' | 'contacts';
+type ProfileTab = 'progress' | 'marks' | 'homework' | 'behaviour' | 'attendance' | 'announcements' | 'interventions' | 'contacts';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -117,6 +119,8 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   const [interventions, setInterventions] = useState<Intervention[] | null>(null);
   const [outcomes, setOutcomes] = useState<Outcome[] | null>(null);
   const [contacts, setContacts] = useState<ParentContact[] | null>(null);
+  const [behaviour, setBehaviour] = useState<BehaviourEntry[] | null>(null);
+  const [attendance, setAttendance] = useState<AttendanceRecord[] | null>(null);
   const [chips,        setChips]        = useState<Map<number, StudentInterventionChip>>(new Map());
   const [classHealth,  setClassHealth]  = useState<TeacherSubjectHealth[]>([]);
   const [lastContacts, setLastContacts] = useState<Map<number, string>>(new Map());
@@ -187,6 +191,8 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
     setInterventions(null);
     setOutcomes(null);
     setContacts(null);
+    setBehaviour(null);
+    setAttendance(null);
   }
 
   function backToList() {
@@ -262,6 +268,16 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
       const data = await fetchParentContacts(selected.student_id, session.teacher_id);
       setContacts(data);
     }
+
+    if (tab === 'behaviour' && behaviour === null) {
+      const data = await fetchStudentBehaviour(selected.student_id);
+      setBehaviour(data);
+    }
+
+    if (tab === 'attendance' && attendance === null) {
+      const data = await fetchStudentAttendanceHistory(selected.student_id);
+      setAttendance(data);
+    }
   }
 
   // ── Render ─────────────────────────────────────────────────
@@ -280,6 +296,8 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
       outcomes={outcomes}
       classHealth={classHealth}
       contacts={contacts}
+      behaviour={behaviour}
+      attendance={attendance}
       onBack={backToList}
       onTabChange={loadTab}
       onContactsChange={(updated) => {
@@ -539,6 +557,8 @@ interface ProfileProps {
   outcomes: Outcome[] | null;
   classHealth: TeacherSubjectHealth[];
   contacts: ParentContact[] | null;
+  behaviour: BehaviourEntry[] | null;
+  attendance: AttendanceRecord[] | null;
   onBack: () => void;
   onTabChange: (tab: ProfileTab) => void;
   onContactsChange: (updated: ParentContact[]) => void;
@@ -547,7 +567,7 @@ interface ProfileProps {
 
 function StudentProfile({
   student, session, onOpenTopicTest, activeTab, marks, events, completions, announcements,
-  interventions, outcomes, classHealth, contacts,
+  interventions, outcomes, classHealth, contacts, behaviour, attendance,
   onBack, onTabChange, onContactsChange, onOutcomeRecorded,
 }: ProfileProps) {
   // ── Comparison strip data ──────────────────────────────────────
@@ -589,6 +609,8 @@ function StudentProfile({
     { key: 'progress',      label: 'Progress',      icon: BookOpen },
     { key: 'marks',         label: 'Marks',          icon: ClipboardList },
     { key: 'homework',      label: 'Homework',       icon: CalendarDays },
+    { key: 'behaviour',     label: 'Behaviour',      icon: Award },
+    { key: 'attendance',    label: 'Attendance',     icon: CalendarCheck },
     { key: 'announcements', label: 'Announcements',  icon: Megaphone },
     { key: 'interventions', label: 'Coaching',       icon: CheckCircle2 },
     { key: 'contacts',      label: 'Contacts',       icon: Phone },
@@ -673,12 +695,12 @@ function StudentProfile({
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 mb-5 bg-stone-100 rounded-2xl p-1">
+      <div className="flex gap-1 mb-5 bg-stone-100 rounded-2xl p-1 overflow-x-auto">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl text-[13px] transition-all ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[13px] transition-all shrink-0 ${
               activeTab === t.key
                 ? 'bg-brand-dark text-white font-black shadow-sm'
                 : 'text-stone-500 font-bold hover:text-stone-900'
@@ -702,6 +724,8 @@ function StudentProfile({
           {activeTab === 'progress'      && <ProgressTab student={student} teacherId={session.teacher_id} onOpenTopicTest={onOpenTopicTest} />}
           {activeTab === 'marks'         && <MarksTab marks={marks} />}
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
+          {activeTab === 'behaviour'     && <BehaviourTab entries={behaviour} />}
+          {activeTab === 'attendance'    && <AttendanceTab records={attendance} />}
           {activeTab === 'announcements' && <AnnouncementsTab announcements={announcements} />}
           {activeTab === 'interventions' && (
             <InterventionsTab
@@ -894,6 +918,42 @@ function TopicTestStruggles({
 
 // ── Tab: Marks ────────────────────────────────────────────────
 
+// Compact inline trend chart — no charting library in this codebase, so a
+// small hand-rolled SVG line matches the existing hand-rolled progress-bar
+// style used elsewhere on this page rather than pulling in a new dependency.
+function MarkTrendChart({ rows }: { rows: StudentResult[] }) {
+  const points = rows
+    .filter(r => r.mark !== null)
+    .map(r => ({ pct: Math.round((r.mark! / r.total) * 100), date: r.marked_at ?? r.created_at, title: r.sheet_title }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  if (points.length < 2) return null;
+
+  const w = 100, h = 36, pad = 4;
+  const stepX = (w - pad * 2) / (points.length - 1);
+  const toY = (pct: number) => h - pad - (pct / 100) * (h - pad * 2);
+  const path = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${pad + i * stepX} ${toY(p.pct)}`).join(' ');
+  const last = points[points.length - 1];
+  const trendUp = points.length >= 2 && last.pct >= points[0].pct;
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-stone-100 bg-stone-50/60">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-24 h-9 shrink-0" preserveAspectRatio="none">
+        <path d={path} fill="none" stroke={trendUp ? '#059669' : '#dc2626'} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+        {points.map((p, i) => (
+          <circle key={i} cx={pad + i * stepX} cy={toY(p.pct)} r="1.6" fill={trendUp ? '#059669' : '#dc2626'} />
+        ))}
+      </svg>
+      <div className="min-w-0">
+        <p className="text-[11px] font-black text-stone-700">
+          Trend: <span className={trendUp ? 'text-emerald-600' : 'text-red-600'}>{last.pct}%</span> most recent
+        </p>
+        <p className="text-[10px] text-stone-400 truncate">{points.length} marked assessments</p>
+      </div>
+    </div>
+  );
+}
+
 function MarksTab({ marks }: { marks: StudentResult[] | null }) {
   if (marks === null) {
     return <LoadingSpinner />;
@@ -910,6 +970,7 @@ function MarksTab({ marks }: { marks: StudentResult[] | null }) {
         <div key={subject}>
           <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">{subject}</p>
           <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
+            <MarkTrendChart rows={rows} />
             {rows.map(row => {
               const gl = row.mark !== null ? gradeLabel(row.mark, row.total) : null;
               return (
@@ -1005,6 +1066,115 @@ function HomeworkTab({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Tab: Behaviour ────────────────────────────────────────────
+
+function BehaviourTab({ entries }: { entries: BehaviourEntry[] | null }) {
+  if (entries === null) return <LoadingSpinner />;
+  if (entries.length === 0) return <EmptyState icon={Award} text="No behaviour entries recorded yet." />;
+
+  const meritPoints   = entries.filter(e => e.type === 'merit').reduce((s, e) => s + e.points, 0);
+  const demeritPoints = entries.filter(e => e.type === 'demerit').reduce((s, e) => s + e.points, 0);
+  const net = meritPoints - demeritPoints;
+
+  return (
+    <div className="space-y-5">
+      <div className="grid grid-cols-3 gap-3">
+        <div className="paper-card rounded p-4 text-center">
+          <p className="text-2xl font-black text-emerald-600">{meritPoints}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Merits</p>
+        </div>
+        <div className="paper-card rounded p-4 text-center">
+          <p className="text-2xl font-black text-red-600">{demeritPoints}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Demerits</p>
+        </div>
+        <div className="paper-card rounded p-4 text-center">
+          <p className={`text-2xl font-black ${net >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{net > 0 ? `+${net}` : net}</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Net</p>
+        </div>
+      </div>
+
+      <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
+        {entries.map(entry => (
+          <div key={entry.id} className="flex items-start gap-3 px-4 py-3">
+            <span className={`text-xs font-black px-2 py-0.5 rounded-full shrink-0 ${
+              entry.type === 'merit' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'
+            }`}>
+              {entry.type === 'merit' ? '+' : '-'}{entry.points}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold text-stone-900">{entry.category}</p>
+              {entry.reason && <p className="text-[12px] text-stone-500 mt-0.5">{entry.reason}</p>}
+              {entry.note && <p className="text-[12px] text-stone-400 mt-0.5 italic">{entry.note}</p>}
+              <p className="text-[10px] text-stone-400 mt-1">
+                {new Date(entry.created_at).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
+                {entry.teacher_name && ` · ${entry.teacher_name} ${entry.teacher_surname ?? ''}`.trimEnd()}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Tab: Attendance ───────────────────────────────────────────
+
+const ATTENDANCE_META: Record<AttendanceStatus, { label: string; color: string; bg: string; border: string }> = {
+  present:        { label: 'Present',       color: 'text-emerald-700', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+  late:           { label: 'Late',          color: 'text-amber-700',   bg: 'bg-amber-50',   border: 'border-amber-200' },
+  absent:         { label: 'Absent',        color: 'text-red-700',     bg: 'bg-red-50',     border: 'border-red-200' },
+  excused:        { label: 'Excused',       color: 'text-blue-700',    bg: 'bg-blue-50',    border: 'border-blue-200' },
+  non_school_day: { label: 'Non-School Day', color: 'text-stone-500',  bg: 'bg-stone-50',   border: 'border-stone-200' },
+};
+
+function AttendanceTab({ records }: { records: AttendanceRecord[] | null }) {
+  if (records === null) return <LoadingSpinner />;
+  if (records.length === 0) return <EmptyState icon={CalendarCheck} text="No attendance history recorded yet." />;
+
+  const countable = records.filter(r => r.status !== 'non_school_day');
+  const presentCount = countable.filter(r => r.status === 'present' || r.status === 'late').length;
+  const rate = countable.length > 0 ? Math.round((presentCount / countable.length) * 100) : null;
+
+  return (
+    <div className="space-y-5">
+      {rate !== null && (
+        <div className="paper-card rounded p-5">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-[11px] font-black uppercase tracking-widest text-stone-500">Attendance Rate</p>
+            <p className={`text-lg font-black ${rate >= 90 ? 'text-emerald-600' : rate >= 75 ? 'text-amber-600' : 'text-red-600'}`}>{rate}%</p>
+          </div>
+          <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full ${rate >= 90 ? 'bg-emerald-500' : rate >= 75 ? 'bg-amber-500' : 'bg-red-500'}`}
+              style={{ width: `${rate}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-stone-500 mt-2">Based on the last {countable.length} school day{countable.length === 1 ? '' : 's'}.</p>
+        </div>
+      )}
+
+      <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
+        {records.map(record => {
+          const meta = ATTENDANCE_META[record.status];
+          return (
+            <div key={`${record.student_id}-${record.date}`} className="flex items-center gap-3 px-4 py-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-stone-900">
+                  {new Date(record.date).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                </p>
+                {record.note && <p className="text-[12px] text-stone-500 mt-0.5">{record.note}</p>}
+              </div>
+              <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border shrink-0 ${meta.bg} ${meta.border} ${meta.color}`}>
+                {meta.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
