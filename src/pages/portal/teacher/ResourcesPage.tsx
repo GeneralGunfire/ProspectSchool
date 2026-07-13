@@ -6,6 +6,7 @@ import {
   FolderOpen, CheckCircle2,
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import {
   fetchTeacherResources, createResource, deleteResource, getResourceDownloadUrl,
   RESOURCE_TYPE_META, RESOURCE_CATEGORY_META,
@@ -443,11 +444,12 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                 {/* Subject tag */}
                 <div>
                   <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject <span className="normal-case font-bold text-stone-400">(optional)</span></label>
-                  <select value={form.subject_id} onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white">
-                    <option value="">No subject tag</option>
-                    {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-                  </select>
+                  <Dropdown
+                    value={form.subject_id || 'none'}
+                    onChange={v => setForm(f => ({ ...f, subject_id: v === 'none' ? '' : v }))}
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+                    options={[{ value: 'none', label: 'No subject tag' }, ...subjects.map(s => ({ value: String(s.id), label: s.label }))]}
+                  />
                 </div>
 
                 {/* Type-specific input */}

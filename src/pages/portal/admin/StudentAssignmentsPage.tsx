@@ -7,6 +7,7 @@ import {
   fetchSubjects, type AssignmentRow, type Subject,
 } from '../../../lib/students';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
+import Dropdown from '../../../shared/components/Dropdown';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -309,13 +310,13 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
 
                     <div>
                       <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student</label>
-                      <select required value={assignStudentId ?? ''} onChange={(e) => setAssignStudentId(Number(e.target.value) || null)}
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                        <option value="">Select student</option>
-                        {knownStudents.map((s) => (
-                          <option key={s.id} value={s.id}>{s.surname}, {s.name} ({s.code})</option>
-                        ))}
-                      </select>
+                      <Dropdown
+                        value={assignStudentId ? String(assignStudentId) : null}
+                        onChange={(v) => setAssignStudentId(Number(v) || null)}
+                        placeholder="Select student"
+                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                        options={knownStudents.map((s) => ({ value: String(s.id), label: `${s.surname}, ${s.name} (${s.code})` }))}
+                      />
                       <p className="text-xs text-stone-500 mt-1.5">
                         Only students already in the school (added by a teacher) appear here.
                       </p>
@@ -323,13 +324,13 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
 
                     <div>
                       <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher</label>
-                      <select required value={assignTeacherId ?? ''} onChange={(e) => setAssignTeacherId(Number(e.target.value) || null)}
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                        <option value="">Select teacher</option>
-                        {teachers.map((t) => (
-                          <option key={t.id} value={t.id}>{t.surname}, {t.name} ({t.teacher_code})</option>
-                        ))}
-                      </select>
+                      <Dropdown
+                        value={assignTeacherId ? String(assignTeacherId) : null}
+                        onChange={(v) => setAssignTeacherId(Number(v) || null)}
+                        placeholder="Select teacher"
+                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                        options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name} (${t.teacher_code})` }))}
+                      />
                     </div>
 
                     <div>

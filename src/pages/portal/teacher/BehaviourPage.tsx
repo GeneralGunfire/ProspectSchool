@@ -4,6 +4,7 @@ import { Search, Plus, Minus, X as XIcon, Trash2, AlertCircle, ListTree, Pencil,
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherStudents } from '../../../lib/students';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import {
   awardBehaviour, fetchBehaviourSummary, fetchStudentBehaviour, deleteBehaviourEntry,
   fetchAllBehaviourEntries, updateBehaviourEntry,
@@ -699,12 +700,12 @@ function EditEntryRow({
         <span className="text-sm font-bold text-brand-dark truncate">{entry.student_surname}, {entry.student_name}</span>
       </div>
 
-      <select
-        value={category} onChange={(e) => setCategory(e.target.value)}
-        className="w-full px-3 py-2 rounded-lg border border-brand-border bg-stone-50 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
-      >
-        {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-      </select>
+      <Dropdown
+        value={category}
+        onChange={(v) => setCategory(v)}
+        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-brand-border bg-stone-50 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
+        options={categories.map((c) => ({ value: c, label: c }))}
+      />
 
       <input
         value={reason} onChange={(e) => setReason(e.target.value)}

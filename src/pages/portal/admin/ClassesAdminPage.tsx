@@ -6,6 +6,7 @@ import { fetchSchoolCohorts, createCohort, setHomeroomTeacher, type CohortWithHo
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 import ClassDetailPage from './ClassDetailPage';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -157,17 +158,17 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
               <div onClick={(e) => e.stopPropagation()}>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Homeroom Teacher</label>
                 <div className="flex items-center gap-2">
-                  <select
-                    value={c.homeroom_teacher_id ?? ''}
-                    onChange={(e) => handleAssign(c, e.target.value)}
+                  <Dropdown
+                    value={c.homeroom_teacher_id ? String(c.homeroom_teacher_id) : 'none'}
+                    onChange={(v) => handleAssign(c, v === 'none' ? '' : v)}
                     disabled={savingId === c.id}
-                    className="w-full px-3 py-2 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
-                  >
-                    <option value="">— None —</option>
-                    {teachers.map((t) => (
-                      <option key={t.id} value={t.id}>{t.surname}, {t.name}</option>
-                    ))}
-                  </select>
+                    className="flex-1"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
+                    options={[
+                      { value: 'none', label: '— None —' },
+                      ...teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` })),
+                    ]}
+                  />
                   {savingId === c.id && (
                     <div className="w-3.5 h-3.5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin shrink-0" />
                   )}
@@ -216,10 +217,12 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
 
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Grade</label>
-                    <select value={newGrade} onChange={(e) => setNewGrade(Number(e.target.value))}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                      {[8, 9, 10, 11, 12].map((g) => <option key={g} value={g}>Grade {g}</option>)}
-                    </select>
+                    <Dropdown
+                      value={String(newGrade)}
+                      onChange={(v) => setNewGrade(Number(v))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
+                    />
                   </div>
                 </form>
 

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import {
   fetchTeacherTopicTests, seedCatalogTest, createTopicTest, deleteTopicTest,
@@ -34,6 +35,7 @@ const GRADES = [8, 9, 10, 11, 12];
 // <300ms transitions, no `transition-all`.
 const FIELD_LABEL = 'block text-[11px] font-semibold uppercase tracking-wide text-stone-500 mb-1.5';
 const FIELD_INPUT = 'w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
+const FIELD_DROPDOWN = 'w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
 const MODAL_BACKDROP = 'fixed inset-0 bg-black/30 z-40';
 const MODAL_PANEL = 'bg-white rounded-2xl border border-stone-200 w-full max-w-lg max-h-[90vh] flex flex-col';
 const MODAL_HEADER = 'flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100';
@@ -414,25 +416,31 @@ function CreateTestModal({ session, subjects, onClose, onCreated }: {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className={FIELD_LABEL}>Grade</label>
-                  <select value={grade} onChange={(e) => { setGrade(e.target.value); setSubjectId(''); setTopicKey(''); }}
-                    className={FIELD_INPUT}>
-                    {GRADES.map((g) => <option key={g} value={g}>{g}</option>)}
-                  </select>
+                  <Dropdown
+                    value={grade}
+                    onChange={(v) => { setGrade(v); setSubjectId(''); setTopicKey(''); }}
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={GRADES.map((g) => ({ value: String(g), label: String(g) }))}
+                  />
                 </div>
                 <div>
                   <label className={FIELD_LABEL}>Term</label>
-                  <select value={term} onChange={(e) => { setTerm(e.target.value); setTopicKey(''); }}
-                    className={FIELD_INPUT}>
-                    {[1, 2, 3, 4].map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <Dropdown
+                    value={term}
+                    onChange={(v) => { setTerm(v); setTopicKey(''); }}
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={[1, 2, 3, 4].map((t) => ({ value: String(t), label: String(t) }))}
+                  />
                 </div>
                 <div>
                   <label className={FIELD_LABEL}>Subject</label>
-                  <select required value={subjectId} onChange={(e) => { setSubjectId(e.target.value); setTopicKey(''); }}
-                    className={FIELD_INPUT}>
-                    <option value="">Select</option>
-                    {gradeSubjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                  </select>
+                  <Dropdown
+                    value={subjectId || null}
+                    onChange={(v) => { setSubjectId(v); setTopicKey(''); }}
+                    placeholder="Select"
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={gradeSubjects.map((s) => ({ value: String(s.id), label: s.label }))}
+                  />
                 </div>
               </div>
 
@@ -445,13 +453,13 @@ function CreateTestModal({ session, subjects, onClose, onCreated }: {
                 ) : availableTopics.length === 0 ? (
                   <p className="text-sm text-stone-400 py-2">No predefined tests available yet for this subject/grade/term.</p>
                 ) : (
-                  <select required value={topicKey} onChange={(e) => setTopicKey(e.target.value)}
-                    className={FIELD_INPUT}>
-                    <option value="">Select a topic</option>
-                    {availableTopics.map((t, i) => (
-                      <option key={t.topicKey} value={t.topicKey}>{i + 1}. {t.label} ({t.questions.length} questions)</option>
-                    ))}
-                  </select>
+                  <Dropdown
+                    value={topicKey || null}
+                    onChange={(v) => setTopicKey(v)}
+                    placeholder="Select a topic"
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={availableTopics.map((t, i) => ({ value: t.topicKey, label: `${i + 1}. ${t.label} (${t.questions.length} questions)` }))}
+                  />
                 )}
               </div>
 
@@ -580,25 +588,31 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className={FIELD_LABEL}>Grade</label>
-                  <select value={grade} onChange={(e) => { setGrade(e.target.value); setSubjectId(''); }}
-                    className={FIELD_INPUT}>
-                    {GRADES.map((g) => <option key={g} value={g}>{g}</option>)}
-                  </select>
+                  <Dropdown
+                    value={grade}
+                    onChange={(v) => { setGrade(v); setSubjectId(''); }}
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={GRADES.map((g) => ({ value: String(g), label: String(g) }))}
+                  />
                 </div>
                 <div>
                   <label className={FIELD_LABEL}>Term</label>
-                  <select value={term} onChange={(e) => setTerm(e.target.value)}
-                    className={FIELD_INPUT}>
-                    {[1, 2, 3, 4].map((t) => <option key={t} value={t}>{t}</option>)}
-                  </select>
+                  <Dropdown
+                    value={term}
+                    onChange={(v) => setTerm(v)}
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={[1, 2, 3, 4].map((t) => ({ value: String(t), label: String(t) }))}
+                  />
                 </div>
                 <div>
                   <label className={FIELD_LABEL}>Subject</label>
-                  <select required value={subjectId} onChange={(e) => setSubjectId(e.target.value)}
-                    className={FIELD_INPUT}>
-                    <option value="">Select</option>
-                    {subjectsForGrade(subjects, grade).map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                  </select>
+                  <Dropdown
+                    value={subjectId || null}
+                    onChange={(v) => setSubjectId(v)}
+                    placeholder="Select"
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={subjectsForGrade(subjects, grade).map((s) => ({ value: String(s.id), label: s.label }))}
+                  />
                 </div>
               </div>
 
@@ -745,17 +759,18 @@ function AssignModal({ session, test, onClose, onAssigned }: {
                   </p>
                 </div>
                 <label className={FIELD_LABEL}>Closes in</label>
-                <select
-                  value={closesInDays}
-                  onChange={(e) => setClosesInDays(e.target.value)}
-                  className={FIELD_INPUT}
-                >
-                  <option value="1">1 day</option>
-                  <option value="3">3 days</option>
-                  <option value="7">7 days</option>
-                  <option value="14">14 days</option>
-                  <option value="">No end date</option>
-                </select>
+                <Dropdown
+                  value={closesInDays || 'none'}
+                  onChange={(v) => setClosesInDays(v === 'none' ? '' : v)}
+                  buttonClassName={FIELD_DROPDOWN}
+                  options={[
+                    { value: '1', label: '1 day' },
+                    { value: '3', label: '3 days' },
+                    { value: '7', label: '7 days' },
+                    { value: '14', label: '14 days' },
+                    { value: 'none', label: 'No end date' },
+                  ]}
+                />
               </>
             )}
           </div>
@@ -1074,10 +1089,12 @@ function AddQuestionModal({ full, onClose, onAdded }: {
 
               <div>
                 <label className={FIELD_LABEL}>Sub-skill</label>
-                <select value={subskillId} onChange={(e) => setSubskillId(e.target.value)}
-                  className={FIELD_INPUT}>
-                  {full.subskills.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                </select>
+                <Dropdown
+                  value={subskillId}
+                  onChange={(v) => setSubskillId(v)}
+                  buttonClassName={FIELD_DROPDOWN}
+                  options={full.subskills.map((s) => ({ value: String(s.id), label: s.label }))}
+                />
               </div>
 
               {!isManual && (
@@ -1121,11 +1138,13 @@ function AddQuestionModal({ full, onClose, onAdded }: {
                     ))}
                   </div>
                   <label className={`${FIELD_LABEL} mt-3`}>Correct Option</label>
-                  <select value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)}
-                    className={FIELD_INPUT}>
-                    <option value="">Select correct option</option>
-                    {options.filter((o) => o.trim()).map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <Dropdown
+                    value={correctAnswer || null}
+                    onChange={(v) => setCorrectAnswer(v)}
+                    placeholder="Select correct option"
+                    buttonClassName={FIELD_DROPDOWN}
+                    options={options.filter((o) => o.trim()).map((o) => ({ value: o, label: o }))}
+                  />
                 </div>
               ) : (
                 <>

@@ -4,6 +4,7 @@ import {
   Plus, X, Trash2, FileText, ExternalLink, FolderOpen, CheckCircle2, Paperclip,
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import {
   fetchTeacherPastPapers, createPastPaper, deletePastPaper, getPastPaperDownloadUrl,
   type PastPaper,
@@ -350,25 +351,23 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject *</label>
-                    <select
-                      value={form.subject_id}
-                      onChange={e => setForm(f => ({ ...f, subject_id: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      <option value="">Select…</option>
-                      {subjects.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
-                    </select>
+                    <Dropdown
+                      value={form.subject_id || null}
+                      onChange={v => setForm(f => ({ ...f, subject_id: v }))}
+                      placeholder="Select…"
+                      options={subjects.map(s => ({ value: String(s.id), label: s.label }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade *</label>
-                    <select
-                      value={form.grade}
-                      onChange={e => setForm(f => ({ ...f, grade: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      <option value="">Select…</option>
-                      {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
-                    </select>
+                    <Dropdown
+                      value={form.grade || null}
+                      onChange={v => setForm(f => ({ ...f, grade: v }))}
+                      placeholder="Select…"
+                      options={GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                    />
                   </div>
                 </div>
 
@@ -376,34 +375,30 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Year *</label>
-                    <select
+                    <Dropdown
                       value={form.year}
-                      onChange={e => setForm(f => ({ ...f, year: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
-                    </select>
+                      onChange={v => setForm(f => ({ ...f, year: v }))}
+                      options={YEARS.map(y => ({ value: String(y), label: String(y) }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Term</label>
-                    <select
-                      value={form.term}
-                      onChange={e => setForm(f => ({ ...f, term: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      <option value="">Any</option>
-                      {TERMS.map(t => <option key={t} value={t}>Term {t}</option>)}
-                    </select>
+                    <Dropdown
+                      value={form.term || 'any'}
+                      onChange={v => setForm(f => ({ ...f, term: v === 'any' ? '' : v }))}
+                      options={[{ value: 'any', label: 'Any' }, ...TERMS.map(t => ({ value: String(t), label: `Term ${t}` }))]}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Paper #</label>
-                    <select
+                    <Dropdown
                       value={form.paper_number}
-                      onChange={e => setForm(f => ({ ...f, paper_number: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      {[1, 2, 3].map(n => <option key={n} value={n}>Paper {n}</option>)}
-                    </select>
+                      onChange={v => setForm(f => ({ ...f, paper_number: v }))}
+                      options={[1, 2, 3].map(n => ({ value: String(n), label: `Paper ${n}` }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                    />
                   </div>
                 </div>
 

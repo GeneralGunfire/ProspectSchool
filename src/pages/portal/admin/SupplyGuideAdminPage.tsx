@@ -7,6 +7,7 @@ import {
 } from '../../../lib/marketplace';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import type { AdminSession } from '../../../lib/auth';
+import Dropdown from '../../../shared/components/Dropdown';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -286,24 +287,21 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade *</label>
-                    <select
+                    <Dropdown
                       value={form.grade}
-                      onChange={e => setForm(f => ({ ...f, grade: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
-                    </select>
+                      onChange={v => setForm(f => ({ ...f, grade: v }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      options={GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))}
+                    />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
-                    <select
-                      value={form.subject}
-                      onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-                    >
-                      <option value="">General</option>
-                      {subjects.map(s => <option key={s.id} value={s.label}>{s.label}</option>)}
-                    </select>
+                    <Dropdown
+                      value={form.subject || 'general'}
+                      onChange={v => setForm(f => ({ ...f, subject: v === 'general' ? '' : v }))}
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      options={[{ value: 'general', label: 'General' }, ...subjects.map(s => ({ value: s.label, label: s.label }))]}
+                    />
                   </div>
                 </div>
 

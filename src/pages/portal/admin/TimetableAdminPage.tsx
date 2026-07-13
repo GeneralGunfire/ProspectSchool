@@ -8,6 +8,7 @@ import type { AdminSession } from '../../../lib/auth';
 import { fetchSchoolCohorts, type CohortWithHomeroom } from '../../../lib/homeroom';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 import { fetchSubjects, type Subject } from '../../../lib/students';
+import Dropdown from '../../../shared/components/Dropdown';
 import {
   DAYS, fetchSchoolPeriods, setSchoolPeriods, fetchCohortTimetable,
   addTimetableEntry, addBreakEntry, deleteTimetableEntry, fetchTeacherClash,
@@ -977,19 +978,23 @@ function SlotModal({
                 )}
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Subject</label>
-                  <select value={subjectId} onChange={(e) => setSubjectId(e.target.value === '' ? '' : Number(e.target.value))}
-                    className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10">
-                    <option value="">Select subject</option>
-                    {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                  </select>
+                  <Dropdown
+                    value={subjectId === '' ? null : String(subjectId)}
+                    onChange={(v) => setSubjectId(v === '' ? '' : Number(v))}
+                    placeholder="Select subject"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                    options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
+                  />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher</label>
-                  <select value={teacherId} onChange={(e) => handleTeacherChange(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10">
-                    <option value="">Select teacher</option>
-                    {teachers.map((t) => <option key={t.id} value={t.id}>{t.name} {t.surname}</option>)}
-                  </select>
+                  <Dropdown
+                    value={teacherId === '' ? null : String(teacherId)}
+                    onChange={(v) => handleTeacherChange(v)}
+                    placeholder="Select teacher"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                    options={teachers.map((t) => ({ value: String(t.id), label: `${t.name} ${t.surname}` }))}
+                  />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Room <span className="normal-case font-medium text-stone-400">(optional)</span></label>

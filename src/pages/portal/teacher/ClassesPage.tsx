@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Search, TrendingUp, Phone, Clock, UserPlus } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import {
   fetchSubjects, createStudent, updateStudent,
   removeStudentFromTeacher, fetchTeacherStudents,
@@ -425,14 +426,12 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
             />
           </div>
-          <select
-            value={filterGrade}
-            onChange={e => setFilterGrade(e.target.value)}
-            className="px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
-          >
-            <option value="">All grades</option>
-            {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
-          </select>
+          <Dropdown
+            value={filterGrade || 'all'}
+            onChange={v => setFilterGrade(v === 'all' ? '' : v)}
+            buttonClassName="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+            options={[{ value: 'all', label: 'All grades' }, ...GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))]}
+          />
           {(search || filterGrade || filterCohort) && (
             <button
               onClick={() => { setSearch(''); setFilterGrade(''); setFilterCohort(''); }}
@@ -657,11 +656,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       </div>
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Grade</label>
-                        <select required value={form.grade} onChange={(e) => set('grade', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                          <option value="">Select</option>
-                          {GRADES.map((g) => <option key={g} value={g}>Grade {g}</option>)}
-                        </select>
+                        <Dropdown
+                          value={form.grade || null}
+                          onChange={(v) => set('grade', v)}
+                          placeholder="Select"
+                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          options={GRADES.map((g) => ({ value: String(g), label: `Grade ${g}` }))}
+                        />
                       </div>
                     </div>
 

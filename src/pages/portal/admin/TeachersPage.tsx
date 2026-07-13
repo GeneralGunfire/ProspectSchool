@@ -12,6 +12,7 @@ import {
 } from '../../../lib/teachers';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -437,15 +438,21 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       <div className="space-y-2">
                         {subjectRows.map((row, i) => (
                           <div key={i} className="flex items-center gap-2">
-                            <select value={row.subject_id ?? ''} onChange={(e) => setSubjectRow(i, 'subject_id', Number(e.target.value))}
-                              className="flex-1 min-w-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                              <option value="">Select subject</option>
-                              {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                            </select>
-                            <select value={row.grade} onChange={(e) => setSubjectRow(i, 'grade', Number(e.target.value))}
-                              className="w-32 shrink-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all">
-                              {[8, 9, 10, 11, 12].map((g) => <option key={g} value={g}>Grade {g}</option>)}
-                            </select>
+                            <Dropdown
+                              value={row.subject_id ? String(row.subject_id) : null}
+                              onChange={(v) => setSubjectRow(i, 'subject_id', Number(v))}
+                              placeholder="Select subject"
+                              className="flex-1 min-w-0"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
+                            />
+                            <Dropdown
+                              value={String(row.grade)}
+                              onChange={(v) => setSubjectRow(i, 'grade', Number(v))}
+                              className="w-32 shrink-0"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
+                            />
                             {subjectRows.length > 1 && (
                               <button type="button" onClick={() => removeSubjectRow(i)}
                                 className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">

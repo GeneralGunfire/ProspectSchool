@@ -13,6 +13,7 @@ import {
   type WantedRequest, type SupplyGuideItem,
 } from '../../../lib/marketplace';
 import { fetchSubjects, type Subject } from '../../../lib/students';
+import Dropdown from '../../../shared/components/Dropdown';
 
 const GRADES = [8, 9, 10, 11, 12];
 const CATEGORIES: { id: ListingCategory; label: string }[] = [
@@ -429,48 +430,42 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Category *</label>
-              <select
+              <Dropdown
                 value={form.category}
-                onChange={e => setForm(f => ({ ...f, category: e.target.value as ListingCategory }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-              </select>
+                onChange={v => setForm(f => ({ ...f, category: v as ListingCategory }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={CATEGORIES.map(c => ({ value: c.id, label: c.label }))}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Condition *</label>
-              <select
+              <Dropdown
                 value={form.condition}
-                onChange={e => setForm(f => ({ ...f, condition: e.target.value as ListingCondition }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                {CONDITIONS.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-              </select>
+                onChange={v => setForm(f => ({ ...f, condition: v as ListingCondition }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={CONDITIONS.map(c => ({ value: c.id, label: c.label }))}
+              />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
-              <select
-                value={form.subject}
-                onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                <option value="">None</option>
-                {subjects.map(s => <option key={s.id} value={s.label}>{s.label}</option>)}
-              </select>
+              <Dropdown
+                value={form.subject || 'none'}
+                onChange={v => setForm(f => ({ ...f, subject: v === 'none' ? '' : v }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={[{ value: 'none', label: 'None' }, ...subjects.map(s => ({ value: s.label, label: s.label }))]}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade</label>
-              <select
-                value={form.grade}
-                onChange={e => setForm(f => ({ ...f, grade: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                <option value="">Any</option>
-                {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
-              </select>
+              <Dropdown
+                value={form.grade || 'any'}
+                onChange={v => setForm(f => ({ ...f, grade: v === 'any' ? '' : v }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={[{ value: 'any', label: 'Any' }, ...GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))]}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Price (R) *</label>
@@ -570,25 +565,21 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
           <div className="grid grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
-              <select
-                value={wantedForm.subject}
-                onChange={e => setWantedForm(f => ({ ...f, subject: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                <option value="">None</option>
-                {subjects.map(s => <option key={s.id} value={s.label}>{s.label}</option>)}
-              </select>
+              <Dropdown
+                value={wantedForm.subject || 'none'}
+                onChange={v => setWantedForm(f => ({ ...f, subject: v === 'none' ? '' : v }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={[{ value: 'none', label: 'None' }, ...subjects.map(s => ({ value: s.label, label: s.label }))]}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade</label>
-              <select
-                value={wantedForm.grade}
-                onChange={e => setWantedForm(f => ({ ...f, grade: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
-              >
-                <option value="">Any</option>
-                {GRADES.map(g => <option key={g} value={g}>Grade {g}</option>)}
-              </select>
+              <Dropdown
+                value={wantedForm.grade || 'any'}
+                onChange={v => setWantedForm(f => ({ ...f, grade: v === 'any' ? '' : v }))}
+                buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                options={[{ value: 'any', label: 'Any' }, ...GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))]}
+              />
             </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Budget (R)</label>
