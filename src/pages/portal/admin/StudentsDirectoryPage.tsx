@@ -186,6 +186,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
         </div>
       ) : (
         <div className="paper-card rounded overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -212,6 +213,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

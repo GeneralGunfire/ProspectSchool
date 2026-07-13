@@ -153,6 +153,7 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
                 <p className="font-bold text-brand-dark mb-1">No students in this class</p>
               </div>
             ) : (
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
@@ -194,6 +195,7 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
                   })}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </>

@@ -84,7 +84,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
           <button onClick={onBack} className="flex items-center gap-1.5 text-xs font-bold text-white/60 hover:text-white transition-colors mb-4">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Classes
           </button>
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Grade {cohort?.grade}</p>
               <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
@@ -125,6 +125,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
         </div>
       ) : (
         <div className="paper-card rounded overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -147,6 +148,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

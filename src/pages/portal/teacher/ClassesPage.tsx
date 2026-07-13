@@ -498,6 +498,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       ) : (
         // ── Flat table ─────────────────────────────────────────────
         <div className="paper-card rounded overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -568,6 +569,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

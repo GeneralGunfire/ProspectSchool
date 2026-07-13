@@ -149,6 +149,7 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
                   <p className="text-[13px] text-stone-500">Your homeroom teacher marks attendance each school day.</p>
                 </div>
               ) : (
+                <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <tbody>
                     {history.map((record, i) => {
@@ -172,6 +173,7 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
                     })}
                   </tbody>
                 </table>
+                </div>
               )}
             </motion.div>
           </>

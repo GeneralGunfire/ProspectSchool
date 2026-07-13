@@ -91,6 +91,7 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
                 <p className="text-[13px] text-stone-500">The homeroom teacher marks attendance each school day.</p>
               </div>
             ) : (
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <tbody>
                   {history.map((record, i) => {
@@ -109,6 +110,7 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
                   })}
                 </tbody>
               </table>
+              </div>
             )}
           </motion.div>
         )}

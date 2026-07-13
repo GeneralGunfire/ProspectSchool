@@ -193,7 +193,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4">
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
@@ -230,6 +230,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         </div>
       ) : (
         <div className="paper-card rounded overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
@@ -288,6 +289,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
       </div>

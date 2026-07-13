@@ -75,7 +75,7 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="flex items-end justify-between gap-4"
+            className="flex flex-wrap items-end justify-between gap-4"
           >
             <div className="min-w-0">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Behaviour</p>
@@ -135,6 +135,7 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
               <p className="text-[13px] text-stone-500">Students you teach will appear here.</p>
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
@@ -178,6 +179,7 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
         )}

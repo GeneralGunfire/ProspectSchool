@@ -298,6 +298,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
             <p className="text-sm text-stone-500">Students appear here once they're placed in this cohort.</p>
           </div>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
@@ -356,6 +357,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
               })}
             </tbody>
           </table>
+          </div>
         )}
       </div>
       </>

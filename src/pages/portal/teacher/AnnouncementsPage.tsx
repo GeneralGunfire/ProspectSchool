@@ -171,7 +171,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
         </div>
-        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4">
+        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Teacher</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
