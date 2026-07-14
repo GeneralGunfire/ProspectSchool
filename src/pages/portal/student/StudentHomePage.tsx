@@ -136,31 +136,30 @@ function StudentHomeSkeleton({ session }: { session: StudentSession }) {
         <div className="absolute inset-0 pointer-events-none">
           <motion.img src="/images/nizamiye-emblem.png" alt=""
             onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.78 : 0 }}
             transition={{ duration: 0.6, ease: easeOut }}
             className="w-full h-full object-cover" />
           <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.74) 0%, rgba(21,23,28,0.52) 35%, rgba(21,23,28,0.22) 62%, rgba(21,23,28,0.56) 100%)' }} />
           <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 38%, rgba(21,23,28,0.78) 100%)' }} />
         </div>
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
           style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}
-            className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">
-                {new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}
-              </p>
-              <p className="text-[11px] text-white/60 mt-1.5 font-medium truncate">
-                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-              </p>
-            </div>
+            className="flex items-center gap-2 min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 leading-none whitespace-nowrap">
+              {new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </p>
+            <span className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
+            <p className="text-[11px] text-white/45 font-medium truncate">
+              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+            </p>
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut, delay: 0.06 }}
-            className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-5 leading-[1.1]"
-            style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+            className="font-display font-extrabold text-white text-[32px] sm:text-[44px] mt-4 leading-[1.08]"
+            style={{ letterSpacing: '-0.025em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
             {(() => {
               const h = new Date().getHours();
               return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
@@ -177,9 +176,9 @@ function StudentHomeSkeleton({ session }: { session: StudentSession }) {
           <Shimmer className="h-4 w-1/3" />
         </motion.div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4, delay: 0.16 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {[0, 1, 2, 3].map(i => (
-            <div key={i} className={`paper-card rounded p-5 h-full min-h-[160px] ${i >= 2 ? 'col-span-2 lg:col-span-2' : ''}`}>
+          className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          {[0, 1].map(i => (
+            <div key={i} className="paper-card rounded p-5 h-full min-h-[160px]">
               <Shimmer className="h-3 w-16 mb-4" />
               <Shimmer className="h-8 w-1/2 mb-2" />
               <Shimmer className="h-3 w-2/3" />
@@ -391,17 +390,9 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     return `${d} days`;
   }
 
-  // Contextual quick actions
   const upcomingAssessmentCount = upcomingEvents.filter(
     e => e.event_type === 'exam' || e.event_type === 'assessment'
   ).length;
-
-  const hasExamSoon = upcomingEvents.some(e =>
-    (e.event_type === 'exam' || e.event_type === 'assessment') &&
-    Math.round((new Date(e.event_date + 'T00:00:00').getTime() - new Date(todayStr + 'T00:00:00').getTime()) / 86400000) <= 7
-  );
-  const isStruggling = avgMark !== null && avgMark < 60;
-  const lowestSubjectName = lowestSubject && subjectProgress.length > 1 ? lowestSubject.label : null;
 
   // Recent activity
   type ActivityItem =
@@ -606,11 +597,11 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             genuinely visible rather than buried under a near-opaque wash */}
         <div className="absolute inset-0 pointer-events-none">
           <img src="/images/nizamiye-emblem.png" alt=""
-            className="w-full h-full object-cover opacity-[0.62]" />
+            className="w-full h-full object-cover opacity-[0.78]" />
           <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.74) 0%, rgba(21,23,28,0.52) 35%, rgba(21,23,28,0.22) 62%, rgba(21,23,28,0.56) 100%)' }} />
           <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 38%, rgba(21,23,28,0.78) 100%)' }} />
         </div>
         {/* Faint sapphire wash, low + far corner — institutional, not glowy */}
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
@@ -618,46 +609,58 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
 
-          {/* Date row */}
+          {/* Date row — quiet, single line, no longer competing with the greeting */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="flex items-start justify-between gap-4"
+            className="flex items-center gap-2 min-w-0"
           >
-            <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">{heroDate}</p>
-              <p className="text-[11px] text-white/60 mt-1.5 font-medium truncate">
-                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-              </p>
-            </div>
-
-            {apsScore !== null ? (
-              <div className="shrink-0 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 text-center">
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">APS</p>
-                <p className="font-black text-xl leading-none mt-1 text-white">{apsScore}</p>
-              </div>
-            ) : goals.targetCareer ? (
-              <div className="shrink-0 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 text-center max-w-[140px]">
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Goal</p>
-                <p className="font-black text-white text-xs leading-tight mt-1 truncate">{goals.targetCareer}</p>
-              </div>
-            ) : null}
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 leading-none whitespace-nowrap">{heroDate}</p>
+            <span className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
+            <p className="text-[11px] text-white/45 font-medium truncate">
+              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+            </p>
           </motion.div>
 
-          {/* Greeting */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-5 leading-[1.1]"
-            style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
-          >
-            {greeting}, {session.name}.
-          </motion.h1>
+          {/* Greeting row — the dominant element, badge now sits beside it
+              at the same visual weight instead of pulling focus upward.
+              On mobile the badge drops below the greeting instead of
+              disappearing, so APS/goal info isn't lost on small screens. */}
+          <div className="flex flex-wrap items-end justify-between gap-3 mt-4">
+            <motion.h1
+              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease, delay: 0.06 }}
+              className="font-display font-extrabold text-white text-[26px] sm:text-[44px] leading-[1.1] min-w-0"
+              style={{ letterSpacing: '-0.025em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
+            >
+              {greeting}, {session.name}.
+            </motion.h1>
+
+            {apsScore !== null ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease, delay: 0.1 }}
+                className="shrink-0 border border-white/15 bg-white/[0.06] rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center sm:mb-1"
+              >
+                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">APS</p>
+                <p className="font-black text-base sm:text-xl leading-none mt-1 text-white">{apsScore}</p>
+              </motion.div>
+            ) : goals.targetCareer ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease, delay: 0.1 }}
+                className="shrink-0 border border-white/15 bg-white/[0.06] rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center max-w-[140px] sm:mb-1"
+              >
+                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Goal</p>
+                <p className="font-black text-white text-[11px] sm:text-xs leading-tight mt-1 truncate">{goals.targetCareer}</p>
+              </motion.div>
+            ) : null}
+          </div>
         </div>
       </div>
 
       {/* ═══ Body — white page ═══════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-4 sm:space-y-6 pt-5 sm:pt-8">
 
         {/* Today's Focus — moved out of the hero into its own card so the
             banner stays a clean crest strip and this reads as a distinct,
@@ -746,7 +749,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 <>
                   {(focusItem.type === 'urgent' || focusItem.type === 'soon') && (
                     <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('calendar')}
-                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
                       <CalendarDays className="w-4 h-4" />
                       View Calendar
                       <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
@@ -754,7 +757,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   )}
                   {focusItem.type === 'exam' && (
                     <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('pastpapers')}
-                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                      className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
                       <BookOpen className="w-4 h-4" />
                       Practice Papers
                       <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
@@ -769,7 +772,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 </>
               ) : (
                 <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('library')}
-                  className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+                  className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
                   <BookOpen className="w-4 h-4" />
                   Start Studying
                   <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
@@ -794,126 +797,112 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </div>
         </motion.div>
 
-        {/* Stat strip — asymmetric rhythm instead of 4 identical tiles.
-            Average mark is the widest (2 cols) since it's the metric a
-            student checks most. Every card shares the same paper-card
-            surface — emphasis (Next Up, when it has content) comes from
-            a teal left border and a small icon, never a different fill.
-            Announcements expands in place on click instead of just
-            linking out, so there's a real interaction beyond navigation. */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Stat strip — two richer cards instead of four interchangeable
+            tiles, each with its own internal layout so they don't read as
+            the same template repeated. "Today" groups the two time/task
+            signals (what's next, what's due); "Marks & News" groups the
+            two check-in signals (how am I doing, what did I miss). */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
 
-          {/* Upcoming event */}
+          {/* Today — upcoming event (top) + homework ring (bottom),
+              split by a hairline divider inside one card */}
           <motion.div
             initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease, delay: 0.12 }}
-            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] relative overflow-hidden"
-            style={upcomingEvents[0] ? { borderLeft: '3px solid var(--color-accent)' } : undefined}
+            className="paper-card rounded flex flex-col h-full overflow-hidden"
           >
-            <div className="relative flex items-center gap-2">
-              <CalendarDays className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
-              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Next up</p>
-            </div>
-            {upcomingEvents[0] ? (() => {
-              const ev = upcomingEvents[0];
-              const typeColors: Record<string, string> = {
-                homework: 'text-blue-600', assessment: 'text-emerald-600', exam: 'text-red-600', other: 'text-[rgba(31,36,33,0.5)]',
-              };
-              return (
-                <>
-                  <p className="relative font-semibold text-brand-dark text-[16px] leading-snug mt-3 flex-1">{ev.title}</p>
-                  <div className="relative flex items-center justify-between mt-2">
-                    <span className={`text-[11px] font-bold uppercase tracking-wide ${typeColors[ev.event_type] ?? typeColors.other}`}>
-                      {EVENT_LABELS[ev.event_type]}
-                    </span>
-                    <span className="text-[rgba(31,36,33,0.45)] text-[12px] font-semibold">{formatDate(ev.event_date)}</span>
-                  </div>
-                  <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
-                    className="relative self-stretch mt-3 pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
-                    style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
-                    Open calendar <ArrowUpRight className="w-3.5 h-3.5" />
-                  </motion.button>
-                </>
-              );
-            })() : (
-              <>
-                <div className="relative flex-1 flex flex-col items-start justify-center gap-1.5 py-2">
-                  <p className="text-[rgba(31,36,33,0.7)] text-[16px] font-semibold">Nothing scheduled</p>
-                  <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug">Your upcoming events will appear here.</p>
-                </div>
-                <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
-                  className="relative self-stretch mt-1 pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
-                  style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
-                  Open calendar <ArrowUpRight className="w-3.5 h-3.5" />
-                </motion.button>
-              </>
-            )}
-          </motion.div>
-
-          {/* Homework — ring-led, blue identity to match its ring color */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease, delay: 0.16 }}
-            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px]"
-          >
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Homework</p>
-            {pendingHomework.length === 0 ? (
-              <div className="flex-1 flex flex-col justify-center py-2">
-                <p className="text-brand-dark font-semibold text-[16px]">All caught up</p>
-                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">Nothing due this week.</p>
+            <div className="p-5 pb-4 flex-1">
+              <div className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Next up</p>
               </div>
-            ) : (
-              <div className="flex-1 flex items-center gap-3.5">
-                <div className="relative shrink-0">
-                  <Ring pct={hwCompletionPct} size={56} stroke={5} trackColor="rgba(10,14,26,0.08)" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-black text-lg text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
+              {upcomingEvents[0] ? (() => {
+                const ev = upcomingEvents[0];
+                const typeColors: Record<string, string> = {
+                  homework: 'text-blue-600', assessment: 'text-emerald-600', exam: 'text-red-600', other: 'text-[rgba(31,36,33,0.5)]',
+                };
+                return (
+                  <div className="flex items-center justify-between gap-4 mt-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-brand-dark text-[16px] leading-snug truncate">{ev.title}</p>
+                      <span className={`text-[11px] font-bold uppercase tracking-wide ${typeColors[ev.event_type] ?? typeColors.other}`}>
+                        {EVENT_LABELS[ev.event_type]}
+                      </span>
+                    </div>
+                    <span className="text-[rgba(31,36,33,0.45)] text-[12px] font-semibold shrink-0">{formatDate(ev.event_date)}</span>
                   </div>
-                </div>
-                <div className="min-w-0">
-                  {hwToday.length > 0
-                    ? <p className="text-red-600 font-black text-[13px] leading-snug">{hwToday.length} due today</p>
-                    : <p className="text-[rgba(31,36,33,0.55)] text-[13px] font-semibold leading-snug">tasks<br />remaining</p>}
-                </div>
-              </div>
-            )}
-            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('calendar')}
-              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
-              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
-              View all <ArrowUpRight className="w-3.5 h-3.5" />
-            </motion.button>
-          </motion.div>
-
-          {/* Average mark — the anchor tile, spans 2 cols so it doesn't
-              read as "one of four interchangeable boxes"; stripe color
-              tracks the mark's own status color for at-a-glance signal */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease, delay: 0.2 }}
-            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] col-span-2 lg:col-span-2"
-          >
-            <div className="flex items-start justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Average</p>
-              {recentSorted.length >= 2 && (
-                <div className="flex items-end gap-[3px] h-6" title="Last 6 assessments">
-                  {recentSorted.slice(0, 6).reverse().map((m, i) => {
-                    const p = Math.round((m.mark! / m.total) * 100);
-                    return (
-                      <motion.div key={i}
-                        className={`w-[3px] rounded-full ${p >= 70 ? 'bg-emerald-400' : p >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
-                        initial={{ height: 0 }} animate={{ height: `${Math.max(15, p)}%` }}
-                        whileHover={{ scaleY: 1.15 }}
-                        transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
-                        style={{ maxHeight: '100%', transformOrigin: 'bottom' }}
-                      />
-                    );
-                  })}
-                </div>
+                ) ;
+              })() : (
+                <p className="text-[rgba(31,36,33,0.5)] text-[14px] mt-3">Nothing scheduled — your upcoming events will appear here.</p>
               )}
             </div>
-            {avgMark !== null ? (
-              <div className="flex-1 flex items-center justify-between gap-4">
-                <div>
+
+            <div className="px-5 py-4 border-t" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
+              <div className="flex items-center gap-3.5">
+                {pendingHomework.length === 0 ? (
+                  <>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-emerald-50">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-brand-dark font-semibold text-[13px]">Homework — all caught up</p>
+                      <p className="text-[rgba(31,36,33,0.4)] text-[11px]">Nothing due this week.</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="relative shrink-0">
+                      <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(10,14,26,0.08)" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="font-black text-[13px] text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold text-brand-dark leading-snug">
+                        {hwToday.length > 0
+                          ? <span className="text-red-600">{hwToday.length} homework due today</span>
+                          : 'Homework — tasks remaining'}
+                      </p>
+                      <p className="text-[11px] text-[rgba(31,36,33,0.45)]">{completions.size}/{totalHomework} done</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Marks & News — average mark (with sparkline) on the left,
+              announcement preview on the right; the two "check in on"
+              signals share one card with a vertical divider on desktop */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            layout
+            transition={{ duration: 0.45, ease, delay: 0.16 }}
+            className="paper-card rounded flex flex-col sm:flex-row h-full overflow-hidden"
+          >
+            {/* Average */}
+            <div className="p-5 flex-1 flex flex-col sm:border-r" style={{ borderColor: 'var(--color-brand-border)' }}>
+              <div className="flex items-start justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Average</p>
+                {recentSorted.length >= 2 && (
+                  <div className="flex items-end gap-[3px] h-5" title="Last 6 assessments">
+                    {recentSorted.slice(0, 6).reverse().map((m, i) => {
+                      const p = Math.round((m.mark! / m.total) * 100);
+                      return (
+                        <motion.div key={i}
+                          className={`w-[3px] rounded-full ${p >= 70 ? 'bg-emerald-400' : p >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                          initial={{ height: 0 }} animate={{ height: `${Math.max(15, p)}%` }}
+                          whileHover={{ scaleY: 1.15 }}
+                          transition={{ duration: 0.6, delay: 0.4 + i * 0.05, ease: [0.16, 1, 0.3, 1] }}
+                          style={{ maxHeight: '100%', transformOrigin: 'bottom' }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              {avgMark !== null ? (
+                <div className="flex-1 flex flex-col justify-center mt-1">
                   <p className={`font-black text-4xl ${avgStatus?.colorClass ?? 'text-brand-dark'}`}><Counter value={avgMark} suffix="%" /></p>
                   {subjectProgress.length > 1 && highestSubject && lowestSubject ? (
                     <p className="text-[11px] text-[rgba(31,36,33,0.5)] mt-1 leading-snug">
@@ -927,73 +916,67 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                     </p>
                   )}
                 </div>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col justify-center py-2">
-                <p className="text-brand-dark font-semibold text-[16px]">No marks yet</p>
-                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">Your average appears once your first assessment is marked.</p>
-              </div>
-            )}
-            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={() => onNavigate('marks')}
-              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
-              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
-              My marks <ArrowUpRight className="w-3.5 h-3.5" />
-            </motion.button>
-          </motion.div>
-
-          {/* Announcements — expands in place on click to preview the
-              latest message body, a real interaction rather than just a
-              count-and-link tile. Shares the same paper-card surface as
-              every other tile; the unread count uses the teal accent. */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-            layout
-            transition={{ duration: 0.45, ease, delay: 0.24 }}
-            className="paper-card rounded p-5 flex flex-col h-full min-h-[160px] col-span-2 lg:col-span-2 cursor-pointer"
-            onClick={() => announcements.length > 0 && setAnnouncementExpanded(v => !v)}
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Announcements</p>
-              {announcements.length > 0 && (
-                <motion.span animate={{ rotate: announcementExpanded ? 90 : 0 }} transition={{ duration: 0.25 }}>
-                  <ChevronRight className="w-4 h-4 text-[rgba(31,36,33,0.35)]" />
-                </motion.span>
-              )}
-            </div>
-            {announcements.length === 0 ? (
-              <div className="flex-1 flex flex-col justify-center py-2">
-                <p className="text-brand-dark font-semibold text-[16px]">Nothing new</p>
-                <p className="text-[rgba(31,36,33,0.4)] text-[13px] leading-snug mt-0.5">School announcements will land here.</p>
-              </div>
-            ) : (
-              <div className="flex-1 flex flex-col justify-center min-w-0 py-1">
-                <div className="flex items-baseline gap-2">
-                  <p className="font-black text-2xl text-brand-dark leading-none"><Counter value={announcements.length} /></p>
-                  <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>unread</p>
+              ) : (
+                <div className="flex-1 flex flex-col justify-center py-2">
+                  <p className="text-brand-dark font-semibold text-[15px]">No marks yet</p>
+                  <p className="text-[rgba(31,36,33,0.4)] text-[12px] leading-snug mt-0.5">Appears once your first assessment is marked.</p>
                 </div>
-                <p className="text-[rgba(31,36,33,0.8)] text-[15px] font-bold mt-1.5 truncate">{announcements[0]?.title}</p>
-                <p className="text-[rgba(31,36,33,0.45)] text-[12px] mt-0.5">{timeAgo(announcements[0].created_at)}</p>
-                <AnimatePresence initial={false}>
-                  {announcementExpanded && announcements[0]?.body && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                      animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
-                      exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      transition={{ duration: 0.25, ease }}
-                      className="text-[rgba(31,36,33,0.6)] text-[13px] leading-relaxed overflow-hidden"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      {announcements[0].body}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+              )}
+              <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('marks')}
+                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold px-3 py-2 rounded transition-colors"
+                style={{ color: 'var(--color-accent-foreground)', background: 'var(--color-accent)' }}>
+                My marks <ArrowUpRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </div>
+
+            {/* Announcements */}
+            <div
+              className="p-5 flex-1 flex flex-col cursor-pointer"
+              onClick={() => announcements.length > 0 && setAnnouncementExpanded(v => !v)}
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Announcements</p>
+                {announcements.length > 0 && (
+                  <motion.span animate={{ rotate: announcementExpanded ? 90 : 0 }} transition={{ duration: 0.25 }}>
+                    <ChevronRight className="w-4 h-4 text-[rgba(31,36,33,0.35)]" />
+                  </motion.span>
+                )}
               </div>
-            )}
-            <motion.button whileTap={tap} whileHover={{ x: 2 }} onClick={e => { e.stopPropagation(); onNavigate('announcements'); }}
-              className="self-stretch mt-auto pt-2.5 border-t inline-flex items-center gap-1.5 text-[13px] font-bold transition-colors"
-              style={{ borderColor: 'var(--color-brand-border)', color: 'var(--color-accent)' }}>
-              Read all <ArrowUpRight className="w-3.5 h-3.5" />
-            </motion.button>
+              {announcements.length === 0 ? (
+                <div className="flex-1 flex flex-col justify-center py-2">
+                  <p className="text-brand-dark font-semibold text-[15px]">Nothing new</p>
+                  <p className="text-[rgba(31,36,33,0.4)] text-[12px] leading-snug mt-0.5">School announcements will land here.</p>
+                </div>
+              ) : (
+                <div className="flex-1 flex flex-col justify-center min-w-0 mt-1">
+                  <div className="flex items-baseline gap-2">
+                    <p className="font-black text-2xl text-brand-dark leading-none"><Counter value={announcements.length} /></p>
+                    <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>unread</p>
+                  </div>
+                  <p className="text-[rgba(31,36,33,0.8)] text-[14px] font-bold mt-1.5 truncate">{announcements[0]?.title}</p>
+                  <p className="text-[rgba(31,36,33,0.45)] text-[12px] mt-0.5">{timeAgo(announcements[0].created_at)}</p>
+                  <AnimatePresence initial={false}>
+                    {announcementExpanded && announcements[0]?.body && (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.25, ease }}
+                        className="text-[rgba(31,36,33,0.6)] text-[13px] leading-relaxed overflow-hidden"
+                        onClick={e => e.stopPropagation()}
+                      >
+                        {announcements[0].body}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+              <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={e => { e.stopPropagation(); onNavigate('announcements'); }}
+                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold px-3 py-2 rounded transition-colors"
+                style={{ color: 'var(--color-accent-foreground)', background: 'var(--color-accent)' }}>
+                Read all <ArrowUpRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </div>
           </motion.div>
         </div>
 
@@ -1021,7 +1004,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             {/* Big ring — tap to cycle through average mark / homework% / APS,
                 so the centrepiece is an interactive dial rather than a
                 static readout. Dots below show which metric is active. */}
-            <div className="flex lg:flex-col items-center gap-5 lg:gap-3 lg:pr-2">
+            <div className="flex flex-col sm:flex-row lg:flex-col items-center gap-3 sm:gap-5 lg:gap-3 lg:pr-2">
               {(() => {
                 const metrics = [
                   { key: 'avg' as const, pct: avgMark, label: 'average', show: avgMark !== null,
@@ -1141,13 +1124,15 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
 
               {/* Bars: homework, library, APS */}
               <div className="space-y-3.5">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[14px] font-semibold text-stone-700">Homework completion</span>
-                    <span className={`text-[14px] font-bold ${hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{hwCompletionPct}%</span>
+                {totalHomework > 0 && (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[14px] font-semibold text-stone-700">Homework completion</span>
+                      <span className={`text-[14px] font-bold ${hwCompletionPct >= 70 ? 'text-emerald-600' : hwCompletionPct >= 40 ? 'text-amber-600' : 'text-red-500'}`}>{hwCompletionPct}%</span>
+                    </div>
+                    <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
                   </div>
-                  <HealthBar pct={hwCompletionPct} color={hwCompletionPct >= 70 ? 'bg-emerald-500' : hwCompletionPct >= 40 ? 'bg-amber-400' : 'bg-red-400'} />
-                </div>
+                )}
                 {studyProgress.length > 0 && (
                   <div>
                     <div className="flex items-center justify-between mb-0.5">
@@ -1513,15 +1498,16 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           {activity.length === 0 ? (
             <div className="flex items-center gap-3 py-3">
               <TrendingUp className="w-8 h-8 text-stone-200" />
-              <p className="text-[15px] font-semibold text-stone-500">No recent activity</p>
+              <p className="text-[14px] font-semibold text-[rgba(31,36,33,0.45)]">No recent activity</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-1">
               {activity.map((item, i) => (
                 <motion.div key={i}
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease, delay: 0.45 + i * 0.04 }}
-                  className="flex items-start gap-3">
+                  className={`flex items-start gap-3 py-2 ${i > 0 ? 'border-t' : ''}`}
+                  style={{ borderColor: 'var(--color-brand-border)' }}>
                   {item.kind === 'mark' ? (
                     <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
                       <ClipboardList className="w-4 h-4 text-blue-600" />
@@ -1531,20 +1517,22 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       <Megaphone className="w-4 h-4 text-amber-600" />
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
                     {item.kind === 'mark' ? (
                       <>
-                        <p className="text-[14px] font-semibold text-stone-800 truncate">
-                          {item.data.subject_label}: {item.data.mark}/{item.data.total}
+                        <p className="text-[14px] font-bold text-brand-dark truncate">
+                          {item.data.subject_label}
+                          <span className="font-semibold text-[rgba(31,36,33,0.5)]"> · {gradeLabel(item.data.mark!, item.data.total).label}</span>
                         </p>
-                        <p className="text-[12px] text-stone-500 mt-0.5">
-                          {Math.round((item.data.mark! / item.data.total) * 100)}% · {gradeLabel(item.data.mark!, item.data.total).label}
+                        <p className="text-[13px] font-black shrink-0" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                          {item.data.mark}<span className="text-[rgba(31,36,33,0.4)] font-bold">/{item.data.total}</span>
+                          <span className="ml-1.5 text-[rgba(31,36,33,0.45)] font-bold">{Math.round((item.data.mark! / item.data.total) * 100)}%</span>
                         </p>
                       </>
                     ) : (
                       <>
-                        <p className="text-[14px] font-semibold text-stone-800 truncate">{item.data.title}</p>
-                        <p className="text-[12px] text-stone-500 mt-0.5">{timeAgo(item.ts)}</p>
+                        <p className="text-[14px] font-bold text-brand-dark truncate">{item.data.title}</p>
+                        <p className="text-[12px] font-semibold text-[rgba(31,36,33,0.4)] shrink-0">{timeAgo(item.ts)}</p>
                       </>
                     )}
                   </div>
@@ -1553,65 +1541,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
             </div>
           )}
 
-          {/* Contextual quick actions */}
-          <div className="mt-4 pt-4 border-t border-brand-border flex flex-wrap gap-2">
-            {isStruggling ? (
-              <>
-                <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <ClipboardList className="w-4 h-4" /> Review Marks
-                </motion.button>
-                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <BookOpen className="w-4 h-4" /> Open Library
-                </motion.button>
-                {lowestSubjectName && (
-                  <motion.button whileTap={tap} onClick={() => onNavigate('library')}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[13px] font-bold transition-colors border border-red-100">
-                    <TrendingUp className="w-4 h-4" /> {lowestSubjectName.split(' ')[0]} Resources
-                  </motion.button>
-                )}
-              </>
-            ) : hasExamSoon ? (
-              <>
-                <motion.button whileTap={tap} onClick={() => onNavigate('pastpapers')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <BookOpen className="w-4 h-4" /> Practice Papers
-                </motion.button>
-                <motion.button whileTap={tap} onClick={() => onNavigate('calendar')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <CalendarDays className="w-4 h-4" /> Exam Calendar
-                </motion.button>
-                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <BookOpen className="w-4 h-4" /> Revise Topics
-                </motion.button>
-              </>
-            ) : (
-              <>
-                <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <ClipboardList className="w-4 h-4" /> My Marks
-                </motion.button>
-                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <BookOpen className="w-4 h-4" /> Library
-                </motion.button>
-                <motion.button whileTap={tap} onClick={() => onNavigate('future')}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded text-[13px] font-bold text-stone-700 hover:text-stone-900 transition-colors border border-brand-border"
-                  style={{ background: 'var(--color-paper-raise)' }}>
-                  <TrendingUp className="w-4 h-4" /> My Future
-                </motion.button>
-              </>
-            )}
-          </div>
         </motion.div>
       </div>
     </div>

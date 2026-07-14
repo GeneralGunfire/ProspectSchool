@@ -723,8 +723,8 @@ html {
    is no separate "dark" card variant — emphasis comes from a left
    accent border or a small dot, never a different fill. */
 .student-home {
-  --color-accent: #0a0e1a;              /* deep midnight navy — sparingly, for CTAs/priority */
-  --color-accent-soft: #2a3350;         /* lighter navy for hover states on dark surfaces */
+  --color-accent: #1f2421;              /* warm charcoal — matches the sidebar's selected-page color */
+  --color-accent-soft: #343b36;         /* lighter charcoal for hover states on dark surfaces */
   --color-accent-foreground: #ffffff;
   --color-brand-dark: #1f2421;          /* warm charcoal text, not pure black */
   --color-brand-border: rgba(15, 23, 21, 0.07);   /* hairline on paper surfaces */
@@ -793,14 +793,10 @@ html {
 }
 .student-home .paper-card:active { transform: translateY(-1px) scale(0.997); }
 
-/* Emphasis without a different fill — a 3px navy left border for the
-   one card that needs to stand out (Today's Focus), applied via class
-   rather than swapping backgrounds. */
+/* Today's Focus — same paper-card surface as every other card now that
+   the left accent border has been removed; no separate treatment. */
 .student-home .paper-card.focus-emphasis {
-  border-left: 3px solid var(--color-accent);
-  background:
-    linear-gradient(90deg, rgba(10,14,26,0.025) 0%, transparent 12%),
-    linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
 }
 
 /* Primary CTA — filled navy, soft inner glow at rest, deeper press
