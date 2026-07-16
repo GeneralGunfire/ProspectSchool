@@ -142,12 +142,12 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
             <label className="block">
               <span className="text-[11px] font-black text-stone-500 uppercase tracking-wide">Opens</span>
               <input type="date" value={opensAt} onChange={(e) => setOpensAt(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-brand-border px-3 py-2 text-sm" required />
+                className="mt-1 w-full rounded border border-brand-border px-3 py-2 text-sm" required />
             </label>
             <label className="block">
               <span className="text-[11px] font-black text-stone-500 uppercase tracking-wide">Closes</span>
               <input type="date" value={closesAt} onChange={(e) => setClosesAt(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-brand-border px-3 py-2 text-sm" required />
+                className="mt-1 w-full rounded border border-brand-border px-3 py-2 text-sm" required />
             </label>
             <div className="flex items-center gap-4">
               <label className="flex items-center gap-2 text-sm font-bold text-brand-dark cursor-pointer">
@@ -155,7 +155,7 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
                 Enabled
               </label>
               <motion.button type="submit" disabled={saving} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2 rounded-xl hover:bg-brand-dark/90 transition-colors disabled:opacity-60">
+                className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-4 py-2 rounded hover:bg-brand-dark/90 transition-colors disabled:opacity-60">
                 <Save className="w-4 h-4" /> {saved ? 'Saved' : 'Save'}
               </motion.button>
             </div>
@@ -173,7 +173,11 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
           <h2 className="text-sm font-black text-brand-dark">Teacher-Approved Submissions</h2>
         </div>
         {loading ? null : rows.length === 0 ? (
-          <div className="px-6 pb-8 text-sm text-stone-400">No submissions have been approved by homeroom teachers yet.</div>
+          <div className="px-6 pb-8 flex flex-col items-center text-center">
+            <Inbox className="w-9 h-9 text-stone-200 mb-3" />
+            <p className="text-sm font-bold text-stone-500">No submissions yet</p>
+            <p className="text-xs text-stone-400 mt-1">Approved subject selections from homeroom teachers will appear here.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -228,7 +232,7 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
           <div onClick={() => setConfirmDelete(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+              <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
                 <AlertTriangle className="w-5 h-5 text-red-500" />
               </div>
               <h2 className="text-base font-black text-brand-dark mb-1">
@@ -239,11 +243,11 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
               </p>
               <div className="flex gap-3">
                 <button onClick={() => setConfirmDelete(null)}
-                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                   Cancel
                 </button>
                 <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                   {deleting
                     ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     : 'Delete'

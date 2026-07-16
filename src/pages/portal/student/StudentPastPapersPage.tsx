@@ -257,7 +257,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     const isUrgent = remaining <= 300 && phase === 'active';
 
     return (
-      <div className="min-h-screen bg-stone-50 flex flex-col">
+      <div className="student-home min-h-screen bg-stone-50 flex flex-col">
 
         {/* Practice top bar */}
         <div className="bg-brand-dark px-5 py-3 flex items-center justify-between shrink-0">
@@ -323,7 +323,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     <button
                       key={mins}
                       onClick={() => setSetupDuration(mins)}
-                      className={`px-3 py-2 rounded-xl text-xs font-black transition-colors border ${
+                      className={`px-3 py-2 rounded text-xs font-black transition-colors border ${
                         setupDuration === mins
                           ? 'bg-brand-dark text-white border-brand-dark'
                           : 'bg-stone-50 text-stone-600 border-brand-border hover:border-stone-400'
@@ -340,13 +340,13 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
               <button
                 onClick={() => startPractice(paper, setupDuration)}
-                className="w-full py-4 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                className="w-full py-4 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
               >
                 Start — {setupDuration >= 60 ? `${setupDuration / 60}h${setupDuration % 60 ? ` ${setupDuration % 60}m` : ''}` : `${setupDuration}m`}
               </button>
               <button
                 onClick={exitPractice}
-                className="w-full py-3 rounded-xl text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+                className="w-full py-3 rounded text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
               >
                 Cancel
               </button>
@@ -372,7 +372,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               <div className="space-y-3">
                 <button
                   onClick={() => getPastPaperDownloadUrl(paper.file_url).then(url => url && window.open(url, '_blank'))}
-                  className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-stone-100 text-stone-700 text-sm font-black hover:bg-stone-200 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded bg-stone-100 text-stone-700 text-sm font-black hover:bg-stone-200 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Reopen Paper
@@ -384,7 +384,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'));
                       setPractice(prev => prev ? { ...prev, memoOpened: true } : null);
                     }}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-black hover:bg-emerald-100 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-black hover:bg-emerald-100 transition-colors"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     Open Memo
@@ -396,7 +396,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
                 <button
                   onClick={() => setPractice(prev => prev ? { ...prev, phase: 'complete' } : null)}
-                  className="w-full py-3 rounded-xl border border-brand-border text-stone-500 text-sm font-black hover:border-stone-400 transition-colors"
+                  className="w-full py-3 rounded border border-brand-border text-stone-500 text-sm font-black hover:border-stone-400 transition-colors"
                 >
                   Done — Self Mark Now
                 </button>
@@ -433,7 +433,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         value={setupScore}
                         onChange={e => setSetupScore(e.target.value)}
                         placeholder="0"
-                        className="w-24 text-center font-black text-2xl rounded-xl border border-brand-border py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10"
+                        className="w-24 text-center font-black text-2xl rounded border border-brand-border py-3 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10"
                       />
                       <span className="text-stone-500 font-bold text-lg">
                         / {150}
@@ -469,14 +469,14 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       }
                     }}
                     disabled={!setupScore || Number(setupScore) < 0}
-                    className="w-full py-3.5 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors disabled:opacity-40"
+                    className="w-full py-3.5 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors disabled:opacity-40"
                   >
                     Save Result
                   </button>
 
                   <button
                     onClick={exitPractice}
-                    className="w-full py-3 rounded-xl text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
+                    className="w-full py-3 rounded text-stone-500 font-black text-sm hover:text-stone-700 transition-colors mt-2"
                   >
                     Skip — Exit Practice
                   </button>
@@ -516,7 +516,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     {paper.memo_url && (
                       <button
                         onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'))}
-                        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-sm hover:bg-emerald-100 transition-colors"
+                        className="w-full flex items-center justify-center gap-2 py-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-sm hover:bg-emerald-100 transition-colors"
                       >
                         <CheckCircle2 className="w-4 h-4" />
                         Review Memo
@@ -524,7 +524,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     )}
                     <button
                       onClick={exitPractice}
-                      className="w-full py-3 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                      className="w-full py-3 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
                     >
                       Back to Past Papers
                     </button>
@@ -593,7 +593,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   return (
                     <div key={p.id} className="paper-card rounded p-4 hover:border-stone-400 hover:shadow-sm transition-all">
                       <div className="flex items-start justify-between mb-3">
-                        <div className="w-8 h-8 rounded-xl bg-stone-100 flex items-center justify-center">
+                        <div className="w-8 h-8 rounded bg-stone-100 flex items-center justify-center">
                           <FileText className="w-4 h-4 text-stone-600" />
                         </div>
                         {p.memo_url && (
@@ -602,7 +602,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                           </span>
                         )}
                       </div>
-                      <p className="font-black text-stone-900 text-sm leading-snug mb-1">{p.title}</p>
+                      <p className="font-black text-brand-dark text-sm leading-snug mb-1">{p.title}</p>
                       <div className="flex flex-wrap gap-1 mb-3">
                         {p.subject_label && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">{p.subject_label}</span>
@@ -621,7 +621,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             selfScore: null,
                             memoOpened: false,
                           })}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
                         >
                           <Timer className="w-3.5 h-3.5" />
                           Practice
@@ -629,7 +629,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         <button
                           onClick={() => handleOpen(p)}
                           disabled={downloading === p.id}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
                         >
                           <ExternalLink className="w-3 h-3" />
                           {downloading === p.id ? '…' : 'Open'}
@@ -658,13 +658,13 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     key={p.id}
                     onClick={() => handleOpen(p)}
                     disabled={downloading === p.id}
-                    className="shrink-0 bg-white border border-brand-border rounded-xl px-3 py-2.5 text-left hover:border-stone-400 transition-colors min-w-40 max-w-50 disabled:opacity-40"
+                    className="shrink-0 bg-white border border-brand-border rounded px-3 py-2.5 text-left hover:border-stone-400 transition-colors min-w-40 max-w-50 disabled:opacity-40"
                   >
                     <div className="flex items-center gap-1.5 mb-1">
                       <FileText className="w-3 h-3 text-stone-500 shrink-0" />
                       {p.memo_url && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />}
                     </div>
-                    <p className="text-xs font-bold text-stone-900 truncate">{p.title}</p>
+                    <p className="text-xs font-bold text-brand-dark truncate">{p.title}</p>
                     <p className="text-[10px] text-stone-500 truncate">{p.subject_label ?? `Grade ${p.grade}`} · {p.year}</p>
                   </button>
                 ))}
@@ -686,13 +686,13 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 {practiceHistory.slice(0, 5).map((r, i) => (
                   <div key={i} className="flex items-center gap-4 px-4 py-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-stone-900 truncate">{r.paperTitle}</p>
+                      <p className="text-sm font-bold text-brand-dark truncate">{r.paperTitle}</p>
                       <p className="text-[11px] text-stone-500">
                         {r.subject ?? 'Past Paper'} · {new Date(r.completedAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}
                       </p>
                     </div>
                     {r.pct !== null ? (
-                      <span className={`font-black text-sm px-2.5 py-1 rounded-xl ${
+                      <span className={`font-black text-sm px-2.5 py-1 rounded ${
                         r.pct >= 70 ? 'bg-emerald-50 text-emerald-700' :
                         r.pct >= 50 ? 'bg-amber-50 text-amber-700' :
                                       'bg-red-50 text-red-600'
@@ -721,7 +721,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search by title or subject…"
-                  className="w-full pl-10 pr-9 py-3 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-white"
+                  className="w-full pl-10 pr-9 py-3 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-white"
                 />
                 {search && (
                   <button onClick={() => setSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2">
@@ -731,7 +731,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               </div>
               <button
                 onClick={() => setIsFilterOpen(v => !v)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors border whitespace-nowrap ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded font-bold text-xs uppercase tracking-widest transition-colors border whitespace-nowrap ${
                   isFilterOpen
                     ? 'bg-brand-dark text-white border-brand-dark'
                     : 'bg-white text-stone-700 border-brand-border hover:border-stone-400'
@@ -767,7 +767,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         {subjects.filter(s => papers.some(p => p.subject_id === s.id)).map(s => (
                           <button key={s.id}
                             onClick={() => setFilterSubject(filterSubject === String(s.id) ? '' : String(s.id))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
+                            className={`px-3 py-1.5 rounded text-xs font-bold transition-colors border ${
                               filterSubject === String(s.id)
                                 ? 'bg-brand-dark text-white border-brand-dark'
                                 : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
@@ -783,7 +783,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         {GRADES.filter(g => papers.some(p => p.grade === g)).map(g => (
                           <button key={g}
                             onClick={() => setFilterGrade(filterGrade === String(g) ? '' : String(g))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
+                            className={`px-3 py-1.5 rounded text-xs font-bold transition-colors border ${
                               filterGrade === String(g)
                                 ? 'bg-brand-dark text-white border-brand-dark'
                                 : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
@@ -799,7 +799,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         {yearOptions.map(y => (
                           <button key={y}
                             onClick={() => setFilterYear(filterYear === String(y) ? '' : String(y))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
+                            className={`px-3 py-1.5 rounded text-xs font-bold transition-colors border ${
                               filterYear === String(y)
                                 ? 'bg-brand-dark text-white border-brand-dark'
                                 : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
@@ -815,7 +815,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         {TERMS.filter(t => papers.some(p => p.term === t)).map(t => (
                           <button key={t}
                             onClick={() => setFilterTerm(filterTerm === String(t) ? '' : String(t))}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border ${
+                            className={`px-3 py-1.5 rounded text-xs font-bold transition-colors border ${
                               filterTerm === String(t)
                                 ? 'bg-brand-dark text-white border-brand-dark'
                                 : 'bg-white text-stone-600 border-brand-border hover:border-stone-400'
@@ -906,7 +906,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   className="w-full flex items-center gap-3 px-4 py-3.5 text-left"
                 >
                   <div className="relative w-9 h-9 shrink-0">
-                    <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                    <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                       <FileText className="w-4 h-4 text-stone-600" />
                     </div>
                     {p.memo_url && (
@@ -914,7 +914,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-stone-900 truncate">{p.title}</p>
+                    <p className="text-sm font-bold text-brand-dark truncate">{p.title}</p>
                     <p className="text-[11px] text-stone-500 truncate">
                       {p.subject_label ? `${p.subject_label} · ` : ''}{p.year}{p.term ? ` · Term ${p.term}` : ''}
                       {wasOpened && ' · Opened'}
@@ -960,7 +960,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                               selfScore: null,
                               memoOpened: false,
                             })}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded bg-stone-100 text-stone-700 text-xs font-black hover:bg-stone-200 transition-colors border border-brand-border"
                           >
                             <Timer className="w-3.5 h-3.5" />
                             Practice
@@ -969,7 +969,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                           <button
                             onClick={() => handleOpen(p)}
                             disabled={downloading === p.id}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                             {downloading === p.id ? 'Opening…' : 'Open'}
@@ -979,7 +979,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                             <button
                               onClick={() => handleShowMemo(p)}
                               disabled={memoLoading === p.id}
-                              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
                             >
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               {memoLoading === p.id ? 'Opening…' : 'Memo'}

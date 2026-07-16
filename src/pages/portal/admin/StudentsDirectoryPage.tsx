@@ -159,7 +159,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name, code, or class..."
-          className="w-full pl-9 pr-3 py-2.5 bg-white border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+          className="w-full pl-9 pr-3 py-2.5 bg-white border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
         />
       </div>
 
@@ -169,7 +169,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
         </div>
       ) : filtered.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Users className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">
@@ -180,7 +180,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
           </p>
           {students.length === 0 && (
             <button onClick={openAddStudent}
-              className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
+              className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
               Add Student <Plus className="w-4 h-4" />
             </button>
           )}
@@ -238,7 +238,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[88vh]">
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
                   <h2 className="text-lg font-black text-brand-dark">Add Student</h2>
-                  <button onClick={() => setShowAddStudent(false)} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={() => setShowAddStudent(false)} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -247,7 +247,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                   <form id="admin-student-form" onSubmit={handleCreateStudent} className="space-y-4">
                     {studentError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                         <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                         <p className="text-red-700 text-sm">{studentError}</p>
                       </motion.div>
@@ -257,13 +257,13 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
                         <input required type="text" value={studentForm.name} onChange={(e) => setField('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Rajen" />
                       </div>
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
                         <input required type="text" value={studentForm.surname} onChange={(e) => setField('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Naidoo" />
                       </div>
                     </div>
@@ -273,14 +273,14 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student Code</label>
                         <input required type="text" value={studentForm.student_code}
                           onChange={(e) => setField('student_code', e.target.value.toUpperCase())}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="e.g. STU-0012" autoCapitalize="characters" />
                       </div>
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">PIN</label>
                         <input required type="password" inputMode="numeric" maxLength={10}
                           value={studentForm.pin} onChange={(e) => setField('pin', e.target.value.replace(/\D/g, ''))}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                           placeholder="4-10 digit PIN" />
                       </div>
                     </div>
@@ -289,7 +289,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Class</label>
                         <input required type="text" value={studentForm.cohort_name} onChange={(e) => setField('cohort_name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="e.g. 10A" />
                       </div>
                       <div>
@@ -297,7 +297,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                         <Dropdown
                           value={String(studentForm.grade)}
                           onChange={(v) => setField('grade', Number(v))}
-                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
                         />
                       </div>
@@ -313,7 +313,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                               onChange={(v) => setRow(i, 'subject_id', Number(v))}
                               placeholder="Select subject"
                               className="flex-1 min-w-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                               options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
                             />
                             <Dropdown
@@ -321,7 +321,7 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
                               onChange={(v) => setRow(i, 'teacher_id', Number(v))}
                               placeholder="Select teacher"
                               className="flex-1 min-w-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                               options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` }))}
                             />
                             {rows.length > 1 && (
@@ -346,11 +346,11 @@ export default function StudentsDirectoryPage({ session }: StudentsDirectoryPage
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
                   <button type="button" onClick={() => setShowAddStudent(false)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="admin-student-form" disabled={studentSubmitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {studentSubmitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>Add Student <ArrowRight className="w-4 h-4" /></>

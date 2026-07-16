@@ -407,13 +407,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded-xl hover:bg-brand-dark/90 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded hover:bg-brand-dark/90 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Create Event
           </button>
 
           {/* Month nav */}
-          <div className="flex items-center bg-white border border-brand-border rounded-xl overflow-hidden">
+          <div className="flex items-center bg-white border border-brand-border rounded overflow-hidden">
             <button onClick={prevMonth} aria-label="Previous month" className="p-2 hover:bg-stone-50 transition-colors border-r border-brand-border">
               <ChevronLeft className="w-4 h-4 text-stone-600" />
             </button>
@@ -437,7 +437,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           </div>
 
           {/* Grid/List toggle */}
-          <div className="flex items-center bg-white border border-brand-border rounded-xl p-0.5 gap-0.5">
+          <div className="flex items-center bg-white border border-brand-border rounded p-0.5 gap-0.5">
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
@@ -489,7 +489,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                         >
                           <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
+                            <p className="text-sm font-bold text-brand-dark truncate">{ev.title}</p>
                             <div className="flex items-center gap-2 mt-0.5">
                               <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${TYPE_PILL[ev.event_type]}`}>
                                 {EVENT_LABELS[ev.event_type]}
@@ -613,13 +613,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, ease, delay: i * 0.04 }}
                       onClick={() => openView(ev)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-brand-border/60 hover:border-brand-border transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded border border-brand-border/60 hover:border-brand-border transition-colors text-left"
                     >
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-100'}`}>
                         <span className={`w-2 h-2 rounded-full ${c.dot}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-stone-900 truncate">{ev.title}</p>
+                        <p className="text-sm font-bold text-brand-dark truncate">{ev.title}</p>
                         <p className="text-[11px] text-stone-500">{formatDate(ev.event_date)}</p>
                         <p className="text-[10px] text-stone-400">{audienceSummary(ev)}</p>
                       </div>
@@ -693,7 +693,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                     <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full mb-2 ${TYPE_PILL[ev.event_type]}`}>
                       {EVENT_LABELS[ev.event_type]}
                     </span>
-                    <h2 className="text-lg font-black text-stone-900 tracking-tight">{ev.title}</h2>
+                    <h2 className="text-lg font-black text-brand-dark tracking-tight">{ev.title}</h2>
                   </div>
                   <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors shrink-0">
                     <X className="w-4 h-4 text-stone-500" />
@@ -702,10 +702,10 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
                 {/* Tabs — only for homework */}
                 {isHomework && (
-                  <div className="flex items-center gap-1 mt-4 bg-stone-100 rounded-xl p-1">
+                  <div className="flex items-center gap-1 mt-4 bg-stone-100 rounded p-1">
                     <button
                       onClick={() => setViewTab('details')}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'details' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'details' ? 'bg-white text-brand-dark shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
                     >
                       Details
                     </button>
@@ -714,7 +714,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                         setViewTab('tracker');
                         if (trackerRows.length === 0) loadTracker(ev);
                       }}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'tracker' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-black transition-all ${viewTab === 'tracker' ? 'bg-white text-brand-dark shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
                     >
                       <ClipboardList className="w-3.5 h-3.5" /> Homework Tracker
                     </button>
@@ -826,7 +826,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                   </div>
 
                                   <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-bold text-stone-900 truncate">{row.surname}, {row.name}</p>
+                                    <p className="text-sm font-bold text-brand-dark truncate">{row.surname}, {row.name}</p>
                                     <p className={`text-[11px] font-black ${statusColor}`}>{statusText}</p>
                                   </div>
 
@@ -845,7 +845,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     value={noteInputs[row.student_id] ?? ''}
                                     onChange={e => setNoteInputs(prev => ({ ...prev, [row.student_id]: e.target.value }))}
                                     placeholder="Note / reason (optional)"
-                                    className="w-full px-3 py-1.5 rounded-xl border border-brand-border text-xs text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
+                                    className="w-full px-3 py-1.5 rounded border border-brand-border text-xs text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
                                   />
                                 )}
 
@@ -854,7 +854,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleVerify(ev, row.student_id, true)}
                                       disabled={isVerifying}
-                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition-colors disabled:opacity-40"
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition-colors disabled:opacity-40"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" /> Verify Done
                                     </button>
@@ -863,7 +863,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleVerify(ev, row.student_id, false)}
                                       disabled={isVerifying}
-                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white text-red-600 border border-red-200 text-xs font-black hover:bg-red-50 transition-colors disabled:opacity-40"
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-white text-red-600 border border-red-200 text-xs font-black hover:bg-red-50 transition-colors disabled:opacity-40"
                                     >
                                       <XCircle className="w-3.5 h-3.5" /> Not Done
                                     </button>
@@ -872,7 +872,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleAbsent(ev, row.student_id)}
                                       disabled={isVerifying}
-                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-xl bg-white text-amber-600 border border-amber-200 text-xs font-black hover:bg-amber-50 transition-colors disabled:opacity-40"
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-white text-amber-600 border border-amber-200 text-xs font-black hover:bg-amber-50 transition-colors disabled:opacity-40"
                                     >
                                       <UserX className="w-3.5 h-3.5" /> Absent
                                     </button>
@@ -881,7 +881,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleClearVerification(ev, row.student_id)}
                                       disabled={isVerifying}
-                                      className="px-3 py-1.5 rounded-xl bg-white border border-brand-border text-stone-500 text-xs font-black hover:bg-stone-100 transition-colors disabled:opacity-40"
+                                      className="px-3 py-1.5 rounded bg-white border border-brand-border text-stone-500 text-xs font-black hover:bg-stone-100 transition-colors disabled:opacity-40"
                                     >
                                       Undo
                                     </button>
@@ -902,13 +902,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors"
                   >
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(true)}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 text-sm font-black transition-colors"
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded text-red-500 hover:bg-red-50 text-sm font-black transition-colors"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -921,15 +921,15 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       transition={{ duration: 0.18 }}
                       className="overflow-hidden mt-2"
                     >
-                      <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+                      <div className="p-4 bg-red-50 rounded border border-red-100">
                         <p className="text-sm font-bold text-red-700 mb-3">Delete this event? This cannot be undone.</p>
                         <div className="flex gap-2">
                           <button onClick={handleDelete} disabled={saving}
-                            className="flex-1 py-2 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                            className="flex-1 py-2 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
                             {saving ? 'Deleting…' : 'Yes, Delete'}
                           </button>
                           <button onClick={() => setDeleteConfirm(false)}
-                            className="flex-1 py-2 rounded-xl bg-white border border-brand-border text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
+                            className="flex-1 py-2 rounded bg-white border border-brand-border text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
                             Cancel
                           </button>
                         </div>
@@ -962,7 +962,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             onClick={e => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-              <h2 className="text-base font-black text-stone-900">
+              <h2 className="text-base font-black text-brand-dark">
                 {modal === 'create' ? `New Event — ${formatDate(form.event_date)}` : 'Edit Event'}
               </h2>
               <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
@@ -981,7 +981,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       <button
                         key={t.value}
                         onClick={() => setForm(f => ({ ...f, event_type: t.value }))}
-                        className={`py-2 rounded-xl text-xs font-black transition-all ${
+                        className={`py-2 rounded text-xs font-black transition-all ${
                           active ? `${TYPE_PILL[t.value]} ring-2 ring-offset-1 ring-current` : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
@@ -999,7 +999,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="e.g. Chapter 4 homework"
-                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -1012,7 +1012,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   type="date"
                   value={form.event_date}
                   onChange={e => setForm(f => ({ ...f, event_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                 />
               </div>
 
@@ -1025,7 +1025,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       type="time"
                       value={form.start_time}
                       onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -1034,7 +1034,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       type="time"
                       value={form.end_time}
                       onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -1048,7 +1048,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Additional details…"
-                  className="w-full px-3 py-2.5 rounded-xl border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none resize-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none resize-none transition-colors"
                 />
               </div>
 
@@ -1057,7 +1057,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 <div>
                   <label className="block text-xs font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Attachment</label>
                   {modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment && !attachmentFile && (
-                    <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 mb-2">
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 rounded border border-blue-100 mb-2">
                       <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
                       <span className="text-sm font-bold text-blue-700 flex-1 truncate">{selectedEvent.attachment_name}</span>
                       <button onClick={() => setClearAttachment(true)} className="text-red-400 hover:text-red-600 transition-colors">
@@ -1066,7 +1066,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                     </div>
                   )}
                   {attachmentFile ? (
-                    <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                    <div className="flex items-center gap-2 p-3 bg-blue-50 rounded border border-blue-100">
                       <Paperclip className="w-4 h-4 text-blue-500 shrink-0" />
                       <span className="text-sm font-bold text-blue-700 flex-1 truncate">{attachmentFile.name}</span>
                       <button onClick={() => { setAttachmentFile(null); if (fileRef.current) fileRef.current.value = ''; }}
@@ -1077,7 +1077,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   ) : (
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border-2 border-dashed border-brand-border hover:border-stone-400 text-sm font-bold text-stone-500 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-4 rounded border-2 border-dashed border-brand-border hover:border-stone-400 text-sm font-bold text-stone-500 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" />
                       {(modal === 'edit' && selectedEvent?.attachment_url && !clearAttachment) ? 'Replace file' : 'Attach file (PDF, Word, Image)'}
@@ -1119,7 +1119,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           target_subject_ids: [],
                           target_student_ids: [],
                         }))}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${
+                        className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
                           active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
@@ -1138,7 +1138,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={g}
                           onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           Grade {g}
                         </button>
@@ -1156,7 +1156,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={c.id}
                           onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
@@ -1176,7 +1176,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={s.id}
                               onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               {s.label}
                             </button>
@@ -1192,7 +1192,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={g}
                               onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               Grade {g}
                             </button>
@@ -1206,7 +1206,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
                 {/* Specific student picker */}
                 {form.target_type === 'specific' && (
-                  <div className="space-y-1 max-h-40 overflow-y-auto border border-brand-border/60 rounded-xl p-2">
+                  <div className="space-y-1 max-h-40 overflow-y-auto border border-brand-border/60 rounded p-2">
                     {allStudents.length === 0 && <p className="text-xs text-stone-500 p-2">No students found.</p>}
                     {allStudents.map(s => {
                       const active = form.target_student_ids.includes(s.id);
@@ -1215,7 +1215,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
                           className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-[#1C1917] text-white' : 'hover:bg-stone-100 text-stone-700'}`}
                         >
-                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-stone-900' : 'border-stone-300'}`}>
+                          <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>
                             {active ? '✓' : ''}
                           </span>
                           {s.surname}, {s.name}
@@ -1231,11 +1231,11 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
             <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
               <button onClick={closeModal}
-                className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
+                className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 py-2.5 rounded-xl bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
+                className="flex-1 py-2.5 rounded bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                 {saving ? 'Saving…' : modal === 'create' ? 'Create Event' : 'Save Changes'}
               </button>
             </div>

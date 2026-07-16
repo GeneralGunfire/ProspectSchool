@@ -145,7 +145,7 @@ export default function StudentTopicTestsPage({ session }: StudentTopicTestsPage
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease }}
             >
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Assessments</p>
               <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
                 Topic Tests
               </h1>
@@ -176,7 +176,8 @@ export default function StudentTopicTestsPage({ session }: StudentTopicTestsPage
               ))}
             </div>
           ) : visibleTests.length === 0 ? (
-            <div className="paper-card rounded p-5 sm:p-7 max-w-2xl py-14 text-center">
+            <div className="paper-card rounded p-5 sm:p-7 max-w-2xl py-14 flex flex-col items-center text-center">
+              <ClipboardCheck className="w-9 h-9 text-stone-200 mb-4" />
               <p className="text-[16px] font-semibold text-brand-dark">No tests assigned right now</p>
               <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Check back once your teacher assigns one.</p>
             </div>

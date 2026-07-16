@@ -133,7 +133,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
               <h2 className="text-base font-black text-brand-dark">Record Outcome</h2>
               <p className="text-xs text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</p>
             </div>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -146,7 +146,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
             ) : (
               <>
                 {noMarks && (
-                  <p className="text-xs text-stone-500 bg-stone-50 rounded-xl px-3 py-2.5 mb-4">
+                  <p className="text-xs text-stone-500 bg-stone-50 rounded px-3 py-2.5 mb-4">
                     No recent marks for {target.subject} — enter values manually.
                   </p>
                 )}
@@ -156,7 +156,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1">
                     <label className="block text-[10px] font-bold text-stone-500 mb-1">Previous Avg</label>
-                    <div className="px-3 py-2 rounded-xl bg-stone-100 text-sm font-black text-stone-500">
+                    <div className="px-3 py-2 rounded bg-stone-100 text-sm font-black text-stone-500">
                       {Math.round(target.previousAvg)}%
                     </div>
                   </div>
@@ -166,7 +166,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                       type="number" min={0} max={100}
                       value={newAvg}
                       onChange={e => setNewAvg(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                      className="w-full px-3 py-2 rounded border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                     />
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                     type="number" min={0} max={100}
                     value={latestMark}
                     onChange={e => setLatestMark(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2 rounded border border-brand-border text-sm font-black text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                 </div>
 
@@ -185,7 +185,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                   const style = RESULT_STYLE[preview.result];
                   const Icon = style.icon;
                   return (
-                    <div className={`rounded-xl border px-3 py-2.5 flex items-center gap-2.5 ${style.bg}`}>
+                    <div className={`rounded border px-3 py-2.5 flex items-center gap-2.5 ${style.bg}`}>
                       <Icon className={`w-4 h-4 shrink-0 ${style.color}`} />
                       <p className={`text-xs font-black ${style.color}`}>
                         {style.label} — {preview.improvement >= 0 ? '+' : ''}{preview.improvement}%
@@ -201,7 +201,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="w-full py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? 'Saving…' : 'Record Outcome'}
             </button>

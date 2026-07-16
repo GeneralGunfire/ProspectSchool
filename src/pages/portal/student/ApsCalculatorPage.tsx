@@ -30,6 +30,7 @@ function nqfColor(level: number) {
 }
 
 function apsColor(aps: number) {
+  if (aps === 0) return 'text-stone-300';
   if (aps >= 40) return 'text-emerald-600';
   if (aps >= 30) return 'text-blue-600';
   if (aps >= 24) return 'text-amber-600';
@@ -73,7 +74,7 @@ function SubjectRow({
         <Dropdown
           value={subject.code}
           onChange={v => onChange(index, { ...subject, code: v as SubjectCode })}
-          buttonClassName="w-full flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded-lg px-3 py-2 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+          buttonClassName="w-full flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded px-3 py-2 text-sm font-medium text-stone-800 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
           options={NSC_SUBJECTS.map(s => ({ value: s.value, label: s.label, group: s.group }))}
         />
       </div>
@@ -90,7 +91,7 @@ function SubjectRow({
             onChange(index, { ...subject, percent: val });
           }}
           placeholder="0"
-          className="w-16 bg-stone-50 border border-brand-border rounded-lg px-2 py-2 text-base sm:text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+          className="w-16 bg-stone-50 border border-brand-border rounded px-2 py-2 text-base sm:text-sm font-semibold text-stone-800 text-center focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
         />
         <span className="text-stone-500 text-xs">%</span>
       </div>
@@ -103,7 +104,7 @@ function SubjectRow({
       {/* Remove */}
       <button
         onClick={() => onRemove(index)}
-        className="shrink-0 p-1.5 rounded-lg text-stone-500 hover:text-red-500 hover:bg-red-50 transition"
+        className="shrink-0 p-1.5 rounded text-stone-500 hover:text-red-500 hover:bg-red-50 transition"
         aria-label="Remove subject"
       >
         <Trash2 className="w-3.5 h-3.5" />
@@ -127,11 +128,8 @@ function DegreeCard({
 
   return (
     <div
-      className={`rounded-xl border transition-all duration-200 ${
-        qualifies
-          ? 'border-emerald-200 bg-emerald-50/40'
-          : 'border-brand-border bg-white'
-      }`}
+      className="paper-card rounded"
+      style={{ borderLeft: qualifies ? '3px solid #10b981' : undefined }}
     >
       {/* Card header */}
       <button
@@ -156,7 +154,7 @@ function DegreeCard({
             </span>
             <span className="text-[11px] text-stone-500">{degree.duration}</span>
           </div>
-          <p className="mt-1 text-sm font-bold text-stone-900 leading-tight">{degree.degree}</p>
+          <p className="mt-1 text-sm font-bold text-brand-dark leading-tight">{degree.degree}</p>
           <p className="text-xs text-stone-500 mt-0.5">{degree.faculty}</p>
         </div>
 
@@ -205,7 +203,7 @@ function DegreeCard({
 
           {/* Notes */}
           {degree.notes && (
-            <div className="flex items-start gap-2 bg-blue-50 rounded-lg px-3 py-2">
+            <div className="flex items-start gap-2 bg-blue-50 rounded px-3 py-2">
               <Info className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
               <p className="text-xs text-blue-700">{degree.notes}</p>
             </div>
@@ -390,20 +388,20 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             </p>
           </div>
           {aps > 0 && apsGoal > 0 && (
-            <div className="shrink-0 hidden sm:block">
-              <div className={`rounded-2xl px-4 py-3 text-center border-2 ${
+            <div className="shrink-0">
+              <div className={`rounded px-3 py-2 sm:px-4 sm:py-3 text-center border-2 ${
                 aps >= apsGoal
                   ? 'bg-emerald-50 border-emerald-200'
                   : 'bg-amber-50 border-amber-200'
               }`}>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">
+                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">
                   {aps >= apsGoal ? 'Goal Reached' : 'Goal'}
                 </p>
-                <p className={`font-black text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
+                <p className={`font-black text-lg sm:text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
                   {aps} / {apsGoal}
                 </p>
                 {aps < apsGoal && (
-                  <p className="text-[10px] text-stone-500 mt-0.5">{apsGoal - aps} to go</p>
+                  <p className="text-[9px] sm:text-[10px] text-stone-500 mt-0.5">{apsGoal - aps} to go</p>
                 )}
               </div>
             </div>
@@ -414,17 +412,17 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
           {/* ── Left: Subject Input ── */}
           <div className="space-y-4">
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm overflow-hidden">
+            <div className="paper-card rounded overflow-hidden">
               <div className="px-5 py-4 border-b border-brand-border/60 flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-bold text-stone-900">Your Subjects & Marks</h2>
+                  <h2 className="text-sm font-bold text-brand-dark">Your Subjects & Marks</h2>
                   <p className="text-[11px] text-stone-500 mt-0.5">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
                 </div>
                 {session && (
                   <button
                     onClick={handleUseMyMarks}
                     disabled={loadingMarks}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors ${
                       marksLoaded
                         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         : 'bg-brand-dark text-white hover:bg-stone-700 disabled:opacity-50'
@@ -455,7 +453,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
               <div className="px-5 pb-4">
                 <button
                   onClick={addSubject}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border-2 border-dashed border-brand-border text-sm font-semibold text-stone-500 hover:border-stone-400 hover:text-stone-700 hover:bg-stone-50 transition"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded border-2 border-dashed border-brand-border text-sm font-semibold text-stone-500 hover:border-stone-400 hover:text-stone-700 hover:bg-stone-50 transition"
                 >
                   <Plus className="w-4 h-4" />
                   Add Subject
@@ -464,7 +462,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             </div>
 
             {/* APS Score card */}
-            <div className={`rounded-2xl border-2 p-6 text-center transition-all ${
+            <div className={`rounded border-2 p-6 text-center transition-all ${
               aps >= 40 ? 'border-emerald-300 bg-emerald-50' :
               aps >= 30 ? 'border-blue-300 bg-blue-50' :
               aps >= 24 ? 'border-amber-300 bg-amber-50' :
@@ -483,7 +481,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* APS Goal progress bar */}
             {apsGoal > 0 && aps > 0 && (
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+              <div className="paper-card rounded p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">APS Goal Progress</p>
                   <span className={`text-xs font-black ${aps >= apsGoal ? 'text-emerald-600' : 'text-stone-600'}`}>
@@ -511,7 +509,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* APS Roadmap — engine-powered, shown when marks loaded + goal set */}
             {apsRoadmap.length > 0 && apsGoal > aps && (
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-4">
+              <div className="paper-card rounded p-4">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">APS Roadmap</p>
                 <p className="text-xs text-stone-500 mb-3">
                   +{apsGoal - aps} needed · Prioritised by biggest gain
@@ -520,7 +518,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   {apsRoadmap.map((step, i) => (
                     <div key={i} className="flex items-center gap-3 py-2 border-b border-brand-border/60 last:border-0">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-stone-900 truncate">{step.subject}</p>
+                        <p className="text-sm font-bold text-brand-dark truncate">{step.subject}</p>
                         <p className="text-[11px] text-stone-500">
                           {step.currentPct}% → {step.targetPct}%
                           <span className="ml-1 text-stone-400">
@@ -538,7 +536,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             )}
 
             {/* NQF conversion guide */}
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm p-4">
+            <div className="paper-card rounded p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-stone-500 mb-3 flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" />
                 NQF Conversion Guide
@@ -575,7 +573,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowGoalPlanner(s => !s)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-black transition-all ${
+                className={`flex items-center gap-2 px-4 py-2 rounded text-[13px] font-black transition-all ${
                   showGoalPlanner
                     ? 'bg-brand-dark text-white'
                     : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
@@ -599,7 +597,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                  className="card-premium bg-white rounded-[24px] border border-brand-border p-6"
+                  className="paper-card rounded p-6"
                 >
                   {/* Part 1 — Target APS input */}
                   <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
@@ -617,14 +615,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                         setApsGoal(val);
                       }}
                       placeholder="—"
-                      className="rounded-xl border border-brand-border w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+                      className="rounded border border-brand-border w-24 text-center font-black text-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                     />
                     <div className="flex items-center gap-2">
                       {[30, 35, 40].map(t => (
                         <button
                           key={t}
                           onClick={() => { setTargetAps(t); setApsGoal(t); }}
-                          className={`bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                          className={`bg-stone-100 hover:bg-stone-200 text-stone-700 rounded px-3 py-1.5 text-xs font-bold transition ${
                             targetAps === t ? 'bg-stone-200 ring-1 ring-stone-400' : ''
                           }`}
                         >
@@ -680,10 +678,10 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                             All subjects are at maximum NQF level. Well done!
                           </p>
                         ) : (
-                          <div className="rounded-xl border border-brand-border/60 divide-y divide-stone-100 overflow-hidden">
+                          <div className="rounded border border-brand-border/60 divide-y divide-stone-100 overflow-hidden">
                             {improvable.map(row => (
                               <div key={row.subject.code} className="flex items-center gap-3 px-4 py-3">
-                                <span className="text-sm font-bold text-stone-900 flex-1 min-w-0 truncate">
+                                <span className="text-sm font-bold text-brand-dark flex-1 min-w-0 truncate">
                                   {row.label}
                                 </span>
                                 <span className="text-xs text-stone-500 shrink-0">
@@ -738,7 +736,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             </AnimatePresence>
 
             {/* Filters bar */}
-            <div className="card-premium bg-white rounded-[24px] border border-brand-border shadow-sm px-4 py-3">
+            <div className="paper-card rounded px-4 py-3">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-stone-500">
                   <Filter className="w-3.5 h-3.5" />
@@ -749,7 +747,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 <Dropdown
                   value={fieldFilter}
                   onChange={v => setFieldFilter(v as FieldOfStudy | 'All')}
-                  buttonClassName="flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+                  buttonClassName="flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded px-3 py-1.5 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   options={[{ value: 'All', label: 'All Fields' }, ...FIELDS_OF_STUDY.map(f => ({ value: f, label: f }))]}
                 />
 
@@ -757,14 +755,14 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                 <Dropdown
                   value={uniFilter}
                   onChange={v => setUniFilter(v)}
-                  buttonClassName="flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded-lg px-3 py-1.5 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
+                  buttonClassName="flex items-center justify-between gap-2 bg-stone-50 border border-brand-border rounded px-3 py-1.5 text-xs font-semibold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/20 focus:border-stone-400 transition"
                   options={[{ value: 'All', label: 'All Universities' }, ...UNIVERSITIES.map(u => ({ value: u, label: u }))]}
                 />
 
                 {/* Qualifying only toggle */}
                 <button
                   onClick={() => setShowOnlyQualifying(v => !v)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold border transition ${
                     showOnlyQualifying
                       ? 'bg-emerald-600 text-white border-emerald-600'
                       : 'bg-stone-50 text-stone-600 border-brand-border hover:border-stone-400'
@@ -785,7 +783,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
 
             {/* Degree cards */}
             {filteredDegrees.length === 0 ? (
-              <div className="card-premium bg-white rounded-[24px] border border-brand-border p-12 text-center">
+              <div className="paper-card rounded p-12 text-center">
                 <GraduationCap className="w-10 h-10 text-stone-200 mx-auto mb-3" />
                 <p className="text-sm font-semibold text-stone-500">No degrees match your filters</p>
                 <p className="text-xs text-stone-500 mt-1">Try adjusting the field or university filter</p>
@@ -804,7 +802,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             )}
 
             {/* Disclaimer */}
-            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-4 py-3">
               <Info className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
               <p className="text-xs text-amber-700 leading-relaxed">
                 <strong>Disclaimer:</strong> APS scores and subject requirements are indicative and may change each year.

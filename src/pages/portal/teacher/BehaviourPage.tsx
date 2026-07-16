@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Plus, Minus, X as XIcon, Trash2, AlertCircle, ListTree, Pencil, Check } from 'lucide-react';
+import { Search, Plus, Minus, X as XIcon, Trash2, AlertCircle, ListTree, Pencil, Check, Award } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherStudents } from '../../../lib/students';
 import { Shimmer } from '../../../shared/components/Shimmer';
@@ -170,7 +170,7 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
                         <motion.button
                           whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                           onClick={() => setAwardTarget(s)}
-                          className="text-xs font-black text-white bg-brand-dark px-4 py-2 rounded-xl hover:bg-brand-dark/90 transition-colors"
+                          className="text-xs font-black text-white bg-brand-dark px-4 py-2 rounded hover:bg-brand-dark/90 transition-colors"
                         >
                           Award
                         </motion.button>
@@ -294,7 +294,7 @@ function AwardModal({
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTypeChange('merit')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-black border transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded text-sm font-black border transition-colors ${
                 type === 'merit' ? 'bg-green-600 text-white border-green-600' : 'bg-stone-50 border-brand-border text-stone-500'
               }`}
             >
@@ -302,7 +302,7 @@ function AwardModal({
             </button>
             <button
               onClick={() => handleTypeChange('demerit')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-black border transition-colors ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded text-sm font-black border transition-colors ${
                 type === 'demerit' ? 'bg-red-600 text-white border-red-600' : 'bg-stone-50 border-brand-border text-stone-500'
               }`}
             >
@@ -316,7 +316,7 @@ function AwardModal({
               <button
                 key={c}
                 onClick={() => handleCategoryChange(c)}
-                className={`text-xs font-bold py-2.5 px-3 rounded-xl border text-left transition-colors ${
+                className={`text-xs font-bold py-2.5 px-3 rounded border text-left transition-colors ${
                   category === c
                     ? type === 'merit' ? 'bg-green-50 border-green-300 text-green-800' : 'bg-red-50 border-red-300 text-red-800'
                     : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
@@ -349,7 +349,7 @@ function AwardModal({
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
               placeholder="Enter a custom reason..."
-              className="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10 mb-4"
+              className="w-full px-4 py-3 rounded border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10 mb-4"
             />
           )}
 
@@ -358,7 +358,7 @@ function AwardModal({
             onChange={(e) => setNote(e.target.value)}
             placeholder="Optional extra detail..."
             rows={2}
-            className="w-full px-4 py-3 rounded-xl border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10 mb-4 resize-none"
+            className="w-full px-4 py-3 rounded border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10 mb-4 resize-none"
           />
 
           {error && (
@@ -369,12 +369,12 @@ function AwardModal({
           )}
 
           <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+            <button onClick={onClose} className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
               Cancel
             </button>
             <button
               onClick={handleSubmit} disabled={saving}
-              className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Award'}
             </button>
@@ -444,11 +444,15 @@ function TimelineModal({
                 <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
               </div>
             ) : entries.length === 0 ? (
-              <p className="text-sm text-stone-500 text-center py-8">No behaviour entries yet.</p>
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <Award className="w-9 h-9 text-stone-200 mb-3" />
+                <p className="text-sm font-bold text-stone-500">No behaviour entries yet.</p>
+                <p className="text-xs text-stone-400 mt-1">Merits and demerits you award will appear here.</p>
+              </div>
             ) : (
               <div className="space-y-2">
                 {entries.map((e) => (
-                  <div key={e.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-stone-50 border border-stone-100">
+                  <div key={e.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded bg-stone-50 border border-stone-100">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
@@ -582,7 +586,7 @@ function AllEntriesModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by student, category, reason, or teacher..."
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
+                className="w-full pl-10 pr-4 py-2.5 rounded border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
           </div>
@@ -604,7 +608,7 @@ function AllEntriesModal({
                       onSaved={(updates) => handleSaved(e.id, updates)}
                     />
                   ) : (
-                    <div key={e.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-stone-50 border border-stone-100">
+                    <div key={e.id} className="flex items-center justify-between gap-3 px-4 py-3 rounded bg-stone-50 border border-stone-100">
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
                           <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded ${
@@ -690,7 +694,7 @@ function EditEntryRow({
   };
 
   return (
-    <div className="px-4 py-3 rounded-xl bg-white border border-brand-dark/20 space-y-2.5">
+    <div className="px-4 py-3 rounded bg-white border border-brand-dark/20 space-y-2.5">
       <div className="flex items-center gap-2">
         <span className={`text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
           entry.type === 'merit' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'

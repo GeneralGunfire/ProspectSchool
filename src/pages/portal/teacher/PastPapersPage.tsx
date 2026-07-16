@@ -241,7 +241,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                   >
                     {/* Icon with memo dot */}
                     <div className="relative w-9 h-9 shrink-0">
-                      <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+                      <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                         <FileText className="w-4 h-4 text-stone-600" />
                       </div>
                       {p.memo_url && (
@@ -250,7 +250,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-stone-900">{p.title}</p>
+                      <p className="text-sm font-bold text-brand-dark">{p.title}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
                           Grade {p.grade}
@@ -281,7 +281,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       <button
                         onClick={() => handleOpen(p)}
                         disabled={downloading === p.id}
-                        className="p-2 rounded-xl hover:bg-stone-100 transition-colors text-stone-500 hover:text-stone-700 disabled:opacity-40"
+                        className="p-2 rounded hover:bg-stone-100 transition-colors text-stone-500 hover:text-stone-700 disabled:opacity-40"
                         title="Open question paper"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -290,7 +290,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                         <button
                           onClick={() => handleOpenMemo(p)}
                           disabled={memoLoading === p.id}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors disabled:opacity-40 bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           {memoLoading === p.id ? 'Opening…' : 'Memo'}
@@ -298,7 +298,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       )}
                       <button
                         onClick={() => setDeleteTarget(p)}
-                        className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"
+                        className="p-2 rounded hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -328,7 +328,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-stone-900">Upload Past Paper</h2>
+                <h2 className="text-base font-black text-brand-dark">Upload Past Paper</h2>
                 <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
@@ -343,7 +343,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Mathematics P1 Final Exam"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                   />
                 </div>
 
@@ -356,7 +356,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       onChange={v => setForm(f => ({ ...f, subject_id: v }))}
                       placeholder="Select…"
                       options={subjects.map(s => ({ value: String(s.id), label: s.label }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     />
                   </div>
                   <div>
@@ -366,7 +366,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       onChange={v => setForm(f => ({ ...f, grade: v }))}
                       placeholder="Select…"
                       options={GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     />
                   </div>
                 </div>
@@ -379,7 +379,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       value={form.year}
                       onChange={v => setForm(f => ({ ...f, year: v }))}
                       options={YEARS.map(y => ({ value: String(y), label: String(y) }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     />
                   </div>
                   <div>
@@ -388,7 +388,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       value={form.term || 'any'}
                       onChange={v => setForm(f => ({ ...f, term: v === 'any' ? '' : v }))}
                       options={[{ value: 'any', label: 'Any' }, ...TERMS.map(t => ({ value: String(t), label: `Term ${t}` }))]}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     />
                   </div>
                   <div>
@@ -397,7 +397,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                       value={form.paper_number}
                       onChange={v => setForm(f => ({ ...f, paper_number: v }))}
                       options={[1, 2, 3].map(n => ({ value: String(n), label: `Paper ${n}` }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                     />
                   </div>
                 </div>
@@ -406,7 +406,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 <div>
                   <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">File *</label>
                   {file ? (
-                    <div className="flex items-center gap-2 p-3 bg-stone-50 rounded-xl border border-brand-border">
+                    <div className="flex items-center gap-2 p-3 bg-stone-50 rounded border border-brand-border">
                       <Paperclip className="w-4 h-4 text-stone-500 shrink-0" />
                       <span className="text-sm font-bold text-stone-700 flex-1 truncate">{file.name}</span>
                       <button
@@ -419,7 +419,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                   ) : (
                     <button
                       onClick={() => fileRef.current?.click()}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-brand-border text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded border-2 border-dashed border-brand-border text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" /> Attach PDF or image
                     </button>
@@ -440,7 +440,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     <span className="ml-2 text-stone-400 normal-case font-medium tracking-normal">(optional)</span>
                   </p>
                   {memoFile ? (
-                    <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                    <div className="flex items-center gap-3 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                       <span className="text-sm font-bold text-emerald-700 flex-1 min-w-0 truncate">{memoFile.name}</span>
                       <button
@@ -455,7 +455,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     <button
                       type="button"
                       onClick={() => memoFileRef.current?.click()}
-                      className="w-full flex items-center gap-3 px-4 py-3 border-2 border-dashed border-brand-border rounded-xl text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-3 border-2 border-dashed border-brand-border rounded text-sm font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
                     >
                       <Paperclip className="w-4 h-4" />
                       Attach memo (PDF or Word)
@@ -476,14 +476,14 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button
                   onClick={closeModal}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Uploading…' : 'Upload'}
                 </button>
@@ -508,7 +508,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
               onClick={e => e.stopPropagation()}
             >
-              <h2 className="text-base font-black text-stone-900 mb-1">Delete paper?</h2>
+              <h2 className="text-base font-black text-brand-dark mb-1">Delete paper?</h2>
               <p className="text-sm text-stone-500 mb-5">
                 <strong>{deleteTarget.title}</strong> will be permanently removed.
                 {deleteTarget.memo_url && (
@@ -518,14 +518,14 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
               <div className="flex gap-2">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>

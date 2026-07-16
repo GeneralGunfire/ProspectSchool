@@ -28,11 +28,14 @@ interface MyFuturePageProps {
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-function Eyebrow({ children }: { children: React.ReactNode }) {
+function Eyebrow({ children, icon: Icon }: { children: React.ReactNode; icon?: LucideIcon }) {
   return (
-    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500 mb-3">
-      {children}
-    </p>
+    <div className="flex items-center gap-2 mb-3">
+      {Icon && <Icon className="w-3.5 h-3.5 text-stone-500" />}
+      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500">
+        {children}
+      </p>
+    </div>
   );
 }
 
@@ -250,7 +253,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             <div className="px-5 pt-5 pb-2">
               <button
                 onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500 hover:text-stone-900 transition-colors"
+                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500 hover:text-brand-dark transition-colors"
               >
                 <ChevronLeft className="w-3.5 h-3.5" /> My Future
               </button>
@@ -331,7 +334,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Goals</p>
               <button
                 onClick={handleEditGoals}
-                className="text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors uppercase tracking-widest"
+                className="text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors uppercase tracking-widest"
               >
                 {goals.targetAps || goals.targetCareer ? 'Edit' : 'Set Goals'}
               </button>
@@ -344,7 +347,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             ) : (
               <div className="flex flex-wrap gap-3 mt-3">
                 {goals.targetAps && (
-                  <div className="flex items-center gap-2 bg-violet-50 border border-violet-100 rounded-xl px-4 py-2.5">
+                  <div className="flex items-center gap-2 bg-violet-50 border border-violet-100 rounded px-4 py-2.5">
                     <GraduationCap className="w-4 h-4 text-violet-500 shrink-0" />
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Target APS</p>
@@ -361,7 +364,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   </div>
                 )}
                 {goals.targetCareer && (
-                  <div className="flex items-center gap-2 bg-stone-50 border border-brand-border rounded-xl px-4 py-2.5">
+                  <div className="flex items-center gap-2 bg-stone-50 border border-brand-border rounded px-4 py-2.5">
                     <Briefcase className="w-4 h-4 text-stone-500 shrink-0" />
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Target Career</p>
@@ -390,7 +393,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                     value={draftAps}
                     onChange={e => setDraftAps(e.target.value)}
                     placeholder="e.g. 35"
-                    className="w-24 text-center font-black text-lg rounded-xl border border-brand-border py-2.5 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
+                    className="w-24 text-center font-black text-lg rounded border border-brand-border py-2.5 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
                   />
                   <div className="flex gap-2">
                     {[28, 32, 36, 40].map(n => (
@@ -419,7 +422,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   value={draftCareer}
                   onChange={e => setDraftCareer(e.target.value)}
                   placeholder="e.g. Civil Engineer, Teacher, Nurse"
-                  className="w-full rounded-xl border border-brand-border px-4 py-2.5 text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
+                  className="w-full rounded border border-brand-border px-4 py-2.5 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:border-stone-400 focus:ring-2 focus:ring-brand-dark/10 bg-stone-50"
                 />
                 {/* Quick picks from quiz results if available */}
                 {quizResults && quizResults.topCareerMatches.length > 0 && (
@@ -441,13 +444,13 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             <div className="flex gap-2 mt-5">
               <button
                 onClick={handleSaveGoals}
-                className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                className="flex-1 py-2.5 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
               >
                 Save Goals
               </button>
               <button
                 onClick={() => setEditingGoals(false)}
-                className="px-4 py-2.5 rounded-xl border border-brand-border text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
+                className="px-4 py-2.5 rounded border border-brand-border text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
               >
                 Cancel
               </button>
@@ -458,7 +461,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 2: Explore — free features with backend ─────────────────── */}
       <Section delay={0.04}>
-        <Eyebrow>Explore</Eyebrow>
+        <Eyebrow icon={Sparkles}>Explore</Eyebrow>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
           {/* Career Quiz */}
@@ -467,12 +470,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                 <Sparkles className="w-4.5 h-4.5 text-stone-700" />
               </div>
               <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
-            <p className="font-black text-stone-900 text-sm mb-0.5">Career Quiz</p>
+            <p className="font-black text-brand-dark text-sm mb-0.5">Career Quiz</p>
             <p className="text-xs text-stone-500 leading-snug">
               {quizResults
                 ? `${quizResults.topCodes[0]}+${quizResults.topCodes[1]} profile · ${quizResults.topCareerMatches[0]?.title ?? 'View matches'}`
@@ -486,12 +489,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                 <Briefcase className="w-4.5 h-4.5 text-stone-700" />
               </div>
               <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
-            <p className="font-black text-stone-900 text-sm mb-0.5">Career Browser</p>
+            <p className="font-black text-brand-dark text-sm mb-0.5">Career Browser</p>
             <p className="text-xs text-stone-500 leading-snug">
               {quizResults
                 ? `${quizResults.topCareerMatches.length} career matches found`
@@ -505,12 +508,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                 <Award className="w-4.5 h-4.5 text-stone-700" />
               </div>
               <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
-            <p className="font-black text-stone-900 text-sm mb-0.5">Bursary Finder</p>
+            <p className="font-black text-brand-dark text-sm mb-0.5">Bursary Finder</p>
             <p className="text-xs text-stone-500 leading-snug">
               {savedBursaries.length > 0
                 ? `${savedBursaries.length} saved · Browse 245+ bursaries`
@@ -524,12 +527,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
             <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
+              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
                 <GraduationCap className="w-4.5 h-4.5 text-stone-700" />
               </div>
               <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
             </div>
-            <p className="font-black text-stone-900 text-sm mb-0.5">APS Calculator</p>
+            <p className="font-black text-brand-dark text-sm mb-0.5">APS Calculator</p>
             <p className="text-xs text-stone-500 leading-snug">
               {apsData
                 ? `Your APS: ${apsData.aps} · ${qualifyingDegrees.length} programmes unlocked`
@@ -542,11 +545,11 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 3: Career Matches ────────────────────────────────────────── */}
       <Section delay={0.1}>
-        <Eyebrow>Your Career Matches</Eyebrow>
+        <Eyebrow icon={Briefcase}>Your Career Matches</Eyebrow>
 
         {quizResults ? (
           <>
-            <h2 className="font-black text-stone-900 mb-1" style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)' }}>
+            <h2 className="font-black text-brand-dark mb-1" style={{ fontSize: 'clamp(1.15rem, 2vw, 1.5rem)' }}>
               Based on your {quizResults.topCodes[0]} + {quizResults.topCodes[1]} profile
             </h2>
             <p className="text-stone-500 text-sm mb-5 max-w-2xl leading-relaxed">
@@ -561,12 +564,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   transition={{ delay: 0.1 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
                   className="paper-card rounded px-5 py-4 flex items-center gap-4"
                 >
-                  <div className="shrink-0 bg-brand-dark text-white rounded-xl px-3 py-1.5 text-center min-w-16">
+                  <div className="shrink-0 bg-brand-dark text-white rounded px-3 py-1.5 text-center min-w-16">
                     <p className="font-black text-sm leading-none">{career.compatibilityScore}%</p>
                     <p className="text-white/50 text-[9px] uppercase tracking-wider mt-0.5">match</p>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-black text-stone-900 text-sm leading-tight truncate">{career.title}</p>
+                    <p className="font-black text-brand-dark text-sm leading-tight truncate">{career.title}</p>
                     <p className="text-xs text-stone-500 mt-0.5 truncate">{career.category}</p>
                     <span className="inline-block mt-1.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
                       {career.educationPath}
@@ -583,7 +586,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             </div>
             <button
               onClick={() => handleSubNavigate('careers')}
-              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-brand-dark transition-colors"
             >
               Browse all careers <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -600,12 +603,12 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 4: APS & University Readiness ───────────────────────────── */}
       <Section delay={0.16}>
-        <Eyebrow>APS &amp; University Readiness</Eyebrow>
+        <Eyebrow icon={GraduationCap}>APS &amp; University Readiness</Eyebrow>
 
         {apsData ? (
           <div className="paper-card rounded px-6 py-5">
             <div className="flex items-end gap-3 mb-5">
-              <span className="font-black text-stone-900 leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
+              <span className="font-black text-brand-dark leading-none" style={{ fontSize: 'clamp(2rem, 5vw, 3rem)' }}>
                 {apsData.aps}
               </span>
               <span className="text-stone-500 text-sm font-bold mb-1.5">APS Score</span>
@@ -639,7 +642,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             )}
             <button
               onClick={() => handleSubNavigate('aps')}
-              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-stone-900 transition-colors"
+              className="mt-4 flex items-center gap-1.5 text-xs font-bold text-stone-500 hover:text-brand-dark transition-colors"
             >
               Open APS Calculator <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -656,7 +659,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 5: Study Progress ────────────────────────────────────────── */}
       <Section delay={0.22}>
-        <Eyebrow>Study Progress</Eyebrow>
+        <Eyebrow icon={BookOpen}>Study Progress</Eyebrow>
 
         {progress.length === 0 ? (
           <div className="paper-card rounded px-6 py-6 text-center">
@@ -665,7 +668,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             </p>
             <button
               onClick={() => onNavigate('library')}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark text-white text-sm font-bold rounded-xl hover:bg-brand-dark/90 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark text-white text-sm font-bold rounded hover:bg-brand-dark/90 transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               Open Library
@@ -675,7 +678,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           <>
             <div className="grid grid-cols-3 gap-3 mb-5">
               {[
-                { label: 'Started',        value: topicsStarted,      color: 'text-stone-900' },
+                { label: 'Started',        value: topicsStarted,      color: 'text-brand-dark' },
                 { label: 'Mastered',       value: topicsMastered,     color: 'text-emerald-600' },
                 { label: 'Needs Practice', value: topicsNeedPractice, color: 'text-amber-600' },
               ].map(stat => (
@@ -711,7 +714,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 6: Saved Bursaries ───────────────────────────────────────── */}
       <Section delay={0.28}>
-        <Eyebrow>Saved Bursaries</Eyebrow>
+        <Eyebrow icon={Award}>Saved Bursaries</Eyebrow>
 
         {savedBursaries.length > 0 ? (
           <div className="paper-card rounded">
@@ -719,7 +722,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
               {savedBursaries.slice(0, 3).map(b => (
                 <div key={b.id} className="flex items-center gap-4 px-5 py-3.5">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-stone-900 truncate">{b.name}</p>
+                    <p className="text-sm font-black text-brand-dark truncate">{b.name}</p>
                     <p className="text-xs text-stone-500 truncate">{b.provider}</p>
                   </div>
                   <span className="shrink-0 text-[10px] font-bold px-2 py-1 rounded-full bg-stone-100 text-stone-600 uppercase tracking-wide">
@@ -731,7 +734,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             <div className="px-5 py-3 border-t border-brand-border/60">
               <button
                 onClick={() => handleSubNavigate('bursaries')}
-                className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors"
+                className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-brand-dark transition-colors"
               >
                 <TrendingUp className="w-3.5 h-3.5" />
                 View all bursaries →
@@ -744,7 +747,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
               No bursaries saved yet.{' '}
               <button
                 onClick={() => handleSubNavigate('bursaries')}
-                className="text-stone-700 font-bold hover:text-stone-900 underline underline-offset-2 transition-colors"
+                className="text-stone-700 font-bold hover:text-brand-dark underline underline-offset-2 transition-colors"
               >
                 Browse bursaries
               </button>{' '}
@@ -756,7 +759,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
       {/* ── Section 7: Academic Journey Milestones ───────────────────────────── */}
       <Section delay={0.34}>
-        <Eyebrow>Academic Journey</Eyebrow>
+        <Eyebrow icon={TrendingUp}>Academic Journey</Eyebrow>
         <div className="paper-card rounded overflow-hidden">
 
           {/* Learner status header */}
@@ -765,7 +768,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Overall Status</p>
               <p className={`font-black text-xl leading-none ${learnerStatus.color}`}>{learnerStatus.label}</p>
             </div>
-            <div className={`rounded-xl px-4 py-2 text-center border ${learnerStatus.border} bg-white`}>
+            <div className={`rounded px-4 py-2 text-center border ${learnerStatus.border} bg-white`}>
               <p className={`font-black text-2xl leading-none ${learnerStatus.color}`}>{learnerStatus.score}</p>
               <p className="text-[10px] font-bold text-stone-500 mt-0.5">/ 100</p>
             </div>
@@ -787,7 +790,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-bold truncate ${m.achieved ? 'text-stone-900' : 'text-stone-500'}`}>
+                  <p className={`text-sm font-bold truncate ${m.achieved ? 'text-brand-dark' : 'text-stone-500'}`}>
                     {m.label}
                   </p>
                   {m.achieved && m.detail && (
@@ -828,7 +831,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       {/* ── Section 8: Growth Timeline ───────────────────────────────────────── */}
       {growthTimeline.length > 0 && (
         <Section delay={0.35}>
-          <Eyebrow>Academic Journey</Eyebrow>
+          <Eyebrow icon={TrendingUp}>Academic Journey</Eyebrow>
           <div className="paper-card rounded overflow-hidden">
             <div className="px-5 pt-4 pb-2">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Your Story So Far</p>
@@ -850,7 +853,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                         <div className={`w-3.5 h-3.5 rounded-full shrink-0 mt-0.5 z-10 border-2 border-white ${dotColor}`} />
                         <div className="flex-1 min-w-0 pb-1">
                           <div className="flex items-baseline justify-between gap-2">
-                            <p className="text-xs font-black text-stone-900">{evt.label}</p>
+                            <p className="text-xs font-black text-brand-dark">{evt.label}</p>
                             <p className="text-[10px] font-bold text-stone-400 shrink-0">{date}</p>
                           </div>
                           <p className="text-[11px] text-stone-500 mt-0.5">{evt.detail}</p>

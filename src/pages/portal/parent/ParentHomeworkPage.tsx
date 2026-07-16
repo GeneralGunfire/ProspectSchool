@@ -60,6 +60,8 @@ export default function ParentHomeworkPage({ session, child }: ParentHomeworkPag
   const today = new Date().toISOString().slice(0, 10);
   const upcoming = events.filter((e) => e.event_date >= today);
   const past = events.filter((e) => e.event_date < today);
+  const pastDone = past.filter((e) => completed.has(e.id)).length;
+  const pastCompletionPct = past.length > 0 ? Math.round((pastDone / past.length) * 100) : null;
 
   const Row = ({ e }: { e: SchoolEvent }) => {
     const isDone = completed.has(e.id);
@@ -136,20 +138,42 @@ export default function ParentHomeworkPage({ session, child }: ParentHomeworkPag
           </div>
         ) : (
           <div className="space-y-5">
-            {upcoming.length > 0 && (
+            {pastCompletionPct !== null && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+                className="paper-card rounded p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-1">Completion Rate</p>
+                    <p className={`text-2xl font-black ${pastCompletionPct >= 80 ? 'text-emerald-600' : pastCompletionPct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                      {pastCompletionPct}%
+                    </p>
+                  </div>
+                  <p className="text-xs text-stone-500">{pastDone} of {past.length} past homework marked done</p>
+                </div>
+                <div className="h-1.5 rounded-full overflow-hidden mt-3" style={{ background: 'var(--color-paper-raise)' }}>
+                  <motion.div
+                    initial={{ width: 0 }} animate={{ width: `${pastCompletionPct}%` }} transition={{ duration: 0.9, ease }}
+                    className={`h-full rounded-full ${pastCompletionPct >= 80 ? 'bg-emerald-500' : pastCompletionPct >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
+                  />
+                </div>
+              </motion.div>
+            )}
+            {upcoming.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.06 }}
                 className="paper-card rounded overflow-hidden">
-                <div className="px-5 py-3" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+                <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
                   <h2 className="text-[15px] font-semibold text-brand-dark">Upcoming & Today</h2>
+                  <span className="text-[11px] font-bold text-stone-400">{upcoming.length}</span>
                 </div>
                 {upcoming.map((e) => <Row key={e.id} e={e} />)}
               </motion.div>
             )}
             {past.length > 0 && (
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.1 }}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.12 }}
                 className="paper-card rounded overflow-hidden">
-                <div className="px-5 py-3" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+                <div className="px-5 py-3 flex items-center justify-between" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
                   <h2 className="text-[15px] font-semibold text-brand-dark">Past</h2>
+                  <span className="text-[11px] font-bold text-stone-400">{past.length}</span>
                 </div>
                 {past.map((e) => <Row key={e.id} e={e} />)}
               </motion.div>

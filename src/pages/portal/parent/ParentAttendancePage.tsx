@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Check, Clock, X as XIcon, Thermometer, CalendarOff } from 'lucide-react';
+import { Check, Clock, X as XIcon, Thermometer, CalendarOff, CalendarX2 } from 'lucide-react';
 import { fetchStudentAttendanceHistory, type AttendanceRecord, type AttendanceStatus } from '../../../lib/homeroom';
 import type { ParentChild } from '../../../lib/parents';
 import { Shimmer } from '../../../shared/components/Shimmer';
@@ -34,6 +34,15 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
 
   const formatDate = (d: string) =>
     new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
+
+  const counts = (['present', 'late', 'absent', 'excused'] as const).map(status => ({
+    status,
+    count: history.filter(r => r.status === status).length,
+  }));
+  const schoolDays = history.filter(r => r.status !== 'non_school_day').length;
+  const presentPct = schoolDays > 0
+    ? Math.round((history.filter(r => r.status === 'present' || r.status === 'late').length / schoolDays) * 100)
+    : null;
 
   return (
     <div className="student-home min-h-full pb-16">
@@ -78,7 +87,26 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
             </div>
           </div>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+          <>
+            {presentPct !== null && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
+                className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <div className="paper-card rounded p-4 text-center">
+                  <p className={`text-xl font-black ${presentPct >= 90 ? 'text-emerald-600' : presentPct >= 75 ? 'text-amber-600' : 'text-red-500'}`}>{presentPct}%</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mt-1">Present Rate</p>
+                </div>
+                {counts.map(({ status, count }) => {
+                  const cfg = STATUS_CONFIG[status];
+                  return (
+                    <div key={status} className="paper-card rounded p-4 text-center">
+                      <p className={`text-xl font-black ${count === 0 ? 'text-stone-300' : 'text-brand-dark'}`}>{count}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400 mt-1">{cfg.label}</p>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            )}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.06 }}
             className="paper-card rounded overflow-hidden">
             <div className="px-6 py-4" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
               <h2 className="text-[16px] font-semibold text-brand-dark">History</h2>
@@ -86,7 +114,8 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
             </div>
 
             {history.length === 0 ? (
-              <div className="p-12 text-center">
+              <div className="p-12 flex flex-col items-center text-center">
+                <CalendarX2 className="w-9 h-9 text-stone-200 mb-4" />
                 <p className="text-[16px] font-semibold text-brand-dark mb-1">No attendance recorded yet</p>
                 <p className="text-[13px] text-stone-500">The homeroom teacher marks attendance each school day.</p>
               </div>
@@ -100,7 +129,7 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
                       <tr key={record.date} style={i === history.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
                         <td className="px-6 py-3.5 font-semibold text-brand-dark">{formatDate(record.date)}</td>
                         <td className="px-6 py-3.5">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-lg ${className}`}>
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-black rounded-full ${className}`}>
                             <Icon className="w-3 h-3" /> {label}
                           </span>
                         </td>
@@ -113,6 +142,7 @@ export default function ParentAttendancePage({ child }: ParentAttendancePageProp
               </div>
             )}
           </motion.div>
+          </>
         )}
       </div>
     </div>

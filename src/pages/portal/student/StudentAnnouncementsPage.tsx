@@ -143,9 +143,9 @@ export default function StudentAnnouncementsPage({ session }: StudentAnnouncemen
             </div>
 
             {unreadCount > 0 && (
-              <div className="shrink-0 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 text-center hidden sm:block">
-                <p className="font-black text-2xl leading-none text-white">{unreadCount}</p>
-                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50 mt-1">Unread</p>
+              <div className="shrink-0 border border-white/15 bg-white/[0.06] rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center">
+                <p className="font-black text-base sm:text-2xl leading-none text-white">{unreadCount}</p>
+                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50 mt-1">Unread</p>
               </div>
             )}
           </motion.div>

@@ -128,13 +128,13 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
         </div>
       ) : cohorts.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Users className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500 mb-6">Create your first class to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
             Add Class <Plus className="w-4 h-4" />
           </button>
         </div>
@@ -163,7 +163,7 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
                     onChange={(v) => handleAssign(c, v === 'none' ? '' : v)}
                     disabled={savingId === c.id}
                     className="flex-1"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
                     options={[
                       { value: 'none', label: '— None —' },
                       ...teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` })),
@@ -195,14 +195,14 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col">
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
                   <h2 className="text-lg font-black text-brand-dark">Add Class</h2>
-                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 <form id="class-form" onSubmit={handleCreate} className="px-6 py-4 space-y-4">
                   {createError && (
-                    <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                       <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                       <p className="text-red-700 text-sm">{createError}</p>
                     </div>
@@ -211,7 +211,7 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Class Name</label>
                     <input required type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                       placeholder="e.g. 10A" />
                   </div>
 
@@ -220,7 +220,7 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
                     <Dropdown
                       value={String(newGrade)}
                       onChange={(v) => setNewGrade(Number(v))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                       options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
                     />
                   </div>
@@ -228,11 +228,11 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
                   <button type="button" onClick={() => setShowAdd(false)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="class-form" disabled={creating}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {creating
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Create Class'

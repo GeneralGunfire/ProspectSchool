@@ -144,7 +144,8 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
               </div>
 
               {history.length === 0 ? (
-                <div className="p-12 text-center">
+                <div className="p-12 flex flex-col items-center text-center">
+                  <CalendarOff className="w-9 h-9 text-stone-200 mb-4" />
                   <p className="text-[16px] font-semibold text-brand-dark mb-1">No attendance recorded yet</p>
                   <p className="text-[13px] text-stone-500">Your homeroom teacher marks attendance each school day.</p>
                 </div>

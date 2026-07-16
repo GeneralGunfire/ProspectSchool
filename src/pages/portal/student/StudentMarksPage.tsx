@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb } from 'lucide-react';
+import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb, AlertTriangle, Target } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
@@ -98,7 +98,7 @@ function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-brand-dark text-white text-xs font-bold px-3 py-2 rounded-xl shadow-xl">
+    <div className="bg-brand-dark text-white text-xs font-bold px-3 py-2 rounded shadow-xl">
       <p className="font-black">{d.fullTitle}</p>
       <p className="text-white/70 mt-0.5">{d.mark}/{d.total} — {d.pct}%</p>
     </div>
@@ -365,9 +365,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     <span className="text-[10px] font-black text-white leading-none">{Math.round(overallAvg)}%</span>
                   </div>
                 </div>
-                <div className="hidden sm:block">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Overall</p>
-                  <p className="text-[12px] font-bold text-white">{markedResults.length} tracked</p>
+                <div>
+                  <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Overall</p>
+                  <p className="text-[11px] sm:text-[12px] font-bold text-white whitespace-nowrap">{markedResults.length} tracked</p>
                 </div>
               </div>
             )}
@@ -418,17 +418,17 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.05 }}
               className="mb-5"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Subject Risk</p>
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="w-3.5 h-3.5 text-stone-500" />
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Subject Risk</p>
+              </div>
               <div className="space-y-2">
                 {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
-                  <div key={risk.subject} className={`rounded border p-4 ${
-                    risk.risk === 'high'
-                      ? 'bg-red-50 border-red-200'
-                      : 'bg-amber-50 border-amber-200'
-                  }`}>
+                  <div key={risk.subject} className="paper-card rounded p-4"
+                    style={{ borderLeft: `3px solid ${risk.risk === 'high' ? '#ef4444' : '#f59e0b'}` }}>
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-black text-stone-900 text-sm">{risk.subject}</p>
+                        <p className="font-black text-brand-dark text-sm">{risk.subject}</p>
                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
                           risk.risk === 'high'
                             ? 'bg-red-100 text-red-700 border-red-200'
@@ -458,11 +458,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => onNavigate('pastpapers')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
                         Practice Papers
                       </button>
                       <button onClick={() => onNavigate('library')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-brand-border text-stone-700 text-[11px] font-black hover:bg-stone-50 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded border border-brand-border text-stone-700 text-[11px] font-black hover:bg-brand-border transition-colors"
+                        style={{ background: 'var(--color-paper-raise)' }}>
                         Open Library
                       </button>
                     </div>
@@ -506,20 +507,23 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 transition={{ delay: 0.1 }}
                 className="paper-card rounded p-5 mb-5"
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Performance Journey</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Performance Journey</p>
+                </div>
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                  <div className="flex-1 text-center bg-stone-50 rounded p-3">
                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Early</p>
                     <p className="font-black text-stone-700 text-xl">{startAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`font-black text-2xl ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                     {change >= 0 ? '↑' : '↓'}
                   </div>
-                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                  <div className="flex-1 text-center bg-stone-50 rounded p-3">
                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Recent</p>
-                    <p className="font-black text-stone-900 text-xl">{currentAvg.toFixed(0)}%</p>
+                    <p className="font-black text-brand-dark text-xl">{currentAvg.toFixed(0)}%</p>
                   </div>
-                  <div className={`flex-1 text-center rounded-xl p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                  <div className={`flex-1 text-center rounded p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
                     <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500">Change</p>
                     <p className={`font-black text-xl ${change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                       {change >= 0 ? '+' : ''}{change.toFixed(1)}%
@@ -557,9 +561,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.15 }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
-                Recommended Actions
-              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="w-3.5 h-3.5 text-stone-500" />
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">
+                  Recommended Actions
+                </p>
+              </div>
               <div className="space-y-3">
                 {actionItems.map((item, i) => (
                   <div key={i} className="paper-card rounded overflow-hidden">
@@ -569,7 +576,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       </p>
                       {item.subject && item.avg !== undefined && (
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <p className="font-black text-stone-900 text-base">{item.subject}</p>
+                          <p className="font-black text-brand-dark text-base">{item.subject}</p>
                           <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
                             item.avg >= 70 ? 'bg-emerald-50 text-emerald-700' :
                             item.avg >= 50 ? 'bg-amber-50 text-amber-700' :
@@ -595,7 +602,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         <button
                           key={j}
                           onClick={() => onNavigate(action.page)}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors ${
                             j === 0
                               ? 'bg-brand-dark text-white hover:bg-stone-700'
                               : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-brand-border'
@@ -618,14 +625,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             const worst = valid[valid.length - 1];
             return best.subject !== worst.subject ? (
               <div className="grid grid-cols-2 gap-3 mb-6 sm:gap-4">
-                <div className="bg-emerald-50 border border-emerald-100 rounded p-4">
+                <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #10b981' }}>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
-                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{best.subject}</p>
+                  <p className="font-black text-brand-dark text-sm leading-tight truncate">{best.subject}</p>
                   <p className="text-emerald-600 font-black text-2xl mt-1">{best.avg.toFixed(0)}%</p>
                 </div>
-                <div className="bg-amber-50 border border-amber-100 rounded p-4">
+                <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #f59e0b' }}>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
-                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{worst.subject}</p>
+                  <p className="font-black text-brand-dark text-sm leading-tight truncate">{worst.subject}</p>
                   <p className="text-amber-600 font-black text-2xl mt-1">{worst.avg.toFixed(0)}%</p>
                 </div>
               </div>
@@ -739,7 +746,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-black text-stone-900 leading-snug">{subject}</p>
+                        <p className="text-sm font-black text-brand-dark leading-snug">{subject}</p>
                         {subjectHealthScores.has(subject) && (() => {
                           const h = subjectHealthScores.get(subject)!;
                           return (
@@ -755,7 +762,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       </p>
                     </div>
                     {trend !== null && (
-                      <div className={`shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded-xl ${
+                      <div className={`shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded ${
                         trendUp   ? 'bg-emerald-50' :
                         trendDown ? 'bg-red-50'      :
                                     'bg-stone-100'
@@ -834,9 +841,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 })(),
                               },
                             ].map(stat => (
-                              <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-2.5 text-center">
+                              <div key={stat.label} className="bg-stone-50 rounded px-3 py-2.5 text-center">
                                 <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">{stat.label}</p>
-                                <p className="font-black text-stone-900 text-sm">{stat.value}</p>
+                                <p className="font-black text-brand-dark text-sm">{stat.value}</p>
                               </div>
                             ))}
                           </div>
@@ -845,7 +852,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {termFinals.length > 0 && (
                             <div className="px-5 pb-3 flex flex-wrap gap-2">
                               {termFinals.map(t => (
-                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold ${
                                   t.isComplete
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
                                     : 'bg-stone-50 text-stone-500 border-brand-border/60'
@@ -865,22 +872,22 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (
                             <div className="px-5 pt-4 pb-3 flex flex-wrap gap-2">
                               {highestMark !== null && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
                                   <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Best</span>
-                                  <span className="text-xs font-black text-stone-900">{highestMark}%</span>
+                                  <span className="text-xs font-black text-brand-dark">{highestMark}%</span>
                                 </div>
                               )}
                               {bestImprove !== null && (
-                                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
                                   <TrendingUp className="w-3 h-3 text-emerald-500" />
                                   <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Best jump</span>
                                   <span className="text-xs font-black text-emerald-700">+{bestImprove}%</span>
                                 </div>
                               )}
                               {markedItems.length > 0 && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
                                   <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Completed</span>
-                                  <span className="text-xs font-black text-stone-900">{markedItems.length}</span>
+                                  <span className="text-xs font-black text-brand-dark">{markedItems.length}</span>
                                 </div>
                               )}
                               {(() => {
@@ -892,7 +899,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 const imp = key ? subjectImpact.get(key) : undefined;
                                 if (!imp || imp.completed === 0) return null;
                                 return (
-                                  <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                  <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
                                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">
                                       {imp.completed} recommendation{imp.completed !== 1 ? 's' : ''} completed
                                     </span>
@@ -944,7 +951,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                               : avg >= 50 ? 'bg-amber-50 text-amber-700 border-amber-100'
                                               :             'bg-red-50 text-red-700 border-red-100';
                                   return (
-                                    <div key={type} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${color}`}>
+                                    <div key={type} className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold ${color}`}>
                                       <span className="font-black">{type}</span>
                                       <span className="opacity-50">·</span>
                                       <span>{avg}%</span>
@@ -1002,7 +1009,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
                             <div className="mx-5 mb-4 bg-stone-50 rounded p-4 border border-brand-border/60">
                               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Focus Area</p>
-                              <p className="text-sm font-bold text-stone-900 mb-1">
+                              <p className="text-sm font-bold text-brand-dark mb-1">
                                 Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
                               </p>
                               <p className="text-xs text-stone-500 leading-relaxed">
@@ -1080,9 +1087,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                   const projected = projectedAvg(mark);
                                   const diff = projected - subjectAvg;
                                   return (
-                                    <div key={mark} className="bg-stone-50 rounded-xl p-3 text-center border border-brand-border/60">
+                                    <div key={mark} className="bg-stone-50 rounded p-3 text-center border border-brand-border/60">
                                       <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-1">{mark}%</p>
-                                      <p className="font-black text-stone-900 text-lg leading-none">{projected.toFixed(1)}%</p>
+                                      <p className="font-black text-brand-dark text-lg leading-none">{projected.toFixed(1)}%</p>
                                       <p className={`text-[10px] font-bold mt-1 ${diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                         {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
                                       </p>
@@ -1138,9 +1145,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                           p >= 70   ? 'bg-blue-500' :
                                           p >= 50   ? 'bg-amber-500' : 'bg-red-500'
                                         }`} />
-                                        <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors">
+                                        <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded px-2 py-1 -mx-2 -my-1 transition-colors">
                                           <div className="min-w-0">
-                                            <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
+                                            <p className="text-sm font-bold text-brand-dark truncate">{r.sheet_title}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                               {r.sheet_scope && (
                                                 <span className="text-[10px] font-bold text-stone-500">{r.sheet_scope}</span>
@@ -1158,7 +1165,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                           <div className="shrink-0 text-right">
                                             {r.mark !== null ? (
                                               <>
-                                                <p className="text-base font-black text-stone-900 leading-none">
+                                                <p className="text-base font-black text-brand-dark leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
                                                   {r.mark}<span className="text-xs font-bold text-stone-500">/{r.total}</span>
                                                 </p>
                                                 <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${g.bg} ${g.color}`}>
@@ -1239,7 +1246,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                         {r.subject_label} · {r.sheet_scope ?? 'Assessment'}
                       </p>
-                      <h2 className="font-black text-stone-900 text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
+                      <h2 className="font-black text-brand-dark text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
                         {r.sheet_title}
                       </h2>
                       {r.marked_at && (
@@ -1307,7 +1314,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         })}
                         {p !== null && (
                           <div className="flex-1 flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-black text-stone-900">{p}%</span>
+                            <span className="text-[10px] font-black text-brand-dark">{p}%</span>
                             <div className="w-full rounded-t-sm border-2 border-brand-dark" style={{
                               height: `${Math.max(8, p * 0.5)}px`,
                               background: barColor(p),

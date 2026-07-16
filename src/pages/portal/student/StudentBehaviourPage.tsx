@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Award } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import type { StudentSession } from '../../../lib/auth';
 import { fetchStudentBehaviour, type BehaviourEntry } from '../../../lib/behaviour';
@@ -119,7 +119,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                 transition={{ duration: 0.45, ease, delay: 0.1 }}
                 className="paper-card rounded p-4 text-center"
               >
-                <p className="text-[22px] font-black text-red-700">{demeritPoints}</p>
+                <p className={`text-[22px] font-black ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-1">Demerits</p>
               </motion.div>
               <motion.div
@@ -150,7 +150,8 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
               </div>
 
               {entries.length === 0 ? (
-                <div className="p-12 text-center">
+                <div className="p-12 flex flex-col items-center text-center">
+                  <Award className="w-9 h-9 text-stone-200 mb-4" />
                   <p className="text-[16px] font-semibold text-brand-dark mb-1">No entries yet</p>
                   <p className="text-[13px] text-stone-500">Merits and demerits from your teachers will appear here.</p>
                 </div>

@@ -422,7 +422,7 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search students…"
-              className="flex-1 px-4 py-2.5 rounded-xl border border-brand-border bg-white text-sm font-medium text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-accent/30 transition-all"
+              className="flex-1 px-4 py-2.5 rounded border border-brand-border bg-white text-sm font-medium text-brand-dark placeholder:text-stone-500 focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-accent/30 transition-all"
             />
             <div className="flex gap-1.5 flex-wrap">
               {([
@@ -457,7 +457,7 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.025, ease: [0.23, 1, 0.32, 1] }}
                 onClick={() => selectStudent(student)}
-                className="group bg-white rounded-xl border border-brand-border px-4 py-3 flex items-center gap-4 hover:border-stone-300 hover:shadow-sm cursor-pointer transition-all"
+                className="group bg-white rounded border border-brand-border px-4 py-3 flex items-center gap-4 hover:border-stone-300 hover:shadow-sm cursor-pointer transition-all"
               >
                 {/* Avatar */}
                 <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center shrink-0">
@@ -466,7 +466,7 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
 
                 {/* Name */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-stone-900 truncate">
+                  <p className="text-sm font-black text-brand-dark truncate">
                     {student.student_surname}, {student.student_name}
                   </p>
                   <p className="text-[10px] text-stone-500 mt-0.5">{student.student_code}</p>
@@ -626,7 +626,7 @@ function StudentProfile({
       {/* Back */}
       <button
         onClick={onBack}
-        className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 hover:text-stone-900 transition-colors mb-5 flex items-center gap-1"
+        className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 hover:text-brand-dark transition-colors mb-5 flex items-center gap-1"
       >
         ← Students
       </button>
@@ -673,7 +673,7 @@ function StudentProfile({
                                  : row.studentAvg >= 50 ? 'text-amber-400'
                                  : 'text-red-400';
                 return (
-                  <div key={row.subject} className="bg-white/5 rounded-xl px-3 py-2.5">
+                  <div key={row.subject} className="bg-white/5 rounded px-3 py-2.5">
                     <p className="text-[10px] font-black text-stone-500 truncate mb-1">{row.subject}</p>
                     <div className="flex items-baseline gap-1.5">
                       <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
@@ -700,10 +700,10 @@ function StudentProfile({
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[13px] transition-all shrink-0 ${
+            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded text-[13px] transition-all shrink-0 ${
               activeTab === t.key
                 ? 'bg-brand-dark text-white font-black shadow-sm'
-                : 'text-stone-500 font-bold hover:text-stone-900'
+                : 'text-stone-500 font-bold hover:text-brand-dark'
             }`}
           >
             <t.icon className="w-3.5 h-3.5 shrink-0" />
@@ -782,7 +782,7 @@ function ProgressTab({
                     <div key={row.topic} className="flex items-center gap-3 px-4 py-3">
                       <span className={`w-2 h-2 rounded-full shrink-0 ${dotColor}`} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-stone-900 capitalize">
+                        <p className="text-sm font-bold text-brand-dark capitalize">
                           {row.topic.replace(/-/g, ' ')}
                         </p>
                         {row.last_attempt_score && (
@@ -894,7 +894,7 @@ function TopicTestStruggles({
                     <div key={s.subskill_id} className="flex items-center gap-3 px-4 py-3">
                       <span className={`w-2 h-2 rounded-full shrink-0 ${s.lastCorrect ? 'bg-emerald-500' : 'bg-red-500'}`} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-stone-900">{s.subskill_label}</p>
+                        <p className="text-sm font-bold text-brand-dark">{s.subskill_label}</p>
                         <p className="text-[10px] text-stone-500 mt-0.5">
                           {s.totalCorrect}/{s.totalAttempts} correct overall · last attempt {s.lastCorrect ? 'correct' : 'incorrect'}
                         </p>
@@ -976,14 +976,14 @@ function MarksTab({ marks }: { marks: StudentResult[] | null }) {
               return (
                 <div key={row.sheet_id} className="flex items-center gap-3 px-4 py-3">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-stone-900">{row.sheet_title}</p>
+                    <p className="text-sm font-black text-brand-dark">{row.sheet_title}</p>
                     {row.sheet_scope && (
                       <p className="text-[10px] text-stone-500 mt-0.5">{row.sheet_scope}</p>
                     )}
                   </div>
                   {row.mark !== null ? (
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-sm font-black text-stone-900">{row.mark} / {row.total}</span>
+                      <span className="text-sm font-black text-brand-dark">{row.mark} / {row.total}</span>
                       {gl && (
                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${gl.bg} ${gl.border} ${gl.color}`}>
                           {gl.label}
@@ -1036,7 +1036,7 @@ function HomeworkTab({
               <div key={e.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-stone-900">{e.title}</p>
+                  <p className="text-sm font-bold text-brand-dark">{e.title}</p>
                   <p className="text-[11px] text-stone-500 mt-0.5">Due {e.event_date}</p>
                 </div>
                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shrink-0">
@@ -1088,7 +1088,7 @@ function BehaviourTab({ entries }: { entries: BehaviourEntry[] | null }) {
           <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Merits</p>
         </div>
         <div className="paper-card rounded p-4 text-center">
-          <p className="text-2xl font-black text-red-600">{demeritPoints}</p>
+          <p className={`text-2xl font-black ${demeritPoints > 0 ? 'text-red-600' : 'text-stone-300'}`}>{demeritPoints}</p>
           <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Demerits</p>
         </div>
         <div className="paper-card rounded p-4 text-center">
@@ -1106,7 +1106,7 @@ function BehaviourTab({ entries }: { entries: BehaviourEntry[] | null }) {
               {entry.type === 'merit' ? '+' : '-'}{entry.points}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-stone-900">{entry.category}</p>
+              <p className="text-sm font-bold text-brand-dark">{entry.category}</p>
               {entry.reason && <p className="text-[12px] text-stone-500 mt-0.5">{entry.reason}</p>}
               {entry.note && <p className="text-[12px] text-stone-400 mt-0.5 italic">{entry.note}</p>}
               <p className="text-[10px] text-stone-400 mt-1">
@@ -1163,7 +1163,7 @@ function AttendanceTab({ records }: { records: AttendanceRecord[] | null }) {
           return (
             <div key={`${record.student_id}-${record.date}`} className="flex items-center gap-3 px-4 py-3">
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-stone-900">
+                <p className="text-sm font-bold text-brand-dark">
                   {new Date(record.date).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                 </p>
                 {record.note && <p className="text-[12px] text-stone-500 mt-0.5">{record.note}</p>}
@@ -1195,7 +1195,7 @@ function AnnouncementsTab({ announcements }: { announcements: Announcement[] | n
         <div key={a.id} className="paper-card rounded px-5 py-4">
           <div className="flex items-start gap-2">
             {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />}
-            <p className="text-sm font-black text-stone-900">{a.title}</p>
+            <p className="text-sm font-black text-brand-dark">{a.title}</p>
           </div>
           {a.body && (
             <p className="text-[13px] text-stone-500 leading-relaxed mt-1 line-clamp-3">{a.body}</p>
@@ -1268,14 +1268,14 @@ function InterventionsTab({
               { label: 'Avg Gain',  value: impact.avgImprovement > 0 ? `+${impact.avgImprovement}%` : '—', color: impact.avgImprovement > 0 ? 'text-blue-600' : 'text-stone-500', bg: impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50' },
               { label: 'Active',    value: String(active.length),                                  color: active.length > 0 ? 'text-amber-600' : 'text-stone-500', bg: active.length > 0 ? 'bg-amber-50' : 'bg-stone-50' },
             ].map(s => (
-              <div key={s.label} className={`${s.bg} rounded-xl p-2.5 text-center`}>
+              <div key={s.label} className={`${s.bg} rounded p-2.5 text-center`}>
                 <p className={`text-base font-black ${s.color}`}>{s.value}</p>
                 <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
           {impact.bestType && impact.bestTypeGain > 0 && (
-            <div className="mt-3 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+            <div className="mt-3 bg-amber-50 border border-amber-100 rounded px-3 py-2">
               <p className="text-[11px] text-amber-800">
                 <span className="font-black">Most effective:</span>{' '}
                 {TYPE_LABEL[impact.bestType] ?? impact.bestType} — avg +{impact.bestTypeGain}%
@@ -1298,7 +1298,7 @@ function InterventionsTab({
               }`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <p className="text-sm font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                    <p className="text-sm font-black text-brand-dark">{TYPE_LABEL[inv.type] ?? inv.type}</p>
                     <p className="text-[11px] text-stone-500 mt-0.5">{inv.subject}</p>
                   </div>
                   <div className="text-right shrink-0">
@@ -1354,7 +1354,7 @@ function InterventionsTab({
                         }`}>
                           {outcome?.result === 'improved' ? '✓' : outcome?.result === 'declined' ? '↓' : '→'}
                         </span>
-                        <p className="text-sm font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                        <p className="text-sm font-black text-brand-dark">{TYPE_LABEL[inv.type] ?? inv.type}</p>
                       </div>
                       <p className="text-[11px] text-stone-500 mt-0.5">{inv.subject}</p>
                     </div>
@@ -1375,7 +1375,7 @@ function InterventionsTab({
 
                   {/* Outcome detail */}
                   {outcome && (
-                    <div className={`mt-3 rounded-xl px-3 py-2 ${
+                    <div className={`mt-3 rounded px-3 py-2 ${
                       outcome.result === 'improved' ? 'bg-emerald-50' :
                       outcome.result === 'declined' ? 'bg-red-50' : 'bg-stone-50'
                     }`}>
@@ -1503,13 +1503,13 @@ function ContactsTab({
           onChange={e => setNote(e.target.value)}
           placeholder="Note (optional)"
           rows={2}
-          className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm text-stone-700 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
+          className="w-full px-3 py-2 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-500 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
         />
 
         <button
           onClick={handleLog}
           disabled={saving}
-          className="w-full py-2 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+          className="w-full py-2 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Log Contact'}
         </button>
@@ -1526,7 +1526,7 @@ function ContactsTab({
               <div key={c.id} className="paper-card rounded px-4 py-3 flex items-start gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-stone-900">{CONTACT_METHOD_LABELS[c.method]}</span>
+                    <span className="text-xs font-black text-brand-dark">{CONTACT_METHOD_LABELS[c.method]}</span>
                     <span className="text-[10px] text-stone-500">
                       {new Date(c.createdAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>

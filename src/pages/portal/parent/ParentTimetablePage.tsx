@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
+import { CalendarClock } from 'lucide-react';
 import type { ParentSession } from '../../../lib/auth';
 import type { ParentChild } from '../../../lib/parents';
 import { DAYS, fetchSchoolPeriods, fetchStudentTimetable, type TimetablePeriod, type TimetableEntryDetailed } from '../../../lib/timetable';
@@ -42,6 +43,8 @@ export default function ParentTimetablePage({ session, child }: ParentTimetableP
     }
     return map;
   }, [entries]);
+
+  const todayDow = new Date().getDay();
 
   return (
     <div className="student-home min-h-full pb-16">
@@ -91,7 +94,8 @@ export default function ParentTimetablePage({ session, child }: ParentTimetableP
             </div>
           </div>
         ) : entries.length === 0 ? (
-          <div className="paper-card rounded p-12 text-center">
+          <div className="paper-card rounded p-12 flex flex-col items-center text-center">
+            <CalendarClock className="w-9 h-9 text-stone-200 mb-4" />
             <p className="text-[16px] font-semibold text-brand-dark mb-1">No timetable set yet</p>
             <p className="text-[13px] text-stone-500">The school hasn't published a timetable yet.</p>
           </div>
@@ -105,12 +109,18 @@ export default function ParentTimetablePage({ session, child }: ParentTimetableP
                     style={{ borderBottom: '1px solid var(--color-brand-border)', borderRight: '1px solid var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
                     Period
                   </th>
-                  {DAYS.map((d) => (
-                    <th key={d.value} className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] min-w-[160px]"
-                      style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
-                      {d.label}
-                    </th>
-                  ))}
+                  {DAYS.map((d) => {
+                    const isToday = d.value === todayDow;
+                    return (
+                      <th key={d.value} className={`text-left px-4 py-3 text-[11px] font-bold uppercase tracking-[0.08em] min-w-[160px] ${isToday ? 'text-brand-dark' : 'text-[rgba(31,36,33,0.45)]'}`}
+                        style={{ borderBottom: '1px solid var(--color-brand-border)', background: isToday ? 'var(--color-paper-raise)' : undefined }}>
+                        <span className="inline-flex items-center gap-1.5">
+                          {d.label}
+                          {isToday && <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />}
+                        </span>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>
@@ -125,8 +135,10 @@ export default function ParentTimetablePage({ session, child }: ParentTimetableP
                     </td>
                     {DAYS.map((d) => {
                       const slotEntries = grid.get(`${d.value}-${p.period_number}`) ?? [];
+                      const isToday = d.value === todayDow;
                       return (
-                        <td key={d.value} className="px-2 py-2 align-top" style={{ borderLeft: '1px solid var(--color-paper-raise)' }}>
+                        <td key={d.value} className="px-2 py-2 align-top"
+                          style={{ borderLeft: '1px solid var(--color-paper-raise)', background: isToday ? 'rgba(31,36,33,0.02)' : undefined }}>
                           {slotEntries.length === 0 ? (
                             <span className="block text-center text-stone-200 text-xs py-2">—</span>
                           ) : (
@@ -135,7 +147,7 @@ export default function ParentTimetablePage({ session, child }: ParentTimetableP
                                 <div key={e.id} className={`rounded px-2 py-1.5 border ${
                                   e.is_break ? 'bg-amber-50 border-amber-200' : ''
                                 }`}
-                                style={!e.is_break ? { background: 'var(--color-paper-raise)', borderColor: 'var(--color-brand-border)' } : undefined}>
+                                style={!e.is_break ? { background: isToday ? '#ffffff' : 'var(--color-paper-raise)', borderColor: isToday ? 'var(--color-accent)' : 'var(--color-brand-border)' } : undefined}>
                                   {e.is_break ? (
                                     <p className="text-[11px] font-bold text-amber-700 leading-tight truncate">{e.break_label ?? 'Break'}</p>
                                   ) : (
