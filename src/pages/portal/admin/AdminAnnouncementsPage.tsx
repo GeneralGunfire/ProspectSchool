@@ -163,7 +163,7 @@ export default function AdminAnnouncementsPage({ session }: AdminAnnouncementsPa
           </div>
           <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
             onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
             <Plus className="w-4 h-4" /> Post Announcement
           </motion.button>
         </div>

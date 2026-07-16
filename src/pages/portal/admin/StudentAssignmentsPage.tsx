@@ -151,7 +151,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
             <p className="text-[11px] text-white/60 mt-1.5 font-medium">Manage which teachers teach which students, and for which subjects.</p>
           </div>
           <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
             <UserPlus className="w-4 h-4" /> Assign Teacher
           </motion.button>
         </div>

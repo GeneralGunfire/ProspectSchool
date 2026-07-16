@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Check, X as XIcon, Send, AlertCircle } from 'lucide-react';
+import { Check, X as XIcon, Send, AlertCircle, Users } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherHomerooms, type CohortWithHomeroom } from '../../../lib/homeroom';
 import {
@@ -149,7 +149,8 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
 
           <div className="paper-card rounded overflow-hidden">
             {rows.length === 0 ? (
-              <div className="p-12 text-center">
+              <div className="p-12 flex flex-col items-center text-center">
+                <Users className="w-9 h-9 text-stone-200 mb-4" />
                 <p className="font-bold text-brand-dark mb-1">No students in this class</p>
               </div>
             ) : (

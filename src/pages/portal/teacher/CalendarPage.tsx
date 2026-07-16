@@ -407,7 +407,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#1C1917] text-white text-xs font-black rounded hover:bg-brand-dark/90 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-dark text-white text-xs font-black rounded hover:bg-brand-dark/90 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Create Event
           </button>
@@ -425,7 +425,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
                   transition={{ duration: 0.22, ease: 'easeOut' }}
-                  className="block text-sm font-black text-[#1C1917] py-1.5"
+                  className="block text-sm font-black text-brand-dark py-1.5"
                 >
                   {MONTHS[month - 1]} {year}
                 </motion.span>
@@ -441,7 +441,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'grid' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'grid' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" /> Grid
@@ -449,7 +449,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'list' ? 'bg-[#1C1917] text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'list' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <List className="w-3.5 h-3.5" /> List
@@ -469,7 +469,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               >
                 {loading ? (
                   <div className="flex items-center justify-center py-24">
-                    <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
+                    <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
                   </div>
                 ) : allSorted.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-24">
@@ -523,7 +523,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
                   {loading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
                     </div>
                   ) : (
                     <AnimatePresence mode="wait" initial={false}>
@@ -548,7 +548,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                                  isToday ? 'bg-[#1C1917] text-white' : 'text-stone-500 group-hover:text-stone-700'
+                                  isToday ? 'bg-brand-dark text-white' : 'text-stone-500 group-hover:text-stone-700'
                                 }`}>
                                   {day}
                                 </span>
@@ -597,7 +597,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming</p>
               <button
                 onClick={() => openCreate(todayStr)}
-                className="flex items-center gap-1 text-[11px] font-black bg-[#1C1917] text-white px-2.5 py-1 rounded-lg hover:bg-brand-dark/90 transition-colors"
+                className="flex items-center gap-1 text-[11px] font-black bg-brand-dark text-white px-2.5 py-1 rounded-lg hover:bg-brand-dark/90 transition-colors"
               >
                 <Plus className="w-3 h-3" /> Create
               </button>
@@ -757,7 +757,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   <div className="pb-2">
                     {trackerLoading ? (
                       <div className="flex items-center justify-center py-12">
-                        <div className="w-5 h-5 border-2 border-brand-border border-t-[#1C1917] rounded-full animate-spin" />
+                        <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
                       </div>
                     ) : trackerRows.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -845,7 +845,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     value={noteInputs[row.student_id] ?? ''}
                                     onChange={e => setNoteInputs(prev => ({ ...prev, [row.student_id]: e.target.value }))}
                                     placeholder="Note / reason (optional)"
-                                    className="w-full px-3 py-1.5 rounded border border-brand-border text-xs text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#1C1917] bg-white mb-2"
+                                    className="w-full px-3 py-1.5 rounded border border-brand-border text-xs text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white mb-2"
                                   />
                                 )}
 
@@ -902,7 +902,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors"
                   >
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </button>
@@ -999,7 +999,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   value={form.title}
                   onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                   placeholder="e.g. Chapter 4 homework"
-                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-brand-dark focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -1012,7 +1012,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   type="date"
                   value={form.event_date}
                   onChange={e => setForm(f => ({ ...f, event_date: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-brand-dark focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                 />
               </div>
 
@@ -1025,7 +1025,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       type="time"
                       value={form.start_time}
                       onChange={e => setForm(f => ({ ...f, start_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-brand-dark focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                     />
                   </div>
                   <div>
@@ -1034,7 +1034,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       type="time"
                       value={form.end_time}
                       onChange={e => setForm(f => ({ ...f, end_time: e.target.value }))}
-                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-brand-dark focus:ring-0 text-sm font-bold text-brand-dark focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -1048,7 +1048,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   rows={3}
                   placeholder="Additional details…"
-                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-[#1C1917] focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none resize-none transition-colors"
+                  className="w-full px-3 py-2.5 rounded border border-brand-border focus:border-brand-dark focus:ring-0 text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none resize-none transition-colors"
                 />
               </div>
 
@@ -1120,7 +1120,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           target_student_ids: [],
                         }))}
                         className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
-                          active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -1138,7 +1138,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={g}
                           onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           Grade {g}
                         </button>
@@ -1156,7 +1156,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={c.id}
                           onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
@@ -1176,7 +1176,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={s.id}
                               onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               {s.label}
                             </button>
@@ -1192,7 +1192,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={g}
                               onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-[#1C1917] text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               Grade {g}
                             </button>
@@ -1213,7 +1213,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={s.id}
                           onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-[#1C1917] text-white' : 'hover:bg-stone-100 text-stone-700'}`}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-brand-dark text-white' : 'hover:bg-stone-100 text-stone-700'}`}
                         >
                           <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>
                             {active ? '✓' : ''}
@@ -1235,7 +1235,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 py-2.5 rounded bg-[#1C1917] text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
+                className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                 {saving ? 'Saving…' : modal === 'create' ? 'Create Event' : 'Save Changes'}
               </button>
             </div>

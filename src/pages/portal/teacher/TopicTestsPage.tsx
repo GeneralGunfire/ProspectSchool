@@ -146,7 +146,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
               <Pencil className="w-4 h-4" /> Build Custom Test
             </motion.button>
             <motion.button onClick={() => setShowCreate(true)} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
               <Plus className="w-4 h-4" /> Assign Test
             </motion.button>
           </div>

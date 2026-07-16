@@ -4,6 +4,7 @@ import {
   ChevronRight, BookOpen, AlertTriangle,
   CheckCircle2, Users, ClipboardList, CalendarDays,
   Megaphone, Pin, Phone, Trash2, Award, CalendarCheck,
+  ClipboardCheck, TrendingUp,
 } from 'lucide-react';
 import {
   fetchTeacherStudentProgress,
@@ -856,7 +857,10 @@ function TopicTestStruggles({
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Topic Tests — where they're stuck</p>
+        <div className="flex items-center gap-2">
+          <ClipboardCheck className="w-3.5 h-3.5 text-stone-500" />
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Topic Tests — where they're stuck</p>
+        </div>
         <button
           onClick={() => setShowAll((v) => !v)}
           className="text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors"
@@ -1260,7 +1264,10 @@ function InterventionsTab({
       {/* ── Impact summary card ─────────────────────────── */}
       {completed.length > 0 && (
         <div className="paper-card rounded p-5">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Intervention Impact</p>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Intervention Impact</p>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {[
               { label: 'Completed', value: String(impact.totalCompleted),                          color: 'text-brand-dark', bg: 'bg-stone-50' },
@@ -1480,7 +1487,10 @@ function ContactsTab({
     <div className="space-y-5">
       {/* Log new contact */}
       <div className="paper-card rounded p-5">
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Log Parent Contact</p>
+        <div className="flex items-center gap-2 mb-3">
+          <Phone className="w-3.5 h-3.5 text-stone-500" />
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Log Parent Contact</p>
+        </div>
 
         <div className="flex gap-1.5 flex-wrap mb-3">
           {(Object.keys(CONTACT_METHOD_LABELS) as ContactMethod[]).map(m => (
