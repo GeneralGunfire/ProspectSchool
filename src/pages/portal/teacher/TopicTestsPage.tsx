@@ -134,7 +134,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Assessments</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Topic Tests</h1>
             <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
               Short, timed tests that pinpoint exactly what a student is struggling with — invisible to students until you assign them.
@@ -157,7 +157,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
       <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {loading ? (
-        <div className="space-y-2.5 max-w-2xl">
+        <div className="space-y-2.5">
           {[0, 1, 2].map(i => (
             <div key={i} className="paper-card rounded p-4 flex items-center gap-3">
               <Shimmer className="w-9 h-9 rounded shrink-0" />

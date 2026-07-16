@@ -1129,19 +1129,6 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               })}
             </div>
           </motion.div>
-
-          {/* Sync Calendar */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease, delay: 0.2 }}
-            className="paper-card rounded p-4"
-          >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-[rgba(31,36,33,0.45)] mb-1">Sync Calendar</p>
-            <p className="text-xs text-stone-500 mb-3">Connect your school calendar to Google Calendar or Apple Calendar.</p>
-            <button className="w-full text-sm font-bold text-brand-dark border border-brand-border rounded py-2 hover:bg-brand-border transition-colors" style={{ background: 'var(--color-paper-raise)' }}>
-              Connect Google Calendar
-            </button>
-          </motion.div>
         </div>
       </div>
       </div>

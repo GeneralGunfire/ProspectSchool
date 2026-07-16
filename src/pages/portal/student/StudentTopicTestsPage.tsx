@@ -160,7 +160,7 @@ export default function StudentTopicTestsPage({ session }: StudentTopicTestsPage
         <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-6 sm:pt-8">
 
           {loading ? (
-            <div className="space-y-2.5 max-w-2xl">
+            <div className="space-y-2.5 max-w-2xl mx-auto">
               {[0, 1, 2].map(i => (
                 <motion.div key={i}
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -176,13 +176,13 @@ export default function StudentTopicTestsPage({ session }: StudentTopicTestsPage
               ))}
             </div>
           ) : visibleTests.length === 0 ? (
-            <div className="paper-card rounded p-5 sm:p-7 max-w-2xl py-14 flex flex-col items-center text-center">
+            <div className="paper-card rounded p-5 sm:p-7 max-w-2xl mx-auto py-14 flex flex-col items-center text-center">
               <ClipboardCheck className="w-9 h-9 text-stone-200 mb-4" />
               <p className="text-[16px] font-semibold text-brand-dark">No tests assigned right now</p>
               <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Check back once your teacher assigns one.</p>
             </div>
           ) : (
-            <div className="space-y-2.5 max-w-2xl">
+            <div className="space-y-2.5 max-w-2xl mx-auto">
               {visibleTests.map((vt, i) => (
                 <motion.div
                   key={vt.assignment.id}

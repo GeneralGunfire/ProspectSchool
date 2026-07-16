@@ -355,7 +355,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Students</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Classes</h1>
             <p className="text-[13px] text-white/60 mt-2.5 font-medium">Manage your students and track their progress.</p>
           </motion.div>
