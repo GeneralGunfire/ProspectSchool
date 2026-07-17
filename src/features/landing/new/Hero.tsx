@@ -1,152 +1,90 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { FadeIn } from './Animations';
-import { ArrowRight, Star, ClipboardList, CalendarClock } from './icons';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
-export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
+export const Hero = ({ onNavigate: _onNavigate }: { onNavigate: (p: string) => void }) => {
   const reduced = useReducedMotion();
 
   return (
-    <section className="relative overflow-hidden bg-brand-bg min-h-screen flex items-center py-20 px-6">
-      {/* Warm paper wash + faint dot grid — same "premium paper" surface as
-          the student dashboard (.student-home), so the marketing hero and
-          the real product read as one brand instead of two palettes. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
+    <section
+      className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-32 pb-16 px-4 sm:px-6 lg:px-10"
+      style={{ background: '#fcfdfd' }}
+    >
+      <motion.div
+        initial={reduced ? undefined : { opacity: 0, y: 14 }}
+        animate={reduced ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: EASE }}
+        className="relative w-full max-w-[1400px] mx-auto h-150 sm:h-165 lg:h-160 rounded-4xl sm:rounded-[2.5rem] overflow-hidden border border-brand-border"
         style={{
-          background:
-            'radial-gradient(1200px 700px at 50% 0%, color-mix(in srgb, var(--color-accent) 4%, transparent), transparent 62%), var(--color-brand-bg)',
+          background: 'linear-gradient(160deg, #e7eaec 0%, #eef1f2 55%, #f4f6f7 100%)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.10), 0 10px 24px -6px rgba(15,18,15,0.20), 0 32px 56px -20px rgba(15,18,15,0.28)',
         }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          backgroundImage: 'radial-gradient(color-mix(in srgb, var(--color-brand-dark) 8%, transparent) 1px, transparent 1px)',
-          backgroundSize: '22px 22px',
-        }}
-      />
+      >
+        {/* Mobile/tablet: image sits as a bottom band under the text, so
+            nothing ever overlaps. Desktop (lg+): side-by-side panel with
+            the sphere on the right, text on the left. */}
+        <div className="relative flex flex-col lg:flex-row h-full lg:absolute lg:inset-0">
 
-      {/* Two columns, fixed 45/55 split, never wraps on lg — grid-cols with
-          explicit fr values rather than flex-wrap, so there is no width
-          threshold at which the phone can fall below the text. */}
-      <div className="relative w-full max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[45%_55%] gap-16 lg:gap-14 items-center">
-
-        {/* Left column — text */}
-        <div className="text-center lg:text-left">
-          <FadeIn delay={0.04}>
-            <span className="inline-block text-[12px] font-bold uppercase tracking-[0.16em] text-brand-eyebrow mb-6">
-              All-in-One School App
-            </span>
-          </FadeIn>
-
-          <FadeIn delay={0.1}>
-            <h1
-              className="text-brand-dark text-[3.1rem] sm:text-[3.9rem] lg:text-[4.4rem] leading-[1.06] tracking-[-0.02em] font-extrabold text-balance"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
-              Take Control of Your School Year
-            </h1>
-          </FadeIn>
-
-          <FadeIn delay={0.18}>
-            <p className="mt-7 text-brand-slate text-[18px] sm:text-[20px] leading-[1.6] max-w-130 mx-auto lg:mx-0">
-              Track marks, homework, and your career path with Prospect — the one place your whole school year lives.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.26}>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mt-10">
-              <button
-                onClick={() => onNavigate('quiz')}
-                className="group w-full sm:w-auto rounded-xl px-9 py-4.5 font-bold text-[17px] bg-brand-dark text-white hover:bg-brand-dark/90 active:scale-[0.97] transition-all cursor-pointer inline-flex items-center justify-center gap-2.5"
-              >
-                Get Started Free
-                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </button>
-              <button
-                onClick={() => onNavigate('library')}
-                className="w-full sm:w-auto rounded-xl px-9 py-4.5 font-bold text-[17px] border-2 border-brand-border text-brand-dark hover:border-brand-dark/25 hover:bg-white active:scale-[0.97] transition-all cursor-pointer"
-              >
-                Book a Demo
-              </button>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.34}>
-            <div className="flex items-center justify-center lg:justify-start gap-3 mt-11">
-              <div className="flex items-center gap-0.5" aria-hidden="true">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="w-4.5 h-4.5 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <span className="text-[15px] text-brand-slate font-semibold">
-                Trusted by 10,000+ students
+          {/* Text block — no fill of its own, so the card's cool grey-white
+              tone (matching the hero image's background) shows through and
+              the whole card reads as one continuous surface. */}
+          <div className="relative z-10 flex-1 flex flex-col justify-center px-8 py-14 sm:px-12 sm:py-16 lg:py-0 lg:pl-16 lg:pr-8 lg:w-[46%] lg:flex-none lg:shrink-0">
+            <FadeIn delay={0.15}>
+              <span className="inline-block text-[11px] font-bold uppercase tracking-[0.2em] text-brand-eyebrow mb-6">
+                All-in-One School App
               </span>
-            </div>
-          </FadeIn>
-        </div>
-
-        {/* Right column — phone mockup, grounded in a soft rounded panel */}
-        <FadeIn delay={0.2} direction="left" className="relative w-full">
-          <div className="relative max-w-115 mx-auto lg:max-w-none lg:mx-0">
-            <motion.div
-              initial={reduced ? undefined : { opacity: 0, y: 16, scale: 0.97 }}
-              animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.15, ease: EASE }}
-              className="relative rounded-[2rem] overflow-hidden border border-brand-border shadow-[0_40px_90px_-24px_rgba(15,18,15,0.28)]"
-              style={{ background: 'linear-gradient(160deg, var(--color-paper-raise, #f1efe9) 0%, var(--color-brand-bg) 100%)' }}
-            >
-              <img
-                src="/hero-device.png"
-                alt="Prospect student dashboard shown on a phone"
-                className="w-full h-auto"
-                width={1536}
-                height={1024}
-                loading="eager"
-                fetchPriority="high"
-              />
-            </motion.div>
-
-            {/* Floating feature cards — overlap the container's bottom edge
-                so the mockup reads as grounded/weighted, not floating in
-                empty space. */}
-            <motion.div
-              initial={reduced ? undefined : { opacity: 0, y: 10, scale: 0.92 }}
-              animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.75, ease: EASE }}
-              className="absolute -bottom-7 left-2 sm:-left-8 flex items-center gap-3 rounded-2xl border border-brand-border shadow-[0_18px_38px_-14px_rgba(15,18,15,0.32)] px-5 py-4"
-              style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)' }}
-            >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)' }}>
-                <ClipboardList className="w-5 h-5" style={{ color: 'var(--color-accent)' }} />
-              </div>
-              <div className="leading-tight text-left">
-                <p className="text-[10.5px] font-bold uppercase tracking-wide text-brand-eyebrow">GPA Tracker</p>
-                <p className="text-[15px] font-bold text-brand-dark">78% average</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={reduced ? undefined : { opacity: 0, y: 10, scale: 0.92 }}
-              animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.9, ease: EASE }}
-              className="absolute -bottom-7 right-2 sm:-right-8 flex items-center gap-3 rounded-2xl border border-brand-border shadow-[0_18px_38px_-14px_rgba(15,18,15,0.32)] px-5 py-4"
-              style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)' }}
-            >
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)' }}>
-                <CalendarClock className="w-5 h-5" style={{ color: 'var(--color-accent)' }} />
-              </div>
-              <div className="leading-tight text-left">
-                <p className="text-[10.5px] font-bold uppercase tracking-wide text-brand-eyebrow">Homework Due</p>
-                <p className="text-[15px] font-bold text-brand-dark">2 tasks this week</p>
-              </div>
-            </motion.div>
+              <h1
+                className="text-brand-dark text-[2.5rem] sm:text-[3.4rem] lg:text-[3.85rem] leading-[1.04] tracking-[-0.025em] font-extrabold text-balance"
+                style={{ fontFamily: 'var(--font-display)' }}
+              >
+                The platform
+                <br />
+                your school has
+                <br />
+                been waiting for
+              </h1>
+              <p
+                className="mt-5 text-[1.6rem] sm:text-[2rem] lg:text-[2.25rem] text-brand-dark/55"
+                style={{ fontFamily: 'var(--font-brand-heading, Georgia)', fontStyle: 'italic', fontWeight: 400 }}
+              >
+                — Prospect.
+              </p>
+              <p className="mt-7 text-brand-slate text-[15px] sm:text-[16px] leading-[1.65] max-w-[34ch]">
+                One place for marks, homework, and the road ahead — built for the way your school actually runs.
+              </p>
+            </FadeIn>
           </div>
-        </FadeIn>
-      </div>
+
+          {/* Image panel — object-position keeps the sphere itself in frame
+              at every width: centered-right on mobile/tablet where the
+              panel is full-width, shifted further right on desktop where
+              the panel is a narrower 54% column. */}
+          <div className="relative h-80 sm:h-95 lg:h-auto lg:w-[54%] lg:absolute lg:inset-y-0 lg:right-0 shrink-0">
+            <img
+              src="/hero-full.png"
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 w-full h-full object-cover object-[68%_50%] lg:object-[88%_52%]"
+              loading="eager"
+              fetchPriority="high"
+            />
+            {/* Soft fade on the inner edge only, on large screens, so the
+                sphere hands off into the text panel without a hard seam —
+                never covers the text since the two live in separate columns. */}
+            <div
+              aria-hidden="true"
+              className="hidden lg:block absolute inset-y-0 left-0 w-28"
+              style={{ background: 'linear-gradient(90deg, rgba(238,241,242,0.9) 0%, rgba(238,241,242,0) 100%)' }}
+            />
+            <div
+              aria-hidden="true"
+              className="lg:hidden absolute inset-x-0 top-0 h-16"
+              style={{ background: 'linear-gradient(180deg, rgba(238,241,242,0.9) 0%, rgba(238,241,242,0) 100%)' }}
+            />
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 };

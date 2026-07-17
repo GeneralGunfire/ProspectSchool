@@ -117,7 +117,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           student dashboard uses (soft layered shadow, faint top-to-
           bottom gradient, hairline border) instead of a flat white
           box with a barely-there shadow. ── */}
-      <aside className="hidden md:flex w-72 shrink-0 h-full flex-col p-4" style={{ background: '#eeece5' }}>
+      <aside className="hidden md:flex w-72 shrink-0 h-full flex-col p-4" style={{ background: '#eaebec' }}>
         <div className="flex-1 min-h-0 flex flex-col rounded-[14px]"
           style={{
             background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
@@ -235,7 +235,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                 initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
                 transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
                 className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[82vw] flex flex-col p-3"
-                style={{ background: '#eeece5' }}
+                style={{ background: '#eaebec' }}
               >
                 <div className="flex-1 min-h-0 flex flex-col rounded-[14px] overflow-hidden"
                   style={{

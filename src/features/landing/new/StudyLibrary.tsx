@@ -21,7 +21,8 @@ const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
       onClick={() => onNavigate('library')}
-      className="group group/spot card-premium relative overflow-hidden w-full bg-white border border-brand-border p-6 text-left hover:border-accent/50 active:scale-[0.98] cursor-pointer"
+      className="group group/spot card-premium relative overflow-hidden w-full border border-brand-border p-6 text-left hover:border-accent/50 active:scale-[0.98] cursor-pointer"
+      style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)' }}
     >
       <SpotlightGlow tone="accent" />
       <div className="w-9 h-9 rounded-lg bg-linear-to-br from-stone-700 to-brand-dark shadow-inner shadow-black/30 flex items-center justify-center mb-4 transition-transform group-hover:scale-105">

@@ -2,11 +2,443 @@
     |-- caveman.config.json
     |-- settings.json
     |-- settings.local.json
+    |-- worktrees
+        |-- agent-a66673aafa455e03b
+            |-- .claude
+                |-- caveman.config.json
+                |-- settings.json
+                |-- settings.local.json
+            |-- .gitignore
+            |-- .planning
+                |-- marketplace_phase1.sql
+                |-- marketplace_phase2.sql
+                |-- marketplace_phase3.sql
+                |-- NEXT_SESSION_PROMPT_topic_tests_content.md
+                |-- STUDENT_PORTAL_DESIGN_ROLLOUT.md
+                |-- TOPIC_TESTS_PLAN.md
+            |-- .vite
+                |-- deps
+                    |-- package.json
+                    |-- _metadata.json
+            |-- BACKEND_NOTES.md
+            |-- CLAUDE.md
+            |-- e2e-my-future.mjs
+            |-- FEATURES.md
+            |-- graphify-out
+                |-- .graphify_labels.json
+                |-- .graphify_root
+                |-- graph.html
+                |-- graph.json
+                |-- GRAPH_REPORT.md
+                |-- GRAPH_TREE.html
+                |-- manifest.json
+                |-- prospect-callflow.html
+            |-- index.html
+            |-- package-lock.json
+            |-- package.json
+            |-- public
+                |-- 3DLogoLab (1).png
+                |-- 3DLogoLab.png
+                |-- 9ff9b9ee-575a-41d8-8789-7e4c58d3a220.png
+                |-- data
+                    |-- civics-procedures.json
+                    |-- cost-of-living.json
+                    |-- loadshedding
+                        |-- latest.json
+                    |-- news
+                        |-- latest.json
+                    |-- water
+                        |-- latest.json
+                |-- hero-bg.jpg
+                |-- hero-device.png
+                |-- hero-devices.webp
+                |-- images
+                    |-- career-education.jpg
+                    |-- career-engineering.jpg
+                    |-- career-healthcare.jpg
+                    |-- career-learning.jpg
+                    |-- career-trades.jpg
+                    |-- electrician.jpg
+                    |-- electrician.webp
+                    |-- engineer.jpg
+                    |-- engineer.webp
+                    |-- gamified_tablet_1779608887104.png
+                    |-- hero_topography_1779608850775.png
+                    |-- logo.png
+                    |-- nizamiye-announcements-banner.png
+                    |-- nizamiye-behaviour.png
+                    |-- nizamiye-calendar.png
+                    |-- nizamiye-emblem.png
+                    |-- nizamiye-homeroom.png
+                    |-- nizamiye-library.png
+                    |-- nizamiye-marketplace.png
+                    |-- nizamiye-marks.png
+                    |-- nizamiye-myfuture.png
+                    |-- nizamiye-pastpapers.png
+                    |-- nizamiye-resources.png
+                    |-- nizamiye-timetable.png
+                    |-- nizamiye-topictests.png
+                    |-- nurse.jpg
+                    |-- nurse.webp
+                    |-- paper_bottleneck_1779608869442.png
+                    |-- sa-flag.jpg
+                    |-- stat-dashboard-graphic.jpg
+                    |-- stat-map-graphic.jpg
+                    |-- students.jpg
+                    |-- students.webp
+                    |-- teacher.jpg
+                    |-- teacher.webp
+                |-- logo-icon.svg
+                |-- logo-mark.svg
+                |-- logo.jpg
+                |-- logo.svg
+                |-- logo2.png
+                |-- logo3.png
+                |-- robots.txt
+                |-- sitemap.xml
+                |-- thumbnails
+                    |-- video1-poster.png
+                |-- videos
+                    |-- Bursaries.mp4
+                    |-- video1.mp4
+            |-- src
+                |-- App.tsx
+                |-- components
+                    |-- blocks
+                        |-- hero-section-5.demo.tsx
+                        |-- hero-section-5.tsx
+                        |-- hero-section-9.tsx
+                    |-- LessonEnrichment.tsx
+                    |-- QuizBlock.tsx
+                    |-- ui
+                        |-- border-beam.tsx
+                        |-- button.tsx
+                        |-- card.tsx
+                        |-- infinite-slider.tsx
+                        |-- input.tsx
+                        |-- label.tsx
+                        |-- progressive-blur.tsx
+                        |-- smokey-background.tsx
+                        |-- tabs.tsx
+                        |-- web-gl-shader.tsx
+                |-- data
+                    |-- apsData.ts
+                |-- features
+                    |-- careers
+                        |-- components
+                            |-- CareerCard.tsx
+                            |-- CareerDetailModal.tsx
+                            |-- CareersTab.tsx
+                            |-- CollegesTab.tsx
+                            |-- InsightsTab.tsx
+                            |-- LocationInput.tsx
+                            |-- MapDisplay.tsx
+                            |-- SearchBox.tsx
+                            |-- SkippedQuestionsPanel.tsx
+                            |-- TVETCareerCard.tsx
+                        |-- data
+                            |-- batches
+                                |-- batch_agriculture2.ts
+                                |-- batch_business.ts
+                                |-- batch_business2.ts
+                                |-- batch_business3.ts
+                                |-- batch_creative2.ts
+                                |-- batch_digital.ts
+                                |-- batch_digital2.ts
+                                |-- batch_education2.ts
+                                |-- batch_education_creative.ts
+                                |-- batch_engineering.ts
+                                |-- batch_engineering2.ts
+                                |-- batch_healthcare.ts
+                                |-- batch_healthcare2.ts
+                                |-- batch_healthcare3.ts
+                                |-- batch_healthcare4.ts
+                                |-- batch_legal_finance.ts
+                                |-- batch_media_comms.ts
+                                |-- batch_public_services.ts
+                                |-- batch_public_services2.ts
+                                |-- batch_trades.ts
+                                |-- batch_trades2.ts
+                                |-- batch_trades3.ts
+                            |-- bursaries.ts
+                            |-- careers400Final.ts
+                            |-- careersFullAudited.ts
+                            |-- careersFullData.ts
+                            |-- careersTypes.ts
+                            |-- mapData.ts
+                            |-- quizQuestions.ts
+                            |-- quizScoringLogic.ts
+                            |-- subjectCareerMapping.ts
+                            |-- universityRequirements.ts
+                        |-- pages
+                            |-- BursariesPage.tsx
+                            |-- BursaryDetailPage.tsx
+                            |-- CareersPageNew.tsx
+                            |-- QuizPage.tsx
+                        |-- services
+                            |-- mapService.ts
+                    |-- landing
+                        |-- new
+                            |-- Animations.tsx
+                            |-- AudienceSection.tsx
+                            |-- CareerPaths.tsx
+                            |-- ChaosCollage.tsx
+                            |-- DashboardPreview.tsx
+                            |-- FinalCTA.tsx
+                            |-- FlipShowcase.tsx
+                            |-- Footer.tsx
+                            |-- Hero.tsx
+                            |-- HoverExpand.tsx
+                            |-- HowItWorks.tsx
+                            |-- icons.ts
+                            |-- LandingPage.tsx
+                            |-- LearnerDestinations.tsx
+                            |-- LearnerFeatureCards.tsx
+                            |-- Navbar.tsx
+                            |-- Pricing.tsx
+                            |-- QuoteSection.tsx
+                            |-- RoleDestinations.tsx
+                            |-- StackedFeatureCards.tsx
+                            |-- StatsBar.tsx
+                            |-- StudentDeepDive.tsx
+                            |-- StudyLibrary.tsx
+                            |-- TeacherTools.tsx
+                            |-- VideoShowcase.tsx
+                            |-- WaveBackground.tsx
+                        |-- UI-REVIEW.md
+                    |-- study
+                        |-- data
+                            |-- studyLibrary
+                                |-- accountingEquation.ts
+                                |-- algebraicExpressions.ts
+                                |-- atomsSubatomicParticles.ts
+                                |-- biodiversityAndClassification.ts
+                                |-- businessStudiesTopics.ts
+                                |-- catAndEgdTopics.ts
+                                |-- chemicalBonding.ts
+                                |-- classificationOfMatter.ts
+                                |-- doubleEntrySystem.ts
+                                |-- economicsTopics.ts
+                                |-- egdTopics.ts
+                                |-- englishTopics.ts
+                                |-- equationsAndInequalities.ts
+                                |-- fiveKingdoms.ts
+                                |-- functions.ts
+                                |-- index.ts
+                                |-- introductionToAccounting.ts
+                                |-- mathematicalModelling.ts
+                                |-- numberPatterns.ts
+                                |-- periodicTableTrends.ts
+                                |-- remainingTopics.ts
+                                |-- speciesConcept.ts
+                                |-- taxonomyAndBinomialNomenclature.ts
+                                |-- wavesSoundLight.ts
+                            |-- subjects.ts
+                        |-- pages
+                            |-- learning
+                                |-- Accounting
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- AccountingEquation.tsx
+                                            |-- DoubleEntrySystem.tsx
+                                            |-- GeneralLedger.tsx
+                                            |-- IntroductionToAccounting.tsx
+                                            |-- JournalsInAccounting.tsx
+                                            |-- SourceDocuments.tsx
+                                |-- Algebra
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- LinearEquations.tsx
+                                            |-- SimultaneousEquations.tsx
+                                |-- BusinessStudies
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- BusinessEnvironment.tsx
+                                            |-- BusinessOperations.tsx
+                                            |-- BusinessSectors.tsx
+                                            |-- BusinessStakeholders.tsx
+                                |-- CAT
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- ComputerSystems.tsx
+                                            |-- FileManagement.tsx
+                                            |-- Spreadsheets.tsx
+                                            |-- WordProcessing.tsx
+                                |-- Economics
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- CircularFlowModel.tsx
+                                            |-- EconomicProblem.tsx
+                                            |-- EconomicSystems.tsx
+                                            |-- FactorsOfProduction.tsx
+                                            |-- ProductionPossibilityCurve.tsx
+                                |-- EGD
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- DrawingInstruments.tsx
+                                |-- LifeSciences
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- BiodiversityAndClassification.tsx
+                                            |-- FiveKingdoms.tsx
+                                            |-- SpeciesConcept.tsx
+                                            |-- TaxonomyAndBinomialNomenclature.tsx
+                                |-- PhysicalSciences
+                                    |-- Grade10
+                                        |-- Term1
+                                            |-- AtomsSubatomicParticles.tsx
+                                            |-- ChemicalBonding.tsx
+                                            |-- ClassificationOfMatter.tsx
+                                            |-- PeriodicTableTrends.tsx
+                                            |-- WavesSoundLight.tsx
+                            |-- StudyLibraryPage.tsx
+                |-- index.css
+                |-- lib
+                    |-- actionCenter.ts
+                    |-- announcements.ts
+                    |-- auth.ts
+                    |-- behaviour.ts
+                    |-- events.ts
+                    |-- homeroom.ts
+                    |-- interventions.ts
+                    |-- interventionTemplates.ts
+                    |-- marketplace.ts
+                    |-- marks.ts
+                    |-- myFuture.ts
+                    |-- notifications.ts
+                    |-- parentContacts.ts
+                    |-- parents.ts
+                    |-- pastPapers.ts
+                    |-- resources.ts
+                    |-- schools.ts
+                    |-- studentGoals.ts
+                    |-- studentInsights.ts
+                    |-- students.ts
+                    |-- studentTasks.ts
+                    |-- studyProgress.ts
+                    |-- subjectSelection.ts
+                    |-- supabase.ts
+                    |-- teacherAnalytics.ts
+                    |-- teachers.ts
+                    |-- timetable.ts
+                    |-- topicTests.ts
+                    |-- types.ts
+                    |-- utils.ts
+                |-- main.tsx
+                |-- pages
+                    |-- auth
+                        |-- AdminLogin.tsx
+                        |-- ParentLogin.tsx
+                        |-- PlatformLogin.tsx
+                        |-- shared
+                            |-- AuthShell.tsx
+                            |-- CodeField.tsx
+                            |-- PinInput.tsx
+                        |-- StudentLogin.tsx
+                        |-- TeacherLogin.tsx
+                    |-- portal
+                        |-- admin
+                            |-- AdminAnnouncementsPage.tsx
+                            |-- AdminHomePage.tsx
+                            |-- ClassDetailPage.tsx
+                            |-- ClassesAdminPage.tsx
+                            |-- ParentsAdminPage.tsx
+                            |-- StudentAssignmentsPage.tsx
+                            |-- StudentDetailModal.tsx
+                            |-- StudentsDirectoryPage.tsx
+                            |-- SubjectSelectionAdminPage.tsx
+                            |-- SupplyGuideAdminPage.tsx
+                            |-- TeachersPage.tsx
+                            |-- TimetableAdminPage.tsx
+                        |-- AdminDashboard.tsx
+                        |-- parent
+                            |-- ParentAnnouncementsPage.tsx
+                            |-- ParentAttendancePage.tsx
+                            |-- ParentBehaviourPage.tsx
+                            |-- ParentHomePage.tsx
+                            |-- ParentHomeworkPage.tsx
+                            |-- ParentMarksPage.tsx
+                            |-- ParentTimetablePage.tsx
+                        |-- ParentDashboard.tsx
+                        |-- PlatformAdminDashboard.tsx
+                        |-- PortalEntry.tsx
+                        |-- PortalSidePanel.tsx
+                        |-- shared
+                            |-- MarketplacePage.tsx
+                        |-- student
+                            |-- ApsCalculatorPage.tsx
+                            |-- LibraryPage.tsx
+                            |-- MyFuturePage.tsx
+                            |-- StudentAnnouncementsPage.tsx
+                            |-- StudentBehaviourPage.tsx
+                            |-- StudentCalendarPage.tsx
+                            |-- StudentHomePage.tsx
+                            |-- StudentHomeroomPage.tsx
+                            |-- StudentMarksPage.tsx
+                            |-- StudentPastPapersPage.tsx
+                            |-- StudentResourcesPage.tsx
+                            |-- StudentTimetablePage.tsx
+                            |-- StudentTopicTestsPage.tsx
+                            |-- SubjectSelectionPage.tsx
+                        |-- StudentDashboard.tsx
+                        |-- teacher
+                            |-- AnnouncementsPage.tsx
+                            |-- BehaviourPage.tsx
+                            |-- CalendarPage.tsx
+                            |-- ClassesPage.tsx
+                            |-- HomeroomPage.tsx
+                            |-- MarksPage.tsx
+                            |-- PastPapersPage.tsx
+                            |-- RecordOutcomeModal.tsx
+                            |-- ResourcesPage.tsx
+                            |-- RiskEnginePage.tsx
+                            |-- StudentProgressPage.tsx
+                            |-- SubjectApprovalsPage.tsx
+                            |-- TeacherHomePage.tsx
+                            |-- TimetablePage.tsx
+                            |-- TopicTestsPage.tsx
+                        |-- TeacherDashboard.tsx
+                |-- providers
+                    |-- AuthProvider.tsx
+                    |-- StudySessionContext.tsx
+                |-- shared
+                    |-- components
+                        |-- Constellation.tsx
+                        |-- Dropdown.tsx
+                        |-- ErrorBoundary.tsx
+                        |-- Grain.tsx
+                        |-- NotificationBell.tsx
+                        |-- PremiumBackground.tsx
+                        |-- Shimmer.tsx
+                        |-- toast.tsx
+                    |-- hooks
+                        |-- usePillVisible.ts
+            |-- student-portal-features.md
+            |-- supabase
+                |-- migrations
+                    |-- 20260529000001_student_tasks.sql
+                    |-- 20260603000001_action_center_notifications_templates.sql
+                    |-- 20260705000001_parent_contacts.sql
+            |-- teacher-portal-features.md
+            |-- test-01-home.png
+            |-- test-02-dashboard.png
+            |-- test-03-my-future-empty.png
+            |-- test-04-quiz-page.png
+            |-- test-05-my-future-after-reload.png
+            |-- test-routing.mjs
+            |-- tsconfig.json
+            |-- vercel.json
+            |-- vite.config.ts
 |-- .env.local
 |-- .github
 |-- .gitignore
 |-- .planning
+    |-- FUTURE_FEATURES_SPEC.md
+    |-- marketplace_phase1.sql
+    |-- marketplace_phase2.sql
+    |-- marketplace_phase3.sql
     |-- NEXT_SESSION_PROMPT_topic_tests_content.md
+    |-- STUDENT_PORTAL_DESIGN_ROLLOUT.md
     |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
     |-- project.json
@@ -16,12 +448,39 @@
         |-- package.json
         |-- _metadata.json
 |-- BACKEND_NOTES.md
+|-- ChatGPT Image Jul 11, 2026, 12_34_14 AM.png
+|-- ChatGPT Image Jul 11, 2026, 12_34_31 AM.png
 |-- CLAUDE.md
 |-- e2e-my-future.mjs
+|-- expo
+    |-- a0af27ef-research-plan-template-20240131 (1).docx
+    |-- Abstract.html
+    |-- Abstract.md
+    |-- Abstract_Cover.html
+    |-- b8eb3333-abstract20240131.docx
+    |-- DRAFT_Abstract.txt
+    |-- DRAFT_Abstract_v2.txt
+    |-- DRAFT_Journal.txt
+    |-- DRAFT_Research_Plan.txt
+    |-- DRAFT_Research_Plan_v2.txt
+    |-- DRAFT_Research_Report.txt
+    |-- DRAFT_Research_Report_v2.txt
+    |-- f6af32fa-how-to-write-a-report-eng20240131.docx
+    |-- Journal.md
+    |-- Journal_Cover.html
+    |-- Research_Plan.md
+    |-- Research_Plan_Cover.html
+    |-- Research_Report.md
+    |-- Research_Report_Cover.html
 |-- FEATURES.md
 |-- graphify-out
     |-- .graphify_labels.json
     |-- .graphify_root
+    |-- converted
+        |-- Prospect_Abstract_976ea554.md
+        |-- Prospect_Journal_bc99e031.md
+        |-- Prospect_Research_Plan_b21e8ec7.md
+        |-- Prospect_Research_Report_e187b147.md
     |-- graph.html
     |-- graph.json
     |-- GRAPH_REPORT.md
@@ -29,6 +488,7 @@
     |-- manifest.json
     |-- prospect-callflow.html
 |-- index.html
+|-- newHero.png
 |-- package-lock.json
 |-- package.json
 |-- public
@@ -44,7 +504,10 @@
             |-- latest.json
         |-- water
             |-- latest.json
+    |-- hero-bg.jpg
+    |-- hero-device.png
     |-- hero-devices.webp
+    |-- hero-full.png
     |-- images
         |-- career-education.jpg
         |-- career-engineering.jpg
@@ -58,6 +521,19 @@
         |-- gamified_tablet_1779608887104.png
         |-- hero_topography_1779608850775.png
         |-- logo.png
+        |-- nizamiye-announcements-banner.png
+        |-- nizamiye-behaviour.png
+        |-- nizamiye-calendar.png
+        |-- nizamiye-emblem.png
+        |-- nizamiye-homeroom.png
+        |-- nizamiye-library.png
+        |-- nizamiye-marketplace.png
+        |-- nizamiye-marks.png
+        |-- nizamiye-myfuture.png
+        |-- nizamiye-pastpapers.png
+        |-- nizamiye-resources.png
+        |-- nizamiye-timetable.png
+        |-- nizamiye-topictests.png
         |-- nurse.jpg
         |-- nurse.webp
         |-- paper_bottleneck_1779608869442.png
@@ -72,6 +548,8 @@
     |-- logo-mark.svg
     |-- logo.jpg
     |-- logo.svg
+    |-- logo2.png
+    |-- logo3.png
     |-- robots.txt
     |-- sitemap.xml
     |-- thumbnails
@@ -152,18 +630,10 @@
                 |-- BursariesPage.tsx
                 |-- BursaryDetailPage.tsx
                 |-- CareersPageNew.tsx
-                |-- Grade10SubjectSelectorPage.tsx
-                |-- MapPage.tsx
                 |-- QuizPage.tsx
             |-- services
                 |-- mapService.ts
         |-- landing
-            |-- CareerSection.tsx
-            |-- CTACanvas.tsx
-            |-- CTASection.tsx
-            |-- HeroCanvas.tsx
-            |-- HeroScene.tsx
-            |-- LandingFooter.tsx
             |-- new
                 |-- Animations.tsx
                 |-- AudienceSection.tsx
@@ -191,8 +661,6 @@
                 |-- TeacherTools.tsx
                 |-- VideoShowcase.tsx
                 |-- WaveBackground.tsx
-            |-- Perspectives.tsx
-            |-- ProblemSection.tsx
             |-- UI-REVIEW.md
         |-- study
             |-- data
@@ -280,18 +748,6 @@
                                 |-- PeriodicTableTrends.tsx
                                 |-- WavesSoundLight.tsx
                 |-- StudyLibraryPage.tsx
-        |-- tvet
-            |-- components
-                |-- TVETSubNav.tsx
-            |-- data
-                |-- tvetCareers.ts
-                |-- tvetColleges.ts
-            |-- pages
-                |-- TVETCareersPage.tsx
-                |-- TVETCollegesPage.tsx
-                |-- TVETFundingPage.tsx
-                |-- TVETPage.tsx
-                |-- TVETRequirementsPage.tsx
     |-- index.css
     |-- lib
         |-- actionCenter.ts
@@ -302,6 +758,7 @@
         |-- homeroom.ts
         |-- interventions.ts
         |-- interventionTemplates.ts
+        |-- marketplace.ts
         |-- marks.ts
         |-- myFuture.ts
         |-- notifications.ts
@@ -309,6 +766,7 @@
         |-- parents.ts
         |-- pastPapers.ts
         |-- resources.ts
+        |-- schoolGradeSubjects.ts
         |-- schools.ts
         |-- studentGoals.ts
         |-- studentInsights.ts
@@ -342,10 +800,12 @@
                 |-- ClassDetailPage.tsx
                 |-- ClassesAdminPage.tsx
                 |-- ParentsAdminPage.tsx
+                |-- SchoolSubjectsAdminPage.tsx
                 |-- StudentAssignmentsPage.tsx
                 |-- StudentDetailModal.tsx
                 |-- StudentsDirectoryPage.tsx
                 |-- SubjectSelectionAdminPage.tsx
+                |-- SupplyGuideAdminPage.tsx
                 |-- TeachersPage.tsx
                 |-- TimetableAdminPage.tsx
             |-- AdminDashboard.tsx
@@ -361,6 +821,8 @@
             |-- PlatformAdminDashboard.tsx
             |-- PortalEntry.tsx
             |-- PortalSidePanel.tsx
+            |-- shared
+                |-- MarketplacePage.tsx
             |-- student
                 |-- ApsCalculatorPage.tsx
                 |-- LibraryPage.tsx
@@ -400,10 +862,12 @@
     |-- shared
         |-- components
             |-- Constellation.tsx
+            |-- Dropdown.tsx
             |-- ErrorBoundary.tsx
             |-- Grain.tsx
             |-- NotificationBell.tsx
             |-- PremiumBackground.tsx
+            |-- Shimmer.tsx
             |-- toast.tsx
         |-- hooks
             |-- usePillVisible.ts

@@ -33,7 +33,10 @@ const schoolRows: StaticRow[] = [
 // admin-facing utilities, not exploratory destinations, so a quieter
 // presentation reads more appropriately than the learner's hover-reveal rows.
 const StaticRowList = ({ rows }: { rows: StaticRow[] }) => (
-  <div className="rounded-3xl border border-brand-border overflow-hidden bg-white">
+  <div
+    className="rounded-3xl border border-brand-border overflow-hidden"
+    style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)' }}
+  >
     {rows.map((row) => {
       const Icon = row.icon;
       return (

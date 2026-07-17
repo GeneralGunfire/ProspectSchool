@@ -129,37 +129,26 @@ const easeOut = [0.23, 1, 0.32, 1] as [number, number, number, number];
 // there's no jarring swap from "blank/spinner" to "fully populated" —
 // the layout is stable and only the content fades/slides in once ready.
 function StudentHomeSkeleton({ session }: { session: StudentSession }) {
-  const [imgLoaded, setImgLoaded] = useState(false);
   return (
     <div className="student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-emblem.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.78 : 0 }}
-            transition={{ duration: 0.6, ease: easeOut }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.74) 0%, rgba(21,23,28,0.52) 35%, rgba(21,23,28,0.22) 62%, rgba(21,23,28,0.56) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 38%, rgba(21,23,28,0.78) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+          }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}
             className="flex items-center gap-2 min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 leading-none whitespace-nowrap">
-              {new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </p>
-            <span className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
-            <p className="text-[11px] text-white/45 font-medium truncate">
-              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
+              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''} · {new Date().toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut, delay: 0.06 }}
-            className="font-display font-extrabold text-white text-[32px] sm:text-[44px] mt-4 leading-[1.08]"
-            style={{ letterSpacing: '-0.025em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+            className="text-brand-dark text-[32px] sm:text-[42px] mt-2 leading-[1.12]"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
             {(() => {
               const h = new Date().getHours();
               return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
@@ -222,6 +211,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   const [allMarks, setAllMarks] = useState<StudentResult[]>([]);
   const [completions, setCompletions] = useState<Set<number>>(new Set());
   const [studyProgress, setStudyProgress] = useState<StudyProgress[]>([]);
+  const [enrolledSubjects, setEnrolledSubjects] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [apsScore, setApsScore] = useState<number | null>(null);
@@ -234,9 +224,11 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
     async function load() {
       const { data: links } = await supabaseAdmin
         .from('teacher_students')
-        .select('subject_id')
+        .select('subject_id, subjects(label)')
         .eq('student_id', session.student_id);
       const subjectIds = [...new Set((links ?? []).map((r: any) => r.subject_id as number))];
+      const subjectLabels = [...new Set((links ?? []).map((r: any) => r.subjects?.label as string).filter(Boolean))].sort();
+      setEnrolledSubjects(subjectLabels);
 
       const [announcs, events, comps, marks, progress] = await Promise.all([
         fetchStudentAnnouncements(session.school_id, session.student_id, session.grade, session.cohort_id, subjectIds),
@@ -589,77 +581,74 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
+          No buttons in this band (house rule — hero/top-strip banners on
+          any page stay button-free; the APS/Goal chips below are static
+          readouts, not actions). The gradient sweeps from a clear
+          blue-grey at the top down through the page's own paper tone,
+          continuing faintly past the fold so it blends into the first
+          card rather than cutting off at a hard edge. */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+          }} />
+        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
+        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
 
-        {/* Full-bleed emblem strip — the fabric/crest photo run edge-to-edge
-            behind a light charcoal scrim, so the crest itself stays
-            genuinely visible rather than buried under a near-opaque wash */}
-        <div className="absolute inset-0 pointer-events-none">
-          <img src="/images/nizamiye-emblem.png" alt=""
-            className="w-full h-full object-cover opacity-[0.78]" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.74) 0%, rgba(21,23,28,0.52) 35%, rgba(21,23,28,0.22) 62%, rgba(21,23,28,0.56) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 38%, rgba(21,23,28,0.78) 100%)' }} />
-        </div>
-        {/* Faint sapphire wash, low + far corner — institutional, not glowy */}
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
-
-          {/* Date row — quiet, single line, no longer competing with the greeting */}
+          {/* Eyebrow row — quiet single line above the greeting */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
             className="flex items-center gap-2 min-w-0"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40 leading-none whitespace-nowrap">{heroDate}</p>
-            <span className="w-1 h-1 rounded-full bg-white/25 shrink-0" />
-            <p className="text-[11px] text-white/45 font-medium truncate">
-              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
+              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''} · {heroDate}
             </p>
           </motion.div>
 
-          {/* Greeting row — the dominant element, badge now sits beside it
-              at the same visual weight instead of pulling focus upward.
-              On mobile the badge drops below the greeting instead of
-              disappearing, so APS/goal info isn't lost on small screens. */}
-          <div className="flex flex-wrap items-end justify-between gap-3 mt-4">
-            <motion.h1
-              initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease, delay: 0.06 }}
-              className="font-display font-extrabold text-white text-[26px] sm:text-[44px] leading-[1.1] min-w-0"
-              style={{ letterSpacing: '-0.025em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}
-            >
-              {greeting}, {session.name}.
-            </motion.h1>
+          {/* Greeting row — the dominant element. Badge sits below it on
+              its own line rather than squeezed to the baseline, so both
+              read cleanly instead of fighting for the same alignment. */}
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+          >
+            {greeting}, {session.name}.
+          </motion.h1>
 
-            {apsScore !== null ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease, delay: 0.1 }}
-                className="shrink-0 border border-white/15 bg-white/[0.06] rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center sm:mb-1"
-              >
-                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">APS</p>
-                <p className="font-black text-base sm:text-xl leading-none mt-1 text-white">{apsScore}</p>
-              </motion.div>
-            ) : goals.targetCareer ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease, delay: 0.1 }}
-                className="shrink-0 border border-white/15 bg-white/[0.06] rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center max-w-[140px] sm:mb-1"
-              >
-                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Goal</p>
-                <p className="font-black text-white text-[11px] sm:text-xs leading-tight mt-1 truncate">{goals.targetCareer}</p>
-              </motion.div>
-            ) : null}
-          </div>
+          {(apsScore !== null || goals.targetCareer) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease, delay: 0.1 }}
+              className="inline-flex items-center gap-2 mt-4 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5"
+            >
+              {apsScore !== null ? (
+                <>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">APS</span>
+                  <span className="font-black text-sm text-brand-dark">{apsScore}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">Goal</span>
+                  <span className="font-bold text-[13px] text-brand-dark truncate max-w-[180px]">{goals.targetCareer}</span>
+                </>
+              )}
+            </motion.div>
+          )}
         </div>
       </div>
 
-      {/* ═══ Body — white page ═══════════════════════════════════════ */}
+      {/* ═══ Body ══════════════════════════════════════════════════ */}
       <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-4 sm:space-y-6 pt-5 sm:pt-8">
 
         {/* Today's Focus — moved out of the hero into its own card so the
@@ -687,13 +676,13 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                     focusItem.type === 'urgent' ? 'border-red-200 bg-red-50 text-red-600'
                     : focusItem.type === 'soon' ? 'border-amber-200 bg-amber-50 text-amber-700'
                     : focusItem.type === 'exam' ? 'border-violet-200 bg-violet-50 text-violet-700'
-                    :                             'border-brand-border bg-[var(--color-paper-raise)] text-stone-500'
+                    :                             'border-[rgba(56,65,79,0.16)] bg-[var(--color-depth-wash)] text-[var(--color-depth)]'
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${
                       focusItem.type === 'urgent' ? 'bg-red-500'
                       : focusItem.type === 'soon' ? 'bg-amber-500'
                       : focusItem.type === 'exam' ? 'bg-violet-500'
-                      :                             'bg-stone-400'
+                      :                             'bg-[var(--color-depth)]'
                     }`} />
                     {focusItem.label} · {daysUntil(focusItem.event.event_date)}
                   </div>
@@ -763,26 +752,26 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                       <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
                     </motion.button>
                   )}
-                  <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('library')}
-                    className="group flex items-center justify-center gap-2 bg-[var(--color-paper-raise)] text-brand-dark font-semibold text-sm px-5 py-3 rounded hover:bg-brand-border transition-colors duration-200 border border-brand-border shadow-[0_1px_2px_rgba(21,23,28,0.06),0_6px_16px_-8px_rgba(21,23,28,0.2)]">
-                    <BookOpen className="w-4 h-4" />
+                  <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                    className="group flex items-center justify-center gap-1.5 text-stone-500 hover:text-brand-dark font-semibold text-[13px] px-2 py-2 rounded transition-colors duration-200">
+                    <BookOpen className="w-3.5 h-3.5" />
                     Open Library
-                    <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                    <ChevronRight className="w-3 h-3 -ml-0.5 transition-transform duration-300 group-hover:translate-x-1" />
                   </motion.button>
                 </>
               ) : (
-                <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('library')}
-                  className="edge-glow group flex items-center justify-center gap-2 bg-accent text-white font-bold text-sm px-5 py-3 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
-                  <BookOpen className="w-4 h-4" />
+                <motion.button whileTap={tap} onClick={() => onNavigate('library')}
+                  className="group flex items-center justify-center gap-1.5 text-stone-500 hover:text-brand-dark font-semibold text-[13px] px-2 py-2 rounded transition-colors duration-200">
+                  <BookOpen className="w-3.5 h-3.5" />
                   Start Studying
-                  <ChevronRight className="w-3.5 h-3.5 -ml-1 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ChevronRight className="w-3 h-3 -ml-0.5 transition-transform duration-300 group-hover:translate-x-1" />
                 </motion.button>
               )}
 
               {totalHomework > 0 && (
                 <div className="flex items-center gap-3 mt-1 pt-3 border-t border-brand-border">
                   <div className="relative shrink-0">
-                    <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(21,23,28,0.08)" />
+                    <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(56,65,79,0.12)" />
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-[10px] font-black text-brand-dark leading-none"><Counter value={hwCompletionPct} />%</span>
                     </div>
@@ -852,7 +841,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 ) : (
                   <>
                     <div className="relative shrink-0">
-                      <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(10,14,26,0.08)" />
+                      <Ring pct={hwCompletionPct} size={40} stroke={4} trackColor="rgba(56,65,79,0.12)" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="font-black text-[13px] text-brand-dark leading-none"><Counter value={pendingHomework.length} /></span>
                       </div>
@@ -922,9 +911,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   <p className="text-[rgba(31,36,33,0.4)] text-[12px] leading-snug mt-0.5">Appears once your first assessment is marked.</p>
                 </div>
               )}
-              <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={() => onNavigate('marks')}
-                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold px-3 py-2 rounded transition-colors"
-                style={{ color: 'var(--color-accent-foreground)', background: 'var(--color-accent)' }}>
+              <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold text-stone-500 hover:text-brand-dark px-3 py-2 rounded transition-colors">
                 My marks <ArrowUpRight className="w-3.5 h-3.5" />
               </motion.button>
             </div>
@@ -971,9 +959,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                   </AnimatePresence>
                 </div>
               )}
-              <motion.button whileTap={tap} whileHover={{ y: -1 }} onClick={e => { e.stopPropagation(); onNavigate('announcements'); }}
-                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold px-3 py-2 rounded transition-colors"
-                style={{ color: 'var(--color-accent-foreground)', background: 'var(--color-accent)' }}>
+              <motion.button whileTap={tap} onClick={e => { e.stopPropagation(); onNavigate('announcements'); }}
+                className="self-end mt-auto pt-3 inline-flex items-center gap-1 text-[12px] font-bold text-stone-500 hover:text-brand-dark px-3 py-2 rounded transition-colors">
                 Read all <ArrowUpRight className="w-3.5 h-3.5" />
               </motion.button>
             </div>
@@ -1032,7 +1019,7 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                           exit={{ opacity: 0, scale: 0.92 }}
                           transition={{ duration: 0.28, ease }}
                         >
-                          <Ring pct={active?.pct ?? 0} size={128} stroke={10} trackColor="rgba(21,23,28,0.07)" />
+                          <Ring pct={active?.pct ?? 0} size={128} stroke={10} trackColor="rgba(56,65,79,0.10)" />
                         </motion.div>
                       </AnimatePresence>
                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
@@ -1173,41 +1160,50 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </div>
         </motion.div>
 
-        {/* ═══ Homework + Subjects ═════════════════════════════════ */}
+        {/* ═══ Pending Homework — full width, time-sensitive ═════════ */}
+        {pendingHomework.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.3 }}
+            className="paper-card rounded p-5 sm:p-6"
+          >
+            <div className="flex items-center gap-2.5 mb-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Pending Homework</p>
+              <span className="flex-1 h-px bg-brand-border" />
+              <span className="text-[11px] font-bold text-stone-400">{completions.size} done</span>
+            </div>
+            <div className="h-1 rounded-full overflow-hidden mb-4" style={{ background: 'var(--color-paper-raise)' }}>
+              <motion.div
+                initial={{ width: 0 }} animate={{ width: `${hwCompletionPct}%` }}
+                transition={{ duration: 0.8, ease }}
+                className="h-full bg-accent rounded-full"
+              />
+            </div>
+            <HomeworkGroup label="Due Today" items={hwToday} urgency="high" />
+            <HomeworkGroup label="Due Tomorrow" items={hwTomorrow} urgency="mid" />
+            <HomeworkGroup label="This Week" items={hwLater} urgency="low" />
+          </motion.div>
+        )}
+
+        {/* ═══ Subjects + Recent Activity — matched pair ═════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
 
-          {pendingHomework.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease, delay: 0.3 }}
-              className="paper-card rounded p-5 sm:p-6"
-            >
-              <div className="flex items-center gap-2.5 mb-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Pending Homework</p>
-                <span className="flex-1 h-px bg-brand-border" />
-                <span className="text-[11px] font-bold text-stone-400">{completions.size} done</span>
-              </div>
-              <div className="h-1 rounded-full overflow-hidden mb-4" style={{ background: 'var(--color-paper-raise)' }}>
-                <motion.div
-                  initial={{ width: 0 }} animate={{ width: `${hwCompletionPct}%` }}
-                  transition={{ duration: 0.8, ease }}
-                  className="h-full bg-accent rounded-full"
-                />
-              </div>
-              <HomeworkGroup label="Due Today" items={hwToday} urgency="high" />
-              <HomeworkGroup label="Due Tomorrow" items={hwTomorrow} urgency="mid" />
-              <HomeworkGroup label="This Week" items={hwLater} urgency="low" />
-            </motion.div>
-          )}
-
-          {subjectProgress.length > 0 && (
+          {enrolledSubjects.length > 0 && (() => {
+            // Union of every subject the student is actually enrolled in
+            // (teacher_students — always accurate, even before any marks
+            // exist) with subjectProgress (mark stats where available), so
+            // subjects with no marks yet still show up instead of being
+            // silently dropped.
+            const progressByLabel = new Map(subjectProgress.map(s => [s.label, s]));
+            const allSubjectRows = enrolledSubjects.map(label => progressByLabel.get(label) ?? { label, pct: 0, count: 0 });
+            return (
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease, delay: 0.34 }}
               className="paper-card rounded p-5 sm:p-6"
             >
               <div className="flex items-center gap-2.5 mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Subjects</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">My Subjects</p>
                 <span className="flex-1 h-px bg-brand-border" />
                 <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
                   className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors">
@@ -1215,7 +1211,8 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 </motion.button>
               </div>
               <div className="space-y-1">
-                {subjectProgress.map(s => {
+                {allSubjectRows.map(s => {
+                  const hasMarks = s.count > 0;
                   const isOpen = expandedSubject === s.label;
                   const subjectMarks = allMarks
                     .filter(m => (m.subject_label || 'Other') === s.label)
@@ -1236,22 +1233,30 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                             <span className="text-sm font-bold text-stone-700">{s.label}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-stone-400">{s.count} assessed</span>
-                            <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
-                              {s.pct}%
-                            </span>
+                            {hasMarks ? (
+                              <>
+                                <span className="text-[11px] text-stone-400">{s.count} assessed</span>
+                                <span className={`text-sm font-black ${s.pct >= 70 ? 'text-emerald-600' : s.pct >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
+                                  {s.pct}%
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-[11px] text-stone-400">No marks yet</span>
+                            )}
                             <motion.span animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
                               <ChevronRight className="w-3 h-3 text-stone-300" />
                             </motion.span>
                           </div>
                         </div>
-                        <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--color-paper-raise)' }}>
-                          <motion.div
-                            initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
-                            transition={{ duration: 0.8, ease }}
-                            className={`h-full rounded-full ${s.pct >= 70 ? 'bg-emerald-500' : s.pct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
-                          />
-                        </div>
+                        {hasMarks && (
+                          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--color-paper-raise)' }}>
+                            <motion.div
+                              initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
+                              transition={{ duration: 0.8, ease }}
+                              className={`h-full rounded-full ${s.pct >= 70 ? 'bg-emerald-500' : s.pct >= 50 ? 'bg-amber-400' : 'bg-red-400'}`}
+                            />
+                          </div>
+                        )}
                       </button>
                       <AnimatePresence initial={false}>
                         {isOpen && (
@@ -1281,7 +1286,69 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
                 })}
               </div>
             </motion.div>
-          )}
+            );
+          })()}
+
+          {/* Recent Activity — matched pair with My Subjects */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease, delay: 0.38 }}
+            className="paper-card rounded p-5 sm:p-6"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Recent Activity</p>
+              <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
+                className="inline-flex items-center gap-1.5 text-[13px] font-bold text-stone-500 hover:text-accent transition-colors">
+                My marks <ArrowUpRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </div>
+
+            {activity.length === 0 ? (
+              <div className="flex items-center gap-3 py-3">
+                <TrendingUp className="w-8 h-8 text-stone-200" />
+                <p className="text-[14px] font-semibold text-[rgba(31,36,33,0.45)]">No recent activity</p>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {activity.map((item, i) => (
+                  <motion.div key={i}
+                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease, delay: 0.41 + i * 0.04 }}
+                    className={`flex items-start gap-3 py-2 ${i > 0 ? 'border-t' : ''}`}
+                    style={{ borderColor: 'var(--color-brand-border)' }}>
+                    {item.kind === 'mark' ? (
+                      <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
+                        <ClipboardList className="w-4 h-4 text-blue-600" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 rounded bg-amber-50 flex items-center justify-center shrink-0">
+                        <Megaphone className="w-4 h-4 text-amber-600" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+                      {item.kind === 'mark' ? (
+                        <>
+                          <p className="text-[14px] font-bold text-brand-dark truncate">
+                            {item.data.subject_label}
+                            <span className="font-semibold text-[rgba(31,36,33,0.5)]"> · {gradeLabel(item.data.mark!, item.data.total).label}</span>
+                          </p>
+                          <p className="text-[13px] font-black shrink-0" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                            {item.data.mark}<span className="text-[rgba(31,36,33,0.4)] font-bold">/{item.data.total}</span>
+                            <span className="ml-1.5 text-[rgba(31,36,33,0.45)] font-bold">{Math.round((item.data.mark! / item.data.total) * 100)}%</span>
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-[14px] font-bold text-brand-dark truncate">{item.data.title}</p>
+                          <p className="text-[12px] font-semibold text-[rgba(31,36,33,0.4)] shrink-0">{timeAgo(item.ts)}</p>
+                        </>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
         </div>
 
         {/* ═══ Academic Coaching (+ history) ═══════════════════════ */}
@@ -1481,67 +1548,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           </motion.div>
         )}
 
-        {/* ═══ Recent activity + quick actions ═════════════════════ */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease, delay: 0.42 }}
-          className="paper-card rounded p-5 sm:p-6"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[12px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Recent Activity</p>
-            <motion.button whileTap={tap} onClick={() => onNavigate('marks')}
-              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-stone-500 hover:text-accent transition-colors">
-              My marks <ArrowUpRight className="w-3.5 h-3.5" />
-            </motion.button>
-          </div>
-
-          {activity.length === 0 ? (
-            <div className="flex items-center gap-3 py-3">
-              <TrendingUp className="w-8 h-8 text-stone-200" />
-              <p className="text-[14px] font-semibold text-[rgba(31,36,33,0.45)]">No recent activity</p>
-            </div>
-          ) : (
-            <div className="space-y-1">
-              {activity.map((item, i) => (
-                <motion.div key={i}
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, ease, delay: 0.45 + i * 0.04 }}
-                  className={`flex items-start gap-3 py-2 ${i > 0 ? 'border-t' : ''}`}
-                  style={{ borderColor: 'var(--color-brand-border)' }}>
-                  {item.kind === 'mark' ? (
-                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
-                      <ClipboardList className="w-4 h-4 text-blue-600" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 rounded bg-amber-50 flex items-center justify-center shrink-0">
-                      <Megaphone className="w-4 h-4 text-amber-600" />
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-                    {item.kind === 'mark' ? (
-                      <>
-                        <p className="text-[14px] font-bold text-brand-dark truncate">
-                          {item.data.subject_label}
-                          <span className="font-semibold text-[rgba(31,36,33,0.5)]"> · {gradeLabel(item.data.mark!, item.data.total).label}</span>
-                        </p>
-                        <p className="text-[13px] font-black shrink-0" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                          {item.data.mark}<span className="text-[rgba(31,36,33,0.4)] font-bold">/{item.data.total}</span>
-                          <span className="ml-1.5 text-[rgba(31,36,33,0.45)] font-bold">{Math.round((item.data.mark! / item.data.total) * 100)}%</span>
-                        </p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="text-[14px] font-bold text-brand-dark truncate">{item.data.title}</p>
-                        <p className="text-[12px] font-semibold text-[rgba(31,36,33,0.4)] shrink-0">{timeAgo(item.ts)}</p>
-                      </>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-        </motion.div>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const LINKS = [
 export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
     <div className="fixed top-4 left-0 right-0 z-50 px-4">
-      <nav className="max-w-3xl mx-auto bg-white/40 backdrop-blur-xl backdrop-saturate-150 border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
+      <nav className="max-w-3xl mx-auto bg-white border border-black/5 shadow-lg shadow-slate-900/8 rounded-full">
         <div className="h-13 flex items-center px-2.5">
           <div className="w-full flex justify-between items-center">
             {/* Logo */}

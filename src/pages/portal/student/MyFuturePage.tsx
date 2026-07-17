@@ -88,7 +88,6 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   const [apsData,         setApsData]         = useState<{ aps: number; subjects: { code: string; percent: number }[] } | null>(null);
   const [savedBursaries,  setSavedBursaries]  = useState<Bursary[]>([]);
   const [loading,         setLoading]         = useState(true);
-  const [imgLoaded,       setImgLoaded]       = useState(false);
   const [subView,         setSubView]         = useState<SubView>(initialSubView);
   const [completedInv,    setCompletedInv]    = useState<import('../../../lib/interventions').Intervention[]>([]);
   const [interventionOutcomes, setInterventionOutcomes] = useState<import('../../../lib/interventions').Outcome[]>([]);
@@ -212,7 +211,28 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   if (loading) {
     return (
       <div className="student-home min-h-full pb-16">
-        <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]" />
+        <div className="relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none"
+            style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+          <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+              maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+            }} />
+          <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
+              className="flex items-center gap-2 min-w-0">
+              <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
+                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+              </p>
+            </motion.div>
+            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
+              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
+              My Future
+            </motion.h1>
+          </div>
+        </div>
         <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-6 sm:pt-8 space-y-5">
           {[0, 1, 2].map(i => (
             <motion.div key={i}
@@ -273,49 +293,62 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   return (
     <div className="student-home min-h-full pb-16">
 
-      {/* ═══ Hero — full-width crested banner ═══════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-myfuture.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
+          No buttons in this band (house rule). Stat readouts below the
+          title are static pills, not actions. */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+          }} />
+        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
+        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
+
+          {/* Eyebrow row */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5"
+            className="flex items-center gap-2 min-w-0"
           >
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">{session.school_name}</p>
-              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
-                {session.name} {session.surname}
-              </h1>
-              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
-                Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2 shrink-0">
-              {[
-                { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
-                { value: String(topicsMastered),              label: 'Mastered' },
-                { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
-              ].map(stat => (
-                <div key={stat.label} className="flex flex-col items-center border border-white/15 bg-white/[0.05] rounded px-4 py-2.5 min-w-18">
-                  <span className="text-white font-black text-xl leading-none">{stat.value}</span>
-                  <span className="text-white/45 text-[9px] font-bold uppercase tracking-wider mt-1">{stat.label}</span>
-                </div>
-              ))}
-            </div>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
+              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+            </p>
+          </motion.div>
+
+          {/* Title */}
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+          >
+            My Future
+          </motion.h1>
+
+          {/* Stat pills — static readouts, not actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.1 }}
+            className="flex flex-wrap gap-2 mt-4"
+          >
+            {[
+              { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
+              { value: String(topicsMastered),              label: 'Mastered' },
+              { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
+            ].map(stat => (
+              <div key={stat.label}
+                className="inline-flex items-center gap-2 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
+                <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">{stat.label}</span>
+                <span className="font-black text-sm text-brand-dark">{stat.value}</span>
+              </div>
+            ))}
           </motion.div>
         </div>
       </div>

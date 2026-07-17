@@ -698,16 +698,63 @@ html {
 .badge-neutral { background: #f1f5f9; color: #475569; }
 
 /* ─── Landing page — scoped accent override ───
-   Repoints the shared --color-accent token (globally the bright blue used
-   by shadcn defaults) to the same deep midnight navy the student dashboard
-   uses, so the marketing site's CTAs/highlights read as the same brand as
-   the real product. Scoped to .landing-page only — the rest of the app
-   (portals, admin) keeps the original blue accent. */
+   Repoints the shared tokens to the exact "institutional charcoal" palette
+   the student dashboard uses (.student-home below) — warm charcoal text,
+   cool blue-grey depth accent, cool-grey paper surfaces — so the marketing
+   site and the real product read as the same brand. Scoped to .landing-page
+   only — the rest of the app (portals, admin) keeps its own tokens. */
 .landing-page {
-  --color-accent: #0a0e1a;
-  --color-accent-soft: #2a3350;
+  --color-accent: #1f2421;
+  --color-accent-soft: #343b36;
   --color-accent-foreground: #ffffff;
-  --color-paper-raise: #f1efe9;
+  --color-brand-dark: #1f2421;
+  --color-brand-border: rgba(15, 23, 21, 0.09);
+  --color-brand-bg: #f7f6f2;
+  --color-paper-raise: #eef0f1;
+  --color-depth: #38414f;
+  --color-depth-soft: #4e5a6c;
+  --color-depth-wash: rgba(56, 65, 79, 0.07);
+  /* One clear, cool, minimal gradient for the whole page — a soft
+     blue-grey wash top-to-bottom rather than per-section fills, so
+     scrolling never shows a seam between sections. */
+  background: linear-gradient(180deg, #eef1f2 0%, #e7ebec 45%, #e2e6e8 100%);
+  background-attachment: fixed;
+}
+
+/* Same faint dot-grid texture as .student-home, scoped to the landing page. */
+.landing-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+  background-image: radial-gradient(rgba(31, 36, 33, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Same one-card recipe as .student-home .paper-card, scoped here so every
+   landing section can use `paper-card` and match the real dashboard. */
+.landing-page .paper-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
+  border: 1px solid var(--color-brand-border);
+  border-radius: 10px;
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 18, 15, 0.10),
+    0 10px 24px -6px rgba(15, 18, 15, 0.20),
+    0 32px 56px -20px rgba(15, 18, 15, 0.28);
+  transition: border-color 0.3s ease, box-shadow 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+.landing-page .paper-card:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 2px 4px rgba(15, 18, 15, 0.12),
+    0 18px 36px -8px rgba(15, 18, 15, 0.28),
+    0 48px 80px -24px rgba(15, 18, 15, 0.36);
 }
 
 /* ─── Student Home — "premium paper" scoped reskin ───
@@ -729,10 +776,17 @@ html {
   --color-brand-dark: #1f2421;          /* warm charcoal text, not pure black */
   --color-brand-border: rgba(15, 23, 21, 0.07);   /* hairline on paper surfaces */
   --color-brand-bg: #f7f6f2;
-  --color-paper-raise: #f1efe9;         /* raised chip surface on cards */
+  --color-paper-raise: #eef0f1;         /* raised chip surface on cards — cool grey, matches depth accent */
+  /* Depth accent — clean blue-grey (stone-blue, near the navy logo
+     family, no green), layered in alongside (not replacing) the
+     charcoal buttons: sidebar active glow, focus badges, ring accents,
+     subtle washes. Cool counterpoint to the warm paper bg. */
+  --color-depth: #38414f;
+  --color-depth-soft: #4e5a6c;
+  --color-depth-wash: rgba(56, 65, 79, 0.07);
   background:
-    radial-gradient(1200px 700px at 50% 0%, rgba(10, 14, 26, 0.035), transparent 62%),
-    #eeece5;
+    radial-gradient(1200px 700px at 50% 0%, rgba(56, 65, 79, 0.05), transparent 62%),
+    #eaebec;
   background-attachment: fixed;
   color-scheme: light;
 }

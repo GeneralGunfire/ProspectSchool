@@ -8,6 +8,7 @@ export interface Subject {
   code: string;
   label: string;
   grades: string;
+  school_id?: number | null;
 }
 
 export interface Student {

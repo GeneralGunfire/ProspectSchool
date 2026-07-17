@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock, ListChecks, ShoppingBag, BookOpen } from 'lucide-react';
+import { LogOut, Home, GraduationCap, Megaphone, Menu, X, UsersRound, Users, School, Heart, CalendarClock, ListChecks, ShoppingBag, BookOpen, BookMarked } from 'lucide-react';
 import { getAdminSession, adminLogout, type AdminSession } from '../../lib/auth';
 import TeachersPage from './admin/TeachersPage';
 import AdminAnnouncementsPage from './admin/AdminAnnouncementsPage';
@@ -11,10 +11,11 @@ import StudentsDirectoryPage from './admin/StudentsDirectoryPage';
 import ParentsAdminPage from './admin/ParentsAdminPage';
 import TimetableAdminPage from './admin/TimetableAdminPage';
 import SubjectSelectionAdminPage from './admin/SubjectSelectionAdminPage';
+import SchoolSubjectsAdminPage from './admin/SchoolSubjectsAdminPage';
 import MarketplacePage from './shared/MarketplacePage';
 import SupplyGuideAdminPage from './admin/SupplyGuideAdminPage';
 
-type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable' | 'subject-selection' | 'marketplace' | 'supply-guide';
+type ActivePage = 'home' | 'teachers' | 'announcements' | 'assignments' | 'classes' | 'students' | 'parents' | 'timetable' | 'subject-selection' | 'school-subjects' | 'marketplace' | 'supply-guide';
 
 interface AdminDashboardProps {
   onNavigate: (page: string) => void;
@@ -45,6 +46,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
     { id: 'classes',       label: 'Classes',       icon: School },
     { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
     { id: 'subject-selection', label: 'Subject Selection', icon: ListChecks },
+    { id: 'school-subjects', label: 'Subjects by Grade', icon: BookMarked },
     { id: 'assignments',   label: 'Assignments',   icon: UsersRound },
     ...(session.school_id ? [{ id: 'marketplace' as ActivePage, label: 'Marketplace', icon: ShoppingBag }] : []),
     ...(session.school_id ? [{ id: 'supply-guide' as ActivePage, label: 'Supply Guide', icon: BookOpen }] : []),
@@ -216,6 +218,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {activePage === 'parents'       && <ParentsAdminPage session={session} />}
           {activePage === 'timetable'     && <TimetableAdminPage session={session} />}
           {activePage === 'subject-selection' && <SubjectSelectionAdminPage session={session} />}
+          {activePage === 'school-subjects' && <SchoolSubjectsAdminPage session={session} />}
           {activePage === 'assignments'   && <StudentAssignmentsPage session={session} />}
           {activePage === 'marketplace' && session.school_id && (
             <MarketplacePage sellerType="admin" sellerId={session.admin_id} schoolId={session.school_id} />

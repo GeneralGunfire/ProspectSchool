@@ -7,7 +7,7 @@ import { Grain } from './Grain';
 // mounted for the whole page. Never opaque enough to compete with content;
 // every layer here is either very low opacity or heavily blurred.
 export const PremiumBackground = () => (
-  <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-brand-bg">
+  <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" style={{ background: '#eaebec' }}>
     {/* -z-10 is required, not optional: `position: fixed` puts this element in
         the browser's "positioned, z-index:auto" paint layer, which renders
         ABOVE ordinary (non-positioned) content regardless of DOM order — so

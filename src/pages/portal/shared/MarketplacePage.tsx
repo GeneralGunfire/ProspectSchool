@@ -69,7 +69,6 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
   const [guideItems, setGuideItems]         = useState<SupplyGuideItem[]>([]);
   const [removedIds, setRemovedIds]         = useState<Set<number>>(new Set());
   const [loading, setLoading]               = useState(true);
-  const [imgLoaded, setImgLoaded]           = useState(false);
   const [imageUrls, setImageUrls]           = useState<Map<string, string>>(new Map());
   const [interestedMap, setInterestedMap]   = useState<Map<number, boolean>>(new Map());
   const [toast, setToast]                   = useState<string | null>(null);
@@ -328,59 +327,66 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
         )}
       </AnimatePresence>
 
-      {/* ═══ Hero — full-width crested banner ═══════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-marketplace.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
+          No buttons in this band (house rule). Action buttons live in the
+          control bar below. */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+          }} />
+        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
+        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex flex-wrap items-end justify-between gap-4"
-          >
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">School Supplies</p>
-              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
-                Marketplace
-              </h1>
-              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
-                Buy, sell and request textbooks and supplies with your school community.
-              </p>
-            </div>
-            {(tab === 'browse' || tab === 'mine') && (
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={() => { closeSellForm(); setTab('sell'); }}
-                className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
-                style={{ background: 'var(--color-accent)' }}
-              >
-                <Plus className="w-4 h-4" /> Sell an Item
-              </motion.button>
-            )}
-            {(tab === 'wanted' || tab === 'my-wanted') && (
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={() => { closeWantedForm(); setTab('post-wanted'); }}
-                className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
-                style={{ background: 'var(--color-accent)' }}
-              >
-                <Plus className="w-4 h-4" /> Post a Request
-              </motion.button>
-            )}
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
+            className="flex items-center gap-2 min-w-0">
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">School Supplies</p>
           </motion.div>
+
+          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
+            Marketplace
+          </motion.h1>
+
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
+            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
+            Buy, sell and request textbooks and supplies with your school community.
+          </motion.p>
         </div>
+      </div>
+
+      {/* ── Control bar with action buttons ───────────────────────────── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-4 sm:pt-5">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
+          className="flex flex-wrap gap-2">
+          {(tab === 'browse' || tab === 'mine') && (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { closeSellForm(); setTab('sell'); }}
+              className="flex items-center gap-2 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+              style={{ background: 'var(--color-accent)' }}
+            >
+              <Plus className="w-4 h-4" /> Sell an Item
+            </motion.button>
+          )}
+          {(tab === 'wanted' || tab === 'my-wanted') && (
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={() => { closeWantedForm(); setTab('post-wanted'); }}
+              className="flex items-center gap-2 text-white text-sm font-bold px-4 py-2.5 rounded transition-colors"
+              style={{ background: 'var(--color-accent)' }}
+            >
+              <Plus className="w-4 h-4" /> Post a Request
+            </motion.button>
+          )}
+        </motion.div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}

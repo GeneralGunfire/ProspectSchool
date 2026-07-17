@@ -73,11 +73,15 @@ const FeatureTile = ({ feature }: { feature: Feature }) => {
       ref={ref}
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
-      className="group group/spot relative overflow-hidden rounded-2xl bg-white border border-brand-border p-6 hover:border-accent/40 transition-colors"
+      className="group group/spot relative overflow-hidden rounded-2xl p-6 border border-brand-border hover:border-accent/40 transition-colors"
+      style={{
+        background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.06), 0 10px 20px -10px rgba(15,18,15,0.10)',
+      }}
     >
       <SpotlightGlow tone="accent" />
-      <div className="w-10 h-10 rounded-xl bg-brand-dark/8 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
-        <Icon className="w-4.5 h-4.5 text-brand-dark" />
+      <div className="w-11 h-11 rounded-xl bg-brand-dark/8 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+        <Icon className="w-5 h-5 text-brand-dark" />
       </div>
       <h4 className="font-black text-[14px] tracking-tight text-brand-dark">{feature.title}</h4>
       <p className="text-[13px] leading-relaxed font-medium text-brand-eyebrow mt-2">{feature.description}</p>

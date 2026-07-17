@@ -1,4 +1,3 @@
-import { PremiumBackground } from '../../../shared/components/PremiumBackground';
 import { Navbar } from './Navbar';
 import { Hero } from './Hero';
 import { LearnerFeatureCards } from './LearnerFeatureCards';
@@ -29,24 +28,19 @@ interface LandingPageProps {
 export default function LandingPage({ onNavigate }: LandingPageProps) {
   return (
     <main className="relative min-h-screen landing-page">
-      <PremiumBackground />
       <Navbar onNavigate={onNavigate} />
       <Hero onNavigate={onNavigate} />
 
-      <div style={{ background: 'linear-gradient(180deg, #EDF3FA 0%, #F5F9FC 35%, #F8FBFD 100%)' }}>
-        <LearnerFeatureCards onNavigate={onNavigate} />
-        <CareerPaths onNavigate={onNavigate} />
-        <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
-        <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>
-      </div>
+      <LearnerFeatureCards onNavigate={onNavigate} />
+      <CareerPaths onNavigate={onNavigate} />
+      <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
+      <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>
 
       <QuoteSection />
 
-      <div style={{ background: 'linear-gradient(180deg, #EDF3FA 0%, #F5F9FC 40%, #F5F9FC 100%)' }}>
-        <div className="cv-auto"><Pricing onNavigate={onNavigate} /></div>
-        <div className="cv-auto"><FinalCTA onNavigate={onNavigate} /></div>
-        <div className="cv-auto"><Footer onNavigate={onNavigate} /></div>
-      </div>
+      <div className="cv-auto"><Pricing onNavigate={onNavigate} /></div>
+      <div className="cv-auto"><FinalCTA onNavigate={onNavigate} /></div>
+      <div className="cv-auto"><Footer onNavigate={onNavigate} /></div>
     </main>
   );
 }

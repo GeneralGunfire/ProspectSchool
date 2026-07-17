@@ -73,13 +73,13 @@ function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
 }
 
 // SVG progress ring — same recipe as StudentHomePage's Ring.
-function Ring({ pct, size = 64, stroke = 6 }: { pct: number; size?: number; stroke?: number }) {
+function Ring({ pct, size = 64, stroke = 6, trackColor = 'rgba(56,65,79,0.12)' }: { pct: number; size?: number; stroke?: number; trackColor?: string }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(100, pct));
   return (
     <svg width={size} height={size} className="-rotate-90 shrink-0">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
       <motion.circle
         cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke="var(--color-accent)" strokeWidth={stroke} strokeLinecap="round"
@@ -149,7 +149,6 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   const goals = getStudentGoals(session.student_id);
   const [results, setResults]         = useState<StudentResult[]>([]);
   const [loading, setLoading]         = useState(true);
-  const [imgLoaded, setImgLoaded]     = useState(false);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
   const [typeFilter, setTypeFilter]   = useState<Record<string, string>>({});
   const [drawerResult, setDrawerResult] = useState<StudentResult | null>(null);
@@ -326,52 +325,54 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   return (
     <div className="student-home min-h-full pb-16">
 
-      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-marks.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
+      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
+          No buttons in this band (house rule). The overall-average ring
+          is a static readout, not an action. */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
+        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
+          style={{
+            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
+            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
+          }} />
+        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
+        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex flex-wrap items-end justify-between gap-4"
-          >
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Results</p>
-              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
-                My Marks
-              </h1>
-              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
-                How you're tracking across your subjects.
-              </p>
-            </div>
-            {overallAvg !== null && (
-              <div className="shrink-0 flex items-center gap-3 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5">
-                <div className="relative shrink-0">
-                  <Ring pct={Math.round(overallAvg)} size={40} stroke={4} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-black text-white leading-none">{Math.round(overallAvg)}%</span>
-                  </div>
-                </div>
-                <div className="hidden sm:block">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Overall</p>
-                  <p className="text-[12px] font-bold text-white">{markedResults.length} tracked</p>
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
+            className="flex items-center gap-2 min-w-0">
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Results</p>
+          </motion.div>
+
+          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
+            My Marks
+          </motion.h1>
+
+          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
+            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
+            How you're tracking across your subjects.
+          </motion.p>
+
+          {overallAvg !== null && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
+              className="inline-flex items-center gap-3 mt-4 border border-brand-border bg-white/70 rounded-full pl-2.5 pr-4 py-1.5">
+              <div className="relative shrink-0">
+                <Ring pct={Math.round(overallAvg)} size={32} stroke={3} trackColor="rgba(56,65,79,0.12)" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[8px] font-black text-brand-dark leading-none">{Math.round(overallAvg)}%</span>
                 </div>
               </div>
-            )}
-          </motion.div>
+              <div>
+                <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">Overall</span>
+                <span className="ml-1.5 font-black text-sm text-brand-dark">{markedResults.length} tracked</span>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
