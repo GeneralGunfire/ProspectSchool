@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, Clock, X as XIcon, Thermometer, ChevronLeft, ChevronRight, CalendarDays, CalendarOff, AlertCircle } from 'lucide-react';
+import { Check, Clock, X as XIcon, Thermometer, ChevronLeft, ChevronRight, CalendarDays, CalendarOff, AlertCircle, Users } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchTeacherHomerooms, fetchCohortRoster, fetchAttendanceForDate, markAttendance, markAttendanceBulk,
@@ -216,20 +216,20 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       <div className="flex items-center justify-end gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <button onClick={() => setDate((d) => addDays(d, -1))}
-            className="p-2.5 rounded-xl border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors">
+            className="p-2.5 rounded border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-brand-border bg-white min-w-[220px] justify-center">
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded border border-brand-border bg-white min-w-[220px] justify-center">
             <CalendarDays className="w-4 h-4 text-stone-400 shrink-0" />
             <span className="text-sm font-bold text-brand-dark whitespace-nowrap">{displayDate}</span>
           </div>
           <button onClick={() => setDate((d) => addDays(d, 1))} disabled={isToday}
-            className="p-2.5 rounded-xl border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors disabled:opacity-40 disabled:hover:bg-white">
+            className="p-2.5 rounded border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors disabled:opacity-40 disabled:hover:bg-white">
             <ChevronRight className="w-4 h-4" />
           </button>
           {!isToday && (
             <button onClick={() => setDate(todayISO())}
-              className="px-3 py-2.5 rounded-xl text-xs font-black text-stone-600 hover:text-brand-dark border border-brand-border bg-white hover:bg-stone-50 transition-colors">
+              className="px-3 py-2.5 rounded text-xs font-black text-stone-600 hover:text-brand-dark border border-brand-border bg-white hover:bg-stone-50 transition-colors">
               Today
             </button>
           )}
@@ -237,7 +237,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       </div>
 
       {saveError && (
-        <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           <p className="text-sm font-bold text-red-700">{saveError}</p>
         </div>
@@ -263,7 +263,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => setConfirmHoliday(true)} disabled={markingHoliday}
-            className="flex items-center gap-2 text-xs font-black text-stone-600 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 text-xs font-black text-stone-600 bg-stone-100 hover:bg-stone-200 border border-stone-200 px-4 py-2 rounded transition-colors disabled:opacity-50"
           >
             <CalendarOff className="w-3.5 h-3.5" />
             Not a School Day
@@ -271,7 +271,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={handleMarkAllPresent} disabled={markingAll}
-            className="flex items-center gap-2 text-xs font-black text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 text-xs font-black text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 px-4 py-2 rounded transition-colors disabled:opacity-50"
           >
             {markingAll
               ? <div className="w-3.5 h-3.5 border-2 border-green-700/30 border-t-green-700 rounded-full animate-spin" />
@@ -283,7 +283,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       )}
 
       {isNonSchoolDay && (
-        <div className="flex items-center gap-2.5 px-4 py-3 bg-stone-100 border border-stone-200 rounded-xl">
+        <div className="flex items-center gap-2.5 px-4 py-3 bg-stone-100 border border-stone-200 rounded">
           <CalendarOff className="w-4 h-4 text-stone-500 shrink-0" />
           <p className="text-sm font-bold text-stone-600">
             {displayDate} is marked as not a school day. It won't count toward attendance percentages.
@@ -293,7 +293,8 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
 
       <div className="paper-card rounded overflow-hidden">
         {roster.length === 0 ? (
-          <div className="p-12 text-center">
+          <div className="p-12 flex flex-col items-center text-center">
+            <Users className="w-9 h-9 text-stone-200 mb-4" />
             <p className="font-bold text-brand-dark mb-1">No students in this class</p>
             <p className="text-sm text-stone-500">Students appear here once they're placed in this cohort.</p>
           </div>
@@ -377,7 +378,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded-xl bg-stone-100 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded bg-stone-100 flex items-center justify-center mb-4">
                   <AlertCircle className="w-5 h-5 text-stone-500" />
                 </div>
                 <h2 className="text-base font-black text-brand-dark mb-1">Mark {displayDate} as not a school day?</h2>
@@ -386,11 +387,11 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setConfirmHoliday(false)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {markingHoliday
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Confirm'

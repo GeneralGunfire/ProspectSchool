@@ -97,7 +97,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
               </p>
             </div>
             <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
               <Plus className="w-4 h-4" /> Add Student
             </motion.button>
           </div>
@@ -113,13 +113,13 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
         </div>
       ) : roster.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Users className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">No students in this class yet</p>
           <p className="text-sm text-stone-500 mb-6">Add students from the school's directory.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
             Add Student <Plus className="w-4 h-4" />
           </button>
         </div>
@@ -168,7 +168,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[80vh]">
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
                   <h2 className="text-lg font-black text-brand-dark">Add Student to {cohort?.name}</h2>
-                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -180,7 +180,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       placeholder="Search by name or code..."
-                      className="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      className="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                     />
                   </div>
                 </div>
@@ -190,7 +190,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
                     <p className="text-sm text-stone-500 text-center py-8">No matching students found.</p>
                   ) : (
                     filteredCandidates.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between px-3 py-2.5 bg-stone-50 rounded-xl border border-brand-border">
+                      <div key={s.id} className="flex items-center justify-between px-3 py-2.5 bg-stone-50 rounded border border-brand-border">
                         <div>
                           <p className="text-sm font-bold text-brand-dark">{s.surname}, {s.name}</p>
                           <p className="text-xs text-stone-500">{s.cohort_name ? `Currently in ${s.cohort_name}` : 'Unassigned'} · Gr {s.grade}</p>
@@ -206,7 +206,7 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
 
                 <div className="px-6 py-4 border-t border-brand-border/60 shrink-0">
                   <button onClick={() => setShowAdd(false)}
-                    className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Done
                   </button>
                 </div>

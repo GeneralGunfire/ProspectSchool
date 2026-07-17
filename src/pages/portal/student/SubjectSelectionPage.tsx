@@ -48,7 +48,7 @@ function SubjectCard({ entry, selected, onClick }: { entry: SubjectCatalogEntry;
 
   return (
     <div
-      className={`text-left w-full rounded-2xl border transition-all ${
+      className={`text-left w-full rounded border transition-all ${
         selected ? 'border-brand-dark bg-brand-dark text-white' : 'border-brand-border bg-white hover:border-stone-300'
       }`}
     >
@@ -213,7 +213,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-24">
+      <div className="student-home flex items-center justify-center py-24">
         <div className="w-5 h-5 border-2 border-brand-border border-t-accent rounded-full animate-spin" />
       </div>
     );
@@ -221,8 +221,8 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (!eligible) {
     return (
-      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+      <div className="student-home px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+        <div className="paper-card rounded p-12 text-center">
           <Lock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not available</h2>
           <p className="text-sm text-stone-500 mt-1">Subject selection is only available to Grade 9 students.</p>
@@ -233,8 +233,8 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (!windowOpen && !selection) {
     return (
-      <div className="px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
-        <div className="card-premium bg-white border border-brand-border rounded-[24px] p-12 text-center">
+      <div className="student-home px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+        <div className="paper-card rounded p-12 text-center">
           <Clock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not open yet</h2>
           <p className="text-sm text-stone-500 mt-1">Your school hasn't opened Grade 10 subject selection yet. Check back soon.</p>
@@ -244,7 +244,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
   }
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
+    <div className="student-home px-4 py-6 sm:p-6 md:p-8 max-w-4xl w-full mx-auto">
       <div className="mb-8">
         <span className="eyebrow">Grade 10 · {year}</span>
         <h1 className="text-2xl font-black text-brand-dark tracking-tight">Subject Selection</h1>
@@ -253,7 +253,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
       {/* Status banner */}
       {selection && (
-        <div className={`rounded-2xl p-4 mb-6 flex items-start gap-3 ${
+        <div className={`rounded p-4 mb-6 flex items-start gap-3 ${
           selection.status === 'rejected' ? 'bg-red-50 border border-red-200' :
           isApproved ? 'bg-green-50 border border-green-200' :
           isSubmitted ? 'bg-amber-50 border border-amber-200' : 'bg-stone-50 border border-brand-border'
@@ -380,11 +380,12 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
       {!isLocked && (
         <div className="flex items-center gap-3 mt-8 pt-6 border-t border-brand-border">
           <motion.button onClick={handleSaveDraft} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="text-sm font-black text-brand-dark px-5 py-2.5 rounded-xl border border-brand-border hover:bg-brand-bg transition-colors disabled:opacity-60">
+            className="text-sm font-black text-brand-dark px-5 py-2.5 rounded border border-brand-border hover:bg-brand-border transition-colors disabled:opacity-60"
+            style={{ background: 'var(--color-paper-raise)' }}>
             {saved ? 'Saved' : 'Save Draft'}
           </motion.button>
           <motion.button onClick={handleSubmit} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors disabled:opacity-60">
+            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded hover:bg-brand-dark/90 transition-colors disabled:opacity-60">
             <Send className="w-4 h-4" /> {isSubmitted ? 'Resubmit' : 'Submit for Approval'}
           </motion.button>
         </div>

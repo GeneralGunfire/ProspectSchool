@@ -156,7 +156,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
           <motion.button
             whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
             onClick={() => { closeModal(); setModal(true); }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]"
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]"
           >
             <Plus className="w-4 h-4" /> Add Item
           </motion.button>
@@ -167,7 +167,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {/* Grade filter */}
-      <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 w-fit flex-wrap">
+      <div className="flex items-center gap-1 bg-stone-100 rounded p-1 w-fit flex-wrap">
         <button
           onClick={() => setGradeFilter(null)}
           className={`px-3 py-2 rounded-lg text-sm font-black transition-colors ${gradeFilter === null ? 'bg-white text-brand-dark shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}
@@ -212,11 +212,11 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     transition={{ delay: i * 0.03 }}
                     className="paper-card rounded px-5 py-4 flex items-center gap-4"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center shrink-0">
                       <BookOpen className="w-4 h-4 text-stone-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-stone-900">{item.item_name}</p>
+                      <p className="text-sm font-bold text-brand-dark">{item.item_name}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">Grade {item.grade}</span>
                         {item.product_code && (
@@ -238,7 +238,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     </div>
                     <button
                       onClick={() => setDeleteTarget(item)}
-                      className="p-2 rounded-xl hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"
+                      className="p-2 rounded hover:bg-red-50 transition-colors text-stone-400 hover:text-red-500"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -267,7 +267,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
               onClick={e => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-stone-900">Add Supply Item</h2>
+                <h2 className="text-base font-black text-brand-dark">Add Supply Item</h2>
                 <button onClick={closeModal} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
                   <X className="w-4 h-4 text-stone-500" />
                 </button>
@@ -280,7 +280,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     value={form.item_name}
                     onChange={e => setForm(f => ({ ...f, item_name: e.target.value }))}
                     placeholder="e.g. Casio fx-82ZA Calculator"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                   />
                 </div>
 
@@ -290,7 +290,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     <Dropdown
                       value={form.grade}
                       onChange={v => setForm(f => ({ ...f, grade: v }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                       options={GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))}
                     />
                   </div>
@@ -299,7 +299,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     <Dropdown
                       value={form.subject || 'general'}
                       onChange={v => setForm(f => ({ ...f, subject: v === 'general' ? '' : v }))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark bg-white"
                       options={[{ value: 'general', label: 'General' }, ...subjects.map(s => ({ value: s.label, label: s.label }))]}
                     />
                   </div>
@@ -314,7 +314,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                       value={form.product_code}
                       onChange={e => setForm(f => ({ ...f, product_code: e.target.value.toUpperCase() }))}
                       placeholder="e.g. ENG10-GRAM"
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark uppercase"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark uppercase"
                     />
                   </div>
                   <div>
@@ -326,7 +326,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                       value={form.avg_price}
                       onChange={e => setForm(f => ({ ...f, avg_price: e.target.value }))}
                       placeholder="Optional"
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                     />
                   </div>
                 </div>
@@ -338,7 +338,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                       value={form.isbn}
                       onChange={e => setForm(f => ({ ...f, isbn: e.target.value }))}
                       placeholder="Optional"
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                     />
                   </div>
                   <div>
@@ -347,7 +347,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                       value={form.edition}
                       onChange={e => setForm(f => ({ ...f, edition: e.target.value }))}
                       placeholder="Optional"
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                     />
                   </div>
                   <div>
@@ -356,7 +356,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                       value={form.brand}
                       onChange={e => setForm(f => ({ ...f, brand: e.target.value }))}
                       placeholder="Optional"
-                      className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                      className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                     />
                   </div>
                 </div>
@@ -367,7 +367,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     value={form.publisher}
                     onChange={e => setForm(f => ({ ...f, publisher: e.target.value }))}
                     placeholder="Optional"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                   />
                 </div>
 
@@ -382,17 +382,17 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                           value={r.name}
                           onChange={e => setRetailers(prev => prev.map((x, idx) => idx === i ? { ...x, name: e.target.value } : x))}
                           placeholder="Retailer name (e.g. Takealot)"
-                          className="flex-1 px-3 py-2 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                          className="flex-1 px-3 py-2 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                         />
                         <input
                           value={r.url ?? ''}
                           onChange={e => setRetailers(prev => prev.map((x, idx) => idx === i ? { ...x, url: e.target.value } : x))}
                           placeholder="URL (optional)"
-                          className="flex-1 px-3 py-2 rounded-xl border border-brand-border text-sm font-bold text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
+                          className="flex-1 px-3 py-2 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark/10 focus:border-brand-dark"
                         />
                         <button
                           onClick={() => setRetailers(prev => prev.filter((_, idx) => idx !== i))}
-                          className="p-2 rounded-xl hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors shrink-0"
+                          className="p-2 rounded hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors shrink-0"
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -400,7 +400,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                     ))}
                     <button
                       onClick={() => setRetailers(prev => [...prev, { ...emptyRetailer }])}
-                      className="w-full py-2 rounded-xl border-2 border-dashed border-brand-border text-xs font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full py-2 rounded border-2 border-dashed border-brand-border text-xs font-bold text-stone-500 hover:border-stone-400 hover:text-stone-600 transition-colors"
                     >
                       + Add Retailer
                     </button>
@@ -413,14 +413,14 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
               <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button
                   onClick={closeModal}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : 'Add Item'}
                 </button>
@@ -445,19 +445,19 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
               className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
               onClick={e => e.stopPropagation()}
             >
-              <h2 className="text-base font-black text-stone-900 mb-1">Remove item?</h2>
+              <h2 className="text-base font-black text-brand-dark mb-1">Remove item?</h2>
               <p className="text-sm text-stone-500 mb-5"><strong>{deleteTarget.item_name}</strong> will be removed from the supply guide.</p>
               <div className="flex gap-2">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
                 >
                   {deleting ? 'Removing…' : 'Remove'}
                 </button>

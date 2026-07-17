@@ -264,8 +264,8 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
                   { label: 'Outcomes',       detail: 'Next mark measures if it actually helped' },
                 ].map((step, i, arr) => (
                   <div key={step.label} className="flex items-center flex-1 gap-1">
-                    <div className="flex-1 bg-white border border-brand-border rounded-xl px-3 py-2.5">
-                      <p className="text-[11px] font-black text-stone-900">{step.label}</p>
+                    <div className="flex-1 bg-white border border-brand-border rounded px-3 py-2.5">
+                      <p className="text-[11px] font-black text-brand-dark">{step.label}</p>
                       <p className="text-[10px] text-stone-500 mt-0.5">{step.detail}</p>
                     </div>
                     {i < arr.length - 1 && <ArrowRight className="w-3.5 h-3.5 text-stone-500 shrink-0 hidden sm:block" />}
@@ -275,7 +275,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
 
               <div className="space-y-2.5 text-[12px] text-stone-600 leading-relaxed">
                 <p>
-                  <span className="font-black text-stone-900">Risk badge</span> — each subject gets a risk level from a rule score, not a black box:
+                  <span className="font-black text-brand-dark">Risk badge</span> — each subject gets a risk level from a rule score, not a black box:
                   average below 50% (below pass), below 65% (needs improvement), a drop of more than 5% over the last 3 assessments
                   (declining), inconsistent marks (swings of 20%+), and an exam within 14 days while the average is still weak all count
                   as separate "reasons." 3+ reasons — or a sub-50% average with an exam in the next 2 weeks — makes it <b>High</b>;
@@ -283,25 +283,25 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
                   A student's overall badge on the list is just their single worst subject.
                 </p>
                 <p>
-                  <span className="font-black text-stone-900">"Why Flagged" vs "Revision Priority"</span> — Why Flagged is the risk
+                  <span className="font-black text-brand-dark">"Why Flagged" vs "Revision Priority"</span> — Why Flagged is the risk
                   assessment itself (the reasons above, per subject). Revision Priority is a separate, action-oriented ranking of which
                   subjects to study first right now, weighted more heavily toward exam closeness — it can repeat a subject from Why Flagged,
                   or add one that isn't "risky" yet but has an exam coming up soon.
                 </p>
                 <p>
-                  <span className="font-black text-stone-900">Interventions</span> — these are not manually assigned by anyone. They're
+                  <span className="font-black text-brand-dark">Interventions</span> — these are not manually assigned by anyone. They're
                   auto-generated directly from the risk data above: a high/medium-risk subject with an exam ≤14 days away creates a
                   past-paper or revision task; a sub-60% average creates a library/revision/resource task. <b>Re-sync Interventions</b>{' '}
                   re-runs this generation for one student on demand — it won't duplicate an already-active task for the same subject+type.
                 </p>
                 <p>
-                  <span className="font-black text-stone-900">Evidence text</span> (the <Sparkles className="w-3 h-3 inline -mt-0.5 text-blue-500" /> lines)
+                  <span className="font-black text-brand-dark">Evidence text</span> (the <Sparkles className="w-3 h-3 inline -mt-0.5 text-blue-500" /> lines)
                   — when choosing which type of task to assign, the system checks this school's own history: which intervention type
                   actually improved marks in that subject before, and by how much. If there's no history yet for that subject, it falls
                   back to a sensible default and there's no evidence line.
                 </p>
                 <p>
-                  <span className="font-black text-stone-900">Completed tasks</span> show a % change — that's the subject average
+                  <span className="font-black text-brand-dark">Completed tasks</span> show a % change — that's the subject average
                   before the task was completed vs. the average after, calculated automatically the next time a mark is recorded.
                 </p>
               </div>
@@ -357,7 +357,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search students…"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-brand-border bg-white text-sm font-medium text-stone-900 placeholder:text-stone-500 focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-accent/30 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded border border-brand-border bg-white text-sm font-medium text-brand-dark placeholder:text-stone-500 focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-accent/30 transition-all"
             />
           </div>
 
@@ -417,7 +417,7 @@ function RiskRow({
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-black text-stone-900 truncate">
+          <p className="text-sm font-black text-brand-dark truncate">
             {row.student.student_surname}, {row.student.student_name}
           </p>
           <p className="text-[10px] text-stone-500 mt-0.5">
@@ -464,7 +464,7 @@ function RiskRow({
                     {row.riskSubjects.map(risk => {
                       const rs = RISK_STYLE[risk.risk];
                       return (
-                        <div key={risk.subjectId || risk.subject} className={`rounded-xl border px-3.5 py-3 ${rs.bg} ${rs.border}`}>
+                        <div key={risk.subjectId || risk.subject} className={`rounded border px-3.5 py-3 ${rs.bg} ${rs.border}`}>
                           <div className="flex items-center justify-between gap-2 mb-1.5">
                             <p className={`text-[13px] font-black ${rs.text}`}>{risk.subject}</p>
                             <span className="text-[11px] font-black text-stone-700">{risk.avg}% avg</span>
@@ -489,7 +489,7 @@ function RiskRow({
                   </div>
                 </div>
               ) : row.loaded ? (
-                <div className="flex items-center gap-2 text-[12px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-3 mt-3">
+                <div className="flex items-center gap-2 text-[12px] text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-3.5 py-3 mt-3">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                   No subjects currently flagged — on track.
                 </div>
@@ -509,7 +509,7 @@ function RiskRow({
                     {row.revisionRecs.map(rec => (
                       <div key={rec.subjectId || rec.subject} className="flex items-center gap-2 text-[11px] px-3 py-2 rounded-lg bg-stone-50 border border-brand-border">
                         <TrendingDown className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-                        <span className="font-black text-stone-900">{rec.subject}</span>
+                        <span className="font-black text-brand-dark">{rec.subject}</span>
                         <span className="text-stone-500 flex-1">{rec.reason}</span>
                         <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${
                           rec.urgency === 'critical' ? 'bg-red-100 text-red-700' :
@@ -561,12 +561,12 @@ function RiskRow({
                 ) : (
                   <div className="space-y-2">
                     {active.map(inv => (
-                      <div key={inv.id} className={`rounded-xl border px-3.5 py-3 ${
+                      <div key={inv.id} className={`rounded border px-3.5 py-3 ${
                         inv.reason === 'exam_soon' || inv.reason === 'below_pass' ? 'border-red-200 bg-red-50' : 'border-amber-200 bg-amber-50'
                       }`}>
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <p className="text-[12px] font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                            <p className="text-[12px] font-black text-brand-dark">{TYPE_LABEL[inv.type] ?? inv.type}</p>
                             <p className="text-[10px] text-stone-500 mt-0.5">{inv.subject}</p>
                           </div>
                           <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-white/70 text-stone-700 shrink-0">
@@ -588,14 +588,14 @@ function RiskRow({
                     {completed.map(inv => {
                       const outcome = row.outcomes.find(o => o.interventionId === inv.id);
                       return (
-                        <div key={inv.id} className={`rounded-xl border px-3.5 py-3 ${
+                        <div key={inv.id} className={`rounded border px-3.5 py-3 ${
                           outcome?.result === 'improved' ? 'border-emerald-200 bg-emerald-50' :
                           outcome?.result === 'declined' ? 'border-red-200 bg-red-50' :
                           'border-brand-border bg-stone-50'
                         }`}>
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="text-[12px] font-black text-stone-900">{TYPE_LABEL[inv.type] ?? inv.type}</p>
+                              <p className="text-[12px] font-black text-brand-dark">{TYPE_LABEL[inv.type] ?? inv.type}</p>
                               <p className="text-[10px] text-stone-500 mt-0.5">{inv.subject}</p>
                             </div>
                             {outcome && (

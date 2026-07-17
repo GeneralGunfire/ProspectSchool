@@ -131,11 +131,11 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
             <h2 className="text-lg font-black text-brand-dark">{editing ? 'Edit Student' : 'Student Details'}</h2>
             <div className="flex items-center gap-1">
               {!editing && detail && (
-                <button onClick={openEdit} aria-label="Edit student" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                <button onClick={openEdit} aria-label="Edit student" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                   <Pencil className="w-4 h-4" />
                 </button>
               )}
-              <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+              <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -152,7 +152,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
               <form id="student-edit-form" onSubmit={handleSave} className="space-y-4">
                 {formError && (
                   <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                     <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <p className="text-red-700 text-sm">{formError}</p>
                   </motion.div>
@@ -162,12 +162,12 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
                     <input required type="text" value={form.name} onChange={(e) => setField('name', e.target.value)}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
                     <input required type="text" value={form.surname} onChange={(e) => setField('surname', e.target.value)}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
                   </div>
                 </div>
 
@@ -176,7 +176,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student Code</label>
                     <input required type="text" value={form.student_code}
                       onChange={(e) => setField('student_code', e.target.value.toUpperCase())}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                       autoCapitalize="characters" />
                   </div>
                   <div>
@@ -185,7 +185,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                     </label>
                     <input type="password" inputMode="numeric" maxLength={10}
                       value={form.pin} onChange={(e) => setField('pin', e.target.value.replace(/\D/g, ''))}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                       placeholder="••••••••••" />
                   </div>
                 </div>
@@ -194,14 +194,14 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Class</label>
                     <input required type="text" value={form.cohort_name} onChange={(e) => setField('cohort_name', e.target.value)}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
+                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
                   </div>
                   <div>
                     <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Grade</label>
                     <Dropdown
                       value={String(form.grade)}
                       onChange={(v) => setField('grade', Number(v))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                       options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
                     />
                   </div>
@@ -217,7 +217,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                           onChange={(v) => setRow(i, 'subject_id', Number(v))}
                           placeholder="Select subject"
                           className="flex-1 min-w-0"
-                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
                         />
                         <Dropdown
@@ -225,7 +225,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                           onChange={(v) => setRow(i, 'teacher_id', Number(v))}
                           placeholder="Select teacher"
                           className="flex-1 min-w-0"
-                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` }))}
                         />
                         {rows.length > 1 && (
@@ -251,11 +251,11 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-stone-50 rounded-xl border border-brand-border">
+                  <div className="p-3 bg-stone-50 rounded border border-brand-border">
                     <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1">Grade</p>
                     <p className="text-sm font-bold text-brand-dark">Grade {detail.grade}</p>
                   </div>
-                  <div className="p-3 bg-stone-50 rounded-xl border border-brand-border">
+                  <div className="p-3 bg-stone-50 rounded border border-brand-border">
                     <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1">Class</p>
                     <p className="text-sm font-bold text-brand-dark">{detail.cohort_name ?? 'Unassigned'}</p>
                   </div>
@@ -288,11 +288,11 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
             {editing ? (
               <>
                 <button type="button" onClick={() => setEditing(false)}
-                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                   Cancel
                 </button>
                 <button type="submit" form="student-edit-form" disabled={submitting}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                   {submitting
                     ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     : <>Save Changes <ArrowRight className="w-4 h-4" /></>
@@ -301,7 +301,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
               </>
             ) : (
               <button onClick={onClose}
-                className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                 Close
               </button>
             )}

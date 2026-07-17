@@ -411,7 +411,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                       className="w-full flex items-center justify-between px-5 py-4 hover:bg-stone-50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
+                        <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center shrink-0">
                           <ClipboardList className="w-4 h-4 text-stone-500" />
                         </div>
                         <div className="text-left">
@@ -520,7 +520,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                 whileTap={!pushedCalendar ? { scale: 0.97 } : {}}
                 onClick={handlePushCalendar}
                 disabled={pushedCalendar || pushingCalendar}
-                className={`flex items-center gap-2 text-xs font-black px-3 py-2 rounded-xl transition-all shrink-0 ${
+                className={`flex items-center gap-2 text-xs font-black px-3 py-2 rounded transition-all shrink-0 ${
                   pushedCalendar
                     ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
                     : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
@@ -545,7 +545,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     { label: 'Highest',   value: `${analytics.highest}%`,  color: 'text-blue-600', bg: 'bg-blue-50' },
                     { label: 'Lowest',    value: `${analytics.lowest}%`,   color: analytics.lowest >= 50 ? 'text-stone-600' : 'text-red-500', bg: analytics.lowest >= 50 ? 'bg-stone-50' : 'bg-red-50' },
                   ].map(stat => (
-                    <div key={stat.label} className={`${stat.bg} rounded-xl p-2.5 text-center`}>
+                    <div key={stat.label} className={`${stat.bg} rounded p-2.5 text-center`}>
                       <p className={`text-base font-black ${stat.color}`}>{stat.value}</p>
                       <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">{stat.label}</p>
                     </div>
@@ -605,7 +605,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     <button
                       onClick={handleCampaign}
                       disabled={campaignState === 'running'}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
                         campaignState === 'running'
                           ? 'bg-red-100 text-red-400 cursor-default'
                           : 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
@@ -625,16 +625,16 @@ export default function MarksPage({ session }: MarksPageProps) {
             {/* Legacy pill row — shown only when nothing is marked yet */}
             {(!analytics || analytics.markedCount === 0) && (
               <div className="mt-4 flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-2 bg-white border border-brand-border rounded-xl px-3 py-2">
+                <div className="flex items-center gap-2 bg-white border border-brand-border rounded px-3 py-2">
                   <span className="text-xs font-black text-stone-500 uppercase tracking-widest">Total</span>
                   <span className="text-sm font-black text-brand-dark">{activeSheet.total}</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white border border-brand-border rounded-xl px-3 py-2">
+                <div className="flex items-center gap-2 bg-white border border-brand-border rounded px-3 py-2">
                   <span className="text-xs font-black text-stone-500 uppercase tracking-widest">Students</span>
                   <span className="text-sm font-black text-brand-dark">{sheetMarks.length}</span>
                 </div>
                 {unmarked > 0 && (
-                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2">
                     <span className="text-xs font-black text-amber-600">{unmarked} unmarked</span>
                   </div>
                 )}
@@ -702,7 +702,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                                 ...prev,
                                 [sm.id]: { ...draft, mark: e.target.value },
                               }))}
-                              className={`w-20 px-3 py-1.5 rounded-xl border text-sm font-bold text-brand-dark text-center focus:outline-none focus:ring-2 focus:ring-brand-dark transition-colors ${
+                              className={`w-20 px-3 py-1.5 rounded border text-sm font-bold text-brand-dark text-center focus:outline-none focus:ring-2 focus:ring-brand-dark transition-colors ${
                                 isInvalid ? 'border-red-300 bg-red-50' : 'border-brand-border'
                               }`}
                             />
@@ -723,7 +723,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                               ...prev,
                               [sm.id]: { ...draft, note: e.target.value },
                             }))}
-                            className="flex-1 min-w-[140px] px-3 py-1.5 rounded-xl border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                            className="flex-1 min-w-[140px] px-3 py-1.5 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                           />
 
                           {/* Save button */}
@@ -731,7 +731,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleSaveMark(sm)}
                             disabled={isSaving || isInvalid}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all disabled:opacity-40 ${
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-black transition-all disabled:opacity-40 ${
                               isSaved
                                 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
                                 : 'bg-brand-dark text-white hover:bg-stone-700'
@@ -791,7 +791,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. Chapter 3 Test"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                 </div>
 
@@ -802,7 +802,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     value={form.subject_id || null}
                     onChange={v => setForm(f => ({ ...f, subject_id: v }))}
                     placeholder="Select subject…"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
                     options={subjects.map(s => ({ value: String(s.id), label: s.label }))}
                   />
                 </div>
@@ -815,7 +815,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                       <button
                         key={g}
                         onClick={() => setForm(f => ({ ...f, grade: String(g) }))}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                        className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
                           form.grade === String(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
@@ -832,7 +832,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     value={form.scope}
                     onChange={e => setForm(f => ({ ...f, scope: e.target.value }))}
                     placeholder="e.g. Term 1, Chapters 1–4"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                 </div>
 
@@ -845,7 +845,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     value={form.total}
                     onChange={e => setForm(f => ({ ...f, total: e.target.value }))}
                     placeholder="e.g. 100"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                 </div>
 
@@ -857,7 +857,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                       <button
                         key={t}
                         onClick={() => setForm(f => ({ ...f, term: String(t) }))}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${
+                        className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
                           form.term === String(t) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
@@ -879,7 +879,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                     value={form.weight}
                     onChange={e => setForm(f => ({ ...f, weight: e.target.value }))}
                     placeholder="e.g. 20"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
                   />
                   <p className="text-xs text-stone-400 mt-1.5">
                     Weights for this subject, grade and term add up to the final mark once they reach 100%.
@@ -892,14 +892,14 @@ export default function MarksPage({ session }: MarksPageProps) {
               <div className="flex gap-2 px-6 pb-6">
                 <button
                   onClick={() => setCreateModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Creating…' : 'Create & Open'}
                 </button>
@@ -932,11 +932,11 @@ export default function MarksPage({ session }: MarksPageProps) {
               </p>
               <div className="flex gap-2">
                 <button onClick={() => setDeleteSheet(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
                   Cancel
                 </button>
                 <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>
               </div>

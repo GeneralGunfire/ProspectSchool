@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Minus } from 'lucide-react';
+import { Plus, Minus, Award } from 'lucide-react';
 import { fetchStudentBehaviour, type BehaviourEntry } from '../../../lib/behaviour';
 import type { ParentChild } from '../../../lib/parents';
 import { Shimmer } from '../../../shared/components/Shimmer';
@@ -27,6 +27,16 @@ export default function ParentBehaviourPage({ child }: ParentBehaviourPageProps)
   const meritPoints = entries.filter((e) => e.type === 'merit').reduce((sum, e) => sum + e.points, 0);
   const demeritPoints = entries.filter((e) => e.type === 'demerit').reduce((sum, e) => sum + e.points, 0);
   const netPoints = meritPoints - demeritPoints;
+
+  const categoryCounts = new Map<string, { count: number; type: 'merit' | 'demerit' }>();
+  for (const e of entries) {
+    const existing = categoryCounts.get(e.category);
+    categoryCounts.set(e.category, { count: (existing?.count ?? 0) + 1, type: e.type });
+  }
+  const topCategories = Array.from(categoryCounts.entries())
+    .map(([category, d]) => ({ category, ...d }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
 
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
@@ -100,7 +110,7 @@ export default function ParentBehaviourPage({ child }: ParentBehaviourPageProps)
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-1">Merits</p>
               </div>
               <div className="paper-card rounded p-4 text-center">
-                <p className="text-[22px] font-black text-red-700">{demeritPoints}</p>
+                <p className={`text-[22px] font-black ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-1">Demerits</p>
               </div>
               <div className="rounded p-4 text-center"
@@ -115,7 +125,23 @@ export default function ParentBehaviourPage({ child }: ParentBehaviourPageProps)
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.1 }}
+            {topCategories.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.08 }}
+                className="paper-card rounded p-5">
+                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-3">Most Common</p>
+                <div className="flex flex-wrap gap-2">
+                  {topCategories.map(({ category, count, type }) => (
+                    <span key={category} className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full ${
+                      type === 'merit' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                    }`}>
+                      {category} <span className="opacity-60">× {count}</span>
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.14 }}
               className="paper-card rounded overflow-hidden">
               <div className="px-5 sm:px-6 py-4" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
                 <h2 className="text-[16px] font-semibold text-brand-dark">Timeline</h2>
@@ -123,7 +149,8 @@ export default function ParentBehaviourPage({ child }: ParentBehaviourPageProps)
               </div>
 
               {entries.length === 0 ? (
-                <div className="p-12 text-center">
+                <div className="p-12 flex flex-col items-center text-center">
+                  <Award className="w-9 h-9 text-stone-200 mb-4" />
                   <p className="text-[16px] font-semibold text-brand-dark mb-1">No entries yet</p>
                   <p className="text-[13px] text-stone-500">Merits and demerits from teachers will appear here.</p>
                 </div>

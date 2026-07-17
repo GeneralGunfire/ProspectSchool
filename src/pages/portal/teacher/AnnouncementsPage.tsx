@@ -181,7 +181,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
           </div>
           <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
             onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
             <Plus className="w-4 h-4" /> Post Announcement
           </motion.button>
         </div>
@@ -276,7 +276,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                   <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
                   <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     placeholder="e.g. School closes early on Friday"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
                 </div>
 
                 {/* Body */}
@@ -286,7 +286,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                   </label>
                   <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
                     rows={3} placeholder="Additional details…"
-                    className="w-full px-3 py-2.5 rounded-xl border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
+                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
                 </div>
 
                 {/* Audience */}
@@ -298,7 +298,7 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
 
                 {/* Pin */}
                 <button onClick={() => setForm(f => ({ ...f, pinned: !f.pinned }))}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-sm font-black transition-all ${
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded border text-sm font-black transition-all ${
                     form.pinned ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-stone-50 border-brand-border text-stone-500 hover:bg-stone-100'
                   }`}>
                   <Pin className="w-4 h-4" />
@@ -310,9 +310,9 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
 
               <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
                 <button onClick={() => setModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleCreate} disabled={saving}
-                  className="flex-1 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
                   {saving ? 'Posting…' : 'Post'}
                 </button>
               </div>
@@ -336,9 +336,9 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
               <p className="text-sm text-stone-500 mb-5"><strong>"{deleteTarget.title}"</strong> will be permanently removed.</p>
               <div className="flex gap-2">
                 <button onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>
               </div>
@@ -380,7 +380,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
           return (
             <button key={opt.value}
               onClick={() => setForm(f => ({ ...f, target_type: opt.value, target_grades: [], target_cohort_ids: [], target_subject_ids: [], target_student_ids: [] }))}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               <Icon className="w-3.5 h-3.5 shrink-0" />{opt.label}
             </button>
           );
@@ -391,7 +391,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
         <div className="flex flex-wrap gap-1.5">
           {GRADES.map(g => (
             <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               Grade {g}
             </button>
           ))}
@@ -402,7 +402,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
         <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
           {cohorts.map(c => (
             <button key={c.id} onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               {c.name} <span className="opacity-60">(Gr {c.grade})</span>
             </button>
           ))}
@@ -416,7 +416,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
               {subjects.map(s => (
                 <button key={s.id} onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                   {s.label}
                 </button>
               ))}
@@ -427,7 +427,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             <div className="flex flex-wrap gap-1.5">
               {GRADES.map(g => (
                 <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                   Grade {g}
                 </button>
               ))}
@@ -437,7 +437,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
       )}
 
       {form.target_type === 'specific' && (
-        <div className="space-y-1 max-h-36 overflow-y-auto border border-brand-border/60 rounded-xl p-2">
+        <div className="space-y-1 max-h-36 overflow-y-auto border border-brand-border/60 rounded p-2">
           {allStudents.map(s => {
             const active = form.target_student_ids.includes(s.id);
             return (
@@ -519,14 +519,14 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
 
       <div className="flex items-start gap-1 shrink-0 p-3">
         <button onClick={onPin} disabled={toggling}
-          className={`p-2 rounded-xl transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
+          className={`p-2 rounded transition-colors disabled:opacity-40 ${a.pinned ? 'text-amber-500 hover:bg-amber-50' : 'text-stone-400 hover:text-amber-500 hover:bg-amber-50'}`}
           title={a.pinned ? 'Unpin' : 'Pin'}
           aria-label={a.pinned ? 'Unpin announcement' : 'Pin announcement'}>
           {a.pinned ? <PinOff className="w-4 h-4" /> : <Pin className="w-4 h-4" />}
         </button>
         <button onClick={onDelete}
           aria-label="Delete announcement"
-          className="p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+          className="p-2 rounded text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
           <Trash2 className="w-4 h-4" />
         </button>
       </div>

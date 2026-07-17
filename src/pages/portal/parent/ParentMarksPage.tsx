@@ -57,6 +57,17 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
     ? markedResults.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / markedResults.length
     : null;
 
+  const subjectAverages = Array.from(grouped.entries()).map(([subject, items]) => {
+    const marked = items.filter((r) => r.mark !== null);
+    return {
+      subject,
+      avg: marked.length ? marked.reduce((s, r) => s + (r.mark! / r.total) * 100, 0) / marked.length : -1,
+    };
+  }).filter((s) => s.avg >= 0).sort((a, b) => b.avg - a.avg);
+  const bestSubject = subjectAverages[0] ?? null;
+  const worstSubject = subjectAverages[subjectAverages.length - 1] ?? null;
+  const showStrengthBanner = bestSubject && worstSubject && bestSubject.subject !== worstSubject.subject;
+
   return (
     <div className="student-home min-h-full pb-16">
 
@@ -128,6 +139,22 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
             </motion.div>
           )}
 
+          {showStrengthBanner && (
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.04 }}
+              className="grid grid-cols-2 gap-3">
+              <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #10b981' }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
+                <p className="font-black text-brand-dark text-sm leading-tight truncate">{bestSubject!.subject}</p>
+                <p className="text-emerald-600 font-black text-2xl mt-1">{bestSubject!.avg.toFixed(0)}%</p>
+              </div>
+              <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #f59e0b' }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
+                <p className="font-black text-brand-dark text-sm leading-tight truncate">{worstSubject!.subject}</p>
+                <p className="text-amber-600 font-black text-2xl mt-1">{worstSubject!.avg.toFixed(0)}%</p>
+              </div>
+            </motion.div>
+          )}
+
           <div className="space-y-3">
             {Array.from(grouped.entries()).map(([subject, items], gi) => {
               const markedItems = items.filter((r) => r.mark !== null);
@@ -160,7 +187,7 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
                     className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-stone-50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-black text-stone-900">{subject}</p>
+                      <p className="text-sm font-black text-brand-dark">{subject}</p>
                       <p className="text-xs text-stone-500 mt-0.5">
                         {items.length} assessment{items.length !== 1 ? 's' : ''}{gl && ` · ${gl.label}`}
                       </p>
@@ -181,7 +208,7 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
                           {termFinals.length > 0 && (
                             <div className="px-5 pt-4 pb-1 flex flex-wrap gap-2">
                               {termFinals.map((t) => (
-                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold ${
                                   t.isComplete ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-stone-50 text-stone-500 border-brand-border/60'
                                 }`}>
                                   <span className="font-black">Term {t.term}</span>
@@ -200,22 +227,22 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
                                 return (
                                   <div key={r.sheet_id} className="flex items-start justify-between gap-3">
                                     <div className="min-w-0">
-                                      <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
+                                      <p className="text-sm font-bold text-brand-dark truncate">{r.sheet_title}</p>
                                       <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                         {r.sheet_scope && <span className="text-[10px] font-bold text-stone-500">{r.sheet_scope}</span>}
                                         {r.marked_at && <span className="text-[10px] text-stone-400">{formatDate(r.marked_at)}</span>}
                                       </div>
                                       {r.note && (
-                                        <p className="text-xs text-stone-500 mt-1 bg-stone-50 rounded-lg px-2 py-1">{r.note}</p>
+                                        <p className="text-xs text-stone-500 mt-1 bg-stone-50 rounded px-2 py-1">{r.note}</p>
                                       )}
                                     </div>
                                     <div className="shrink-0 text-right">
                                       {r.mark !== null ? (
                                         <>
-                                          <p className="text-base font-black text-stone-900 leading-none">
+                                          <p className="text-base font-black text-brand-dark leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
                                             {r.mark}<span className="text-xs font-bold text-stone-500">/{r.total}</span>
                                           </p>
-                                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${g.bg} ${g.color}`}>{p}%</span>
+                                          <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${g.bg} ${g.color}`}>{p}%</span>
                                         </>
                                       ) : (
                                         <span className="text-xs font-bold text-stone-400">Pending</span>

@@ -180,11 +180,11 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                   onClick={() => onNavigate(action.page)}
                   className="paper-card w-full flex items-start gap-4 p-4 rounded cursor-pointer text-left group"
                 >
-                  <div className="w-9 h-9 bg-brand-dark text-white rounded-xl flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 bg-brand-dark text-white rounded flex items-center justify-center shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-stone-900">{action.title}</p>
+                    <p className="text-sm font-black text-brand-dark">{action.title}</p>
                     <p className="text-xs text-stone-500 mt-0.5">{action.description}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-0.5 shrink-0" />
@@ -230,7 +230,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                     <Megaphone className="w-3.5 h-3.5 text-amber-600" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-stone-900 truncate">{a.title}</p>
+                    <p className="text-sm font-bold text-brand-dark truncate">{a.title}</p>
                     {a.body && <p className="text-xs text-stone-500 truncate mt-0.5">{a.body}</p>}
                   </div>
                   <span className="text-[11px] text-stone-400 shrink-0">{timeAgo(a.created_at)}</span>
@@ -242,7 +242,7 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
           {/* Post announcement CTA */}
           <button
             onClick={() => onNavigate('announcements')}
-            className="w-full mt-4 py-2.5 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors"
+            className="w-full mt-4 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors"
           >
             Post New Announcement
           </button>

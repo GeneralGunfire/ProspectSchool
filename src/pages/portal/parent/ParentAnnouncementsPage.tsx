@@ -51,7 +51,7 @@ export default function ParentAnnouncementsPage({ session, child }: ParentAnnoun
   const unpinned = announcements.filter((a) => !a.pinned);
 
   const Card = ({ a }: { a: Announcement }) => (
-    <div className={`paper-card rounded px-5 py-4 ${a.pinned ? 'border-amber-200' : ''}`}>
+    <div className="paper-card rounded px-5 py-4" style={a.pinned ? { borderLeft: '3px solid #f59e0b' } : undefined}>
       <div className="flex items-start justify-between gap-2 mb-1">
         <p className="text-sm font-black text-brand-dark leading-snug">{a.title}</p>
         {a.pinned && <Pin className="w-3.5 h-3.5 text-amber-500 shrink-0" />}
@@ -114,9 +114,28 @@ export default function ParentAnnouncementsPage({ session, child }: ParentAnnoun
           </div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
-            className="space-y-3">
-            {pinned.map((a) => <Card key={a.id} a={a} />)}
-            {unpinned.map((a) => <Card key={a.id} a={a} />)}
+            className="space-y-6">
+            {pinned.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Pin className="w-3.5 h-3.5 text-amber-500" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Pinned</p>
+                </div>
+                <div className="space-y-2.5">
+                  {pinned.map((a) => <Card key={a.id} a={a} />)}
+                </div>
+              </div>
+            )}
+            {unpinned.length > 0 && (
+              <div>
+                {pinned.length > 0 && (
+                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-3">Recent</p>
+                )}
+                <div className="space-y-2.5">
+                  {unpinned.map((a) => <Card key={a.id} a={a} />)}
+                </div>
+              </div>
+            )}
           </motion.div>
         )}
       </div>

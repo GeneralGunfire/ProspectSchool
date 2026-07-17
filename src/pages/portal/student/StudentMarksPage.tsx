@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb } from 'lucide-react';
+import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb, AlertTriangle, Target } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
@@ -73,13 +73,13 @@ function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
 }
 
 // SVG progress ring — same recipe as StudentHomePage's Ring.
-function Ring({ pct, size = 64, stroke = 6, trackColor = 'rgba(56,65,79,0.12)' }: { pct: number; size?: number; stroke?: number; trackColor?: string }) {
+function Ring({ pct, size = 64, stroke = 6 }: { pct: number; size?: number; stroke?: number }) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(100, pct));
   return (
     <svg width={size} height={size} className="-rotate-90 shrink-0">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} />
       <motion.circle
         cx={size / 2} cy={size / 2} r={r} fill="none"
         stroke="var(--color-accent)" strokeWidth={stroke} strokeLinecap="round"
@@ -98,7 +98,7 @@ function ChartTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const d = payload[0].payload;
   return (
-    <div className="bg-brand-dark text-white text-xs font-bold px-3 py-2 rounded-xl shadow-xl">
+    <div className="bg-brand-dark text-white text-xs font-bold px-3 py-2 rounded shadow-xl">
       <p className="font-black">{d.fullTitle}</p>
       <p className="text-white/70 mt-0.5">{d.mark}/{d.total} — {d.pct}%</p>
     </div>
@@ -149,6 +149,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   const goals = getStudentGoals(session.student_id);
   const [results, setResults]         = useState<StudentResult[]>([]);
   const [loading, setLoading]         = useState(true);
+  const [imgLoaded, setImgLoaded]     = useState(false);
   const [openSubject, setOpenSubject] = useState<string | null>(null);
   const [typeFilter, setTypeFilter]   = useState<Record<string, string>>({});
   const [drawerResult, setDrawerResult] = useState<StudentResult | null>(null);
@@ -325,54 +326,52 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   return (
     <div className="student-home min-h-full pb-16">
 
-      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
-          No buttons in this band (house rule). The overall-average ring
-          is a static readout, not an action. */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
-        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
-            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
-          }} />
-        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
-        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
+      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
+      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
+        <div className="absolute inset-0 pointer-events-none">
+          <motion.img src="/images/nizamiye-marks.png" alt=""
+            onLoad={() => setImgLoaded(true)}
+            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
+            transition={{ duration: 0.6, ease }}
+            className="w-full h-full object-cover" />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
+          <div className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
+        </div>
+        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Results</p>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            My Marks
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
-            How you're tracking across your subjects.
-          </motion.p>
-
-          {overallAvg !== null && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
-              className="inline-flex items-center gap-3 mt-4 border border-brand-border bg-white/70 rounded-full pl-2.5 pr-4 py-1.5">
-              <div className="relative shrink-0">
-                <Ring pct={Math.round(overallAvg)} size={32} stroke={3} trackColor="rgba(56,65,79,0.12)" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-[8px] font-black text-brand-dark leading-none">{Math.round(overallAvg)}%</span>
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex flex-wrap items-end justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Results</p>
+              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+                My Marks
+              </h1>
+              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
+                How you're tracking across your subjects.
+              </p>
+            </div>
+            {overallAvg !== null && (
+              <div className="shrink-0 flex items-center gap-3 border border-white/15 bg-white/[0.05] rounded px-4 py-2.5">
+                <div className="relative shrink-0">
+                  <Ring pct={Math.round(overallAvg)} size={40} stroke={4} />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-[10px] font-black text-white leading-none">{Math.round(overallAvg)}%</span>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-white/50">Overall</p>
+                  <p className="text-[11px] sm:text-[12px] font-bold text-white whitespace-nowrap">{markedResults.length} tracked</p>
                 </div>
               </div>
-              <div>
-                <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">Overall</span>
-                <span className="ml-1.5 font-black text-sm text-brand-dark">{markedResults.length} tracked</span>
-              </div>
-            </motion.div>
-          )}
+            )}
+          </motion.div>
         </div>
       </div>
 
@@ -419,17 +418,17 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.05 }}
               className="mb-5"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Subject Risk</p>
+              <div className="flex items-center gap-2 mb-3">
+                <AlertTriangle className="w-3.5 h-3.5 text-stone-500" />
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Subject Risk</p>
+              </div>
               <div className="space-y-2">
                 {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
-                  <div key={risk.subject} className={`rounded border p-4 ${
-                    risk.risk === 'high'
-                      ? 'bg-red-50 border-red-200'
-                      : 'bg-amber-50 border-amber-200'
-                  }`}>
+                  <div key={risk.subject} className="paper-card rounded p-4"
+                    style={{ borderLeft: `3px solid ${risk.risk === 'high' ? '#ef4444' : '#f59e0b'}` }}>
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-black text-stone-900 text-sm">{risk.subject}</p>
+                        <p className="font-black text-brand-dark text-sm">{risk.subject}</p>
                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${
                           risk.risk === 'high'
                             ? 'bg-red-100 text-red-700 border-red-200'
@@ -459,11 +458,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => onNavigate('pastpapers')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
                         Practice Papers
                       </button>
                       <button onClick={() => onNavigate('library')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-brand-border text-stone-700 text-[11px] font-black hover:bg-stone-50 transition-colors">
+                        className="flex items-center gap-1 px-3 py-1.5 rounded border border-brand-border text-stone-700 text-[11px] font-black hover:bg-brand-border transition-colors"
+                        style={{ background: 'var(--color-paper-raise)' }}>
                         Open Library
                       </button>
                     </div>
@@ -507,20 +507,23 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 transition={{ delay: 0.1 }}
                 className="paper-card rounded p-5 mb-5"
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Performance Journey</p>
+                <div className="flex items-center gap-2 mb-4">
+                  <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Performance Journey</p>
+                </div>
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                  <div className="flex-1 text-center bg-stone-50 rounded p-3">
                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Early</p>
                     <p className="font-black text-stone-700 text-xl">{startAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`font-black text-2xl ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                     {change >= 0 ? '↑' : '↓'}
                   </div>
-                  <div className="flex-1 text-center bg-stone-50 rounded-xl p-3">
+                  <div className="flex-1 text-center bg-stone-50 rounded p-3">
                     <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Recent</p>
-                    <p className="font-black text-stone-900 text-xl">{currentAvg.toFixed(0)}%</p>
+                    <p className="font-black text-brand-dark text-xl">{currentAvg.toFixed(0)}%</p>
                   </div>
-                  <div className={`flex-1 text-center rounded-xl p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                  <div className={`flex-1 text-center rounded p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
                     <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500">Change</p>
                     <p className={`font-black text-xl ${change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                       {change >= 0 ? '+' : ''}{change.toFixed(1)}%
@@ -558,9 +561,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               transition={{ delay: 0.15 }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
-                Recommended Actions
-              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <Target className="w-3.5 h-3.5 text-stone-500" />
+                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">
+                  Recommended Actions
+                </p>
+              </div>
               <div className="space-y-3">
                 {actionItems.map((item, i) => (
                   <div key={i} className="paper-card rounded overflow-hidden">
@@ -570,7 +576,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       </p>
                       {item.subject && item.avg !== undefined && (
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
-                          <p className="font-black text-stone-900 text-base">{item.subject}</p>
+                          <p className="font-black text-brand-dark text-base">{item.subject}</p>
                           <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
                             item.avg >= 70 ? 'bg-emerald-50 text-emerald-700' :
                             item.avg >= 50 ? 'bg-amber-50 text-amber-700' :
@@ -596,7 +602,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         <button
                           key={j}
                           onClick={() => onNavigate(action.page)}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black transition-colors ${
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors ${
                             j === 0
                               ? 'bg-brand-dark text-white hover:bg-stone-700'
                               : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-brand-border'
@@ -619,14 +625,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             const worst = valid[valid.length - 1];
             return best.subject !== worst.subject ? (
               <div className="grid grid-cols-2 gap-3 mb-6 sm:gap-4">
-                <div className="bg-emerald-50 border border-emerald-100 rounded p-4">
+                <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #10b981' }}>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
-                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{best.subject}</p>
+                  <p className="font-black text-brand-dark text-sm leading-tight truncate">{best.subject}</p>
                   <p className="text-emerald-600 font-black text-2xl mt-1">{best.avg.toFixed(0)}%</p>
                 </div>
-                <div className="bg-amber-50 border border-amber-100 rounded p-4">
+                <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #f59e0b' }}>
                   <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
-                  <p className="font-black text-stone-900 text-sm leading-tight truncate">{worst.subject}</p>
+                  <p className="font-black text-brand-dark text-sm leading-tight truncate">{worst.subject}</p>
                   <p className="text-amber-600 font-black text-2xl mt-1">{worst.avg.toFixed(0)}%</p>
                 </div>
               </div>
@@ -740,7 +746,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-black text-stone-900 leading-snug">{subject}</p>
+                        <p className="text-sm font-black text-brand-dark leading-snug">{subject}</p>
                         {subjectHealthScores.has(subject) && (() => {
                           const h = subjectHealthScores.get(subject)!;
                           return (
@@ -756,7 +762,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       </p>
                     </div>
                     {trend !== null && (
-                      <div className={`shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded-xl ${
+                      <div className={`shrink-0 flex flex-col items-center px-2.5 py-1.5 rounded ${
                         trendUp   ? 'bg-emerald-50' :
                         trendDown ? 'bg-red-50'      :
                                     'bg-stone-100'
@@ -835,9 +841,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 })(),
                               },
                             ].map(stat => (
-                              <div key={stat.label} className="bg-stone-50 rounded-xl px-3 py-2.5 text-center">
+                              <div key={stat.label} className="bg-stone-50 rounded px-3 py-2.5 text-center">
                                 <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">{stat.label}</p>
-                                <p className="font-black text-stone-900 text-sm">{stat.value}</p>
+                                <p className="font-black text-brand-dark text-sm">{stat.value}</p>
                               </div>
                             ))}
                           </div>
@@ -846,7 +852,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {termFinals.length > 0 && (
                             <div className="px-5 pb-3 flex flex-wrap gap-2">
                               {termFinals.map(t => (
-                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${
+                                <div key={t.term} className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold ${
                                   t.isComplete
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
                                     : 'bg-stone-50 text-stone-500 border-brand-border/60'
@@ -866,22 +872,22 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {(highestMark !== null || bestImprove !== null || markedItems.length > 0) && (
                             <div className="px-5 pt-4 pb-3 flex flex-wrap gap-2">
                               {highestMark !== null && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
                                   <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Best</span>
-                                  <span className="text-xs font-black text-stone-900">{highestMark}%</span>
+                                  <span className="text-xs font-black text-brand-dark">{highestMark}%</span>
                                 </div>
                               )}
                               {bestImprove !== null && (
-                                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
                                   <TrendingUp className="w-3 h-3 text-emerald-500" />
                                   <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Best jump</span>
                                   <span className="text-xs font-black text-emerald-700">+{bestImprove}%</span>
                                 </div>
                               )}
                               {markedItems.length > 0 && (
-                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded-xl px-3 py-1.5">
+                                <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
                                   <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Completed</span>
-                                  <span className="text-xs font-black text-stone-900">{markedItems.length}</span>
+                                  <span className="text-xs font-black text-brand-dark">{markedItems.length}</span>
                                 </div>
                               )}
                               {(() => {
@@ -893,7 +899,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 const imp = key ? subjectImpact.get(key) : undefined;
                                 if (!imp || imp.completed === 0) return null;
                                 return (
-                                  <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-1.5">
+                                  <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
                                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">
                                       {imp.completed} recommendation{imp.completed !== 1 ? 's' : ''} completed
                                     </span>
@@ -945,7 +951,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                               : avg >= 50 ? 'bg-amber-50 text-amber-700 border-amber-100'
                                               :             'bg-red-50 text-red-700 border-red-100';
                                   return (
-                                    <div key={type} className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold ${color}`}>
+                                    <div key={type} className={`flex items-center gap-2 px-3 py-1.5 rounded border text-xs font-bold ${color}`}>
                                       <span className="font-black">{type}</span>
                                       <span className="opacity-50">·</span>
                                       <span>{avg}%</span>
@@ -1003,7 +1009,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
                             <div className="mx-5 mb-4 bg-stone-50 rounded p-4 border border-brand-border/60">
                               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Focus Area</p>
-                              <p className="text-sm font-bold text-stone-900 mb-1">
+                              <p className="text-sm font-bold text-brand-dark mb-1">
                                 Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
                               </p>
                               <p className="text-xs text-stone-500 leading-relaxed">
@@ -1081,9 +1087,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                   const projected = projectedAvg(mark);
                                   const diff = projected - subjectAvg;
                                   return (
-                                    <div key={mark} className="bg-stone-50 rounded-xl p-3 text-center border border-brand-border/60">
+                                    <div key={mark} className="bg-stone-50 rounded p-3 text-center border border-brand-border/60">
                                       <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-1">{mark}%</p>
-                                      <p className="font-black text-stone-900 text-lg leading-none">{projected.toFixed(1)}%</p>
+                                      <p className="font-black text-brand-dark text-lg leading-none">{projected.toFixed(1)}%</p>
                                       <p className={`text-[10px] font-bold mt-1 ${diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                         {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
                                       </p>
@@ -1139,9 +1145,9 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                           p >= 70   ? 'bg-blue-500' :
                                           p >= 50   ? 'bg-amber-500' : 'bg-red-500'
                                         }`} />
-                                        <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded-xl px-2 py-1 -mx-2 -my-1 transition-colors">
+                                        <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded px-2 py-1 -mx-2 -my-1 transition-colors">
                                           <div className="min-w-0">
-                                            <p className="text-sm font-bold text-stone-900 truncate">{r.sheet_title}</p>
+                                            <p className="text-sm font-bold text-brand-dark truncate">{r.sheet_title}</p>
                                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                                               {r.sheet_scope && (
                                                 <span className="text-[10px] font-bold text-stone-500">{r.sheet_scope}</span>
@@ -1159,7 +1165,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                           <div className="shrink-0 text-right">
                                             {r.mark !== null ? (
                                               <>
-                                                <p className="text-base font-black text-stone-900 leading-none">
+                                                <p className="text-base font-black text-brand-dark leading-none" style={{ fontVariantNumeric: 'tabular-nums' }}>
                                                   {r.mark}<span className="text-xs font-bold text-stone-500">/{r.total}</span>
                                                 </p>
                                                 <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md ${g.bg} ${g.color}`}>
@@ -1240,7 +1246,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
                         {r.subject_label} · {r.sheet_scope ?? 'Assessment'}
                       </p>
-                      <h2 className="font-black text-stone-900 text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
+                      <h2 className="font-black text-brand-dark text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
                         {r.sheet_title}
                       </h2>
                       {r.marked_at && (
@@ -1308,7 +1314,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         })}
                         {p !== null && (
                           <div className="flex-1 flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-black text-stone-900">{p}%</span>
+                            <span className="text-[10px] font-black text-brand-dark">{p}%</span>
                             <div className="w-full rounded-t-sm border-2 border-brand-dark" style={{
                               height: `${Math.max(8, p * 0.5)}px`,
                               background: barColor(p),

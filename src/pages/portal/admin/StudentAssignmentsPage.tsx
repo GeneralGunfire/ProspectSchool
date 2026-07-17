@@ -151,7 +151,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
             <p className="text-[11px] text-white/60 mt-1.5 font-medium">Manage which teachers teach which students, and for which subjects.</p>
           </div>
           <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
             <UserPlus className="w-4 h-4" /> Assign Teacher
           </motion.button>
         </div>
@@ -169,7 +169,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by student, teacher or subject…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+              className="w-full pl-9 pr-4 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
             />
           </div>
           <p className="text-xs font-bold text-stone-500">
@@ -185,7 +185,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
         </div>
       ) : rows.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <UserPlus className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">No assignments yet</p>
@@ -293,7 +293,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
                 <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
                   <h2 className="text-lg font-black text-brand-dark">Assign Teacher to Student</h2>
-                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -302,7 +302,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                   <form id="admin-assign-form" onSubmit={handleAssignSubmit} className="space-y-4">
                     {assignError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                         <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                         <p className="text-red-700 text-sm">{assignError}</p>
                       </motion.div>
@@ -314,7 +314,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                         value={assignStudentId ? String(assignStudentId) : null}
                         onChange={(v) => setAssignStudentId(Number(v) || null)}
                         placeholder="Select student"
-                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                         options={knownStudents.map((s) => ({ value: String(s.id), label: `${s.surname}, ${s.name} (${s.code})` }))}
                       />
                       <p className="text-xs text-stone-500 mt-1.5">
@@ -328,7 +328,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                         value={assignTeacherId ? String(assignTeacherId) : null}
                         onChange={(v) => setAssignTeacherId(Number(v) || null)}
                         placeholder="Select teacher"
-                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                         options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name} (${t.teacher_code})` }))}
                       />
                     </div>
@@ -340,7 +340,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                           const selected = assignSubjectId === s.id;
                           return (
                             <button key={s.id} type="button" onClick={() => setAssignSubjectId(s.id)}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
+                              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
                                 selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                               }`}>
                               <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
@@ -357,11 +357,11 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
                   <button type="button" onClick={closeAssign}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="admin-assign-form" disabled={assignSubmitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {assignSubmitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>Assign <ArrowRight className="w-4 h-4" /></>
@@ -387,7 +387,7 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
                 <h2 className="text-base font-black text-brand-dark mb-1">Remove this link?</h2>
@@ -399,11 +399,11 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setConfirmRemove(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button onClick={handleRemove} disabled={removing}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {removing
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Remove'

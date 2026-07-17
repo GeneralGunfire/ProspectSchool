@@ -365,10 +365,10 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
               style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
               Timetable
             </h1>
-            <p className="text-[11px] text-white/60 mt-1.5 font-medium hidden sm:block">
+            <p className="text-[10px] sm:text-[11px] text-white/60 mt-1.5 font-medium max-w-md">
               {editMode
-                ? <>Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</>
-                : 'Click Edit Timetable to make changes.'}
+                ? <><span className="sm:hidden">Tap a card to edit it. Nothing is saved until you tap Save.</span><span className="hidden sm:inline">Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</span></>
+                : 'Tap Edit Timetable to make changes.'}
             </p>
           </div>
 
@@ -380,7 +380,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
               {!editMode ? (
                 <motion.button
                   onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                  className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]"
+                  className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]"
                 >
                   <PencilLine className="w-4 h-4" /> Edit Timetable
                 </motion.button>
@@ -389,14 +389,14 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                   <button
                     onClick={cancelEditing}
                     disabled={saving}
-                    className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded hover:bg-stone-50 transition-colors disabled:opacity-50"
                   >
                     <RotateCcw className="w-3.5 h-3.5" /> Cancel
                   </button>
                   <button
                     onClick={saveChanges}
                     disabled={saving || !dirty}
-                    className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
+                    className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
                   >
                     {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
                     {saving ? 'Saving…' : 'Save Changes'}
@@ -412,7 +412,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {saveError && (
-        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           <p className="text-sm font-bold text-red-700 flex-1">{saveError}</p>
           <button onClick={() => setSaveError(null)} className="text-red-400 hover:text-red-600">
@@ -422,7 +422,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
       )}
 
       {moveError && (
-        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
+        <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
           <p className="text-sm font-bold text-red-700 flex-1">{moveError}</p>
           <button onClick={() => setMoveError(null)} className="text-red-400 hover:text-red-600">
@@ -436,7 +436,10 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
           <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
         </div>
       ) : cohorts.length === 0 ? (
-        <div className="paper-card rounded p-12 text-center">
+        <div className="paper-card rounded p-12 flex flex-col items-center text-center">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mb-4">
+            <CalendarDays className="w-5 h-5 text-stone-500" />
+          </div>
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500">Create classes on the Classes page first.</p>
         </div>
@@ -449,7 +452,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                 key={c.id}
                 onClick={() => { if (!editMode) setSelectedCohortId(c.id); }}
                 disabled={editMode}
-                className={`shrink-0 px-4 py-2 rounded-xl text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`shrink-0 px-4 py-2 rounded text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed ${
                   selectedCohortId === c.id ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-600 hover:bg-white/70'
                 }`}
               >
@@ -570,7 +573,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                         <button
                           key={d.value}
                           onClick={() => setMobileDay(d.value)}
-                          className={`py-2 rounded-xl text-[11px] font-black transition-colors ${
+                          className={`py-2 rounded text-[11px] font-black transition-colors ${
                             mobileDay === d.value ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-500 hover:bg-white/70'
                           }`}
                         >
@@ -611,7 +614,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
             <div className="flex gap-2 mt-3">
               <button
                 onClick={handleAddRow} disabled={addingRow}
-                className="flex items-center gap-2 text-xs font-black text-stone-600 bg-white hover:bg-stone-50 border border-brand-border px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 text-xs font-black text-stone-600 bg-white hover:bg-stone-50 border border-brand-border px-4 py-2.5 rounded transition-colors disabled:opacity-50"
               >
                 <Plus className="w-3.5 h-3.5" /> Add Row
               </button>
@@ -647,9 +650,9 @@ function SaveStatusPill({ dirty, saving }: { dirty: boolean; saving: boolean }) 
   const label = saving ? 'Saving…' : dirty ? 'Unsaved changes' : 'All changes saved';
   const dot = saving ? 'bg-blue-400 animate-pulse' : dirty ? 'bg-amber-400' : 'bg-emerald-400';
   return (
-    <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/70 border border-stone-200/70 backdrop-blur-sm">
-      <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
-      <span className="text-[11px] font-bold text-stone-500">{label}</span>
+    <div className="flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/70 border border-stone-200/70 backdrop-blur-sm">
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+      <span className="text-[10px] sm:text-[11px] font-bold text-stone-500 whitespace-nowrap">{label}</span>
     </div>
   );
 }
@@ -670,7 +673,7 @@ function EmptyTimetableState({ onStartEditing }: { onStartEditing: () => void })
       <p className="text-sm text-stone-500 mb-5">Enter edit mode to start adding subjects and breaks.</p>
       <button
         onClick={onStartEditing}
-        className="inline-flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded-xl hover:bg-brand-dark/90 transition-colors"
+        className="inline-flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded hover:bg-brand-dark/90 transition-colors"
       >
         <Sparkles className="w-4 h-4" /> Start Building
       </button>
@@ -733,7 +736,7 @@ function SlotCell({
             draggable={editMode}
             onDragStart={editMode ? (ev) => onDragStart(ev, e) : undefined}
             onClick={!editMode ? undefined : () => onOpenSlot(day, period, e.id)}
-            className={`group flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 transition-colors ${
+            className={`group flex items-center gap-1.5 rounded border px-2.5 py-1.5 transition-colors ${
               editMode ? 'cursor-grab active:cursor-grabbing hover:border-stone-300 hover:bg-white' : ''
             } bg-white/70 border-stone-200/70`}
           >
@@ -930,7 +933,7 @@ function SlotModal({
           <div className="px-6 py-4 overflow-y-auto space-y-3">
             {rows.map((r) => (
               typeof editingId === 'number' && editingId === r.id ? null : (
-                <div key={r.id} className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border ${
+                <div key={r.id} className={`flex items-center justify-between gap-3 px-4 py-3 rounded border ${
                   r.is_break ? 'bg-amber-50/70 border-amber-100' : 'bg-white/60 border-stone-200/70'
                 }`}>
                   <div className="min-w-0">
@@ -965,13 +968,13 @@ function SlotModal({
                   <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Editing subject group</p>
                 )}
                 {error && (
-                  <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded-xl">
+                  <div className="flex gap-2 p-3 bg-red-50 border border-red-200 rounded">
                     <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <p className="text-xs font-bold text-red-700">{error}</p>
                   </div>
                 )}
                 {clashWarning && (
-                  <div className="flex gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                  <div className="flex gap-2 p-3 bg-amber-50 border border-amber-200 rounded">
                     <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                     <p className="text-xs font-bold text-amber-700">{clashWarning}</p>
                   </div>
@@ -982,7 +985,7 @@ function SlotModal({
                     value={subjectId === '' ? null : String(subjectId)}
                     onChange={(v) => setSubjectId(v === '' ? '' : Number(v))}
                     placeholder="Select subject"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
                     options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
                   />
                 </div>
@@ -992,31 +995,31 @@ function SlotModal({
                     value={teacherId === '' ? null : String(teacherId)}
                     onChange={(v) => handleTeacherChange(v)}
                     placeholder="Select teacher"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10"
                     options={teachers.map((t) => ({ value: String(t.id), label: `${t.name} ${t.surname}` }))}
                   />
                 </div>
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Room <span className="normal-case font-medium text-stone-400">(optional)</span></label>
                   <input value={room} onChange={(e) => setRoom(e.target.value)} placeholder="e.g. Room 14"
-                    className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10" />
+                    className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10" />
                 </div>
                 <div className="flex gap-2">
                   {rows.length > 0 && (
                     <button onClick={() => { setEditingId(undefined); setError(null); setClashWarning(null); }}
-                      className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                      className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                       Cancel
                     </button>
                   )}
                   <button onClick={typeof editingId === 'number' ? handleSaveEdit : handleAdd}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all">
                     {typeof editingId === 'number' ? 'Update' : 'Add Subject Group'}
                   </button>
                 </div>
               </div>
             ) : (
               <button onClick={() => setEditingId(null)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-black text-stone-600 border border-dashed border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-black text-stone-600 border border-dashed border-brand-border rounded hover:bg-stone-50 transition-all">
                 <Plus className="w-4 h-4" /> Add Another Subject Group
               </button>
             ))}
@@ -1053,7 +1056,7 @@ function DuplicatePopover({
   return (
     <div
       ref={ref}
-      className="absolute right-0 top-full mt-1 z-30 glass-panel rounded-xl shadow-xl p-2 w-56 max-h-64 overflow-y-auto"
+      className="absolute right-0 top-full mt-1 z-30 glass-panel rounded shadow-xl p-2 w-56 max-h-64 overflow-y-auto"
       onClick={(ev) => ev.stopPropagation()}
     >
       <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 px-2 pt-1 pb-2">Duplicate to…</p>

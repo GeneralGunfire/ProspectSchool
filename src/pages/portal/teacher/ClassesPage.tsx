@@ -355,7 +355,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Students</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Classes</h1>
             <p className="text-[13px] text-white/60 mt-2.5 font-medium">Manage your students and track their progress.</p>
           </motion.div>
@@ -365,7 +365,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               <UserPlus className="w-4 h-4" /> Assign Student
             </motion.button>
             <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
               <Plus className="w-4 h-4" /> Add Student
             </motion.button>
           </div>
@@ -423,19 +423,19 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, code or subject…"
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+              className="w-full pl-9 pr-4 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
             />
           </div>
           <Dropdown
             value={filterGrade || 'all'}
             onChange={v => setFilterGrade(v === 'all' ? '' : v)}
-            buttonClassName="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+            buttonClassName="flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-stone-700 focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
             options={[{ value: 'all', label: 'All grades' }, ...GRADES.map(g => ({ value: String(g), label: `Grade ${g}` }))]}
           />
           {(search || filterGrade || filterCohort) && (
             <button
               onClick={() => { setSearch(''); setFilterGrade(''); setFilterCohort(''); }}
-              className="px-3 py-2.5 rounded-xl border border-brand-border text-sm font-black text-stone-500 hover:bg-stone-100 transition-colors"
+              className="px-3 py-2.5 rounded border border-brand-border text-sm font-black text-stone-500 hover:bg-stone-100 transition-colors"
             >
               Clear
             </button>
@@ -447,7 +447,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           <button
             onClick={() => setGroupByTier(g => !g)}
             disabled={tiersLoading}
-            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl border text-xs font-black transition-all ${
+            className={`flex items-center gap-1.5 px-3 py-2.5 rounded border text-xs font-black transition-all ${
               groupByTier
                 ? 'bg-brand-dark text-white border-brand-dark'
                 : 'bg-white text-stone-500 border-brand-border hover:border-stone-400'
@@ -475,13 +475,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
         </div>
       ) : students.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Plus className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">No students yet</p>
           <p className="text-sm text-stone-500 mb-6">Add your first student to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
             Add Student <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -591,7 +591,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Student' : 'Edit Student'}
                   </h2>
-                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -600,7 +600,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   <form id="student-form" onSubmit={handleSubmit} className="space-y-4">
                     {formError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                         <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                         <p className="text-red-700 text-sm">{formError}</p>
                       </motion.div>
@@ -611,13 +611,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
                         <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="John" />
                       </div>
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
                         <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Doe" />
                       </div>
                     </div>
@@ -628,7 +628,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       <input required type="text" value={form.student_code}
                         onChange={(e) => modalMode === 'add' && set('student_code', e.target.value.toUpperCase())}
                         readOnly={modalMode === 'edit'}
-                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
+                        className={`w-full px-3 py-2.5 border rounded text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
                           modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
                         }`}
                         placeholder="e.g. STU-0001" autoCapitalize="characters" />
@@ -642,7 +642,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       <input type="password" inputMode="numeric" maxLength={10}
                         required={modalMode === 'add'}
                         value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                         placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
                     </div>
 
@@ -651,7 +651,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Class</label>
                         <input required type="text" value={form.cohort} onChange={(e) => set('cohort', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="e.g. 10A" />
                       </div>
                       <div>
@@ -660,7 +660,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                           value={form.grade || null}
                           onChange={(v) => set('grade', v)}
                           placeholder="Select"
-                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           options={GRADES.map((g) => ({ value: String(g), label: `Grade ${g}` }))}
                         />
                       </div>
@@ -676,7 +676,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                           const selected = form.subjects.includes(s.code);
                           return (
                             <button key={s.code} type="button" onClick={() => toggleSubject(s.code)}
-                              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
+                              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
                                 selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                               }`}>
                               <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
@@ -693,11 +693,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
                   <button type="button" onClick={closeForm}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="student-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>{modalMode === 'add' ? 'Add Student' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
@@ -728,7 +728,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     <h2 className="text-lg font-black text-brand-dark">Assign Student</h2>
                     <p className="text-xs text-stone-500 mt-0.5">Link a student already in this school to your subjects</p>
                   </div>
-                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -736,7 +736,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 <div className="overflow-y-auto flex-1 px-6 py-4">
                   {assignError && (
                     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                      className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-4">
+                      className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded mb-4">
                       <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                       <p className="text-red-700 text-sm">{assignError}</p>
                     </motion.div>
@@ -748,7 +748,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student Code</label>
                         <input required type="text" value={assignCode}
                           onChange={(e) => setAssignCode(e.target.value.toUpperCase())}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium tracking-widest text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="e.g. STU-0001" autoCapitalize="characters" autoFocus />
                         <p className="text-xs text-stone-500 mt-2">
                           Enter the student's existing code. You won't be able to edit their name, grade or PIN — only pick which subjects you teach them.
@@ -758,7 +758,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   ) : (
                     <form id="assign-subjects-form" onSubmit={handleAssignSubmit} className="space-y-4">
                       {assignFoundStudent && (
-                        <div className="bg-stone-50 border border-brand-border rounded-xl px-4 py-3">
+                        <div className="bg-stone-50 border border-brand-border rounded px-4 py-3">
                           <p className="font-bold text-brand-dark">{assignFoundStudent.surname}, {assignFoundStudent.name}</p>
                           <p className="text-xs text-stone-500 mt-0.5">
                             {assignFoundStudent.cohort ? assignFoundStudent.cohort.name : `Grade ${assignFoundStudent.grade}`}
@@ -777,7 +777,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                             const selected = assignSubjects.includes(s.code);
                             return (
                               <button key={s.code} type="button" onClick={() => toggleAssignSubject(s.code)}
-                                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-left transition-all ${
+                                className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
                                   selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                                 }`}>
                                 <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
@@ -795,12 +795,12 @@ export default function ClassesPage({ session }: ClassesPageProps) {
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
                   <button type="button" onClick={assignStep === 'confirm' ? () => setAssignStep('code') : closeAssign}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     {assignStep === 'confirm' ? 'Back' : 'Cancel'}
                   </button>
                   {assignStep === 'code' ? (
                     <button type="submit" form="assign-code-form" disabled={assignLookingUp}
-                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                       {assignLookingUp
                         ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Looking up...</>
                         : <>Find Student <ArrowRight className="w-4 h-4" /></>
@@ -808,7 +808,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     </button>
                   ) : (
                     <button type="submit" form="assign-subjects-form" disabled={assignSubmitting}
-                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                       {assignSubmitting
                         ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Assigning...</>
                         : <>Assign Student <ArrowRight className="w-4 h-4" /></>
@@ -841,7 +841,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     <h2 className="text-base font-black text-brand-dark">Parent Contact Log</h2>
                     <p className="text-xs text-stone-500 mt-0.5">{contactModal.surname}, {contactModal.name}</p>
                   </div>
-                  <button onClick={closeContactModal} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 transition-colors">
+                  <button onClick={closeContactModal} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -873,13 +873,13 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     onChange={e => setContactNote(e.target.value)}
                     placeholder="Note (optional) — e.g. discussed term progress, parent satisfied"
                     rows={2}
-                    className="w-full px-3 py-2 rounded-xl border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
+                    className="w-full px-3 py-2 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none mb-3"
                   />
 
                   <button
                     onClick={handleLogContact}
                     disabled={contactSaving}
-                    className="w-full py-2 rounded-xl bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                    className="w-full py-2 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
                   >
                     {contactSaving ? 'Saving…' : 'Log Contact'}
                   </button>
@@ -900,7 +900,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   ) : (
                     <div className="space-y-2">
                       {contactHistory.map(c => (
-                        <div key={c.id} className="flex items-start gap-3 bg-stone-50 rounded-xl px-3 py-2.5">
+                        <div key={c.id} className="flex items-start gap-3 bg-stone-50 rounded px-3 py-2.5">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="text-[11px] font-black text-stone-700">{CONTACT_METHOD_LABELS[c.method]}</span>
@@ -940,7 +940,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
                 <h2 className="text-base font-black text-brand-dark mb-1">Remove student?</h2>
@@ -949,11 +949,11 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 </p>
                 <div className="flex gap-3">
                   <button onClick={() => setConfirmDelete(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button onClick={handleDelete} disabled={deleting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {deleting
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Remove'
@@ -1028,7 +1028,7 @@ function TierGroupView({ students, tiers, filtered, onEdit, onDelete }: TierGrou
             <div className={`${cfg.bg} px-5 py-3 flex items-center justify-between`}>
               <div className="flex items-center gap-2.5">
                 <span className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
-                <p className="text-sm font-black text-stone-900">{cfg.label}</p>
+                <p className="text-sm font-black text-brand-dark">{cfg.label}</p>
                 <p className="text-[11px] text-stone-500">{cfg.description}</p>
               </div>
               <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${cfg.badge}`}>

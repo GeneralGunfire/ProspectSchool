@@ -34,14 +34,14 @@ const GRADES = [8, 9, 10, 11, 12];
 // border (no shadow+border ghost-card stack), 16px radius, explicit
 // <300ms transitions, no `transition-all`.
 const FIELD_LABEL = 'block text-[11px] font-semibold uppercase tracking-wide text-stone-500 mb-1.5';
-const FIELD_INPUT = 'w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
-const FIELD_DROPDOWN = 'w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
+const FIELD_INPUT = 'w-full px-3 py-2.5 bg-stone-50 border border-stone-200 rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
+const FIELD_DROPDOWN = 'w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-stone-200 rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-colors duration-150';
 const MODAL_BACKDROP = 'fixed inset-0 bg-black/30 z-40';
 const MODAL_PANEL = 'bg-white rounded-2xl border border-stone-200 w-full max-w-lg max-h-[90vh] flex flex-col';
 const MODAL_HEADER = 'flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-100';
 const MODAL_FOOTER = 'flex gap-2.5 px-6 py-4 border-t border-stone-100';
-const BTN_SECONDARY = 'flex-1 py-2.5 text-sm font-medium text-stone-600 border border-stone-200 rounded-xl hover:bg-stone-50 transition-colors duration-150';
-const BTN_PRIMARY = 'flex-1 py-2.5 text-sm font-semibold text-white bg-brand-dark rounded-xl hover:bg-stone-800 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2';
+const BTN_SECONDARY = 'flex-1 py-2.5 text-sm font-medium text-stone-600 border border-stone-200 rounded hover:bg-stone-50 transition-colors duration-150';
+const BTN_PRIMARY = 'flex-1 py-2.5 text-sm font-semibold text-white bg-brand-dark rounded hover:bg-stone-800 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2';
 
 function subjectsForGrade(subjects: Subject[], grade: string): Subject[] {
   return subjects.filter((s) => s.grades.split(',').map((g) => g.trim()).includes(grade));
@@ -134,7 +134,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
         <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Portal</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Assessments</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Topic Tests</h1>
             <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
               Short, timed tests that pinpoint exactly what a student is struggling with — invisible to students until you assign them.
@@ -146,7 +146,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
               <Pencil className="w-4 h-4" /> Build Custom Test
             </motion.button>
             <motion.button onClick={() => setShowCreate(true)} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[#2a3350]">
+              className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
               <Plus className="w-4 h-4" /> Assign Test
             </motion.button>
           </div>
@@ -157,7 +157,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
       <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
 
       {loading ? (
-        <div className="space-y-2.5 max-w-2xl">
+        <div className="space-y-2.5">
           {[0, 1, 2].map(i => (
             <div key={i} className="paper-card rounded p-4 flex items-center gap-3">
               <Shimmer className="w-9 h-9 rounded shrink-0" />
@@ -170,13 +170,13 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
         </div>
       ) : allTests.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-11 h-11 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-11 h-11 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <ClipboardCheck className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-semibold text-brand-dark mb-1">No topic tests yet</p>
           <p className="text-sm text-stone-500 mb-6">Create your first test to start diagnosing exactly where students struggle.</p>
           <button onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-brand-dark border border-stone-200 hover:border-stone-300 px-5 py-2.5 rounded-xl transition-colors duration-150">
+            className="inline-flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-brand-dark border border-stone-200 hover:border-stone-300 px-5 py-2.5 rounded transition-colors duration-150">
             Assign Test <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -266,7 +266,7 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl border border-stone-200 w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
                 <h2 className="text-base font-semibold text-brand-dark mb-1">Delete test?</h2>
@@ -275,11 +275,11 @@ export default function TopicTestsPage({ session, initialTestId, onConsumeInitia
                 </p>
                 <div className="flex gap-2.5">
                   <button onClick={() => setConfirmDelete(null)}
-                    className="flex-1 py-2.5 text-sm font-medium text-stone-600 border border-stone-200 rounded-xl hover:bg-stone-50 transition-colors duration-150">
+                    className="flex-1 py-2.5 text-sm font-medium text-stone-600 border border-stone-200 rounded hover:bg-stone-50 transition-colors duration-150">
                     Cancel
                   </button>
                   <button onClick={handleDelete} disabled={deleting}
-                    className="flex-1 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-xl hover:bg-red-700 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-semibold text-white bg-red-600 rounded hover:bg-red-700 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2">
                     {deleting ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Delete'}
                   </button>
                 </div>
@@ -301,7 +301,7 @@ function TestCard({ test, onAssign, onOverview, onDelete }: {
     <div className="paper-card rounded overflow-hidden">
       <div className="px-5 py-4 flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center shrink-0">
             <ClipboardCheck className="w-4 h-4 text-stone-600" strokeWidth={2.25} />
           </div>
           <div className="min-w-0">
@@ -399,7 +399,7 @@ function CreateTestModal({ session, subjects, onClose, onCreated }: {
               <h2 className="text-lg font-semibold text-brand-dark">Assign Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">Pick a ready-made CAPS topic test — questions are already set and auto-graded.</p>
             </div>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -407,7 +407,7 @@ function CreateTestModal({ session, subjects, onClose, onCreated }: {
           <div className="overflow-y-auto flex-1 px-6 py-4">
             <form id="create-test-form" onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                   <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
@@ -555,7 +555,7 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
               <h2 className="text-lg font-semibold text-brand-dark">Build Custom Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">Full control — set your own title, sub-skills, and question types.</p>
             </div>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150 shrink-0">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -563,7 +563,7 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
           <div className="overflow-y-auto flex-1 px-6 py-4">
             <form id="custom-test-form" onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                   <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
@@ -620,11 +620,11 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
                 <label className={FIELD_LABEL.replace('mb-1.5', 'mb-2')}>Grading</label>
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setGradingMode('auto')}
-                    className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-150 ${gradingMode === 'auto' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
+                    className={`flex-1 py-2.5 rounded text-xs font-semibold transition-colors duration-150 ${gradingMode === 'auto' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
                     Auto-graded (MCQ / short answer)
                   </button>
                   <button type="button" onClick={() => setGradingMode('manual')}
-                    className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-150 ${gradingMode === 'manual' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
+                    className={`flex-1 py-2.5 rounded text-xs font-semibold transition-colors duration-150 ${gradingMode === 'manual' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
                     Teacher-marked (open text)
                   </button>
                 </div>
@@ -653,7 +653,7 @@ function CustomTestModal({ session, subjects, onClose, onCreated }: {
                         className={`flex-1 ${FIELD_INPUT}`} />
                       {subskills.length > 1 && (
                         <button type="button" onClick={() => removeSubskillField(i)}
-                          className="p-2.5 rounded-xl hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors duration-150">
+                          className="p-2.5 rounded hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors duration-150">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
@@ -730,7 +730,7 @@ function AssignModal({ session, test, onClose, onAssigned }: {
               <h2 className="text-lg font-semibold text-brand-dark">Assign Test</h2>
               <p className="text-xs text-stone-500 mt-0.5">{test.title}</p>
             </div>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -738,7 +738,7 @@ function AssignModal({ session, test, onClose, onAssigned }: {
           <div className="px-6 py-5">
             {done ? (
               <div className="text-center py-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded bg-emerald-50 flex items-center justify-center mx-auto mb-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                 </div>
                 <p className="font-semibold text-brand-dark">Assigned</p>
@@ -747,12 +747,12 @@ function AssignModal({ session, test, onClose, onAssigned }: {
             ) : (
               <>
                 {error && (
-                  <div className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-xl mb-4">
+                  <div className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded mb-4">
                     <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <p className="text-xs text-red-700">{error}</p>
                   </div>
                 )}
-                <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl mb-4">
+                <div className="flex gap-3 p-3 bg-amber-50 border border-amber-200 rounded mb-4">
                   <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-amber-800 leading-relaxed">
                     This test stays invisible to students until you assign it. Once assigned, all students you teach for this subject/grade see it immediately.
@@ -859,7 +859,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
         </div>
         {pendingCount > 0 && (
           <button onClick={onMark}
-            className="shrink-0 flex items-center gap-2 bg-blue-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors duration-150 active:scale-[0.98]">
+            className="shrink-0 flex items-center gap-2 bg-blue-600 text-white text-xs font-semibold px-4 py-2.5 rounded hover:bg-blue-700 transition-colors duration-150 active:scale-[0.98]">
             <PenLine className="w-3.5 h-3.5" /> Mark {pendingCount} response{pendingCount !== 1 ? 's' : ''}
           </button>
         )}
@@ -905,7 +905,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
           <p className="text-xs text-stone-400 mb-4">Wrong answers that reveal a specific, recognisable error — not just "incorrect."</p>
           <div className="space-y-2.5">
             {overview.misconceptions.map((m) => (
-              <div key={`${m.question_id}-${m.option}`} className="flex items-start gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-100">
+              <div key={`${m.question_id}-${m.option}`} className="flex items-start gap-3 px-4 py-3 rounded bg-amber-50 border border-amber-100">
                 <span className="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
                   {m.count} student{m.count !== 1 ? 's' : ''}
                 </span>
@@ -977,7 +977,7 @@ function TopicOverview({ topicTestId, onBack, onMark }: { topicTestId: number; o
             {full.questions.map((q, i) => {
               const sk = full.subskills.find((s) => s.id === q.subskill_id);
               return (
-                <div key={q.id} className="flex items-start gap-3 bg-stone-50 rounded-xl px-4 py-3">
+                <div key={q.id} className="flex items-start gap-3 bg-stone-50 rounded px-4 py-3">
                   <span className="w-5 h-5 rounded-full bg-brand-dark text-white text-[10px] font-semibold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </span>
@@ -1073,7 +1073,7 @@ function AddQuestionModal({ full, onClose, onAdded }: {
         <div className={MODAL_PANEL}>
           <div className={MODAL_HEADER}>
             <h2 className="text-lg font-semibold text-brand-dark">Add Question</h2>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
+            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors duration-150">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -1081,7 +1081,7 @@ function AddQuestionModal({ full, onClose, onAdded }: {
           <div className="overflow-y-auto flex-1 px-6 py-4">
             <form id="add-question-form" onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                   <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
@@ -1102,11 +1102,11 @@ function AddQuestionModal({ full, onClose, onAdded }: {
                   <label className={FIELD_LABEL}>Question Type</label>
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setQuestionType('mcq')}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 ${questionType === 'mcq' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
+                      className={`flex-1 py-2 rounded text-xs font-semibold transition-colors duration-150 ${questionType === 'mcq' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
                       Multiple Choice
                     </button>
                     <button type="button" onClick={() => setQuestionType('short_answer')}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 ${questionType === 'short_answer' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
+                      className={`flex-1 py-2 rounded text-xs font-semibold transition-colors duration-150 ${questionType === 'short_answer' ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-stone-200 text-stone-600'}`}>
                       Short Answer
                     </button>
                   </div>
@@ -1121,7 +1121,7 @@ function AddQuestionModal({ full, onClose, onAdded }: {
               </div>
 
               {questionType === 'open_text' ? (
-                <div className="flex gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                <div className="flex gap-3 p-3 bg-blue-50 border border-blue-200 rounded">
                   <PenLine className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-blue-800 leading-relaxed">
                     Students answer in free text. There's no auto-grading — you'll mark each response correct or incorrect after they submit.
@@ -1233,7 +1233,7 @@ function AttemptDetailModal({ attemptId, onClose }: { attemptId: number; onClose
             ) : (
               <div className="space-y-2.5">
                 {detail.questions.map((q, i) => (
-                  <div key={q.question_id} className="px-4 py-3.5 rounded-xl bg-stone-50 border border-stone-100">
+                  <div key={q.question_id} className="px-4 py-3.5 rounded bg-stone-50 border border-stone-100">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 text-stone-500 text-[11px] font-medium rounded-full">
                         {i + 1}. {q.subskill_label}
@@ -1372,7 +1372,7 @@ function MarkingScreen({ topicTestId, onBack }: { topicTestId: number; onBack: (
 
       {pending.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-11 h-11 rounded bg-emerald-50 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
           </div>
           <p className="font-semibold text-brand-dark mb-1">All caught up</p>
@@ -1444,7 +1444,7 @@ function MarkingAnswerRow({
             transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
             className="overflow-hidden"
           >
-            <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-3">
+            <div className="bg-blue-50 border border-blue-100 rounded px-4 py-3 mb-3">
               <p className="text-[11px] font-semibold uppercase tracking-wide text-blue-600 mb-1">Memo / model answer</p>
               <p className="text-sm text-blue-900 whitespace-pre-wrap leading-relaxed">{answer.question.memo_answer}</p>
             </div>
@@ -1452,7 +1452,7 @@ function MarkingAnswerRow({
         )}
       </AnimatePresence>
 
-      <div className="bg-stone-50 rounded-xl px-4 py-3 mb-3">
+      <div className="bg-stone-50 rounded px-4 py-3 mb-3">
         <p className="text-sm text-stone-700 whitespace-pre-wrap">{answer.student_answer || <span className="text-stone-400 italic">No answer given</span>}</p>
       </div>
       {answer.graded_at ? (
@@ -1467,14 +1467,14 @@ function MarkingAnswerRow({
           <button
             onClick={() => onMark(true)}
             disabled={saving}
-            className="flex-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
+            className="flex-1 py-2 rounded bg-emerald-50 text-emerald-700 text-xs font-semibold hover:bg-emerald-100 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
           >
             Correct
           </button>
           <button
             onClick={() => onMark(false)}
             disabled={saving}
-            className="flex-1 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
+            className="flex-1 py-2 rounded bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition-colors duration-150 active:scale-[0.98] disabled:opacity-50"
           >
             Incorrect
           </button>

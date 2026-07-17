@@ -203,7 +203,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
             </h1>
           </div>
           <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
             <Plus className="w-4 h-4" /> Add Teacher
           </motion.button>
         </div>
@@ -219,13 +219,13 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         </div>
       ) : teachers.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
             <Plus className="w-5 h-5 text-stone-500" />
           </div>
           <p className="font-bold text-brand-dark mb-1">No teachers yet</p>
           <p className="text-sm text-stone-500 mb-6">Add your first teacher to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded-xl transition-all">
+            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
             Add Teacher <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -308,7 +308,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
                   <Trash2 className="w-5 h-5 text-red-500" />
                 </div>
                 <h2 className="text-base font-black text-brand-dark mb-1">Delete teacher?</h2>
@@ -317,18 +317,18 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                 </p>
                 {deleteError && (
                   <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded-xl mb-4">
+                    className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded mb-4">
                     <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                     <p className="text-red-700 text-sm">{deleteError}</p>
                   </motion.div>
                 )}
                 <div className="flex gap-3">
                   <button onClick={() => setConfirmDelete(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button onClick={handleDelete} disabled={deleting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded-xl hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {deleting
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Delete'
@@ -358,7 +358,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                   <h2 className="text-lg font-black text-brand-dark">
                     {modalMode === 'add' ? 'Add Teacher' : 'Edit Teacher'}
                   </h2>
-                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded-xl hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </div>
@@ -367,7 +367,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                   <form id="teacher-form" onSubmit={handleSubmit} className="space-y-4">
                     {formError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded-xl">
+                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
                         <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
                         <p className="text-red-700 text-sm">{formError}</p>
                       </motion.div>
@@ -378,13 +378,13 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
                         <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Jane" />
                       </div>
                       <div>
                         <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
                         <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                           placeholder="Smith" />
                       </div>
                     </div>
@@ -395,7 +395,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       <input required type="text" value={form.teacher_code}
                         onChange={(e) => modalMode === 'add' && set('teacher_code', e.target.value.toUpperCase())}
                         readOnly={modalMode === 'edit'}
-                        className={`w-full px-3 py-2.5 border rounded-xl text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
+                        className={`w-full px-3 py-2.5 border rounded text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
                           modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
                         }`}
                         placeholder="e.g. TCH-0002" autoCapitalize="characters" />
@@ -409,7 +409,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       <input type="password" inputMode="numeric" maxLength={10}
                         required={modalMode === 'add'}
                         value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
+                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
                         placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
                     </div>
 
@@ -419,7 +419,7 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                       <div className="grid grid-cols-2 gap-2">
                         {(['teacher', 'school_admin'] as const).map((r) => (
                           <button key={r} type="button" onClick={() => set('role', r)}
-                            className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                            className={`flex items-center gap-2 px-3 py-2.5 rounded text-xs font-bold border transition-all ${
                               form.role === r ? 'bg-brand-dark text-white border-brand-dark' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
                             }`}>
                             <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${form.role === r ? 'bg-white/20' : 'border border-stone-300'}`}>
@@ -443,14 +443,14 @@ export default function TeachersPage({ session }: TeachersPageProps) {
                               onChange={(v) => setSubjectRow(i, 'subject_id', Number(v))}
                               placeholder="Select subject"
                               className="flex-1 min-w-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                               options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
                             />
                             <Dropdown
                               value={String(row.grade)}
                               onChange={(v) => setSubjectRow(i, 'grade', Number(v))}
                               className="w-32 shrink-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
                               options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
                             />
                             {subjectRows.length > 1 && (
@@ -473,11 +473,11 @@ export default function TeachersPage({ session }: TeachersPageProps) {
 
                 <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
                   <button type="button" onClick={closeForm}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded-xl hover:bg-stone-50 transition-all">
+                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
                     Cancel
                   </button>
                   <button type="submit" form="teacher-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>{modalMode === 'add' ? 'Add Teacher' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>

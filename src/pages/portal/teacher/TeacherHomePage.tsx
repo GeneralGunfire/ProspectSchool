@@ -293,7 +293,8 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="card-premium-dark bg-brand-dark rounded-[24px] p-5 flex flex-col justify-between min-h-30 relative overflow-hidden border border-white/[0.06]"
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30 relative overflow-hidden"
+          style={{ background: 'var(--color-brand-dark)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)' }}
         >
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none blur-2xl opacity-25"
             style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
@@ -322,7 +323,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Students</p>
           <p className="font-black text-4xl text-brand-dark">{studentCount}</p>
           <button onClick={() => onNavigate('classes')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
             View Classes <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
@@ -338,7 +339,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             {recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)}
           </p>
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
             Enter Marks <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
@@ -352,7 +353,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
           <p className="font-black text-4xl text-brand-dark">{upcomingEvents.length}</p>
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-stone-900 transition-colors flex items-center gap-0.5 mt-1">
+            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
             View Calendar <ChevronRight className="w-3 h-3" />
           </button>
         </motion.div>
@@ -366,9 +367,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
-              <p className="text-[10px] text-stone-500 mt-0.5">Recommended interventions — click Assign to activate</p>
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 text-stone-500 shrink-0" />
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
+                <p className="text-[10px] text-stone-500 mt-0.5">Recommended interventions — click Assign to activate</p>
+              </div>
             </div>
             <span className="text-[11px] font-bold text-red-500">
               {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
@@ -383,7 +387,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               const RecIcon = rec ? (TYPE_ICON[rec.type] ?? BookOpen) : Zap;
 
               return (
-                <div key={i} className={`rounded-xl border ${
+                <div key={i} className={`rounded border ${
                   s.reason === 'below_pass'    ? 'bg-red-50 border-red-100' :
                   s.reason === 'declining'     ? 'bg-amber-50 border-amber-100' :
                                                  'bg-orange-50 border-orange-100'
@@ -397,7 +401,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                       {s.name[0]}{s.surname[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-black text-stone-900">{s.surname}, {s.name}</p>
+                      <p className="text-xs font-black text-brand-dark">{s.surname}, {s.name}</p>
                       <p className="text-[10px] text-stone-500 truncate">{s.detail}</p>
                     </div>
 
@@ -471,7 +475,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           {atRisk.length > 6 && (
             <p className="text-[11px] text-stone-500 text-center mt-3">
               +{atRisk.length - 6} more —{' '}
-              <button onClick={() => onNavigate('library')} className="font-black text-stone-600 hover:text-stone-900">
+              <button onClick={() => onNavigate('library')} className="font-black text-stone-600 hover:text-brand-dark">
                 View all
               </button>
             </p>
@@ -497,7 +501,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           </div>
           <div className="space-y-2">
             {stale.filter(inv => !dismissed.has(inv.interventionId)).map((inv, i) => (
-              <div key={i} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 border ${
+              <div key={i} className={`flex items-center gap-3 rounded px-3 py-2.5 border ${
                 inv.reason === 'awaiting_outcome'
                   ? 'bg-blue-50 border-blue-100'
                   : 'bg-amber-50 border-amber-100'
@@ -508,7 +512,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   {inv.studentSurname[0]}{inv.studentName[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-stone-900">{inv.studentSurname}, {inv.studentName}</p>
+                  <p className="text-xs font-black text-brand-dark">{inv.studentSurname}, {inv.studentName}</p>
                   <p className="text-[10px] text-stone-500 truncate">
                     {inv.subject} · {inv.typeLabel} ·{' '}
                     {inv.reason === 'awaiting_outcome'
@@ -555,12 +559,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           </div>
           <div className="space-y-2">
             {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).slice(0, 5).map((gap, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl px-3 py-2.5 bg-orange-50 border border-orange-100">
+              <div key={i} className="flex items-center gap-3 rounded px-3 py-2.5 bg-orange-50 border border-orange-100">
                 <div className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
                   <ClipboardList className="w-3.5 h-3.5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-black text-stone-900">{gap.subject} · Gr {gap.grade}</p>
+                  <p className="text-xs font-black text-brand-dark">{gap.subject} · Gr {gap.grade}</p>
                   <p className="text-[10px] text-stone-500">
                     Last assessed {gap.daysSinceLast}d ago · {gap.sheetCount} sheet{gap.sheetCount !== 1 ? 's' : ''} total
                   </p>
@@ -591,13 +595,16 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.24 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Academic Impact</p>
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Impact</p>
+          </div>
           <div className="grid grid-cols-3 gap-3 mb-3">
-            <div className="bg-stone-50 rounded-xl p-3 text-center">
+            <div className="bg-stone-50 rounded p-3 text-center">
               <p className="text-xl font-black text-brand-dark">{impact.completedInterventions}</p>
               <p className="text-[9px] font-bold text-stone-500 uppercase tracking-wider mt-0.5">Completed</p>
             </div>
-            <div className={`rounded-xl p-3 text-center ${impact.successRate >= 70 ? 'bg-emerald-50' : impact.successRate >= 50 ? 'bg-amber-50' : 'bg-stone-50'}`}>
+            <div className={`rounded p-3 text-center ${impact.successRate >= 70 ? 'bg-emerald-50' : impact.successRate >= 50 ? 'bg-amber-50' : 'bg-stone-50'}`}>
               <p className={`text-xl font-black ${impact.successRate >= 70 ? 'text-emerald-700' : impact.successRate >= 50 ? 'text-amber-700' : 'text-stone-500'}`}>
                 {impact.successRate}%
               </p>
@@ -605,7 +612,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 Success
               </p>
             </div>
-            <div className={`rounded-xl p-3 text-center ${impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
+            <div className={`rounded p-3 text-center ${impact.avgImprovement > 0 ? 'bg-blue-50' : 'bg-stone-50'}`}>
               <p className={`text-xl font-black ${impact.avgImprovement > 0 ? 'text-blue-700' : 'text-stone-500'}`}>
                 {impact.avgImprovement > 0 ? `+${impact.avgImprovement}%` : '—'}
               </p>
@@ -615,7 +622,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             </div>
           </div>
           {impact.bestType && impact.bestTypeSuccessRate > 0 && (
-            <div className="bg-amber-50 border border-amber-100 rounded-xl px-3 py-2 flex items-center gap-2">
+            <div className="bg-amber-50 border border-amber-100 rounded px-3 py-2 flex items-center gap-2">
               <TrendingUp className="w-3.5 h-3.5 text-amber-600 shrink-0" />
               <p className="text-[11px] text-amber-800">
                 <span className="font-black">Most effective:</span>{' '}
@@ -647,7 +654,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-0.5">
-                    <p className="text-xs font-black text-stone-900">{row.label}</p>
+                    <p className="text-xs font-black text-brand-dark">{row.label}</p>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`text-[10px] font-black ${row.successRate >= 70 ? 'text-emerald-600' : row.successRate >= 50 ? 'text-amber-600' : 'text-stone-500'}`}>
                         {row.successRate}%
@@ -691,7 +698,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 <div key={i} className="flex items-center gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <p className="text-xs font-black text-stone-900">{h.subject}</p>
+                      <p className="text-xs font-black text-brand-dark">{h.subject}</p>
                       <span className="text-[10px] font-bold text-stone-500">Gr {h.grade}</span>
                       {h.atRiskCount > 0 && (
                         <span className="text-[10px] font-black text-red-500">{h.atRiskCount} at risk</span>
@@ -767,7 +774,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
             <button
               key={page}
               onClick={() => onNavigate(page)}
-              className="flex items-center gap-2.5 px-3 py-3 rounded-xl bg-stone-50 hover:bg-stone-100 border border-brand-border/60 transition-colors text-left"
+              className="flex items-center gap-2.5 px-3 py-3 rounded bg-stone-50 hover:bg-stone-100 border border-brand-border/60 transition-colors text-left"
             >
               <Icon className={`w-4 h-4 shrink-0 ${color}`} />
               <span className="text-[12px] font-black text-stone-700">{label}</span>
@@ -791,7 +798,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-stone-50 last:border-0">
                   <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-stone-900 truncate">{ev.title}</p>
+                    <p className="text-xs font-black text-brand-dark truncate">{ev.title}</p>
                     <p className="text-[10px] text-stone-500">{formatDate(ev.event_date)}</p>
                   </div>
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${colors.pill}`}>
