@@ -31,23 +31,29 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
     new Date(d).toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═════════════════════════════════════════════════ */}
+      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, #bcc5cb 0%, #cbd3d5 18%, #dde2e1 42%, #e8eae7 68%, #eaebec 92%, #eaebec 100%)' }} />
-        <div className="absolute inset-0 pointer-events-none opacity-[0.6]"
-          style={{
-            backgroundImage: 'repeating-linear-gradient(120deg, rgba(56,65,79,0.08) 0px, rgba(56,65,79,0.08) 1px, transparent 1px, transparent 28px)',
-            maskImage: 'linear-gradient(180deg, black 0%, black 45%, transparent 92%)',
-          }} />
-        <div className="absolute -top-24 -right-20 w-[28rem] h-[28rem] rounded-full blur-3xl opacity-[0.32] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-depth-soft), transparent 70%)' }} />
-        <div className="absolute -top-12 left-1/4 w-[19rem] h-[19rem] rounded-full blur-3xl opacity-[0.16] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-depth), transparent 70%)' }} />
+          style={{ background: 'linear-gradient(180deg, #d6dbde 0%, #dee3e5 22%, #e4e8ea 45%, #e9ecec 68%, #eaebec 100%)' }} />
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1200 100">
+          <path d="M0,42 C220,32 380,49 600,40 C800,32 970,46 1200,38 L1200,0 L0,0 Z" fill="rgba(200,207,212,0.5)" />
+          <path d="M0,50 C210,60 390,45 610,53 C800,60 960,47 1200,55" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
+          <path d="M0,58 C220,50 380,66 600,57 C800,50 970,63 1200,55" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" />
+          <path d="M0,66 C210,74 400,60 620,68 C810,75 980,62 1200,70" fill="none" stroke="rgba(255,255,255,0.48)" strokeWidth="1" />
+          <path d="M0,74 C220,66 400,82 620,73 C820,65 990,79 1200,71" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
+          <path d="M0,82 C220,90 380,75 600,84 C800,92 970,78 1200,86" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
+          <path d="M0,90 C210,82 390,98 610,89 C800,82 960,95 1200,87" fill="none" stroke="rgba(255,255,255,0.38)" strokeWidth="1" />
+          <path d="M0,96 C220,90 400,100 620,94 C820,88 990,98 1200,93" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="1" />
+          <path d="M0,55 C240,65 400,48 620,58 C820,67 980,50 1200,60 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.5)" />
+          <path d="M0,72 C240,62 420,81 640,71 C830,62 1000,79 1200,69 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.55)" />
+          <path d="M0,88 C230,98 410,82 630,92 C825,101 995,85 1200,95 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.65)" />
+        </svg>
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: 'linear-gradient(180deg, #b9c0c5 0%, #c9d0d4 30%, transparent 42%, transparent 55%, rgba(234,235,236,0.75) 80%, #eaebec 100%)' }} />
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-10 sm:pb-14 w-full">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="flex items-center gap-2 min-w-0">
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">My Behaviour</p>
           </motion.div>
@@ -59,7 +65,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
           </motion.h1>
 
           <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
+            className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
             Your conduct record, as logged by your teachers.
           </motion.p>
 
@@ -74,7 +80,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
         {loading ? (
           <div className="space-y-5">
@@ -116,32 +122,43 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease, delay: 0.06 }}
-                className="paper-card rounded p-4 text-center"
+                className="paper-card rounded p-4 sm:p-5"
               >
-                <p className="text-[22px] font-black text-green-700">{meritPoints}</p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-1">Merits</p>
+                <div className="w-8 h-8 rounded flex items-center justify-center mb-3 bg-emerald-50 text-emerald-600">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <p className="text-[26px] sm:text-[28px] font-black text-emerald-700 leading-none">{meritPoints}</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Merits</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease, delay: 0.1 }}
-                className="paper-card rounded p-4 text-center"
+                className="paper-card rounded p-4 sm:p-5"
               >
-                <p className={`text-[22px] font-black ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-1">Demerits</p>
+                <div className={`w-8 h-8 rounded flex items-center justify-center mb-3 ${demeritPoints > 0 ? 'bg-red-50 text-red-600' : 'bg-[var(--color-paper-raise)] text-stone-300'}`}>
+                  <Minus className="w-4 h-4" />
+                </div>
+                <p className={`text-[26px] sm:text-[28px] font-black leading-none ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
+                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Demerits</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease, delay: 0.14 }}
-                className="rounded p-4 text-center"
+                className="rounded p-4 sm:p-5 relative overflow-hidden"
                 style={{
-                  background: 'var(--color-brand-dark)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
+                  background: 'linear-gradient(155deg, #4b5568 0%, #3c4657 100%)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.12), 0 6px 14px -6px rgba(0,0,0,0.18)',
                 }}
               >
-                <p className={`text-[22px] font-black ${netPoints >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-20 pointer-events-none"
+                  style={{ background: netPoints >= 0 ? '#34d399' : '#f87171' }} />
+                <div className={`relative w-8 h-8 rounded flex items-center justify-center mb-3 ${netPoints >= 0 ? 'bg-emerald-400/15 text-emerald-400' : 'bg-red-400/15 text-red-400'}`}>
+                  <Award className="w-4 h-4" />
+                </div>
+                <p className={`relative text-[26px] sm:text-[28px] font-black leading-none ${netPoints >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                   {netPoints > 0 ? '+' : ''}{netPoints}
                 </p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-white/40 mt-1">Net</p>
+                <p className="relative text-[11px] font-bold uppercase tracking-[0.08em] text-white/40 mt-2">Net Score</p>
               </motion.div>
             </div>
 
@@ -149,21 +166,24 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
             <motion.div
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, ease, delay: 0.2 }}
-              className="paper-card rounded overflow-hidden"
+              className="paper-card rounded p-5 sm:p-6"
             >
-              <div className="px-5 sm:px-6 py-4" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
-                <h2 className="text-[16px] font-semibold text-brand-dark">Timeline</h2>
-                <p className="text-[13px] text-stone-500 mt-0.5">All recorded behaviour points, most recent first.</p>
+              <div className="flex items-center gap-2.5 mb-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Timeline</p>
+                <span className="flex-1 h-px" style={{ background: 'var(--color-brand-border)' }} />
+                <span className="text-[11px] font-bold text-stone-400">{entries.length} recorded</span>
               </div>
 
               {entries.length === 0 ? (
-                <div className="p-12 flex flex-col items-center text-center">
-                  <Award className="w-9 h-9 text-stone-200 mb-4" />
-                  <p className="text-[16px] font-semibold text-brand-dark mb-1">No entries yet</p>
+                <div className="py-12 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--color-paper-raise)' }}>
+                    <Award className="w-5 h-5 text-stone-300" />
+                  </div>
+                  <p className="text-[15px] font-semibold text-brand-dark mb-1">No entries yet</p>
                   <p className="text-[13px] text-stone-500">Merits and demerits from your teachers will appear here.</p>
                 </div>
               ) : (
-                <div>
+                <div className="-mx-5 sm:-mx-6">
                   {entries.map((e, i) => (
                     <motion.div key={e.id}
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -171,15 +191,22 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                       className="flex items-start gap-3 px-5 sm:px-6 py-4"
                       style={i === entries.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}
                     >
-                      <div className={`w-8 h-8 rounded flex items-center justify-center shrink-0 ${
-                        e.type === 'merit' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                      <div className={`w-9 h-9 rounded flex items-center justify-center shrink-0 ${
+                        e.type === 'merit' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
                       }`}>
                         {e.type === 'merit' ? <Plus className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="text-[14px] font-semibold text-brand-dark">{e.category}</p>
-                          <span className="text-[12px] text-[rgba(31,36,33,0.35)] whitespace-nowrap">{formatDate(e.created_at)}</span>
+                          <div className="flex items-center gap-2 min-w-0">
+                            <p className="text-[14px] font-semibold text-brand-dark truncate">{e.category}</p>
+                            <span className={`shrink-0 text-[10px] font-black px-1.5 py-0.5 rounded ${
+                              e.type === 'merit' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
+                            }`}>
+                              {e.type === 'merit' ? '+' : '-'}{e.points}
+                            </span>
+                          </div>
+                          <span className="text-[12px] text-[rgba(31,36,33,0.35)] whitespace-nowrap shrink-0">{formatDate(e.created_at)}</span>
                         </div>
                         {e.reason && <p className="text-[13px] text-stone-600 font-medium mt-0.5">{e.reason}</p>}
                         <p className="text-[12px] text-[rgba(31,36,33,0.4)] mt-0.5">{e.teacher_name ?? 'Teacher'} {e.teacher_surname ?? ''}</p>

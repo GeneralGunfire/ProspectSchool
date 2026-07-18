@@ -14,7 +14,9 @@
     "test:debug": "playwright test --debug",
     "test:headed": "playwright test --headed",
     "scrape:water": "tsx lib/scrapers/water-scraper-manager.ts",
-    "scrape:water:local": "tsx --env-file=.env.local lib/scrapers/water-scraper-manager.ts"
+    "scrape:water:local": "tsx --env-file=.env.local lib/scrapers/water-scraper-manager.ts",
+    "seed:topictests": "tsx --env-file=.env.local scripts/seedTopicTests.ts",
+    "validate:topictests": "tsx scripts/validateCatalog.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

@@ -438,6 +438,9 @@
     |-- marketplace_phase2.sql
     |-- marketplace_phase3.sql
     |-- NEXT_SESSION_PROMPT_topic_tests_content.md
+    |-- research
+        |-- GRADE10_MATHS_CAPS_TOPIC_LIST.md
+        |-- TOPIC_TESTS_QUESTION_RESEARCH.md
     |-- STUDENT_PORTAL_DESIGN_ROLLOUT.md
     |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
@@ -477,6 +480,9 @@
     |-- .graphify_labels.json
     |-- .graphify_root
     |-- converted
+        |-- a0af27ef-research-plan-template-20240131 (1)_9b79fe9b.md
+        |-- b8eb3333-abstract20240131_4dd48f6a.md
+        |-- f6af32fa-how-to-write-a-report-eng20240131_e23ec291.md
         |-- Prospect_Abstract_976ea554.md
         |-- Prospect_Journal_bc99e031.md
         |-- Prospect_Research_Plan_b21e8ec7.md
@@ -489,6 +495,7 @@
     |-- prospect-callflow.html
 |-- index.html
 |-- newHero.png
+|-- newtopimagestrip.png
 |-- package-lock.json
 |-- package.json
 |-- public
@@ -540,6 +547,7 @@
         |-- sa-flag.jpg
         |-- stat-dashboard-graphic.jpg
         |-- stat-map-graphic.jpg
+        |-- student-home-topstrip.png
         |-- students.jpg
         |-- students.webp
         |-- teacher.jpg
@@ -557,6 +565,9 @@
     |-- videos
         |-- Bursaries.mp4
         |-- video1.mp4
+|-- scripts
+    |-- seedTopicTests.ts
+    |-- validateCatalog.mjs
 |-- src
     |-- App.tsx
     |-- components
@@ -778,7 +789,9 @@
         |-- teacherAnalytics.ts
         |-- teachers.ts
         |-- timetable.ts
-        |-- topicTests.ts
+        |-- topicTestCatalog.ts
+        |-- topicTestScoring.ts
+        |-- topicTestsV2.ts
         |-- types.ts
         |-- utils.ts
     |-- main.tsx
@@ -836,7 +849,7 @@
                 |-- StudentPastPapersPage.tsx
                 |-- StudentResourcesPage.tsx
                 |-- StudentTimetablePage.tsx
-                |-- StudentTopicTestsPage.tsx
+                |-- StudentTopicTestsV2Page.tsx
                 |-- SubjectSelectionPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
@@ -854,7 +867,7 @@
                 |-- SubjectApprovalsPage.tsx
                 |-- TeacherHomePage.tsx
                 |-- TimetablePage.tsx
-                |-- TopicTestsPage.tsx
+                |-- TopicTestsV2Page.tsx
             |-- TeacherDashboard.tsx
     |-- providers
         |-- AuthProvider.tsx
@@ -884,6 +897,7 @@
 |-- test-04-quiz-page.png
 |-- test-05-my-future-after-reload.png
 |-- test-routing.mjs
+|-- topicTests.txt
 |-- tsconfig.json
 |-- vercel.json
 |-- vite.config.ts

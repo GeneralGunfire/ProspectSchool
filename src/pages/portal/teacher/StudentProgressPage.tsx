@@ -17,7 +17,6 @@ import {
   type SchoolEvent,
 } from '../../../lib/events';
 import { fetchStudentAnnouncements, type Announcement } from '../../../lib/announcements';
-import { fetchStudentStruggles, type StudentSubskillStruggle } from '../../../lib/topicTests';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
@@ -766,7 +765,6 @@ function ProgressTab({
 
   return (
     <div className="space-y-8">
-      <TopicTestStruggles studentId={student.student_id} teacherId={teacherId} onOpenTopicTest={onOpenTopicTest} />
 
       {!hasStudyLibrary ? (
         <EmptyState icon={BookOpen} text="No study activity yet." />
@@ -809,111 +807,6 @@ function ProgressTab({
               </div>
             </div>
           ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Topic Tests struggle diagnosis — cross-test, per-student ──
-
-function TopicTestStruggles({
-  studentId, teacherId, onOpenTopicTest,
-}: {
-  studentId: number;
-  teacherId: number;
-  onOpenTopicTest?: (topicTestId: number) => void;
-}) {
-  const [struggles, setStruggles] = useState<StudentSubskillStruggle[] | null>(null);
-  const [showAll, setShowAll] = useState(false);
-
-  useEffect(() => {
-    setStruggles(null);
-    fetchStudentStruggles(studentId, teacherId).then(setStruggles);
-  }, [studentId, teacherId]);
-
-  if (struggles === null) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="w-4 h-4 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (struggles.length === 0) {
-    return null; // no topic test history yet in subjects this teacher teaches — say nothing rather than an empty box
-  }
-
-  const flagged = struggles.filter((s) => !s.lastCorrect);
-  const visible = showAll ? struggles : flagged;
-
-  const groups = new Map<string, StudentSubskillStruggle[]>();
-  for (const s of visible) {
-    const key = `${s.subject_label}::${s.topic_label}`;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key)!.push(s);
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="w-3.5 h-3.5 text-stone-500" />
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Topic Tests — where they're stuck</p>
-        </div>
-        <button
-          onClick={() => setShowAll((v) => !v)}
-          className="text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors"
-        >
-          {showAll ? 'Show flagged only' : 'Show all'}
-        </button>
-      </div>
-
-      {visible.length === 0 ? (
-        <div className="paper-card rounded bg-emerald-50/60 p-6 text-center">
-          <p className="text-sm font-bold text-emerald-800">No flagged sub-skills right now — last attempt on every sub-skill was correct.</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {Array.from(groups.entries()).map(([key, rows]) => {
-            const [subjectLabel, topicLabel] = key.split('::');
-            return (
-              <div key={key} className="paper-card rounded overflow-hidden">
-                <div className="px-4 py-3 border-b border-stone-100 flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">{subjectLabel}</p>
-                    <p className="text-sm font-bold text-brand-dark truncate">{topicLabel}</p>
-                  </div>
-                  {onOpenTopicTest && (
-                    <button
-                      onClick={() => onOpenTopicTest(rows[0].topic_test_id)}
-                      className="shrink-0 text-[11px] font-black text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1"
-                    >
-                      Open test <ChevronRight className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
-                <div className="divide-y divide-stone-50">
-                  {rows.map((s) => (
-                    <div key={s.subskill_id} className="flex items-center gap-3 px-4 py-3">
-                      <span className={`w-2 h-2 rounded-full shrink-0 ${s.lastCorrect ? 'bg-emerald-500' : 'bg-red-500'}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-brand-dark">{s.subskill_label}</p>
-                        <p className="text-[10px] text-stone-500 mt-0.5">
-                          {s.totalCorrect}/{s.totalAttempts} correct overall · last attempt {s.lastCorrect ? 'correct' : 'incorrect'}
-                        </p>
-                      </div>
-                      {!s.lastCorrect && (
-                        <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-600 shrink-0">
-                          Flagged
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
         </div>
       )}
     </div>

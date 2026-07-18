@@ -10,10 +10,10 @@ import StudentMarksPage from './student/StudentMarksPage';
 import StudentResourcesPage from './student/StudentResourcesPage';
 import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 import StudentPastPapersPage from './student/StudentPastPapersPage';
-import StudentTopicTestsPage from './student/StudentTopicTestsPage';
 import StudentHomeroomPage from './student/StudentHomeroomPage';
 import StudentBehaviourPage from './student/StudentBehaviourPage';
 import StudentTimetablePage from './student/StudentTimetablePage';
+import StudentTopicTestsV2Page from './student/StudentTopicTestsV2Page';
 import MarketplacePage from './shared/MarketplacePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
@@ -325,7 +325,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'topic-tests'   && <StudentTopicTestsPage session={session} />}
+          {activePage === 'topic-tests'   && <StudentTopicTestsV2Page session={session} />}
           {activePage === 'marketplace'   && <MarketplacePage sellerType="student" sellerId={session.student_id} schoolId={session.school_id} studentGrade={session.grade} />}
           {activePage === 'subject-selection' && <SubjectSelectionPage session={session} />}
           {activePage === 'future'        && (

@@ -13,10 +13,10 @@ import PastPapersPage from './teacher/PastPapersPage';
 import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
 import RiskEnginePage from './teacher/RiskEnginePage';
-import TopicTestsPage from './teacher/TopicTestsPage';
 import HomeroomPage from './teacher/HomeroomPage';
 import BehaviourPage from './teacher/BehaviourPage';
 import TimetablePage from './teacher/TimetablePage';
+import TopicTestsV2Page from './teacher/TopicTestsV2Page';
 import MarketplacePage from './shared/MarketplacePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
@@ -251,7 +251,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'resources'     && <ResourcesPage session={session} />}
           {activePage === 'past-papers'   && <PastPapersPage session={session} />}
           {activePage === 'library'       && <StudentProgressPage session={session} onOpenTopicTest={(id) => { setJumpToTestId(id); setPage('topic-tests'); }} />}
-          {activePage === 'topic-tests'   && <TopicTestsPage session={session} initialTestId={jumpToTestId} onConsumeInitialTestId={() => setJumpToTestId(null)} />}
+          {activePage === 'topic-tests'   && <TopicTestsV2Page session={session} />}
           {activePage === 'marketplace'   && <MarketplacePage sellerType="teacher" sellerId={session.teacher_id} schoolId={session.school_id} />}
           {activePage === 'risk'          && <RiskEnginePage session={session} />}
         </div>

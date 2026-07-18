@@ -379,11 +379,12 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
           className="mb-6 flex items-start justify-between gap-4"
         >
           <div>
-            <span className="eyebrow">APS & Universities</span>
-            <h1 className="font-display font-black text-brand-dark text-2xl md:text-3xl mt-1" style={{ letterSpacing: '-0.03em' }}>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">APS & Universities</p>
+            <h1 className="text-brand-dark text-[28px] sm:text-[34px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
               APS Calculator
             </h1>
-            <p className="text-sm text-stone-500 mt-1">
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
               Enter your Grade 12 marks to see which programmes you qualify for.
             </p>
           </div>
