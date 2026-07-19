@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, Megaphone, Award, ClipboardCheck, Menu, X, ChevronDown, CalendarClock } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, Megaphone, Award, ClipboardCheck, Menu, X, ChevronDown, CalendarClock, HeartHandshake } from 'lucide-react';
 import { getParentSession, parentLogout, type ParentSession } from '../../lib/auth';
 import { fetchParentChildren, type ParentChild } from '../../lib/parents';
 import ParentHomePage from './parent/ParentHomePage';
@@ -10,8 +10,9 @@ import ParentMarksPage from './parent/ParentMarksPage';
 import ParentHomeworkPage from './parent/ParentHomeworkPage';
 import ParentAnnouncementsPage from './parent/ParentAnnouncementsPage';
 import ParentTimetablePage from './parent/ParentTimetablePage';
+import ParentWellbeingConsentPage from './parent/ParentWellbeingConsentPage';
 
-type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements' | 'timetable';
+type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements' | 'timetable' | 'wellbeing';
 
 interface ParentDashboardProps {
   onNavigate: (page: string) => void;
@@ -23,6 +24,7 @@ const navItems: { id: ActivePage; label: string; icon: any }[] = [
   { id: 'announcements', label: 'Announcements', icon: Megaphone },
   { id: 'attendance',    label: 'Attendance',    icon: CalendarDays },
   { id: 'behaviour',     label: 'Behaviour',     icon: Award },
+  { id: 'wellbeing',     label: 'Wellbeing',     icon: HeartHandshake },
   { id: 'marks',         label: 'Marks',         icon: ClipboardList },
   { id: 'homework',      label: 'Homework',      icon: ClipboardCheck },
   { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
@@ -296,6 +298,7 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
               {activePage === 'home'          && <ParentHomePage session={session} child={activeChild} onNavigate={p => setPage(p as ActivePage)} />}
               {activePage === 'attendance'    && <ParentAttendancePage child={activeChild} />}
               {activePage === 'behaviour'     && <ParentBehaviourPage child={activeChild} />}
+              {activePage === 'wellbeing'     && <ParentWellbeingConsentPage session={session} child={activeChild} />}
               {activePage === 'marks'         && <ParentMarksPage session={session} child={activeChild} />}
               {activePage === 'homework'      && <ParentHomeworkPage session={session} child={activeChild} />}
               {activePage === 'timetable'     && <ParentTimetablePage session={session} child={activeChild} />}

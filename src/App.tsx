@@ -10,38 +10,8 @@ const CareersPageNew     = lazy(() => import('./features/careers/pages/CareersPa
 const BursariesPage      = lazy(() => import('./features/careers/pages/BursariesPage'));
 const BursaryDetailPage  = lazy(() => import('./features/careers/pages/BursaryDetailPage'));
 const QuizPage           = lazy(() => import('./features/careers/pages/QuizPage'));
-const LinearEquationsPage = lazy(() => import('./features/study/pages/learning/Algebra/Grade10/Term1/LinearEquations'));
-const SimultaneousEquationsPage = lazy(() => import('./features/study/pages/learning/Algebra/Grade10/Term1/SimultaneousEquations'));
-const WavesSoundLightPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/WavesSoundLight'));
-const AtomsSubatomicParticlesPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/AtomsSubatomicParticles'));
-const ClassificationOfMatterPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/ClassificationOfMatter'));
-const PeriodicTableTrendsPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/PeriodicTableTrends'));
-const ChemicalBondingPage = lazy(() => import('./features/study/pages/learning/PhysicalSciences/Grade10/Term1/ChemicalBonding'));
-const BiodiversityAndClassificationPage = lazy(() => import('./features/study/pages/learning/LifeSciences/Grade10/Term1/BiodiversityAndClassification'));
-const FiveKingdomsPage = lazy(() => import('./features/study/pages/learning/LifeSciences/Grade10/Term1/FiveKingdoms'));
-const TaxonomyAndBinomialNomenclaturePage = lazy(() => import('./features/study/pages/learning/LifeSciences/Grade10/Term1/TaxonomyAndBinomialNomenclature'));
-const SpeciesConceptPage = lazy(() => import('./features/study/pages/learning/LifeSciences/Grade10/Term1/SpeciesConcept'));
-const IntroductionToAccountingPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/IntroductionToAccounting'));
-const AccountingEquationPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/AccountingEquation'));
-const DoubleEntrySystemPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/DoubleEntrySystem'));
-const SourceDocumentsPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/SourceDocuments'));
-const JournalsInAccountingPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/JournalsInAccounting'));
-const GeneralLedgerPage = lazy(() => import('./features/study/pages/learning/Accounting/Grade10/Term1/GeneralLedger'));
-const BusinessEnvironmentPage = lazy(() => import('./features/study/pages/learning/BusinessStudies/Grade10/Term1/BusinessEnvironment'));
-const BusinessSectorsPage = lazy(() => import('./features/study/pages/learning/BusinessStudies/Grade10/Term1/BusinessSectors'));
-const BusinessStakeholdersPage = lazy(() => import('./features/study/pages/learning/BusinessStudies/Grade10/Term1/BusinessStakeholders'));
-const BusinessOperationsPage = lazy(() => import('./features/study/pages/learning/BusinessStudies/Grade10/Term1/BusinessOperations'));
-const EconomicProblemPage = lazy(() => import('./features/study/pages/learning/Economics/Grade10/Term1/EconomicProblem'));
-const ProductionPossibilityCurvePage = lazy(() => import('./features/study/pages/learning/Economics/Grade10/Term1/ProductionPossibilityCurve'));
-const EconomicSystemsPage = lazy(() => import('./features/study/pages/learning/Economics/Grade10/Term1/EconomicSystems'));
-const CircularFlowModelPage = lazy(() => import('./features/study/pages/learning/Economics/Grade10/Term1/CircularFlowModel'));
-const FactorsOfProductionPage = lazy(() => import('./features/study/pages/learning/Economics/Grade10/Term1/FactorsOfProduction'));
-const ComputerSystemsPage = lazy(() => import('./features/study/pages/learning/CAT/Grade10/Term1/ComputerSystems'));
-const FileManagementPage = lazy(() => import('./features/study/pages/learning/CAT/Grade10/Term1/FileManagement'));
-const WordProcessingPage = lazy(() => import('./features/study/pages/learning/CAT/Grade10/Term1/WordProcessing'));
-const SpreadsheetsPage = lazy(() => import('./features/study/pages/learning/CAT/Grade10/Term1/Spreadsheets'));
-const DrawingInstrumentsPage = lazy(() => import('./features/study/pages/learning/EGD/Grade10/Term1/DrawingInstruments'));
-const StudyLibraryPage = lazy(() => import('./features/study/pages/StudyLibraryPage'));
+// Study Library is being rebuilt from scratch — all previous learning-page
+// routes were removed along with the deleted content/pages they pointed to.
 
 // Auth & Portal pages
 const TeacherLogin = lazy(() => import('./pages/auth/TeacherLogin'));
@@ -59,24 +29,9 @@ const PlatformAdminDashboard = lazy(() => import('./pages/portal/PlatformAdminDa
 
 type Page =
   | 'home' | 'careers' | 'quiz' | 'bursaries' | 'bursary'
-  | 'learning-algebra-g10-t1-linear-equations' | 'learning-algebra-g10-t1-simultaneous'
-  | 'learning-physci-g10-t1-waves' | 'learning-physci-g10-t1-atoms'
-  | 'learning-physci-g10-t1-classification' | 'learning-physci-g10-t1-periodic-table'
-  | 'learning-physci-g10-t1-bonding'
-  | 'learning-lifesci-g10-t1-biodiversity' | 'learning-lifesci-g10-t1-five-kingdoms'
-  | 'learning-lifesci-g10-t1-taxonomy' | 'learning-lifesci-g10-t1-species'
-  | 'learning-accounting-g10-t1-intro' | 'learning-accounting-g10-t1-equation'
-  | 'learning-accounting-g10-t1-double-entry' | 'learning-accounting-g10-t1-source-documents'
-  | 'learning-accounting-g10-t1-journals' | 'learning-accounting-g10-t1-ledger'
-  | 'learning-bizstudies-g10-t1-environment' | 'learning-bizstudies-g10-t1-sectors'
-  | 'learning-bizstudies-g10-t1-stakeholders' | 'learning-bizstudies-g10-t1-operations'
-  | 'learning-economics-g10-t1-problem' | 'learning-economics-g10-t1-ppc'
-  | 'learning-economics-g10-t1-systems' | 'learning-economics-g10-t1-circular-flow'
-  | 'learning-economics-g10-t1-factors'
-  | 'learning-cat-g10-t1-computer-systems' | 'learning-cat-g10-t1-file-management'
-  | 'learning-cat-g10-t1-word-processing' | 'learning-cat-g10-t1-spreadsheets'
-  | 'learning-egd-g10-t1-drawing-instruments'
-  // Study
+  // Study Library topic pages are routed internally by StudentDashboard's
+  // innerPage state (a plain string), not through this top-level Page union —
+  // see src/pages/portal/student/LibraryPage.tsx.
   | 'library'
   // Portal pages
   | 'portal' | 'teacher-login' | 'student-login' | 'admin-login' | 'parent-login'
@@ -159,23 +114,6 @@ function pageFromHash(hash: string): Page | null {
     'home', 'careers', 'quiz', 'bursaries', 'bursary',
     'library',
     'portal',
-    'learning-algebra-g10-t1-linear-equations', 'learning-algebra-g10-t1-simultaneous',
-    'learning-physci-g10-t1-waves', 'learning-physci-g10-t1-atoms',
-    'learning-physci-g10-t1-classification', 'learning-physci-g10-t1-periodic-table',
-    'learning-physci-g10-t1-bonding',
-    'learning-lifesci-g10-t1-biodiversity', 'learning-lifesci-g10-t1-five-kingdoms',
-    'learning-lifesci-g10-t1-taxonomy', 'learning-lifesci-g10-t1-species',
-    'learning-accounting-g10-t1-intro', 'learning-accounting-g10-t1-equation',
-    'learning-accounting-g10-t1-double-entry', 'learning-accounting-g10-t1-source-documents',
-    'learning-accounting-g10-t1-journals', 'learning-accounting-g10-t1-ledger',
-    'learning-bizstudies-g10-t1-environment', 'learning-bizstudies-g10-t1-sectors',
-    'learning-bizstudies-g10-t1-stakeholders', 'learning-bizstudies-g10-t1-operations',
-    'learning-economics-g10-t1-problem', 'learning-economics-g10-t1-ppc',
-    'learning-economics-g10-t1-systems', 'learning-economics-g10-t1-circular-flow',
-    'learning-economics-g10-t1-factors',
-    'learning-cat-g10-t1-computer-systems', 'learning-cat-g10-t1-file-management',
-    'learning-cat-g10-t1-word-processing', 'learning-cat-g10-t1-spreadsheets',
-    'learning-egd-g10-t1-drawing-instruments',
   ];
   return knownPages.includes(key) ? key : null;
 }
@@ -238,7 +176,6 @@ export default function App() {
       case 'quiz':       return <PageTransition pageKey="quiz"><FreeToolsNav onNavigate={navigate} activePage={page} /><QuizPage {...pp} /></PageTransition>;
       case 'bursaries':  return <PageTransition pageKey="bursaries"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursariesPage {...pp} /></PageTransition>;
       case 'bursary':    return <PageTransition pageKey="bursary"><FreeToolsNav onNavigate={navigate} activePage={page} /><BursaryDetailPage {...pp} /></PageTransition>;
-      case 'library':           return <PageTransition pageKey="library"><StudyLibraryPage {...pp} /></PageTransition>;
 
       // Portal
       case 'portal':            return <PageTransition pageKey="portal"><PortalEntry onNavigate={navigate} /></PageTransition>;
@@ -252,39 +189,6 @@ export default function App() {
       case 'parent-dashboard':  return <PageTransition pageKey="parent-dashboard"><ParentDashboard onNavigate={navigate} /></PageTransition>;
       case 'platform-login':    return <PageTransition pageKey="platform-login"><PlatformLogin onNavigate={navigate} /></PageTransition>;
       case 'platform-dashboard': return <PageTransition pageKey="platform-dashboard"><PlatformAdminDashboard onNavigate={navigate} /></PageTransition>;
-
-      // Learning pages
-      case 'learning-algebra-g10-t1-linear-equations':    return <PageTransition pageKey={page}><LinearEquationsPage {...pp} /></PageTransition>;
-      case 'learning-algebra-g10-t1-simultaneous':        return <PageTransition pageKey={page}><SimultaneousEquationsPage {...pp} /></PageTransition>;
-      case 'learning-physci-g10-t1-waves':                return <PageTransition pageKey={page}><WavesSoundLightPage {...pp} /></PageTransition>;
-      case 'learning-physci-g10-t1-atoms':                return <PageTransition pageKey={page}><AtomsSubatomicParticlesPage {...pp} /></PageTransition>;
-      case 'learning-physci-g10-t1-classification':       return <PageTransition pageKey={page}><ClassificationOfMatterPage {...pp} /></PageTransition>;
-      case 'learning-physci-g10-t1-periodic-table':       return <PageTransition pageKey={page}><PeriodicTableTrendsPage {...pp} /></PageTransition>;
-      case 'learning-physci-g10-t1-bonding':              return <PageTransition pageKey={page}><ChemicalBondingPage {...pp} /></PageTransition>;
-      case 'learning-lifesci-g10-t1-biodiversity':        return <PageTransition pageKey={page}><BiodiversityAndClassificationPage {...pp} /></PageTransition>;
-      case 'learning-lifesci-g10-t1-five-kingdoms':       return <PageTransition pageKey={page}><FiveKingdomsPage {...pp} /></PageTransition>;
-      case 'learning-lifesci-g10-t1-taxonomy':            return <PageTransition pageKey={page}><TaxonomyAndBinomialNomenclaturePage {...pp} /></PageTransition>;
-      case 'learning-lifesci-g10-t1-species':             return <PageTransition pageKey={page}><SpeciesConceptPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-intro':            return <PageTransition pageKey={page}><IntroductionToAccountingPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-equation':         return <PageTransition pageKey={page}><AccountingEquationPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-double-entry':     return <PageTransition pageKey={page}><DoubleEntrySystemPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-source-documents': return <PageTransition pageKey={page}><SourceDocumentsPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-journals':         return <PageTransition pageKey={page}><JournalsInAccountingPage {...pp} /></PageTransition>;
-      case 'learning-accounting-g10-t1-ledger':           return <PageTransition pageKey={page}><GeneralLedgerPage {...pp} /></PageTransition>;
-      case 'learning-bizstudies-g10-t1-environment':      return <PageTransition pageKey={page}><BusinessEnvironmentPage {...pp} /></PageTransition>;
-      case 'learning-bizstudies-g10-t1-sectors':          return <PageTransition pageKey={page}><BusinessSectorsPage {...pp} /></PageTransition>;
-      case 'learning-bizstudies-g10-t1-stakeholders':     return <PageTransition pageKey={page}><BusinessStakeholdersPage {...pp} /></PageTransition>;
-      case 'learning-bizstudies-g10-t1-operations':       return <PageTransition pageKey={page}><BusinessOperationsPage {...pp} /></PageTransition>;
-      case 'learning-economics-g10-t1-problem':           return <PageTransition pageKey={page}><EconomicProblemPage {...pp} /></PageTransition>;
-      case 'learning-economics-g10-t1-ppc':               return <PageTransition pageKey={page}><ProductionPossibilityCurvePage {...pp} /></PageTransition>;
-      case 'learning-economics-g10-t1-systems':           return <PageTransition pageKey={page}><EconomicSystemsPage {...pp} /></PageTransition>;
-      case 'learning-economics-g10-t1-circular-flow':     return <PageTransition pageKey={page}><CircularFlowModelPage {...pp} /></PageTransition>;
-      case 'learning-economics-g10-t1-factors':           return <PageTransition pageKey={page}><FactorsOfProductionPage {...pp} /></PageTransition>;
-      case 'learning-cat-g10-t1-computer-systems':        return <PageTransition pageKey={page}><ComputerSystemsPage {...pp} /></PageTransition>;
-      case 'learning-cat-g10-t1-file-management':         return <PageTransition pageKey={page}><FileManagementPage {...pp} /></PageTransition>;
-      case 'learning-cat-g10-t1-word-processing':         return <PageTransition pageKey={page}><WordProcessingPage {...pp} /></PageTransition>;
-      case 'learning-cat-g10-t1-spreadsheets':            return <PageTransition pageKey={page}><SpreadsheetsPage {...pp} /></PageTransition>;
-      case 'learning-egd-g10-t1-drawing-instruments':     return <PageTransition pageKey={page}><DrawingInstrumentsPage {...pp} /></PageTransition>;
 
       default:
       case 'home':

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag } from 'lucide-react';
+import { LogOut, Home, Users, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Menu, X, FileText, AlertTriangle, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag, HeartHandshake } from 'lucide-react';
 import { getTeacherSession, teacherLogout, type TeacherSession } from '../../lib/auth';
 import { fetchTeacherHomerooms } from '../../lib/homeroom';
 import SubjectApprovalsPage from './teacher/SubjectApprovalsPage';
@@ -14,13 +14,15 @@ import AnnouncementsPage from './teacher/AnnouncementsPage';
 import TeacherHomePage from './teacher/TeacherHomePage';
 import RiskEnginePage from './teacher/RiskEnginePage';
 import HomeroomPage from './teacher/HomeroomPage';
+import WellbeingHomeroomPage from './teacher/WellbeingHomeroomPage';
 import BehaviourPage from './teacher/BehaviourPage';
 import TimetablePage from './teacher/TimetablePage';
 import TopicTestsV2Page from './teacher/TopicTestsV2Page';
+import PeerTutoringPage from './teacher/PeerTutoringPage';
 import MarketplacePage from './shared/MarketplacePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
-type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-approvals' | 'marketplace';
+type ActivePage = 'home' | 'classes' | 'calendar' | 'marks' | 'library' | 'resources' | 'past-papers' | 'announcements' | 'risk' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-approvals' | 'marketplace' | 'wellbeing' | 'peer-tutoring';
 
 interface TeacherDashboardProps {
   onNavigate: (page: string) => void;
@@ -48,6 +50,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'announcements', label: 'Announcements', icon: Megaphone },
     { id: 'classes',       label: 'Classes',       icon: Users },
     ...(isHomeroom ? [{ id: 'homeroom' as ActivePage, label: 'Homeroom', icon: School }] : []),
+    ...(isHomeroom ? [{ id: 'wellbeing' as ActivePage, label: 'Wellbeing', icon: HeartHandshake }] : []),
     ...(isHomeroom ? [{ id: 'subject-approvals' as ActivePage, label: 'Subject Selection', icon: ListChecks }] : []),
     { id: 'behaviour',     label: 'Behaviour',     icon: Award },
     { id: 'timetable',     label: 'Timetable',     icon: CalendarClock },
@@ -57,6 +60,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
     { id: 'past-papers',   label: 'Past Papers',   icon: FileText },
     { id: 'library',       label: 'Progress',      icon: BookOpen },
     { id: 'topic-tests',   label: 'Topic Tests',   icon: ClipboardCheck },
+    { id: 'peer-tutoring', label: 'Peer Tutoring', icon: Users },
     { id: 'marketplace',   label: 'Marketplace',   icon: ShoppingBag },
     { id: 'risk',          label: 'At-Risk',       icon: AlertTriangle },
   ];
@@ -243,6 +247,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'announcements' && <AnnouncementsPage session={session} />}
           {activePage === 'classes'       && <ClassesPage session={session} />}
           {activePage === 'homeroom'      && <HomeroomPage session={session} />}
+          {activePage === 'wellbeing'     && <WellbeingHomeroomPage session={session} />}
           {activePage === 'subject-approvals' && <SubjectApprovalsPage session={session} />}
           {activePage === 'behaviour'     && <BehaviourPage session={session} />}
           {activePage === 'timetable'     && <TimetablePage session={session} />}
@@ -252,6 +257,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {activePage === 'past-papers'   && <PastPapersPage session={session} />}
           {activePage === 'library'       && <StudentProgressPage session={session} onOpenTopicTest={(id) => { setJumpToTestId(id); setPage('topic-tests'); }} />}
           {activePage === 'topic-tests'   && <TopicTestsV2Page session={session} />}
+          {activePage === 'peer-tutoring' && <PeerTutoringPage session={session} />}
           {activePage === 'marketplace'   && <MarketplacePage sellerType="teacher" sellerId={session.teacher_id} schoolId={session.school_id} />}
           {activePage === 'risk'          && <RiskEnginePage session={session} />}
         </div>

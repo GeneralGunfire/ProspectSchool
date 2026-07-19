@@ -3,7 +3,10 @@ import { Grain } from '../../../shared/components/Grain';
 
 export const QuoteSection = () => {
   return (
-    <section className="relative bg-brand-dark py-14 lg:py-20 px-5 overflow-hidden">
+    <section
+      className="relative py-14 lg:py-20 px-5 overflow-hidden"
+      style={{ background: 'linear-gradient(160deg, #050708 0%, #0a0d10 50%, #060809 100%)' }}
+    >
       <Grain />
       {/* Handoff glow — same warm bleed used at the top of the page, so the
           dark-to-light transition reads as one continuous flow, not a cut. */}

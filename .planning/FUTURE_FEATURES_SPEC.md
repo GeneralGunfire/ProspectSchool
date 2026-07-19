@@ -10,6 +10,7 @@ Captured from research/planning session. These are **specs to reference later**,
 - Overcrowded classrooms, limited 1:1 teacher time, accumulating foundational gaps, English-medium instruction vs. home-language barriers, no structured on-demand support outside school hours.
 - Platform already has content (library, past papers, topic tests) and diagnostic data (marks, topic-test results, interventions) but no adaptive conversational tutor.
 - Differentiator vs. generic ChatGPT: strict CAPS/IEB/ATP alignment, integration with each learner's real marks/topic-tests/interventions, multilingual + low-bandwidth design.
+- Built with Groq, different languages passed through translator before answered. Cheap, not really a very in depth feature. Reference a topic list for CAPS/IED cirriuculums for accurate answers
 
 ### Design Principles
 - Grounded, not generic — RAG over study library, CAPS docs, teacher-created resources; cite/link specific lessons.
@@ -20,10 +21,10 @@ Captured from research/planning session. These are **specs to reference later**,
 
 ### System Architecture
 - **Content Index (RAG corpus):** study library lessons/worked examples, topic test question banks + explanations, CAPS policy docs/ATPs/exemplar papers. Chunked per lesson/topic/concept, embedded, stored in a vector DB (pgvector on Supabase or dedicated vector store).
-- **LLM Orchestrator:** receives learner query + context (grade, subject, recent performance), calls retrieval service for top-k chunks, pulls student model, constructs system+context+query prompt.
-- **Student Model Integration:** pulls from `study_progress`, `topic_test_attempts`/`topic_test_answers`, `assessment_results`. Computes per-topic mastery (BKT-style or moving average) and known misconceptions from repeated sub-skill errors. Adjusts explanation depth and practice prioritization.
-- **Conversation Store:** `ai_tutor_sessions` (id, student_id, subject_id, topic_id, started_at, last_active_at), `ai_tutor_messages` (id, session_id, role, content_text, metadata jsonb, created_at).
-- **Safety & Guardrails Layer:** blocks off-topic/harmful queries, prevents direct answers to high-stakes exam questions without scaffolding, POPIA-safe disclaimers.
+- **LLM Orchestrator:** receives learner query + context (grade, subject, recent performance), calls retrieval service for top-k chunks, pulls student model, constructs system+context+query prompt. -- important to note
+- **Student Model Integration:** pulls from `study_progress`, `topic_test_attempts`/`topic_test_answers`, `assessment_results`. Computes per-topic mastery (BKT-style or moving average) and known misconceptions from repeated sub-skill errors. Adjusts explanation depth and practice prioritization. --important
+- **Conversation Store:** `ai_tutor_sessions` (id, student_id, subject_id, topic_id, started_at, last_active_at), `ai_tutor_messages` (id, session_id, role, content_text, metadata jsonb, created_at). --important
+- **Safety & Guardrails Layer:** blocks off-topic/harmful queries, prevents direct answers to high-stakes exam questions without scaffolding, POPIA-safe disclaimers. Learner cant query and request backend server side information.
 
 ### Key Workflows
 - **A. Learner asks a question** — entry points on library pages, topic test results, past papers, global Tutor tab. Query + context → retrieval → LLM → stored + returned. Chat UI with "similar practice question" and "simpler language / another language" toggles.
@@ -49,17 +50,13 @@ ai_practice_attempts { id, practice_set_id, student_id, responses jsonb, score_p
 - No direct answers to live exam questions; effort-encouraging language.
 - Host LLM in-region if possible; clear privacy policy; allow learners to delete conversation history.
 
-### MVP vs. Full Vision
-- **MVP (8-12 weeks):** text-only Q&A for Grade 10 Maths & Physical Sciences, RAG over existing library + CAPS summaries, basic student model from topic tests only, "Ask AI" button on library + topic test pages.
-- **Phase 2:** expand to all FET subjects, add photo input, voice, multilingual explanations, integrate with past papers and interventions.
-- **Phase 3:** fully adaptive practice generation, teacher dashboard showing common questions/persistent misconceptions across their classes.
 
 ### Integration Points
 Topic Tests, Library, Past Papers, Interventions (AI-suggested actions), My Future (career → required topic mapping).
 
 ---
 
-## 3. Whole-School Wellbeing & Mental-Health Tracking
+## 2. Whole-School Wellbeing & Mental-Health Tracking
 
 *(Numbering follows source material — item 2 was not included in this research pass.)*
 
@@ -76,9 +73,9 @@ Topic Tests, Library, Past Papers, Interventions (AI-suggested actions), My Futu
 - Correlate with academics — marks, attendance, behaviour combined for holistic risk detection.
 
 ### Core Features
-- **A. Learner Check-In:** 2-3x/week default (school-configurable) + anytime "I need help now" button. Mood/energy/stress sliders (1-5), multi-select tags (exams, friends, family, money, safety, health), optional free text (can be anonymous), occasional safety question with immediate referral pathway if flagged. Channels: web/app, SMS/USSD for low-data contexts.
+- **A. Learner Check-In:** 2-3x/week default (school-configurable) + anytime "I need help now" button. Mood/energy/stress sliders (1-5), multi-select tags (exams, friends, family, money, safety, health), optional free text (can be anonymous), occasional safety question with immediate referral pathway if flagged. Channels: web/app, SMS/USSD for low-data contexts. --Research on how to determine mental state and how to help (quiz based checkups maybe) Heavy Research
 - **B. Class & Grade Dashboards (Teacher View):** aggregated only — weekly trends, % high stress/low mood, breakdowns by tag/grade, action prompts and suggested actions. No individual data unless a learner explicitly opts to share with a specific teacher.
-- **C. Counsellor/Welfare Officer Dashboard:** individual timelines, pattern detection (declining mood, stress around exams), correlation with marks/attendance/behaviour, case management (log interactions, follow-ups, outcomes), "Wellbeing support" as an intervention type, automatic risk flags with escalation workflow.
+- **C. Counsellor/Welfare Officer Dashboard:** individual timelines, pattern detection (declining mood, stress around exams), correlation with marks/attendance/behaviour, case management (log interactions, follow-ups, outcomes), "Wellbeing support" as an intervention type, automatic risk flags with escalation workflow. --Change this into the students profile can be viewed by homeroom teacher who can (only homeroom teacher) can see this kind of information.
 - **D. Resources & Self-Help:** in-app library (articles/videos/exercises), breathing/grounding exercises, external helplines (Childline SA, Lifeline) with click-to-call/WhatsApp.
 
 ### Data Model
@@ -100,17 +97,91 @@ wellbeing_resources { id, school_id?, title, content, type, topics text[], langu
 - Encrypt at rest/in transit, minimize retention (delete raw check-ins after X months, keep aggregates).
 - Clear crisis protocols for self-harm indicators/abuse disclosures, automatic helpline display on flagged responses.
 
-### MVP vs. Full Vision
-- **MVP (6-10 weeks):** web check-in (mood/stress/energy/tags/notes, 2-3x/week), counsellor dashboard with individual timelines + basic case logging, teacher dashboard with class-level aggregates/trend charts.
-- **Phase 2:** SMS/USSD check-in, automated risk flags, resource library, wellbeing as an intervention type.
-- **Phase 3:** holistic risk scoring (academics + wellbeing combined), opt-in parent-facing summaries, school-level correlation analytics.
-
 ### Integration Points
 Interventions (new type + outcome tracking), At-Risk Identification (additional signal), Home/Calendar (gentle check-in reminders), My Future (wellbeing journey in growth timeline).
 
 ---
 
-## 4. Digital Portfolio + Skills Badging (Beyond Marks)
+## 5. Peer Tutoring & Study-Group Matching
+
+### Problem & Opportunity
+- Large class sizes limit individual attention; private tutoring is expensive/inaccessible; learners don't know who could help them; informal study groups are ad hoc and unstructured.
+- Opportunity: AI-matched peer tutoring/study-group platform connecting learners by complementary strengths/needs, with structured session tools, tracking, and recognition (badges/portfolio), scaling support without added teacher load.
+
+### Design Principles
+- Mutual benefit — tutors reinforce knowledge, tutees get targeted help, both get recognition.
+- Safe and supervised — teacher-moderated, clear code of conduct, reporting mechanisms.
+- Flexible formats — 1:1 or small groups, in-person/online/hybrid.
+- Integrated with academics — matching based on real marks/topic-test data, sessions tied to specific subjects/topics.
+- Low-friction sign-up and minimal teacher admin.
+
+### Core Features
+- **A. Tutor & Tutee Profiles:** tutor = subjects (self + system-suggested), strengths from marks/topic tests, availability, mode, languages. Tutee = subjects/topics needed, availability, preferences (gender/language).
+- **B. Matching Algorithm:** inputs = subject/topic need-vs-strength match, grade compatibility, availability overlap, language preference, past ratings. Scoring combines subject match + availability overlap + proximity (same school/class) + diversity balance (avoid always-same pairs). Output: ranked suggested matches, request 1:1 or join/create study group.
+- **C. Session Tools:** 1:1 — built-in chat or external link (WhatsApp/Zoom), shared whiteboard (phase 2), session agenda/goals. Study groups — creation with subject/topic focus, max size, schedule, group chat, shared resource space. Session logging — tutor logs topics/duration/notes, tutee rates usefulness 1-5 with optional feedback.
+- **D. Recognition & Incentives:** tutor badges ("Certified Peer Tutor – Maths", "10-Hour Tutor"), portfolio entries, school-managed rewards (certificates, recommendation letters). Tutee progress tracking (topics covered, optional correlation with mark improvement).
+
+### Data Model
+```
+peer_tutors { id, student_id, school_id, subjects uuid[], topics text[], availability jsonb, modes text[], languages text[], is_verified, verified_by? }
+peer_tutees { id, student_id, school_id, subjects uuid[], topics text[], availability jsonb, preferences jsonb }
+peer_matches { id, tutor_id, tutee_id, status, created_at }
+peer_sessions { id, match_id, session_type, datetime, duration_minutes, topics_covered text[], notes?, tutee_rating?, tutee_feedback? }
+peer_study_groups { id, school_id, subject_id, topics text[], max_members, meeting_schedule jsonb, creator_id }
+peer_group_members { group_id, student_id, joined_at }
+```
+
+### Workflows
+- **A. Becoming a tutor:** select subjects/topics → system checks marks/topic tests and that gets displayed for teacher approval → profile live (if teacher approved)
+- **B. Requesting a tutor:** select subject/topic → ranked recommended tutors shown → request → accept/decline → match created → scheduling UI.
+- **C. Study group creation:** learner or teacher creates group (subject/topic/schedule) → others join via browse or invite link → group chat/resource space enabled.
+
+### Safety & Moderation
+- Teacher oversight of all matches/groups with suspend/disable ability, clear code of conduct, easy "report issue" button, no personal contact info shared unless both agree (prefer in-platform chat initially).
+
+### Integration Points
+Topic Tests & Marks (informs matching, measures impact), Interventions ("peer tutoring" as a type with tracked outcomes), Portfolio & Badges (tutoring hours/badges appear), Wellbeing (peer support may reduce isolation).
+
+---
+
+## Cross-Feature Notes
+
+- All four features assume the existing Prospect data model (schools, students, teachers, subjects, marks, topic tests, interventions) as their foundation — none of them are standalone products.
+- All four lean on the same underlying pattern already established by the At-Risk engine and Topic Test system: explainable logic, teacher-in-the-loop verification, and integration with real captured data rather than a separate silo.
+- POPIA compliance and data minimization are recurring requirements across every feature that touches personal/sensitive data (AI Tutor conversations, Wellbeing check-ins, Portfolio evidence, Peer Tutoring contact info) — this should be treated as one shared compliance workstream, not four separate ones, when any of these are eventually scoped for real.
+- None of these are scheduled. See priority order below.
+
+---
+
+## Priority Order & Timeline (established earlier, unchanged)
+
+**1. Immediate**
+- Topic Tests — heavy research, grounded content, manual testing -- done; expand more subjects later *Huzayfa?
+- Teacher-side intervention / at-risk flagging --today *Groq/AI backend? ****CHECK LATER*****
+- Future career tests + APS calculator — accuracy and reliability testing *Huzayfa
+- Grade 9 subject selection forms — review, narrow down, make more useful for students *Huzayfa
+
+**2. Then — ongoing/parallel**
+- Implement new features *(this document is part of that output)* 
+- Library rebuild* *Huzayfa
+- Restart systematically, starting with Algebra
+- Research topics together, build first 2 (Grade 10, Term 1)
+- Validate format, refine desktop/mobile layout
+- Scale same method across subjects/terms for Grade 10
+- Hand off list + method to partner to build the rest via Claude Code
+- Content note: build first topics without AI; partner later uses NVIDIA's free open-source models for term/content breakdowns — documented for the report
+
+**3. Then — long-term, not locked in**
+- Separate free/open portal for under-resourced students (IT/tech/AI/software), unlinked to school accounts, open signup — last-stage idea
+
+The five feature specs above (AI Tutor, Wellbeing Tracking, Peer Tutoring) sit within step 2 ("scan for new features and edtech market gaps") as candidate output — none are scheduled ahead of the four immediate items.
+
+
+--- OPTIONAL --- 
+
+
+
+## 3. Digital Portfolio + Skills Badging (Beyond Marks)
 
 ### Problem & Opportunity
 - University/employer decisions rely heavily on marks and APS, ignoring projects, leadership, creativity, community service, and soft skills.
@@ -161,83 +232,3 @@ APS & Unis (portfolio link visible alongside APS), My Future (career matches con
 
 ---
 
-## 5. Peer Tutoring & Study-Group Matching
-
-### Problem & Opportunity
-- Large class sizes limit individual attention; private tutoring is expensive/inaccessible; learners don't know who could help them; informal study groups are ad hoc and unstructured.
-- Opportunity: AI-matched peer tutoring/study-group platform connecting learners by complementary strengths/needs, with structured session tools, tracking, and recognition (badges/portfolio), scaling support without added teacher load.
-
-### Design Principles
-- Mutual benefit — tutors reinforce knowledge, tutees get targeted help, both get recognition.
-- Safe and supervised — teacher-moderated, clear code of conduct, reporting mechanisms.
-- Flexible formats — 1:1 or small groups, in-person/online/hybrid.
-- Integrated with academics — matching based on real marks/topic-test data, sessions tied to specific subjects/topics.
-- Low-friction sign-up and minimal teacher admin.
-
-### Core Features
-- **A. Tutor & Tutee Profiles:** tutor = subjects (self + system-suggested), strengths from marks/topic tests, availability, mode, languages. Tutee = subjects/topics needed, availability, preferences (gender/language).
-- **B. Matching Algorithm:** inputs = subject/topic need-vs-strength match, grade compatibility, availability overlap, language preference, past ratings. Scoring combines subject match + availability overlap + proximity (same school/class) + diversity balance (avoid always-same pairs). Output: ranked suggested matches, request 1:1 or join/create study group.
-- **C. Session Tools:** 1:1 — built-in chat or external link (WhatsApp/Zoom), shared whiteboard (phase 2), session agenda/goals. Study groups — creation with subject/topic focus, max size, schedule, group chat, shared resource space. Session logging — tutor logs topics/duration/notes, tutee rates usefulness 1-5 with optional feedback.
-- **D. Recognition & Incentives:** tutor badges ("Certified Peer Tutor – Maths", "10-Hour Tutor"), portfolio entries, school-managed rewards (certificates, recommendation letters). Tutee progress tracking (topics covered, optional correlation with mark improvement).
-
-### Data Model
-```
-peer_tutors { id, student_id, school_id, subjects uuid[], topics text[], availability jsonb, modes text[], languages text[], is_verified, verified_by? }
-peer_tutees { id, student_id, school_id, subjects uuid[], topics text[], availability jsonb, preferences jsonb }
-peer_matches { id, tutor_id, tutee_id, status, created_at }
-peer_sessions { id, match_id, session_type, datetime, duration_minutes, topics_covered text[], notes?, tutee_rating?, tutee_feedback? }
-peer_study_groups { id, school_id, subject_id, topics text[], max_members, meeting_schedule jsonb, creator_id }
-peer_group_members { group_id, student_id, joined_at }
-```
-
-### Workflows
-- **A. Becoming a tutor:** select subjects/topics → system checks marks/topic tests for recommended flags → optional teacher approval → profile live.
-- **B. Requesting a tutor:** select subject/topic → ranked recommended tutors shown → request → accept/decline → match created → scheduling UI.
-- **C. Study group creation:** learner or teacher creates group (subject/topic/schedule) → others join via browse or invite link → group chat/resource space enabled.
-
-### Safety & Moderation
-- Teacher oversight of all matches/groups with suspend/disable ability, clear code of conduct, easy "report issue" button, no personal contact info shared unless both agree (prefer in-platform chat initially).
-
-### MVP vs. Full Vision
-- **MVP (6-10 weeks):** tutor/tutee profiles, basic matching (subject + availability), manual scheduling (no built-in video), session logging, teacher oversight dashboard.
-- **Phase 2:** AI-enhanced matching (more signals), study groups, tutor badges, portfolio integration.
-- **Phase 3:** built-in video/whiteboard, automated impact analysis (tutee marks before/after), carefully piloted cross-school peer tutoring.
-
-### Integration Points
-Topic Tests & Marks (informs matching, measures impact), Interventions ("peer tutoring" as a type with tracked outcomes), Portfolio & Badges (tutoring hours/badges appear), Wellbeing (peer support may reduce isolation).
-
----
-
-## Cross-Feature Notes
-
-- All four features assume the existing Prospect data model (schools, students, teachers, subjects, marks, topic tests, interventions) as their foundation — none of them are standalone products.
-- All four lean on the same underlying pattern already established by the At-Risk engine and Topic Test system: explainable logic, teacher-in-the-loop verification, and integration with real captured data rather than a separate silo.
-- POPIA compliance and data minimization are recurring requirements across every feature that touches personal/sensitive data (AI Tutor conversations, Wellbeing check-ins, Portfolio evidence, Peer Tutoring contact info) — this should be treated as one shared compliance workstream, not four separate ones, when any of these are eventually scoped for real.
-- None of these are scheduled. See priority order below.
-
----
-
-## Priority Order & Timeline (established earlier, unchanged)
-
-**1. Immediate**
-- Topic Tests — heavy research, grounded content, manual testing
-- Teacher-side intervention / at-risk flagging
-- Future career tests + APS calculator — accuracy and reliability testing
-- Grade 9 subject selection forms — review, narrow down, make more useful for students
-
-**2. Then — ongoing/parallel**
-- Scan for new features and edtech market gaps *(this document is part of that output)*
-- Evaluate free AI (e.g. Groq) for existing or new features — analysis engine flagged, undecided
-
-**3. Then — long-term, not locked in**
-- Separate free/open portal for under-resourced students (IT/tech/AI/software), unlinked to school accounts, open signup — last-stage idea
-
-**4. Last — Library rebuild**
-- Restart systematically, starting with Algebra
-- Research topics together, build first 2 (Grade 10, Term 1)
-- Validate format, refine desktop/mobile layout
-- Scale same method across subjects/terms for Grade 10
-- Hand off list + method to partner to build the rest via Claude Code
-- Content note: build first topics without AI; partner later uses NVIDIA's free open-source models for term/content breakdowns — documented for the report
-
-The five feature specs above (AI Tutor, Wellbeing Tracking, Digital Portfolio/Badging, Peer Tutoring) sit within step 2 ("scan for new features and edtech market gaps") as candidate output — none are scheduled ahead of the four immediate items.

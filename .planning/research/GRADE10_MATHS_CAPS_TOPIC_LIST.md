@@ -1,16 +1,27 @@
-# Grade 10 Mathematics — Complete CAPS Topic List (Terms 1-4)
+# Grade 10 Mathematics (Algebra/Non-Geometry) — Complete CAPS Topic List (Terms 1-4)
 
 Source: Perplexity deep research pass, 2026-07-18. Cross-referenced against the
 official CAPS document / Annual Teaching Plan (ATP), Siyavula's Grade 10 textbook,
 and WCED Teaching Plans. ATP takes priority over textbook sequencing where they
 disagree (noted per term below).
 
-**Status:** Master topic backlog. This is the authoritative topic-key list for
-`src/lib/topicTestCatalog.ts` — one topic per row below becomes one `CatalogTopic`
-entry once questions are researched and authored for it.
+**IMPORTANT — Geometry moved to a separate list.** All Euclidean Geometry,
+Analytical Geometry, and Measurement topics have been removed from this file.
+Geometry is tracked as its own subject (`subjectCode: 'geometry'`, matching the
+real, already-existing `geometry` subject in the platform's `subjects` table —
+distinct from `math`/"Algebra"). See `GRADE10_GEOMETRY_CAPS_TOPIC_LIST.md` for
+the authoritative Geometry topic breakdown (16 sub-topics across Terms 2-4, none
+in Term 1). Trigonometry stays in this file/on `subjectCode: 'math'` — it is not
+treated as Geometry for subject-separation purposes.
 
-**Total: 58 discrete sub-topics across 4 terms**, each scoped narrow enough to
-support a 10-14 question diagnostic test.
+**Status:** Master topic backlog for the Algebra subject. This is the
+authoritative topic-key list for `src/lib/topicTestCatalog.ts` (subjectCode:
+'math' entries) — one topic per row below becomes one `CatalogTopic` entry once
+questions are researched and authored for it.
+
+**Total: 58 discrete sub-topics across 4 terms** in the original combined
+breakdown; the Geometry-topic rows below are superseded by the dedicated
+Geometry list and should not be re-added here.
 
 ---
 
@@ -63,21 +74,42 @@ Surds per official ATP).
 | `TrigonometrySpecialAngles` | Trigonometry: Special Angles (0°,30°,45°,60°,90°) | Exact trig values at special angles without a calculator | 1 week |
 | `TrigonometrySolvingRightAngledTriangles` | Trigonometry: Solving Right-Angled Triangles | Finding unknown sides/angles in right-angled triangles | 1 week |
 | `TrigonometryApplicationsHeightsAndDistances` | Trigonometry: Applications (Heights and Distances) | Word problems: angles of elevation and depression | 1 week |
-| `EuclideanGeometryPointsAndLines` | Euclidean Geometry: Points, Lines, and Angles | Angle properties (adjacent, vertically opposite, corresponding, alternate) | 1 week |
-| `EuclideanGeometryTrianglesAndQuadrilaterals` | Euclidean Geometry: Properties of Triangles and Quadrilaterals | Isosceles/equilateral/right-angled triangles; parallelograms, rectangles, squares, rhombi | 1 week |
-| `EuclideanGeometryCircleGeometry` | Euclidean Geometry: Circle Geometry (Terminology and Basic Theorems) | Circle terminology, tangent, chord, basic angle properties | 1 week |
-| `AnalyticalGeometryDistanceAndMidpoint` | Analytical Geometry: Distance and Midpoint Formulae | Distance between two points, midpoint of a line segment | 1 week |
-| `AnalyticalGeometryGradientAndEquationOfLine` | Analytical Geometry: Gradient and Equation of a Line | Gradient given two points; y=mx+c or y-y₁=m(x-x₁) | 1 week |
-| `AnalyticalGeometryParallelAndPerpendicularLines` | Analytical Geometry: Parallel and Perpendicular Lines | Conditions: parallel (m₁=m₂), perpendicular (m₁×m₂=-1) | 1 week |
+
+Note: Term 2 Geometry topics (Euclidean Geometry, Analytical Geometry) are now
+tracked in `GRADE10_GEOMETRY_CAPS_TOPIC_LIST.md`, not here.
 
 Source tension: CAPS ATP places Functions before Trigonometry; some textbooks
-(incl. Siyavula) reverse this. ATP sequencing used. Euclidean Geometry proofs
-are gradual in Grade 10 — focus is properties/basic riders, not full rigor
-(that intensifies in Grades 11-12).
+(incl. Siyavula) reverse this. ATP sequencing used.
 
 ---
 
-## Term 3 (14 sub-topics, ~9 weeks)
+## Term 3 (10 sub-topics — revised breakdown, superseding the original 14-topic version below)
+
+**Revision note:** this section was originally researched as 14 topics (Trig ×4,
+Financial Math ×4, Statistics ×4, Probability ×2, listed further below for
+record-keeping). The actual content batch received (topicTests.txt, "TERM 3 -
+BATCH 8/9") used a different, real breakdown — Data Handling split into 3
+topics, Probability split into 3, Financial Mathematics split into 3 — and per
+project decision this file was updated to match the received content rather
+than the reverse. Trigonometry topics (Reduction Formulae, Trig Equations,
+Sine/Cosine Rules, Area of Triangle) were NOT covered in the received batch and
+still need research separately — see the Perplexity prompt already prepared
+for Term 3 Trigonometry.
+
+| Topic Key | Label | Description |
+|---|---|---|
+| `DataHandlingCollectingAndOrganising` | Data Handling: Collecting and Organising Data | Primary vs. secondary data, population vs. sample, frequency tables, data types (categorical/discrete/continuous) |
+| `DataHandlingRepresentingGraphically` | Data Handling: Representing Data Graphically | Choosing appropriate graph types (bar, histogram, pie, line, scatter), reading scales |
+| `DataHandlingMeasuresOfCentralTendency` | Data Handling: Measures of Central Tendency | Mean, median, mode; range; effect of outliers |
+| `DataHandlingMeasuresOfSpread` | Data Handling: Measures of Spread | Quartiles, IQR, standard deviation, box-and-whisker plots |
+| `ProbabilityIntroductionAndBasicConcepts` | Probability: Introduction and Basic Concepts | Probability scale (0-1), theoretical vs. experimental probability, basic calculations |
+| `ProbabilityTwoWayTablesAndVennDiagrams` | Probability: Two-Way Tables and Venn Diagrams | Union/intersection, complement, addition rule P(A∪B)=P(A)+P(B)-P(A∩B) |
+| `ProbabilityTreeDiagramsAndCombinedEvents` | Probability: Tree Diagrams and Combined Events | Independent/dependent events, with/without replacement, multiplication rule |
+| `FinancialMathematicsSimpleAndCompoundInterest` | Financial Mathematics: Simple and Compound Interest | SI=P×r×t vs. A=P(1+r)^t, comparing growth |
+| `FinancialMathematicsHirePurchaseAndLoans` | Financial Mathematics: Hire Purchase and Loans | Deposit + instalments, total cost of credit vs. cash |
+| `FinancialMathematicsBudgetingAndTariffs` | Financial Mathematics: Budgeting and Tariffs | Income/expenses, fixed vs. variable costs, tariff table interpretation |
+
+### Original 14-topic version (superseded, kept for reference only)
 
 | Topic Key | Label | Description | CAPS Periods |
 |---|---|---|---|
@@ -106,39 +138,38 @@ dev for the first time in Grade 10.
 
 | Topic Key | Label | Description | CAPS Periods |
 |---|---|---|---|
-| `EuclideanGeometrySimilarity` | Euclidean Geometry: Similarity (Proportionality Theorems) | Triangle similarity, proportionality theorems | 1.5 weeks |
-| `EuclideanGeometryMidpointTheorem` | Euclidean Geometry: Midpoint Theorem | Proving and applying the midpoint theorem | 0.5 week |
-| `EuclideanGeometryRiderProblems` | Euclidean Geometry: Rider Problems and Proofs | Multi-step geometry problems requiring proofs/justification | 1 week |
-| `AnalyticalGeometryCircles` | Analytical Geometry: Equation of a Circle | (x-a)²+(y-b)²=r², centre (a,b), radius r | 1 week |
-| `AnalyticalGeometryTangentsToCircles` | Analytical Geometry: Tangents to Circles | Equations of tangents to circles at a given point | 1 week |
 | `FunctionsTransformationsAndInverses` | Functions: Transformations and Inverse Functions | Reflecting graphs, inverse functions (linear, quadratic) | 1.5 weeks |
 | `NumberPatternsGeometricSequences` | Number Patterns: Geometric Sequences | Identifying/extending geometric sequences, Tn = ar^(n-1) | 1 week |
 | `NumberPatternsSumOfArithmeticSeries` | Number Patterns: Sum of Arithmetic Series | Sn = n/2[2a+(n-1)d] | 1 week |
 | `NumberPatternsSumOfGeometricSeries` | Number Patterns: Sum of Geometric Series | Sn = a(1-r^n)/(1-r), \|r\|<1 case included | 1 week |
 | `RevisionAndExamPreparation` | Revision and Exam Preparation | Comprehensive revision, past-paper practice (not a diagnostic-test topic) | 2-3 weeks |
 
-Note: Term 4 is shorter, heavily exam-prep weighted. Euclidean Geometry riders
-and similarity proofs are typically the hardest Grade 10 topics.
+Note: Term 4 Geometry topics (Euclidean Geometry similarity/midpoint/riders,
+Analytical Geometry circles/tangents) and Measurement are now tracked in
+`GRADE10_GEOMETRY_CAPS_TOPIC_LIST.md`, not here.
 
 ---
 
-## Summary
+## Summary (this file — Algebra/Trigonometry only, Geometry excluded)
 
 | Term | Sub-Topics | Weeks |
 |---|---|---|
 | Term 1 | 17 | 9 |
-| Term 2 | 17 | 9 |
+| Term 2 | 11 (Functions ×6, Trigonometry ×5) | ~6 |
 | Term 3 | 14 | 9 |
-| Term 4 | 10 (+ revision) | 8-9 |
-| **Total** | **58 teachable sub-topics** | ~36-38 |
+| Term 4 | 7 (+ revision) | ~5.5 |
+| **Total (this file)** | **49 teachable sub-topics** | — |
+
+Geometry (16 sub-topics: Term 2 ×11, Term 3 ×1, Term 4 ×4) tracked separately —
+see `GRADE10_GEOMETRY_CAPS_TOPIC_LIST.md`. Combined total across both files: 65
+teachable sub-topics (was reported as 58 before Geometry was separated out and
+re-researched at finer granularity).
 
 ## Known disagreements between sources (resolved in favor of official ATP)
 
 1. **Functions vs. Trigonometry order (Term 2):** ATP does Functions first; Siyavula does Trigonometry first. ATP wins.
-2. **Euclidean Geometry rigor:** Grade 10 = properties + basic riders, not full proof rigor (that's Grade 11-12).
-3. **Trig reciprocal ratios (sec/cosec/cot):** In CAPS but lightly assessed by some schools — kept as its own topic since it's in the official curriculum.
-4. **Financial Mathematics timing:** Bulk in Term 3 per most ATPs, though some spread it into Term 4.
-5. **Analytical Geometry circles:** Some sources put this in Term 2; CAPS ATP places it in Term 4 — ATP wins.
+2. **Trig reciprocal ratios (sec/cosec/cot):** In CAPS but lightly assessed by some schools — kept as its own topic since it's in the official curriculum.
+3. **Financial Mathematics timing:** Bulk in Term 3 per most ATPs, though some spread it into Term 4.
 
 ## Open decision
 

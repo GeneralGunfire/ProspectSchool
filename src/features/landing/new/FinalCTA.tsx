@@ -11,7 +11,8 @@ export const FinalCTA = ({ onNavigate }: { onNavigate: (p: string) => void }) =>
           ref={ref}
           onMouseEnter={onMouseEnter}
           onMouseMove={onMouseMove}
-          className="group/spot relative overflow-hidden max-w-5xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] bg-brand-dark px-6 py-10 sm:px-8 md:px-16 sm:py-16 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-10 shadow-[0_1px_2px_rgba(0,0,0,0.2),0_12px_32px_-10px_rgba(0,0,0,0.45),0_32px_64px_-20px_rgba(0,0,0,0.35)]"
+          className="group/spot relative overflow-hidden max-w-5xl mx-auto rounded-[2rem] sm:rounded-[2.5rem] px-6 py-10 sm:px-8 md:px-16 sm:py-16 flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-10 shadow-[0_1px_2px_rgba(0,0,0,0.2),0_12px_32px_-10px_rgba(0,0,0,0.45),0_32px_64px_-20px_rgba(0,0,0,0.35)]"
+          style={{ background: 'linear-gradient(160deg, #050708 0%, #0a0d10 50%, #060809 100%)' }}
         >
           <Grain opacity={0.035} />
           <SpotlightGlow tone="white" />

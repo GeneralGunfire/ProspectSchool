@@ -4,6 +4,7 @@
 
 import { supabaseAdmin } from './supabase';
 import type { InterventionType, OutcomeResult } from './interventions';
+import { fetchStudentRisk } from './riskEngine';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -193,38 +194,40 @@ export async function fetchTeacherClassHealth(
 }
 
 // ── 3. Students requiring attention ──────────────────────────────────────────
+// Sourced from the unified ABC risk engine (riskEngine.ts) rather than a
+// separate below-pass/missed-homework rule set. `reason` keeps its historical
+// values so existing UI (the "Assign" flow on Teacher Home, which only offers
+// an intervention for 'below_pass') doesn't need reshaping in this pass:
+//   - 'below_pass'   -> the student's Course-performance domain is flagged
+//                       (driven by their worst subject, per the ABC engine)
+//   - 'missed_homework' -> retained as-is; homework isn't part of the ABC
+//                       model yet (out of scope for this pass) so this still
+//                       comes from raw homework_completions, unchanged.
+// 'declining' is intentionally still never emitted — the ABC engine's course
+// score already folds "declining" into the same flagged-subject reason.
 
 export async function fetchAtRiskStudents(
   teacherId: number,
   schoolId:  number,
 ): Promise<AtRiskStudent[]> {
-
-  // Get teacher's students + their subjects
   const { data: links } = await supabaseAdmin
     .from('teacher_students')
-    .select('student_id, subject_id, students(id, name, surname, grade), subjects(label)')
+    .select('student_id, students(id, name, surname, grade)')
     .eq('teacher_id', teacherId);
 
   if (!links || links.length === 0) return [];
 
-  const studentIds = [...new Set(links.map((l: any) => l.student_id as number))];
+  const seenStudents = new Set<number>();
+  const students: { id: number; name: string; surname: string; grade: number }[] = [];
+  for (const l of links) {
+    const s = (l as any).students;
+    if (!s || seenStudents.has(s.id)) continue;
+    seenStudents.add(s.id);
+    students.push(s);
+  }
+  const studentIds = students.map(s => s.id);
 
-  // Get all marks for teacher's sheets
-  const { data: sheets } = await supabaseAdmin
-    .from('mark_sheets')
-    .select('id, subject_id, grade')
-    .eq('teacher_id', teacherId)
-    .eq('school_id', schoolId);
-
-  const sheetIds = (sheets ?? []).map((s: any) => s.id as number);
-  const sheetSubjectMap = new Map((sheets ?? []).map((s: any) => [s.id, s.subject_id as number]));
-
-  const { data: marks } = sheetIds.length > 0
-    ? await supabaseAdmin.from('student_marks').select('student_id, sheet_id, mark, mark_sheets(total, subject_id, created_at)')
-        .in('sheet_id', sheetIds).not('mark', 'is', null)
-    : { data: [] };
-
-  // Get missed homework counts (not_done or no completion record)
+  // Missed homework — unchanged, not part of the ABC model in this pass.
   const { data: homeworkEvents } = await supabaseAdmin
     .from('school_events')
     .select('id')
@@ -237,66 +240,35 @@ export async function fetchAtRiskStudents(
         .in('event_id', homeworkIds).in('student_id', studentIds).eq('verification_status', 'not_done')
     : { data: [] };
 
-  // Build per-student per-subject averages
-  type SubAvg = { subject: string; subjectId: number; sum: number; count: number };
-  const studentSubjectAvgs = new Map<number, SubAvg[]>();
-
-  for (const m of (marks ?? [])) {
-    const ms = (m as any).mark_sheets;
-    if (!ms) continue;
-    const sid = m.student_id as number;
-    const pct = (Number((m as any).mark) / Number(ms.total)) * 100;
-    if (!studentSubjectAvgs.has(sid)) studentSubjectAvgs.set(sid, []);
-
-    const link = links.find((l: any) => l.student_id === sid && l.subject_id === ms.subject_id);
-    const subjectLabel = (link as any)?.subjects?.label ?? 'Unknown';
-
-    const existing = studentSubjectAvgs.get(sid)!.find(s => s.subjectId === ms.subject_id);
-    if (existing) {
-      existing.sum += pct;
-      existing.count += 1;
-    } else {
-      studentSubjectAvgs.get(sid)!.push({ subject: subjectLabel, subjectId: ms.subject_id, sum: pct, count: 1 });
-    }
-  }
-
   const missedByStudent = new Map<number, number>();
   for (const nd of (notDone ?? [])) {
     const sid = (nd as any).student_id as number;
     missedByStudent.set(sid, (missedByStudent.get(sid) ?? 0) + 1);
   }
 
+  const todayStr = new Date().toISOString().split('T')[0];
   const atRisk: AtRiskStudent[] = [];
 
-  for (const link of links) {
-    const student = (link as any).students;
-    if (!student) continue;
-    const sid = link.student_id as number;
+  for (const student of students) {
+    const profile = await fetchStudentRisk(student.id, schoolId, todayStr);
 
-    const subjectAvgs = studentSubjectAvgs.get(sid) ?? [];
-
-    // Below pass
-    for (const sa of subjectAvgs) {
-      const avg = sa.sum / sa.count;
-      if (avg < 50) {
-        atRisk.push({
-          studentId: sid,
-          name:      student.name,
-          surname:   student.surname,
-          grade:     student.grade,
-          subject:   sa.subject,
-          avg:       Math.round(avg),
-          reason:    'below_pass',
-          detail:    `${sa.subject} average ${Math.round(avg)}%`,
-        });
-      }
+    if (profile.worstSubject && profile.worstSubject.score > 0) {
+      atRisk.push({
+        studentId: student.id,
+        name:      student.name,
+        surname:   student.surname,
+        grade:     student.grade,
+        subject:   profile.worstSubject.subject,
+        avg:       profile.worstSubject.avg,
+        reason:    'below_pass',
+        detail:    profile.worstSubject.reasons[0] ?? `${profile.worstSubject.subject} average ${profile.worstSubject.avg}%`,
+      });
     }
 
-    // Missed homework
-    const missed = missedByStudent.get(sid) ?? 0;
+    const missed = missedByStudent.get(student.id) ?? 0;
     if (missed >= 2) {
       atRisk.push({
-        studentId: sid,
+        studentId: student.id,
         name:      student.name,
         surname:   student.surname,
         grade:     student.grade,
@@ -1054,12 +1026,14 @@ export async function fetchAssessmentGaps(
   return gaps.sort((a, b) => b.daysSinceLast - a.daysSinceLast);
 }
 
-// ── 16. Class performance by learner status ───────────────────────────────────
-// For each student in teacher's classes, compute a learner status tier
-// based on their average mark across all subjects.
-// Returns students grouped into risk tiers for smart class grouping.
+// ── 16. Class grouping by unified ABC risk tier ───────────────────────────────
+// Replaces the old average-only computeLearnerTier/fetchStudentTiers (40/55/75
+// cut points) with the same ABC risk engine used everywhere else (riskEngine.ts).
+// Grouping is now 3-tier (high / moderate / none) instead of 4, since that's
+// the tiering the unified engine actually produces — see riskEngine.ts for
+// the exact rules.
 
-export type LearnerTier = 'high_risk' | 'medium_risk' | 'on_track' | 'flourishing';
+export type { RiskTier as LearnerTier } from './riskEngine';
 
 export interface StudentTierSummary {
   studentId:    number;
@@ -1067,23 +1041,15 @@ export interface StudentTierSummary {
   surname:      string;
   grade:        number;
   cohort:       string | null;
-  avg:          number;   // overall average %
-  tier:         LearnerTier;
+  avg:          number;   // overall average % (display only — no longer drives tier)
+  tier:         import('./riskEngine').RiskTier;
   subjectCount: number;
-}
-
-export function computeLearnerTier(avg: number): LearnerTier {
-  if (avg < 40) return 'high_risk';
-  if (avg < 55) return 'medium_risk';
-  if (avg < 75) return 'on_track';
-  return 'flourishing';
 }
 
 export async function fetchStudentTiers(
   teacherId: number,
   schoolId:  number,
 ): Promise<StudentTierSummary[]> {
-  // Get teacher's students
   const { data: links } = await supabaseAdmin
     .from('teacher_students')
     .select('student_id, subject_id, students(id, name, surname, grade, cohort_id, cohorts(name))')
@@ -1091,40 +1057,9 @@ export async function fetchStudentTiers(
 
   if (!links || links.length === 0) return [];
 
-  const studentIds = [...new Set(links.map((l: any) => l.student_id as number))];
-
-  // Get all marks for teacher's sheets
-  const { data: sheets } = await supabaseAdmin
-    .from('mark_sheets')
-    .select('id, subject_id')
-    .eq('teacher_id', teacherId)
-    .eq('school_id', schoolId);
-
-  const sheetIds = (sheets ?? []).map((s: any) => s.id as number);
-
-  const { data: marks } = sheetIds.length > 0
-    ? await supabaseAdmin
-        .from('student_marks')
-        .select('student_id, mark, mark_sheets(total)')
-        .in('sheet_id', sheetIds)
-        .in('student_id', studentIds)
-        .not('mark', 'is', null)
-    : { data: [] };
-
-  // Build per-student average
-  const marksByStudent = new Map<number, number[]>();
-  for (const m of (marks ?? [])) {
-    const ms = (m as any).mark_sheets;
-    if (!ms) continue;
-    const sid = (m as any).student_id as number;
-    const pct = (Number((m as any).mark) / Number(ms.total)) * 100;
-    if (!marksByStudent.has(sid)) marksByStudent.set(sid, []);
-    marksByStudent.get(sid)!.push(pct);
-  }
-
-  // Unique students
   const seen = new Set<number>();
   const result: StudentTierSummary[] = [];
+  const todayStr = new Date().toISOString().split('T')[0];
 
   for (const link of links) {
     const student = (link as any).students;
@@ -1133,12 +1068,11 @@ export async function fetchStudentTiers(
     if (seen.has(sid)) continue;
     seen.add(sid);
 
-    const pcts = marksByStudent.get(sid) ?? [];
-    const avg  = pcts.length > 0
-      ? Math.round(pcts.reduce((s, v) => s + v, 0) / pcts.length)
-      : 0;
-
+    const profile = await fetchStudentRisk(sid, schoolId, todayStr);
     const subjectCount = links.filter((l: any) => l.student_id === sid).length;
+    const avg = profile.courseSubjects.length > 0
+      ? Math.round(profile.courseSubjects.reduce((s, c) => s + c.avg, 0) / profile.courseSubjects.length)
+      : 0;
 
     result.push({
       studentId:    sid,
@@ -1147,7 +1081,7 @@ export async function fetchStudentTiers(
       grade:        student.grade as number,
       cohort:       (student.cohorts as any)?.name ?? null,
       avg,
-      tier:         computeLearnerTier(avg),
+      tier:         profile.tier,
       subjectCount,
     });
   }

@@ -33,20 +33,17 @@ const schoolRows: StaticRow[] = [
 // admin-facing utilities, not exploratory destinations, so a quieter
 // presentation reads more appropriately than the learner's hover-reveal rows.
 const StaticRowList = ({ rows }: { rows: StaticRow[] }) => (
-  <div
-    className="rounded-3xl border border-brand-border overflow-hidden"
-    style={{ background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)' }}
-  >
+  <div className="paper-card-dark rounded-3xl overflow-hidden">
     {rows.map((row) => {
       const Icon = row.icon;
       return (
-        <div key={row.label} className="flex items-center gap-4 px-6 py-5 border-b border-brand-border/60 last:border-b-0">
-          <div className="w-10 h-10 rounded-xl bg-brand-dark flex items-center justify-center shrink-0">
+        <div key={row.label} className="flex items-center gap-4 px-6 py-5 border-b border-white/10 last:border-b-0">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
             <Icon className="w-4.5 h-4.5 text-white" />
           </div>
           <div className="min-w-0">
-            <h4 className="font-black text-[14px] tracking-tight text-brand-dark">{row.label}</h4>
-            <p className="text-[13px] mt-0.5 leading-relaxed font-medium text-brand-eyebrow">{row.description}</p>
+            <h4 className="font-black text-[14px] tracking-tight text-white">{row.label}</h4>
+            <p className="text-[13px] mt-0.5 leading-relaxed font-medium text-white/60">{row.description}</p>
           </div>
         </div>
       );
@@ -56,22 +53,22 @@ const StaticRowList = ({ rows }: { rows: StaticRow[] }) => (
 
 export const RoleDestinations = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="py-16 lg:py-24 px-5">
-      <div className="max-w-5xl mx-auto">
+    <section className="section-dark-blue py-16 lg:py-24 px-5">
+      <div className="relative max-w-5xl mx-auto">
         <FadeIn className="text-center mb-10 lg:mb-12">
-          <span className="eyebrow">FOR TEACHERS & SCHOOLS</span>
-          <h2 className="text-brand-dark text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
+          <span className="eyebrow" style={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)' }}>FOR TEACHERS & SCHOOLS</span>
+          <h2 className="text-white text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Built for the whole staff room too.
           </h2>
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
           <FadeIn delay={0.05}>
-            <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-eyebrow mb-3">Teacher Portal</h3>
+            <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/50 mb-3">Teacher Portal</h3>
             <StaticRowList rows={teacherRows} />
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-brand-eyebrow mb-3">Admin Portal</h3>
+            <h3 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/50 mb-3">Admin Portal</h3>
             <StaticRowList rows={schoolRows} />
           </FadeIn>
         </div>
@@ -79,7 +76,7 @@ export const RoleDestinations = ({ onNavigate }: { onNavigate: (p: string) => vo
         <FadeIn delay={0.18} className="text-center mt-8">
           <button
             onClick={() => onNavigate('portal')}
-            className="bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-brand-dark/90 active:scale-[0.97] transition-all cursor-pointer"
+            className="bg-white text-brand-dark rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-white/90 active:scale-[0.97] transition-all cursor-pointer"
           >
             Teacher & Admin Portal →
           </button>

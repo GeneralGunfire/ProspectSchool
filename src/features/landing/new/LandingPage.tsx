@@ -19,11 +19,11 @@ interface LandingPageProps {
  * Prospect Landing Page
  * Wraps all sections and threads onNavigate through for portal/quiz CTAs.
  *
- * Background strategy: the page is light end-to-end (cream, matching the
- * brand background) rather than alternating dark/light blocks — texture and
- * "life" come from the Constellation node/line decoration scattered across
- * several sections and the gradient washes below, not from solid dark fills.
- * QuoteSection is the one deliberate dark beat on the page, for contrast.
+ * Background strategy: sections alternate light/dark down the page (light
+ * cream cards vs. the near-black gradient used in the Hero video, defined
+ * as .section-dark-blue in index.css and inlined on QuoteSection/FinalCTA).
+ * No two dark sections sit back-to-back — each is separated by at least
+ * one light section so the alternation stays legible while scrolling.
  */
 export default function LandingPage({ onNavigate }: LandingPageProps) {
   return (
@@ -33,11 +33,11 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
 
       <LearnerFeatureCards onNavigate={onNavigate} />
       <CareerPaths onNavigate={onNavigate} />
-      <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
-      <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>
 
       <QuoteSection />
 
+      <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
+      <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>
       <div className="cv-auto"><Pricing onNavigate={onNavigate} /></div>
       <div className="cv-auto"><FinalCTA onNavigate={onNavigate} /></div>
       <div className="cv-auto"><Footer onNavigate={onNavigate} /></div>

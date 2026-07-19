@@ -757,6 +757,52 @@ html {
     0 48px 80px -24px rgba(15, 18, 15, 0.36);
 }
 
+/* ─── Dark alternating sections ───
+   Every other content section (LearnerFeatureCards, RoleDestinations) sits
+   on this near-black wash instead of the page's light gradient, matching
+   the Hero video's own dark water tone (deep charcoal-black with just a
+   hint of blue, not a visible navy gradient). Cards inside these sections
+   use .paper-card-dark, a translucent "glass" surface (not the light
+   paper-card), so text and borders stay legible against the dark fill. */
+.landing-page .section-dark-blue {
+  position: relative;
+  background: linear-gradient(160deg, #050708 0%, #0a0d10 50%, #060809 100%);
+}
+.landing-page .section-dark-blue::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.landing-page .paper-card-dark {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.03) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 10px;
+  position: relative;
+  isolation: isolate;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 10px 24px -6px rgba(0, 0, 0, 0.35),
+    0 32px 56px -20px rgba(0, 0, 0, 0.45);
+  transition: border-color 0.3s ease, box-shadow 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+.landing-page .paper-card-dark:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-5px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 18px 36px -8px rgba(0, 0, 0, 0.45),
+    0 48px 80px -24px rgba(0, 0, 0, 0.55);
+}
+
 /* ─── Student Home — "premium paper" scoped reskin ───
    Warm off-white / charcoal-text / deep-midnight-navy palette scoped to
    the student dashboard home page only. Overrides the themable tokens
@@ -770,8 +816,8 @@ html {
    is no separate "dark" card variant — emphasis comes from a left
    accent border or a small dot, never a different fill. */
 .student-home {
-  --color-accent: #1f2421;              /* warm charcoal — matches the sidebar's selected-page color */
-  --color-accent-soft: #343b36;         /* lighter charcoal for hover states on dark surfaces */
+  --color-accent: #43505f;              /* slate-blue — matches the My Future CTA card gradient's midtone */
+  --color-accent-soft: #4b5568;         /* lighter slate for hover states on dark surfaces */
   --color-accent-foreground: #ffffff;
   --color-brand-dark: #1f2421;          /* warm charcoal text, not pure black */
   --color-brand-border: rgba(15, 23, 21, 0.07);   /* hairline on paper surfaces */
@@ -789,6 +835,42 @@ html {
     #eaebec;
   background-attachment: fixed;
   color-scheme: light;
+}
+
+/* Student dashboard content area — background image sits behind every page
+   rendered inside StudentDashboard's scrollable content pane. Mobile gets
+   its own portrait-oriented image; background-attachment is `scroll` on
+   mobile (fixed is unreliable/janky on mobile Safari) and `fixed` on
+   desktop/tablet where it reads as a stable backdrop. */
+@media (max-width: 767px) {
+  .student-dashboard-bg {
+    background-image: url('/images/student-dashboard-bg-mobile.png');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+  }
+  .student-dashboard-bg .student-home {
+    background: transparent;
+    background-attachment: initial;
+  }
+}
+
+@media (min-width: 768px) {
+  .student-dashboard-bg {
+    background-image: url('/images/student-dashboard-bg-desktop.png');
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  /* Let the dashboard background show through — each page's own opaque
+     .student-home background is only meant for standalone use elsewhere
+     in the app (e.g. if a page is ever rendered outside this shell). */
+  .student-dashboard-bg .student-home {
+    background: transparent;
+    background-attachment: initial;
+  }
 }
 
 /* Extremely faint dot grid across the page — premium paper texture, not

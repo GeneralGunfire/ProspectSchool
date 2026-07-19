@@ -439,8 +439,16 @@
     |-- marketplace_phase3.sql
     |-- NEXT_SESSION_PROMPT_topic_tests_content.md
     |-- research
+        |-- AI_TUTOR_FEATURE_RESEARCH.md
         |-- GRADE10_MATHS_CAPS_TOPIC_LIST.md
+        |-- LIBRARY_TEACHING_EXECUTION_PLAN.md
+        |-- PEER_TUTORING_FEATURE_RESEARCH.md
         |-- TOPIC_TESTS_QUESTION_RESEARCH.md
+        |-- WELLBEING_FEATURE_RESEARCH.md
+    |-- sql
+        |-- 2026-07-19_peer_tutoring.sql
+        |-- 2026-07-19_risk_scores_table.sql
+        |-- 2026-07-19_wellbeing_checkins.sql
     |-- STUDENT_PORTAL_DESIGN_ROLLOUT.md
     |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
@@ -450,10 +458,13 @@
     |-- deps
         |-- package.json
         |-- _metadata.json
+|-- 13144708_1920_1080_30fps.mp4
+|-- 14108170_1080_1920_60fps.mp4
 |-- BACKEND_NOTES.md
 |-- ChatGPT Image Jul 11, 2026, 12_34_14 AM.png
 |-- ChatGPT Image Jul 11, 2026, 12_34_31 AM.png
 |-- CLAUDE.md
+|-- desktopbackground.png
 |-- e2e-my-future.mjs
 |-- expo
     |-- a0af27ef-research-plan-template-20240131 (1).docx
@@ -494,6 +505,7 @@
     |-- manifest.json
     |-- prospect-callflow.html
 |-- index.html
+|-- mobilebackground.png
 |-- newHero.png
 |-- newtopimagestrip.png
 |-- package-lock.json
@@ -547,6 +559,8 @@
         |-- sa-flag.jpg
         |-- stat-dashboard-graphic.jpg
         |-- stat-map-graphic.jpg
+        |-- student-dashboard-bg-desktop.png
+        |-- student-dashboard-bg-mobile.png
         |-- student-home-topstrip.png
         |-- students.jpg
         |-- students.webp
@@ -564,10 +578,18 @@
         |-- video1-poster.png
     |-- videos
         |-- Bursaries.mp4
+        |-- hero-bg-2.mp4
+        |-- hero-bg.mp4
         |-- video1.mp4
 |-- scripts
     |-- seedTopicTests.ts
     |-- validateCatalog.mjs
+    |-- verify-peer-tutoring-matching.mjs
+    |-- verify-peer-tutoring-schema.mjs
+    |-- verify-risk-engine-synthetic.mjs
+    |-- verify-risk-engine.mjs
+    |-- verify-wellbeing-alerts.mjs
+    |-- verify-wellbeing-schema.mjs
 |-- src
     |-- App.tsx
     |-- components
@@ -674,91 +696,30 @@
                 |-- WaveBackground.tsx
             |-- UI-REVIEW.md
         |-- study
+            |-- components
+                |-- lesson
+                    |-- colorScheme.ts
+                    |-- HintTiers.tsx
+                    |-- LessonShell.tsx
+                    |-- MisconceptionFeedback.tsx
+                    |-- Scratchpad.tsx
+                    |-- SelfRegulation.tsx
+                    |-- WorkedExample.tsx
             |-- data
-                |-- studyLibrary
-                    |-- accountingEquation.ts
-                    |-- algebraicExpressions.ts
-                    |-- atomsSubatomicParticles.ts
-                    |-- biodiversityAndClassification.ts
-                    |-- businessStudiesTopics.ts
-                    |-- catAndEgdTopics.ts
-                    |-- chemicalBonding.ts
-                    |-- classificationOfMatter.ts
-                    |-- doubleEntrySystem.ts
-                    |-- economicsTopics.ts
-                    |-- egdTopics.ts
-                    |-- englishTopics.ts
-                    |-- equationsAndInequalities.ts
-                    |-- fiveKingdoms.ts
-                    |-- functions.ts
-                    |-- index.ts
-                    |-- introductionToAccounting.ts
-                    |-- mathematicalModelling.ts
-                    |-- numberPatterns.ts
-                    |-- periodicTableTrends.ts
-                    |-- remainingTopics.ts
-                    |-- speciesConcept.ts
-                    |-- taxonomyAndBinomialNomenclature.ts
-                    |-- wavesSoundLight.ts
+                |-- library
+                    |-- algebra
+                        |-- grade10
+                            |-- term1
+                                |-- realNumberSystem.ts
+                    |-- types.ts
                 |-- subjects.ts
             |-- pages
                 |-- learning
-                    |-- Accounting
-                        |-- Grade10
-                            |-- Term1
-                                |-- AccountingEquation.tsx
-                                |-- DoubleEntrySystem.tsx
-                                |-- GeneralLedger.tsx
-                                |-- IntroductionToAccounting.tsx
-                                |-- JournalsInAccounting.tsx
-                                |-- SourceDocuments.tsx
-                    |-- Algebra
-                        |-- Grade10
-                            |-- Term1
-                                |-- LinearEquations.tsx
-                                |-- SimultaneousEquations.tsx
-                    |-- BusinessStudies
-                        |-- Grade10
-                            |-- Term1
-                                |-- BusinessEnvironment.tsx
-                                |-- BusinessOperations.tsx
-                                |-- BusinessSectors.tsx
-                                |-- BusinessStakeholders.tsx
-                    |-- CAT
-                        |-- Grade10
-                            |-- Term1
-                                |-- ComputerSystems.tsx
-                                |-- FileManagement.tsx
-                                |-- Spreadsheets.tsx
-                                |-- WordProcessing.tsx
-                    |-- Economics
-                        |-- Grade10
-                            |-- Term1
-                                |-- CircularFlowModel.tsx
-                                |-- EconomicProblem.tsx
-                                |-- EconomicSystems.tsx
-                                |-- FactorsOfProduction.tsx
-                                |-- ProductionPossibilityCurve.tsx
-                    |-- EGD
-                        |-- Grade10
-                            |-- Term1
-                                |-- DrawingInstruments.tsx
-                    |-- LifeSciences
-                        |-- Grade10
-                            |-- Term1
-                                |-- BiodiversityAndClassification.tsx
-                                |-- FiveKingdoms.tsx
-                                |-- SpeciesConcept.tsx
-                                |-- TaxonomyAndBinomialNomenclature.tsx
-                    |-- PhysicalSciences
-                        |-- Grade10
-                            |-- Term1
-                                |-- AtomsSubatomicParticles.tsx
-                                |-- ChemicalBonding.tsx
-                                |-- ClassificationOfMatter.tsx
-                                |-- PeriodicTableTrends.tsx
-                                |-- WavesSoundLight.tsx
-                |-- StudyLibraryPage.tsx
+                    |-- algebra
+                        |-- grade10
+                            |-- term1
+                                |-- RealNumberSystem.tsx
+                |-- LibraryHubPage.tsx
     |-- index.css
     |-- lib
         |-- actionCenter.ts
@@ -776,7 +737,9 @@
         |-- parentContacts.ts
         |-- parents.ts
         |-- pastPapers.ts
+        |-- peerTutoring.ts
         |-- resources.ts
+        |-- riskEngine.ts
         |-- schoolGradeSubjects.ts
         |-- schools.ts
         |-- studentGoals.ts
@@ -794,6 +757,8 @@
         |-- topicTestsV2.ts
         |-- types.ts
         |-- utils.ts
+        |-- wellbeing.ts
+        |-- wellbeingCrisisResources.ts
     |-- main.tsx
     |-- pages
         |-- auth
@@ -830,6 +795,7 @@
                 |-- ParentHomeworkPage.tsx
                 |-- ParentMarksPage.tsx
                 |-- ParentTimetablePage.tsx
+                |-- ParentWellbeingConsentPage.tsx
             |-- ParentDashboard.tsx
             |-- PlatformAdminDashboard.tsx
             |-- PortalEntry.tsx
@@ -847,9 +813,11 @@
                 |-- StudentHomeroomPage.tsx
                 |-- StudentMarksPage.tsx
                 |-- StudentPastPapersPage.tsx
+                |-- StudentPeerTutoringPage.tsx
                 |-- StudentResourcesPage.tsx
                 |-- StudentTimetablePage.tsx
                 |-- StudentTopicTestsV2Page.tsx
+                |-- StudentWellbeingPage.tsx
                 |-- SubjectSelectionPage.tsx
             |-- StudentDashboard.tsx
             |-- teacher
@@ -860,6 +828,7 @@
                 |-- HomeroomPage.tsx
                 |-- MarksPage.tsx
                 |-- PastPapersPage.tsx
+                |-- PeerTutoringPage.tsx
                 |-- RecordOutcomeModal.tsx
                 |-- ResourcesPage.tsx
                 |-- RiskEnginePage.tsx
@@ -868,6 +837,7 @@
                 |-- TeacherHomePage.tsx
                 |-- TimetablePage.tsx
                 |-- TopicTestsV2Page.tsx
+                |-- WellbeingHomeroomPage.tsx
             |-- TeacherDashboard.tsx
     |-- providers
         |-- AuthProvider.tsx
@@ -890,6 +860,7 @@
         |-- 20260529000001_student_tasks.sql
         |-- 20260603000001_action_center_notifications_templates.sql
         |-- 20260705000001_parent_contacts.sql
+        |-- 20260719000001_study_progress_subskills.sql
 |-- teacher-portal-features.md
 |-- test-01-home.png
 |-- test-02-dashboard.png
@@ -897,7 +868,6 @@
 |-- test-04-quiz-page.png
 |-- test-05-my-future-after-reload.png
 |-- test-routing.mjs
-|-- topicTests.txt
 |-- tsconfig.json
 |-- vercel.json
 |-- vite.config.ts

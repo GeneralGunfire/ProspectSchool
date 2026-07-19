@@ -977,13 +977,12 @@ const TIER_CONFIG: Record<LearnerTier, {
   label: string; description: string;
   bg: string; border: string; badge: string; dot: string;
 }> = {
-  high_risk:   { label: 'High Risk',   description: 'Below 40% — urgent intervention needed', bg: 'bg-red-50',     border: 'border-red-200',    badge: 'bg-red-500 text-white',          dot: 'bg-red-500' },
-  medium_risk: { label: 'Medium Risk', description: '40–55% — monitor and support',            bg: 'bg-amber-50',  border: 'border-amber-200',  badge: 'bg-amber-500 text-white',        dot: 'bg-amber-500' },
-  on_track:    { label: 'On Track',    description: '55–75% — performing adequately',           bg: 'bg-blue-50',   border: 'border-blue-200',   badge: 'bg-blue-500 text-white',         dot: 'bg-blue-500' },
-  flourishing: { label: 'Flourishing', description: 'Above 75% — excelling',                   bg: 'bg-emerald-50',border: 'border-emerald-200', badge: 'bg-emerald-600 text-white',      dot: 'bg-emerald-500' },
+  high:     { label: 'High Risk',     description: 'Attendance, behaviour, and/or course performance — urgent',   bg: 'bg-red-50',     border: 'border-red-200',    badge: 'bg-red-500 text-white',     dot: 'bg-red-500' },
+  moderate: { label: 'Moderate Risk', description: 'One or more early-warning signals — monitor and support',      bg: 'bg-amber-50',  border: 'border-amber-200',  badge: 'bg-amber-500 text-white',   dot: 'bg-amber-500' },
+  none:     { label: 'On Track',      description: 'No attendance, behaviour, or course-performance concerns',      bg: 'bg-emerald-50',border: 'border-emerald-200', badge: 'bg-emerald-600 text-white', dot: 'bg-emerald-500' },
 };
 
-const TIER_ORDER: LearnerTier[] = ['high_risk', 'medium_risk', 'on_track', 'flourishing'];
+const TIER_ORDER: LearnerTier[] = ['high', 'moderate', 'none'];
 
 interface TierGroupViewProps {
   students:  Student[];
@@ -1003,7 +1002,7 @@ function TierGroupView({ students, tiers, filtered, onEdit, onDelete }: TierGrou
   for (const tier of TIER_ORDER) groups.set(tier, []);
 
   for (const s of filtered) {
-    const tier = tierMap.get(s.id) ?? 'on_track';   // default on_track if no marks yet
+    const tier = tierMap.get(s.id) ?? 'none';   // default to on-track if no data yet
     groups.get(tier)!.push(s);
   }
 

@@ -7,18 +7,22 @@ import {
 import type { TeacherSession } from '../../../lib/auth';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchTeacherStudentProgress, type StudentProgressSummary } from '../../../lib/studyProgress';
-import { fetchStudentResults } from '../../../lib/marks';
-import { fetchSchoolEvents } from '../../../lib/events';
 import { getInterventions, getOutcomes, syncInterventionsFromRisk, type Intervention, type Outcome } from '../../../lib/interventions';
-import { computeStudentInsights, type SubjectRisk, type RevisionRecommendation, type RiskLevel } from '../../../lib/studentInsights';
+import type { SubjectRisk, RevisionRecommendation } from '../../../lib/studentInsights';
+import {
+  fetchStudentRisk, profileToSubjectRisks, profileToRevisionRecs,
+  type StudentRiskProfile, type RiskTier,
+} from '../../../lib/riskEngine';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 // ── Row state ──────────────────────────────────────────────────
+// Tier is the unified ABC engine's tier — high / moderate / none.
 
 interface RowData {
   student: StudentProgressSummary;
-  overallRisk: RiskLevel;      // worst subject risk for this student
+  overallTier: RiskTier;
+  profile: StudentRiskProfile | null;
   riskSubjects: SubjectRisk[];
   revisionRecs: RevisionRecommendation[];
   loaded: boolean;
@@ -29,13 +33,12 @@ interface RowData {
   lastSynced: string | null;
 }
 
-const RISK_ORDER: Record<RiskLevel, number> = { high: 0, medium: 1, low: 2, none: 3 };
+const RISK_ORDER: Record<RiskTier, number> = { high: 0, moderate: 1, none: 2 };
 
-const RISK_STYLE: Record<RiskLevel, { bg: string; border: string; text: string; dot: string; label: string }> = {
-  high:   { bg: 'bg-red-50',    border: 'border-red-200',    text: 'text-red-700',    dot: 'bg-red-500',    label: 'High Risk' },
-  medium: { bg: 'bg-amber-50',  border: 'border-amber-200',  text: 'text-amber-700',  dot: 'bg-amber-500',  label: 'Medium Risk' },
-  low:    { bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-700',   dot: 'bg-blue-500',   label: 'Low Risk' },
-  none:   { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'On Track' },
+const RISK_STYLE: Record<RiskTier, { bg: string; border: string; text: string; dot: string; label: string }> = {
+  high:     { bg: 'bg-red-50',    border: 'border-red-200',    text: 'text-red-700',    dot: 'bg-red-500',    label: 'High Risk' },
+  moderate: { bg: 'bg-amber-50',  border: 'border-amber-200',  text: 'text-amber-700',  dot: 'bg-amber-500',  label: 'Moderate Risk' },
+  none:     { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', dot: 'bg-emerald-500', label: 'On Track' },
 };
 
 const TYPE_LABEL: Record<string, string> = {
@@ -69,7 +72,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<number | null>(null);
   const [search, setSearch] = useState('');
-  const [filterRisk, setFilterRisk] = useState<RiskLevel | ''>('');
+  const [filterRisk, setFilterRisk] = useState<RiskTier | ''>('');
   const [showHow, setShowHow] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
 
@@ -80,17 +83,14 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
       const students = await fetchTeacherStudentProgress(session.teacher_id, session.school_id);
       if (cancelled) return;
 
-      // Fetch shared data once — used to detect exam proximity per student.
-      const events = await fetchSchoolEvents(session.school_id, session.teacher_id);
-      if (cancelled) return;
-
       const todayStr = new Date().toISOString().split('T')[0];
 
       const initial = new Map<number, RowData>();
       for (const s of students) {
         initial.set(s.student_id, {
           student: s,
-          overallRisk: 'none',
+          overallTier: 'none',
+          profile: null,
           riskSubjects: [],
           revisionRecs: [],
           loaded: false,
@@ -108,21 +108,19 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
       // risk levels/sort order without waiting on each row's manual expand.
       for (const s of students) {
         if (cancelled) return;
-        const marks = await fetchStudentResults(s.student_id, session.school_id);
-        const insights = computeStudentInsights(marks, events, s.progress, { targetAps: null, targetCareer: null, updatedAt: '' }, todayStr);
-        const worst = insights.examRiskSubjects.reduce<RiskLevel>(
-          (acc, r) => RISK_ORDER[r.risk] < RISK_ORDER[acc] ? r.risk : acc,
-          'none',
-        );
+        const profile = await fetchStudentRisk(s.student_id, session.school_id, todayStr);
+        const riskSubjects = profileToSubjectRisks(profile);
+        const revisionRecs = profileToRevisionRecs(profile);
         setRows(prev => {
           const next = new Map(prev);
           const row = next.get(s.student_id);
           if (!row) return prev;
           next.set(s.student_id, {
             ...row,
-            overallRisk: worst,
-            riskSubjects: insights.examRiskSubjects,
-            revisionRecs: insights.revisionRecs,
+            overallTier: profile.tier,
+            profile,
+            riskSubjects,
+            revisionRecs,
             loaded: true,
           });
           return next;
@@ -195,17 +193,16 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
   const allRows = Array.from(rows.values());
   const filtered = allRows
     .filter(r => {
-      if (filterRisk && r.overallRisk !== filterRisk) return false;
+      if (filterRisk && r.overallTier !== filterRisk) return false;
       const q = search.toLowerCase();
       return `${r.student.student_surname} ${r.student.student_name} ${r.student.student_code}`.toLowerCase().includes(q);
     })
-    .sort((a, b) => RISK_ORDER[a.overallRisk] - RISK_ORDER[b.overallRisk] || a.student.student_surname.localeCompare(b.student.student_surname));
+    .sort((a, b) => RISK_ORDER[a.overallTier] - RISK_ORDER[b.overallTier] || a.student.student_surname.localeCompare(b.student.student_surname));
 
   const counts = {
-    high:   allRows.filter(r => r.overallRisk === 'high').length,
-    medium: allRows.filter(r => r.overallRisk === 'medium').length,
-    low:    allRows.filter(r => r.overallRisk === 'low').length,
-    none:   allRows.filter(r => r.overallRisk === 'none').length,
+    high:     allRows.filter(r => r.overallTier === 'high').length,
+    moderate: allRows.filter(r => r.overallTier === 'moderate').length,
+    none:     allRows.filter(r => r.overallTier === 'none').length,
   };
 
   return (
@@ -228,7 +225,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Early Warning</p>
             <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>At-Risk Students</h1>
             <p className="text-[13px] text-white/60 mt-2.5 font-medium max-w-md">
-              Live risk scoring from marks, trends and exam proximity. Expand a student to see exactly why they're flagged.
+              Live risk scoring from attendance, behaviour, and course performance. Expand a student to see exactly why they're flagged.
             </p>
             <button
               onClick={() => setShowHow(v => !v)}
@@ -258,8 +255,8 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-stretch mb-4">
                 {[
-                  { label: 'Marks & Events', detail: 'Every subject average, mark trend, and exam date' },
-                  { label: 'Risk Rules',     detail: 'Thresholds flag subjects as high / medium / low risk' },
+                  { label: 'Attendance, Behaviour, Course', detail: 'Three independent domains, each scored 0-2' },
+                  { label: 'Combined Score',  detail: 'Domains sum to a risk total; multiple weak domains required for High' },
                   { label: 'Interventions',  detail: 'Auto-created coaching tasks per flagged subject' },
                   { label: 'Outcomes',       detail: 'Next mark measures if it actually helped' },
                 ].map((step, i, arr) => (
@@ -275,23 +272,30 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
 
               <div className="space-y-2.5 text-[12px] text-stone-600 leading-relaxed">
                 <p>
-                  <span className="font-black text-brand-dark">Risk badge</span> — each subject gets a risk level from a rule score, not a black box:
-                  average below 50% (below pass), below 65% (needs improvement), a drop of more than 5% over the last 3 assessments
-                  (declining), inconsistent marks (swings of 20%+), and an exam within 14 days while the average is still weak all count
-                  as separate "reasons." 3+ reasons — or a sub-50% average with an exam in the next 2 weeks — makes it <b>High</b>;
-                  2 reasons (or sub-60% with an exam in 3 weeks) makes it <b>Medium</b>; anything else with 1 reason is <b>Low</b>.
-                  A student's overall badge on the list is just their single worst subject.
+                  <span className="font-black text-brand-dark">ABC model</span> — this engine follows early-warning-system research
+                  (Chicago's On-Track Indicator; Balfanz/Herzog/Mac Iver's ABC model): a student rarely needs flagging from marks alone,
+                  so <b>Attendance</b>, <b>Behaviour</b>, and <b>Course performance</b> are scored independently (0–2 each) and combined.
+                  Attendance below 85% (last 6 weeks, weighted against term-to-date) scores 1; below 75% scores 2. Behaviour scores from
+                  serious demerits (3+ points) this window — 1 serious incident scores 1, 2+ scores 2; a pattern of 4+ minor incidents
+                  also scores 1. Course performance looks at each subject's last 4–6 assessments for a declining trend (slope) or high
+                  volatility against the student's own prior-term baseline (or 50% if none exists) — the single worst subject drives the
+                  student's Course score, since a strong overall average shouldn't hide one subject in real trouble.
                 </p>
                 <p>
-                  <span className="font-black text-brand-dark">"Why Flagged" vs "Revision Priority"</span> — Why Flagged is the risk
-                  assessment itself (the reasons above, per subject). Revision Priority is a separate, action-oriented ranking of which
-                  subjects to study first right now, weighted more heavily toward exam closeness — it can repeat a subject from Why Flagged,
-                  or add one that isn't "risky" yet but has an exam coming up soon.
+                  <span className="font-black text-brand-dark">High vs Moderate</span> — <b>High</b> requires the combined total to reach
+                  4+ AND at least two of the three domains to be non-zero (multiple corroborating signals, not just one bad subject) —
+                  this is deliberate: it reduces false positives, but a single domain hitting its most severe level (2) on its own is
+                  still surfaced as <b>Moderate</b>, so a serious single-domain problem is never silently missed.
+                </p>
+                <p>
+                  <span className="font-black text-brand-dark">"Why Flagged" vs "Revision Priority"</span> — Why Flagged is the
+                  subject-level detail behind the Course score above. Revision Priority is a separate, action-oriented ranking of which
+                  subjects to study first right now.
                 </p>
                 <p>
                   <span className="font-black text-brand-dark">Interventions</span> — these are not manually assigned by anyone. They're
-                  auto-generated directly from the risk data above: a high/medium-risk subject with an exam ≤14 days away creates a
-                  past-paper or revision task; a sub-60% average creates a library/revision/resource task. <b>Re-sync Interventions</b>{' '}
+                  still auto-generated from flagged subjects (unchanged in this pass): a flagged subject creates a past-paper, revision,
+                  or library task depending on severity. <b>Re-sync Interventions</b>{' '}
                   re-runs this generation for one student on demand — it won't duplicate an already-active task for the same subject+type.
                 </p>
                 <p>
@@ -331,8 +335,8 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
       ) : (
         <>
           {/* Risk summary tiles */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 mb-6">
-            {(['high', 'medium', 'low', 'none'] as RiskLevel[]).map(level => {
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 mb-6">
+            {(['high', 'moderate', 'none'] as RiskTier[]).map(level => {
               const style = RISK_STYLE[level];
               const active = filterRisk === level;
               return (
@@ -394,7 +398,7 @@ function RiskRow({
   onToggle: () => void;
   onSync: () => void;
 }) {
-  const style = RISK_STYLE[row.overallRisk];
+  const style = RISK_STYLE[row.overallTier];
   const active = row.interventions.filter(i => i.status === 'recommended' || i.status === 'started');
   const completed = row.interventions.filter(i => i.status === 'completed');
 
@@ -450,7 +454,41 @@ function RiskRow({
           >
             <div className="px-4 pb-4 pt-1 border-t border-brand-border space-y-4">
 
-              {/* Why flagged — the engine's reasoning */}
+              {/* ABC breakdown — the unified engine's domain scores + plain-language reasons */}
+              {row.profile && (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2 mt-3">
+                    <Gauge className="w-3 h-3 text-stone-500" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Attendance · Behaviour · Course</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mb-2">
+                    {([
+                      ['Attendance', row.profile.attendance.score],
+                      ['Behaviour',  row.profile.behaviour.score],
+                      ['Course',     row.profile.course.score],
+                    ] as [string, number][]).map(([label, score]) => (
+                      <div key={label} className="rounded border border-brand-border bg-stone-50 px-2.5 py-2 text-center">
+                        <p className="text-lg font-black text-brand-dark leading-none">{score}<span className="text-[10px] text-stone-500">/2</span></p>
+                        <p className="text-[9px] font-bold text-stone-500 mt-1">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {row.profile.reasons.length > 0 ? (
+                    <ul className="space-y-1">
+                      {row.profile.reasons.map((reason, ri) => (
+                        <li key={ri} className="flex items-start gap-1.5 text-[11px] text-stone-600">
+                          <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0 text-stone-500" />
+                          {reason}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[11px] text-stone-500">No attendance, behaviour, or course-performance concerns detected.</p>
+                  )}
+                </div>
+              )}
+
+              {/* Why flagged — subject-level detail feeding the Course domain above */}
               {row.riskSubjects.length > 0 ? (
                 <div>
                   <div className="flex items-center gap-1.5 mb-2 mt-3">

@@ -33,7 +33,7 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.10), 0 24px 48px -16px rgba(15,18,15,0.16)',
           }}
         >
-          <div className="w-11 h-11 rounded-xl bg-brand-dark flex items-center justify-center mx-auto">
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center mx-auto" style={{ background: 'linear-gradient(160deg, #050708 0%, #0a0d10 100%)' }}>
             <span className="text-white font-black text-[15px] leading-none">P</span>
           </div>
 
@@ -54,7 +54,8 @@ export const Pricing = ({ onNavigate }: { onNavigate: (p: string) => void }) => 
 
           <button
             onClick={() => onNavigate('portal')}
-            className="mt-8 w-full bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-brand-dark/90 active:scale-[0.97] transition-all cursor-pointer"
+            className="mt-8 w-full text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:opacity-90 active:scale-[0.97] transition-all cursor-pointer"
+            style={{ background: 'linear-gradient(160deg, #050708 0%, #0a0d10 100%)' }}
           >
             Set Up Your School Free
           </button>

@@ -46,23 +46,8 @@ export default function StudentTimetablePage({ session }: StudentTimetablePagePr
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, #d6dbde 0%, #dee3e5 22%, #e4e8ea 45%, #e9ecec 68%, #eaebec 100%)' }} />
-        <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1200 100">
-          <path d="M0,42 C220,32 380,49 600,40 C800,32 970,46 1200,38 L1200,0 L0,0 Z" fill="rgba(200,207,212,0.5)" />
-          <path d="M0,50 C210,60 390,45 610,53 C800,60 960,47 1200,55" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
-          <path d="M0,58 C220,50 380,66 600,57 C800,50 970,63 1200,55" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2" />
-          <path d="M0,66 C210,74 400,60 620,68 C810,75 980,62 1200,70" fill="none" stroke="rgba(255,255,255,0.48)" strokeWidth="1" />
-          <path d="M0,74 C220,66 400,82 620,73 C820,65 990,79 1200,71" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1" />
-          <path d="M0,82 C220,90 380,75 600,84 C800,92 970,78 1200,86" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="1" />
-          <path d="M0,90 C210,82 390,98 610,89 C800,82 960,95 1200,87" fill="none" stroke="rgba(255,255,255,0.38)" strokeWidth="1" />
-          <path d="M0,96 C220,90 400,100 620,94 C820,88 990,98 1200,93" fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="1" />
-          <path d="M0,55 C240,65 400,48 620,58 C820,67 980,50 1200,60 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.5)" />
-          <path d="M0,72 C240,62 420,81 640,71 C830,62 1000,79 1200,69 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.55)" />
-          <path d="M0,88 C230,98 410,82 630,92 C825,101 995,85 1200,95 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.65)" />
-        </svg>
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, #b9c0c5 0%, #c9d0d4 30%, transparent 42%, transparent 55%, rgba(234,235,236,0.75) 80%, #eaebec 100%)' }} />
+        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
+          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="flex items-center gap-2 min-w-0">

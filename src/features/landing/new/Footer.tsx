@@ -12,7 +12,7 @@ export const Footer = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <button onClick={() => onNavigate('home')} className="flex items-center gap-2.5 cursor-pointer mb-5">
-              <div className="w-7 h-7 bg-brand-dark rounded-md flex items-center justify-center">
+              <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: 'linear-gradient(160deg, #050708 0%, #0a0d10 100%)' }}>
                 <span className="text-white font-black text-sm leading-none">P</span>
               </div>
               <span className="font-black text-lg tracking-tight text-brand-dark">Prospect</span>

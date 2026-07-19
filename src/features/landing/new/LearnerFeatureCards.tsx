@@ -73,32 +73,28 @@ const FeatureTile = ({ feature }: { feature: Feature }) => {
       ref={ref}
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
-      className="group group/spot relative overflow-hidden rounded-2xl p-6 border border-brand-border hover:border-accent/40 transition-colors"
-      style={{
-        background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.06), 0 10px 20px -10px rgba(15,18,15,0.10)',
-      }}
+      className="group group/spot paper-card-dark relative overflow-hidden rounded-2xl p-6"
     >
-      <SpotlightGlow tone="accent" />
-      <div className="w-11 h-11 rounded-xl bg-brand-dark/8 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
-        <Icon className="w-5 h-5 text-brand-dark" />
+      <SpotlightGlow tone="white" />
+      <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+        <Icon className="w-5 h-5 text-white" />
       </div>
-      <h4 className="font-black text-[14px] tracking-tight text-brand-dark">{feature.title}</h4>
-      <p className="text-[13px] leading-relaxed font-medium text-brand-eyebrow mt-2">{feature.description}</p>
+      <h4 className="font-black text-[14px] tracking-tight text-white">{feature.title}</h4>
+      <p className="text-[13px] leading-relaxed font-medium text-white/60 mt-2">{feature.description}</p>
     </div>
   );
 };
 
 export const LearnerFeatureCards = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="py-16 lg:py-24 px-5">
-      <div className="max-w-5xl mx-auto">
+    <section className="section-dark-blue py-16 lg:py-24 px-5">
+      <div className="relative max-w-5xl mx-auto">
         <FadeIn className="text-center mb-10 lg:mb-14">
-          <span className="eyebrow">STUDENT ACCOUNT</span>
-          <h2 className="text-brand-dark text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
+          <span className="eyebrow" style={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.5)' }}>STUDENT ACCOUNT</span>
+          <h2 className="text-white text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Everything school, in one login.
           </h2>
-          <p className="mt-4 text-brand-eyebrow text-[14px] sm:text-[15px] leading-relaxed max-w-[52ch] mx-auto font-medium">
+          <p className="mt-4 text-white/60 text-[14px] sm:text-[15px] leading-relaxed max-w-[52ch] mx-auto font-medium">
             The same account your teacher and school use — marks, timetable, tests, and every announcement, all in your dashboard.
           </p>
         </FadeIn>
@@ -114,7 +110,7 @@ export const LearnerFeatureCards = ({ onNavigate }: { onNavigate: (p: string) =>
         <FadeIn delay={0.3} className="text-center mt-10">
           <button
             onClick={() => onNavigate('portal')}
-            className="bg-brand-dark text-white rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-brand-dark/90 active:scale-[0.97] transition-all cursor-pointer"
+            className="bg-white text-brand-dark rounded-xl px-8 py-3.5 font-black text-[13px] tracking-wide hover:bg-white/90 active:scale-[0.97] transition-all cursor-pointer"
           >
             Student Portal Login →
           </button>
