@@ -26,7 +26,7 @@ export function GoalSetting({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: EASE }}
-      className="rounded-2xl border border-stone-200 bg-white overflow-hidden"
+      className="paper-card rounded overflow-hidden"
     >
       <div className="px-5 py-4 border-b border-stone-100 flex items-center gap-2.5">
         <Target className="w-4 h-4 text-stone-500" />
@@ -120,7 +120,7 @@ export function Reflection({
   const allAnswered = prompts.every(p => answers[p.id] !== undefined);
 
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+    <div className="paper-card rounded overflow-hidden">
       <div className="px-5 py-4 border-b border-stone-100 flex items-center gap-2.5">
         <Sparkles className="w-4 h-4 text-stone-500" />
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-400">Reflect</p>

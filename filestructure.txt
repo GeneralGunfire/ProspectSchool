@@ -711,6 +711,7 @@
                         |-- grade10
                             |-- term1
                                 |-- realNumberSystem.ts
+                    |-- registry.ts
                     |-- types.ts
                 |-- subjects.ts
             |-- pages

@@ -129,11 +129,15 @@ export default function QuizBlock({
   questions,
   timerSeconds = 0,
   shuffle = true,
+  preventSkip = false,
 }: {
   storageKey: string;
   questions: QuizQuestion[];
   timerSeconds?: number;
   shuffle?: boolean;
+  /** When true, the progress dots can't jump ahead to unanswered questions,
+   *  and "Next" is disabled until the current question is answered. */
+  preventSkip?: boolean;
 }) {
   const prev = loadQuizResult(storageKey);
 
@@ -332,7 +336,7 @@ export default function QuizBlock({
             {state.questions.map((_, i) => (
               <button
                 key={i}
-                onClick={() => goTo(i)}
+                onClick={() => { if (!preventSkip || state.revealed[i] || i <= state.current) goTo(i); }}
                 className="rounded-full transition-all duration-200"
                 style={{
                   width: i === state.current ? 24 : 14,
@@ -448,7 +452,7 @@ export default function QuizBlock({
             ) : (
               <button
                 onClick={() => goTo(Math.min(state.questions.length - 1, state.current + 1))}
-                disabled={state.current === state.questions.length - 1}
+                disabled={state.current === state.questions.length - 1 || (preventSkip && !rev)}
                 className="flex items-center gap-1 text-[12px] font-bold text-stone-400 hover:text-stone-800 disabled:opacity-20 transition-colors"
               >
                 Next <ChevronRight className="w-3.5 h-3.5" />

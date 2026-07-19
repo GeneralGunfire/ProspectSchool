@@ -6,14 +6,14 @@
 
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, X, PenLine } from 'lucide-react';
 import { KnowledgeCheck, LearningOutcomes, SummaryCard } from '../../../../components/LessonEnrichment';
 import QuizBlock, { type QuizQuestion } from '../../../../components/QuizBlock';
 import type { LessonContent, PracticeItem, FadingProblem } from '../../data/library/types';
 import { WorkedExample } from './WorkedExample';
 import { HintTiers } from './HintTiers';
 import { MisconceptionFeedback } from './MisconceptionFeedback';
-import { Scratchpad } from './Scratchpad';
+import { Scratchpad, ScratchpadModal } from './Scratchpad';
 import { GoalSetting, ConfidenceCheck, Reflection } from './SelfRegulation';
 import { saveTopicProgress } from '../../../../lib/studyProgress';
 import { useStudySession } from '../../../../providers/StudySessionContext';
@@ -44,8 +44,8 @@ function PhaseProgress({ phase }: { phase: Phase }) {
   );
 }
 
-function FadingProblemBlock({ problem }: { problem: FadingProblem }) {
-  return <WorkedExample example={problem} revealSteps={problem.revealSteps} />;
+function FadingProblemBlock({ problem, onDone }: { problem: FadingProblem; onDone?: () => void }) {
+  return <WorkedExample example={problem} revealSteps={problem.revealSteps} onFullyRevealed={onDone} />;
 }
 
 function IndependentPracticeBlock({
@@ -58,16 +58,31 @@ function IndependentPracticeBlock({
 }) {
   const [selected, setSelected] = useState<number | null>(null);
   const [attempts, setAttempts] = useState(0);
+  const [scratchpadOpen, setScratchpadOpen] = useState(false);
 
   const isCorrect = selected === item.correctIndex;
   const activeMisconceptionId = selected !== null && !isCorrect ? item.distractorMisconceptions[selected] : null;
 
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden my-5">
-      <div className="px-5 py-3.5 border-b border-stone-100">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-1.5">Your turn</p>
-        <p className="text-[14px] font-bold text-[#1e293b] leading-snug">{item.question}</p>
+    <div className="paper-card rounded overflow-hidden my-5">
+      <div className="px-4 sm:px-5 py-3.5 border-b border-stone-100 space-y-3">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-1.5">Your turn</p>
+          <p className="text-[14px] font-bold text-[#1e293b] leading-snug">{item.question}</p>
+        </div>
+        <button
+          onClick={() => setScratchpadOpen(true)}
+          className="flex items-center justify-center gap-1.5 w-full sm:w-auto px-3 py-2.5 sm:py-2 rounded-xl border border-stone-200 text-[12.5px] font-bold text-stone-500 hover:border-stone-300 hover:text-stone-700 active:scale-[0.97] transition-all"
+        >
+          <PenLine className="w-3.5 h-3.5" /> Work it out
+        </button>
       </div>
+      <ScratchpadModal
+        storageKey={`ip-${item.id}`}
+        question={item.question}
+        open={scratchpadOpen}
+        onClose={() => setScratchpadOpen(false)}
+      />
       <div className="px-5 py-4 space-y-2">
         {item.options.map((opt, i) => {
           const active = selected === i;
@@ -115,12 +130,35 @@ function MisconceptionMount({ misconceptionId, onRetry }: { misconceptionId: str
   return <MisconceptionFeedback misconception={m} onRetry={onRetry} />;
 }
 
-export function LessonShell({ content }: { content: LessonContent }) {
+export function LessonShell({ content, onExit }: { content: LessonContent; onExit?: () => void }) {
   const session = useStudySession();
   const [phase, setPhase] = useState<Phase>('goal');
   const [quizScorePct, setQuizScorePct] = useState<number | null>(null);
   const [weakObjectives, setWeakObjectives] = useState<string[]>([]);
   const [remediationTarget, setRemediationTarget] = useState<string | null>(null);
+
+  // Tracks which interactive items (by id) have been resolved in the CURRENT
+  // phase, so "Continue" stays disabled until every embedded question/example
+  // in that phase has been answered — no skipping ahead. Cleared on phase change.
+  const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
+  const markAnswered = (id: string) => setAnsweredIds(prev => (prev.has(id) ? prev : new Set(prev).add(id)));
+  useEffect(() => { setAnsweredIds(new Set()); }, [phase]);
+
+  const activateRequired = content.activate.diagnosticQuestions.map((_, i) => `activate-${i}`);
+  const demo1Required = [
+    ...content.demonstrateChunk1.workedExamples.map(ex => `wx-${ex.id}`),
+    ...content.demonstrateChunk1.knowledgeChecks.map((_, i) => `demo1-${i}`),
+  ];
+  const demo2Required = [
+    ...content.demonstrateChunk2.workedExamples.map(ex => `wx-${ex.id}`),
+    ...content.demonstrateChunk2.knowledgeChecks.map((_, i) => `demo2-${i}`),
+  ];
+  const applyRequired = [
+    ...content.apply.fadingProblems.map(p => `wx-${p.id}`),
+    ...content.apply.independentPractice.map(item => `ip-${item.id}`),
+  ];
+
+  const isPhaseComplete = (required: string[]) => required.every(id => answeredIds.has(id));
 
   const storageKey = `${content.meta.subject}-g${content.meta.grade}-t${content.meta.term}-${content.meta.topicId}`;
 
@@ -168,8 +206,26 @@ export function LessonShell({ content }: { content: LessonContent }) {
 
   return (
     <MisconceptionsContext.Provider value={content.misconceptions}>
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <PhaseProgress phase={phase} />
+    <div className="student-home min-h-full pb-16 relative">
+      {/* Sticky, always-visible exit/back affordance — consistent position
+          across every phase, not just the first one, per the mobile-nav
+          requirement that back buttons stay visible and non-intrusive. */}
+      {onExit && (
+        <div className="sticky top-0 z-20 bg-brand-bg/90 backdrop-blur-sm border-b border-brand-border/60">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6">
+            <button
+              onClick={onExit}
+              className="flex items-center gap-1.5 py-3 text-[13px] font-bold text-[rgba(31,36,33,0.55)] hover:text-brand-dark active:scale-[0.97] transition-all"
+            >
+              <X className="w-4 h-4" /> Exit lesson
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-5">
+        <PhaseProgress phase={phase} />
+      </div>
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -178,11 +234,23 @@ export function LessonShell({ content }: { content: LessonContent }) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -16 }}
           transition={{ duration: 0.25, ease: EASE }}
+          className="max-w-2xl mx-auto px-4 sm:px-6"
         >
           {phase === 'goal' && (
             <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-400 mb-2">{content.meta.topicName}</p>
-              <h1 className="text-2xl font-black text-[#1e293b] tracking-tight mb-4">{content.openingHook}</h1>
+              <div className="relative overflow-hidden -mx-4 sm:-mx-6 mb-2">
+                <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
+                <div className="relative px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-8">
+                  <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{content.meta.topicName}</p>
+                  <h1
+                    className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
+                    style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+                  >
+                    {content.openingHook}
+                  </h1>
+                </div>
+              </div>
               <GoalSetting
                 prompt={content.goalSettingPrompt}
                 objectives={content.meta.objectives.map(o => o.text)}
@@ -196,9 +264,13 @@ export function LessonShell({ content }: { content: LessonContent }) {
               <h2 className="text-lg font-black text-[#1e293b]">Before we begin</h2>
               <p className="text-[13.5px] text-stone-600">{content.activate.connectPrompt}</p>
               {content.activate.diagnosticQuestions.map((q, i) => (
-                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} />
+                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} onAnswered={() => markAnswered(`activate-${i}`)} />
               ))}
-              <NavRow onNext={goNext} onBack={goBack} />
+              <NavRow
+                onNext={goNext} onBack={goBack}
+                disabled={!isPhaseComplete(activateRequired)}
+                disabledHint="Answer every question above to continue."
+              />
             </div>
           )}
 
@@ -206,12 +278,18 @@ export function LessonShell({ content }: { content: LessonContent }) {
             <div className="space-y-5">
               <h2 className="text-lg font-black text-[#1e293b]">{content.meta.objectives[0]?.text ?? 'Core idea'}</h2>
               <p className="text-[13.5px] text-stone-600 leading-relaxed">{content.demonstrateChunk1.explanation}</p>
-              {content.demonstrateChunk1.workedExamples.map(ex => <WorkedExample key={ex.id} example={ex} />)}
+              {content.demonstrateChunk1.workedExamples.map(ex => (
+                <WorkedExample key={ex.id} example={ex} onFullyRevealed={() => markAnswered(`wx-${ex.id}`)} />
+              ))}
               {content.demonstrateChunk1.knowledgeChecks.map((q, i) => (
-                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} />
+                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} onAnswered={() => markAnswered(`demo1-${i}`)} />
               ))}
               <ConfidenceCheck prompt={content.demonstrateChunk1.confidenceCheckPrompt} onRate={() => {}} />
-              <NavRow onNext={goNext} onBack={goBack} />
+              <NavRow
+                onNext={goNext} onBack={goBack}
+                disabled={!isPhaseComplete(demo1Required)}
+                disabledHint="Work through every example and question above to continue."
+              />
             </div>
           )}
 
@@ -219,12 +297,18 @@ export function LessonShell({ content }: { content: LessonContent }) {
             <div className="space-y-5">
               <h2 className="text-lg font-black text-[#1e293b]">Going further</h2>
               <p className="text-[13.5px] text-stone-600 leading-relaxed">{content.demonstrateChunk2.explanation}</p>
-              {content.demonstrateChunk2.workedExamples.map(ex => <WorkedExample key={ex.id} example={ex} />)}
+              {content.demonstrateChunk2.workedExamples.map(ex => (
+                <WorkedExample key={ex.id} example={ex} onFullyRevealed={() => markAnswered(`wx-${ex.id}`)} />
+              ))}
               {content.demonstrateChunk2.knowledgeChecks.map((q, i) => (
-                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} />
+                <KnowledgeCheck key={i} question={q.question} options={q.options} correctIndex={q.correctIndex} explanation={q.explanation} onAnswered={() => markAnswered(`demo2-${i}`)} />
               ))}
               <ConfidenceCheck prompt={content.demonstrateChunk2.confidenceCheckPrompt} onRate={() => {}} />
-              <NavRow onNext={goNext} onBack={goBack} />
+              <NavRow
+                onNext={goNext} onBack={goBack}
+                disabled={!isPhaseComplete(demo2Required)}
+                disabledHint="Work through every example and question above to continue."
+              />
             </div>
           )}
 
@@ -232,11 +316,20 @@ export function LessonShell({ content }: { content: LessonContent }) {
             <div className="space-y-5">
               <h2 className="text-lg font-black text-[#1e293b]">Practice</h2>
               <Scratchpad storageKey={`${storageKey}-apply`} />
-              {content.apply.fadingProblems.map(p => <FadingProblemBlock key={p.id} problem={p} />)}
-              {content.apply.independentPractice.map(item => (
-                <IndependentPracticeBlock key={item.id} item={item} content={content} onResolved={() => {}} />
+              {content.apply.fadingProblems.map(p => (
+                <FadingProblemBlock key={p.id} problem={p} onDone={() => markAnswered(`wx-${p.id}`)} />
               ))}
-              <NavRow onNext={goNext} onBack={goBack} nextLabel="I'm ready for the quiz" />
+              {content.apply.independentPractice.map(item => (
+                <IndependentPracticeBlock
+                  key={item.id} item={item} content={content}
+                  onResolved={(correct) => { if (correct) markAnswered(`ip-${item.id}`); }}
+                />
+              ))}
+              <NavRow
+                onNext={goNext} onBack={goBack} nextLabel="I'm ready for the quiz"
+                disabled={!isPhaseComplete(applyRequired)}
+                disabledHint="Get every practice question correct (use the hints if you're stuck) to continue."
+              />
             </div>
           )}
 
@@ -282,15 +375,31 @@ export function LessonShell({ content }: { content: LessonContent }) {
   );
 }
 
-function NavRow({ onNext, onBack, nextLabel = 'Continue' }: { onNext: () => void; onBack: () => void; nextLabel?: string }) {
+function NavRow({
+  onNext, onBack, nextLabel = 'Continue', disabled = false, disabledHint,
+}: {
+  onNext: () => void; onBack: () => void; nextLabel?: string; disabled?: boolean; disabledHint?: string;
+}) {
   return (
-    <div className="flex items-center justify-between pt-2">
-      <button onClick={onBack} className="flex items-center gap-1.5 text-[12.5px] font-bold text-stone-400 hover:text-stone-700 transition-colors">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back
-      </button>
-      <button onClick={onNext} className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-[13px] font-black text-white bg-[#1e293b]">
-        {nextLabel} <ArrowRight className="w-3.5 h-3.5" />
-      </button>
+    <div className="pt-2">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        <button
+          onClick={onBack}
+          className="flex items-center justify-center gap-1.5 py-2.5 sm:py-1.5 text-[13px] font-bold text-stone-400 hover:text-stone-700 active:scale-[0.97] transition-all"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" /> Back
+        </button>
+        <button
+          onClick={onNext}
+          disabled={disabled}
+          className="flex items-center justify-center gap-1.5 px-5 py-3 sm:py-2.5 rounded-xl text-[13px] font-black text-white bg-[#1e293b] disabled:opacity-30 active:scale-[0.97] transition-all"
+        >
+          {nextLabel} <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {disabled && disabledHint && (
+        <p className="text-[11.5px] text-stone-400 text-center sm:text-right mt-2">{disabledHint}</p>
+      )}
     </div>
   );
 }
@@ -320,7 +429,7 @@ function QuizBlockWithCompletion({
     return () => clearInterval(id);
   }, [storageKey, onComplete]);
 
-  return <QuizBlock storageKey={storageKey} questions={questions} shuffle={false} />;
+  return <QuizBlock storageKey={storageKey} questions={questions} shuffle={false} preventSkip />;
 }
 
 function RemediationBlock({

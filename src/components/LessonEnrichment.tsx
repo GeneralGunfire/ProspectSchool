@@ -44,9 +44,10 @@ export interface KnowledgeCheckProps {
   options: string[]
   correctIndex: number
   explanation: string
+  onAnswered?: () => void
 }
 
-export function KnowledgeCheck({ question, options, correctIndex, explanation }: KnowledgeCheckProps) {
+export function KnowledgeCheck({ question, options, correctIndex, explanation, onAnswered }: KnowledgeCheckProps) {
   const [selected, setSelected] = useState<number | null>(null)
   const answered = selected !== null
 
@@ -101,7 +102,7 @@ export function KnowledgeCheck({ question, options, correctIndex, explanation }:
               key={i}
               type="button"
               className={containerCls}
-              onClick={() => !answered && setSelected(i)}
+              onClick={() => { if (!answered) { setSelected(i); onAnswered?.() } }}
               disabled={answered}
             >
               <span className={labelCls}>{

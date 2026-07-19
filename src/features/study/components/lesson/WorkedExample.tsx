@@ -4,7 +4,7 @@
 // a partially-worked "completion" problem; revealSteps === 0 is independent
 // (handled by IndependentPractice, not this component).
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, CheckCircle2 } from 'lucide-react';
 import type { WorkedExampleContent } from '../../data/library/types';
@@ -14,14 +14,23 @@ const EASE = [0.23, 1, 0.32, 1] as const;
 export function WorkedExample({
   example,
   revealSteps,
+  onFullyRevealed,
 }: {
   example: WorkedExampleContent;
   revealSteps?: number; // defaults to fully worked
+  onFullyRevealed?: () => void;
 }) {
   const total = example.steps.length;
   const initialShown = revealSteps ?? total;
   const [shown, setShown] = useState(initialShown);
   const [done, setDone] = useState(shown >= total);
+
+  useEffect(() => {
+    if (done) onFullyRevealed?.();
+    // Only fire when `done` transitions — onFullyRevealed intentionally
+    // excluded from deps so callers can pass an inline arrow safely.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   const advance = () => {
     setShown(s => {
@@ -32,7 +41,7 @@ export function WorkedExample({
   };
 
   return (
-    <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden my-5">
+    <div className="paper-card rounded overflow-hidden my-5">
       <div className="px-5 py-3.5 border-b border-stone-100 bg-stone-50/60">
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-1">Worked Example</p>
         <p className="text-[14px] font-bold text-[#1e293b] leading-snug">{example.prompt}</p>
