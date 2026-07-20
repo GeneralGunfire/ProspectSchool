@@ -962,3 +962,19 @@ html {
 /* Hide scrollbar on the mobile stat carousel without killing scroll */
 .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Wavy monochrome backdrop for the portal entry + all four role login
+   pages — plain CSS background-image so it always paints (no <picture>/
+   z-index stacking to get wrong), with a mobile crop swapped in below
+   768px so the wave band stays in frame on narrow viewports. */
+.auth-bg {
+  background-image: url('/backgrounds/auth-bg-desktop.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+@media (max-width: 767px) {
+  .auth-bg {
+    background-image: url('/backgrounds/auth-bg-mobile.png');
+  }
+}

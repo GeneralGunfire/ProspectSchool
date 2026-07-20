@@ -66,7 +66,9 @@ const RoleButton = ({ role, index, onNavigate }: { role: typeof roles[number]; i
 
 export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-brand-bg">
+    <div className="auth-bg relative min-h-screen flex flex-col overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-brand-bg/40 via-transparent to-brand-bg/60" />
+
       {/* Top nav — same floating glass pill as the landing page navbar, but
           with only the logo and a back button, since Students/Teachers/
           Pricing links and "Portal Login" don't apply on the portal
@@ -92,9 +94,17 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
       <div className="relative z-10 flex-1 flex items-center justify-center px-4 pt-24 sm:pt-28 pb-10 sm:pb-12">
         <div className="w-full max-w-md">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+            className="rounded-3xl px-5 py-8 sm:px-8 sm:py-10"
+            style={{
+              background: 'linear-gradient(180deg, color-mix(in srgb, white 78%, transparent) 0%, color-mix(in srgb, white 68%, transparent) 100%)',
+              backdropFilter: 'blur(20px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+              border: '1px solid color-mix(in srgb, white 60%, var(--color-brand-border))',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.08), 0 10px 24px -6px rgba(15,18,15,0.16), 0 32px 60px -20px rgba(15,18,15,0.24)',
+            }}
           >
             <h1 className="font-black text-brand-dark text-[clamp(1.5rem,6vw,2.25rem)] leading-tight mb-6 sm:mb-9" style={{ letterSpacing: '-0.03em' }}>
               Welcome back.

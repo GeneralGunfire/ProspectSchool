@@ -26,7 +26,8 @@ export const AuthNavbar = ({ onNavigate, backTo = 'portal', backLabel = 'Portal'
 );
 
 export const AuthShell = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative min-h-screen flex flex-col overflow-hidden bg-brand-bg">
+  <div className="auth-bg relative min-h-screen flex flex-col overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-brand-bg/40 via-transparent to-brand-bg/60" />
     {children}
   </div>
 );
@@ -39,11 +40,11 @@ export const AuthCard = ({ children }: { children: React.ReactNode }) => (
       transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
       className="w-full max-w-md rounded-3xl px-5 py-8 sm:px-8 sm:py-16"
       style={{
-        background: 'color-mix(in srgb, white 65%, transparent)',
+        background: 'linear-gradient(180deg, color-mix(in srgb, white 78%, transparent) 0%, color-mix(in srgb, white 68%, transparent) 100%)',
         backdropFilter: 'blur(20px) saturate(160%)',
         WebkitBackdropFilter: 'blur(20px) saturate(160%)',
         border: '1px solid color-mix(in srgb, white 60%, var(--color-brand-border))',
-        boxShadow: '0 20px 60px -20px rgba(11,29,51,0.2)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.08), 0 10px 24px -6px rgba(15,18,15,0.16), 0 32px 60px -20px rgba(15,18,15,0.24)',
       }}
     >
       {children}
