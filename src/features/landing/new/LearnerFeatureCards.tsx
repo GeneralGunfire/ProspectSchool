@@ -9,8 +9,10 @@ import {
 // navItems: Home, Announcements, Behaviour, Timetable, Calendar, My Marks,
 // Resources, Past Papers, Library, Topic Tests, APS & Unis, My Future. Home
 // and Library are covered elsewhere on the page (StudyLibrary section, quiz
-// funnel), so this grid covers the remaining 8 account-specific items with
-// copy that says what the feature actually does, not just its name.
+// funnel), so this grid covers the remaining 9 account-specific items with
+// copy that says what the feature actually does, not just its name. One
+// long light section, directly under the dark Hero, so the two don't sit
+// back-to-back dark.
 interface Feature {
   title: string;
   description: string;
@@ -73,7 +75,7 @@ const FeatureTile = ({ feature }: { feature: Feature }) => {
       ref={ref}
       onMouseEnter={onMouseEnter}
       onMouseMove={onMouseMove}
-      className="group group/spot paper-card-dark relative overflow-hidden rounded-2xl p-6"
+      className="group group/spot card-premium-dark paper-card-dark relative overflow-hidden rounded-2xl p-6"
     >
       <SpotlightGlow tone="white" />
       <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
@@ -94,7 +96,7 @@ export const LearnerFeatureCards = ({ onNavigate }: { onNavigate: (p: string) =>
           <h2 className="text-white text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">
             Everything school, in one login.
           </h2>
-          <p className="mt-4 text-white/60 text-[14px] sm:text-[15px] leading-relaxed max-w-[52ch] mx-auto font-medium">
+          <p className="mt-4 text-slate-400 text-[14px] sm:text-[15px] leading-relaxed max-w-[52ch] mx-auto font-medium">
             The same account your teacher and school use — marks, timetable, tests, and every announcement, all in your dashboard.
           </p>
         </FadeIn>

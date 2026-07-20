@@ -1,6 +1,7 @@
 import { useState, useEffect, type ReactNode, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
+import { Spinner } from './shared/components/Spinner';
 
 // ── New landing page (from Stitch/AI Studio export) ──────────────────────────
 const NewLandingPage = lazy(() => import('./features/landing/new/LandingPage'));
@@ -206,7 +207,7 @@ export default function App() {
     <>
       {isAssetsLoaded && (
         <div className="relative min-h-screen bg-white">
-          <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><div className="w-6 h-6 border-2 border-slate-200 border-t-slate-700 rounded-full animate-spin" /></div>}>
+          <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><Spinner /></div>}>
             <AnimatePresence mode="wait">
               {renderPage()}
             </AnimatePresence>

@@ -20,10 +20,14 @@ interface LandingPageProps {
  * Wraps all sections and threads onNavigate through for portal/quiz CTAs.
  *
  * Background strategy: sections alternate light/dark down the page (light
- * cream cards vs. the near-black gradient used in the Hero video, defined
- * as .section-dark-blue in index.css and inlined on QuoteSection/FinalCTA).
- * No two dark sections sit back-to-back — each is separated by at least
- * one light section so the alternation stays legible while scrolling.
+ * cream cards vs. the near-black .section-dark-blue gradient). Order:
+ * Hero(light, desktop) → LearnerFeatureCards(dark) → CareerPaths(light) →
+ * QuoteSection(dark) → StudyLibrary(light) → RoleDestinations(dark) →
+ * Pricing(light — dark inverted card as the focal element) →
+ * FinalCTA(dark, intentional back-to-back so the closing CTA stays punchy)
+ * → Footer(light). Navbar and Hero's mobile video variant are unaffected —
+ * mobile hero stays dark, so Navbar keeps a dark-glass style below `md:`
+ * and switches to light-glass at `md:` to match the desktop hero.
  */
 export default function LandingPage({ onNavigate }: LandingPageProps) {
   return (
@@ -31,10 +35,13 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       <Navbar onNavigate={onNavigate} />
       <Hero onNavigate={onNavigate} />
 
+      {/* Light section — sits directly under the dark Hero, carrying all
+          nine student-account features on the light surface so the two
+          don't sit back-to-back dark. */}
       <LearnerFeatureCards onNavigate={onNavigate} />
-      <CareerPaths onNavigate={onNavigate} />
+      <div className="cv-auto"><CareerPaths onNavigate={onNavigate} /></div>
 
-      <QuoteSection />
+      <div className="cv-auto"><QuoteSection /></div>
 
       <div className="cv-auto"><StudyLibrary onNavigate={onNavigate} /></div>
       <div className="cv-auto"><RoleDestinations onNavigate={onNavigate} /></div>

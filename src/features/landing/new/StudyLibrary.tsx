@@ -37,7 +37,7 @@ const SubjectCard = ({ subject, onNavigate }: { subject: typeof subjects[number]
 export const StudyLibrary = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
     <section className="py-14 lg:py-20 px-5">
-      <div className="max-w-6xl mx-auto">
+      <div className="relative max-w-6xl mx-auto">
 
         <FadeIn className="text-center mb-12">
           <span className="eyebrow">SCHOOL ASSIST</span>

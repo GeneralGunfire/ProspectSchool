@@ -52,8 +52,8 @@ const PathCard = ({ path, onNavigate }: { path: typeof paths[number]; onNavigate
 
 export const CareerPaths = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
-    <section className="py-16 lg:py-24 px-5">
-      <div className="max-w-6xl mx-auto">
+    <section className="bg-brand-bg py-16 lg:py-24 px-5">
+      <div className="relative max-w-6xl mx-auto">
         <FadeIn className="text-center mb-10 lg:mb-12">
           <span className="eyebrow">REAL CAREERS, REAL PEOPLE</span>
           <h2 className="text-brand-dark text-[clamp(1.75rem,5.5vw,2.75rem)] tracking-tight mt-3 leading-[1.2] font-black">

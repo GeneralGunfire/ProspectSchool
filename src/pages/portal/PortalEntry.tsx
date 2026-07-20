@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Shield, GraduationCap, BookOpen, Users, ChevronRight, ArrowLeft, LucideIcon } from 'lucide-react';
+import { Shield, GraduationCap, BookOpen, Users, ChevronRight, ArrowLeft, ShieldCheck, Sparkles, Users2, LucideIcon } from 'lucide-react';
 
 type Page = string;
 
@@ -58,11 +58,55 @@ const RoleButton = ({ role, index, onNavigate }: { role: typeof roles[number]; i
       </div>
       <div className="flex-1 min-w-0">
         <p className="font-black text-brand-dark text-[15px] sm:text-[16px] leading-tight">{role.label}</p>
+        <p className="hidden sm:block text-[12px] text-brand-eyebrow/70 font-medium leading-snug mt-0.5 truncate">{role.desc}</p>
       </div>
       <ChevronRight className="w-4 h-4 text-brand-eyebrow/50 group-hover:text-brand-dark shrink-0 transition-colors" />
     </motion.button>
   );
 };
+
+const trustPoints = [
+  { icon: ShieldCheck, text: 'Secure, code-based sign-in — no email required' },
+  { icon: Users2,      text: 'Built for every role in the school, one login flow' },
+  { icon: Sparkles,    text: 'Free for every South African school' },
+];
+
+// Desktop-only left panel, mirrors the intro panel used on the four role
+// login pages (src/pages/auth/shared/AuthShell.tsx) so the portal entry
+// screen reads as one continuous flow rather than switching layouts.
+const PortalIntroPanel = () => (
+  <div className="hidden lg:flex flex-col justify-center max-w-sm shrink-0">
+    <motion.div
+      initial={{ opacity: 0, x: -16 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+    >
+      <span className="eyebrow">Prospect Portal</span>
+      <h2 className="font-black text-brand-dark text-[2.5rem] leading-[1.1] mt-4" style={{ letterSpacing: '-0.03em' }}>
+        One platform, every part of the school.
+      </h2>
+      <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[36ch]">
+        Pick your role on the right — students, parents, teachers, and admins each get a dashboard built for them.
+      </p>
+      <div className="mt-9 space-y-4">
+        {trustPoints.map(({ icon: Icon, text }, i) => (
+          <motion.div
+            key={text}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 + i * 0.08, duration: 0.4 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-9 h-9 rounded-xl bg-white/50 border border-white/60 flex items-center justify-center shrink-0">
+              <Icon className="w-4 h-4 text-brand-dark/70" />
+            </div>
+            <p className="text-[13.5px] font-medium text-brand-eyebrow">{text}</p>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  </div>
+);
 
 export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
@@ -90,14 +134,15 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
         </nav>
       </div>
 
-      {/* Centered content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 pt-24 sm:pt-28 pb-10 sm:pb-12">
-        <div className="w-full max-w-md">
+      {/* Content */}
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 lg:px-10 pt-24 sm:pt-28 pb-10 sm:pb-12">
+        <div className="w-full max-w-md lg:max-w-5xl flex items-center justify-center lg:justify-between gap-16 xl:gap-24">
+          <PortalIntroPanel />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
-            className="rounded-3xl px-5 py-8 sm:px-8 sm:py-10"
+            className="w-full max-w-md rounded-3xl px-5 py-8 sm:px-8 sm:py-10 shrink-0"
             style={{
               background: 'linear-gradient(180deg, color-mix(in srgb, white 78%, transparent) 0%, color-mix(in srgb, white 68%, transparent) 100%)',
               backdropFilter: 'blur(20px) saturate(160%)',
