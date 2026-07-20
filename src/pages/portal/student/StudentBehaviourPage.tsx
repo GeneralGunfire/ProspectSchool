@@ -35,8 +35,6 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="flex items-center gap-2 min-w-0">
@@ -131,21 +129,17 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.45, ease, delay: 0.14 }}
-                className="rounded p-4 sm:p-5 relative overflow-hidden"
-                style={{
-                  background: 'linear-gradient(155deg, #4b5568 0%, #3c4657 100%)',
-                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.12), 0 6px 14px -6px rgba(0,0,0,0.18)',
-                }}
+                className="paper-card rounded p-4 sm:p-5 relative overflow-hidden"
               >
                 <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-20 pointer-events-none"
                   style={{ background: netPoints >= 0 ? '#34d399' : '#f87171' }} />
-                <div className={`relative w-8 h-8 rounded flex items-center justify-center mb-3 ${netPoints >= 0 ? 'bg-emerald-400/15 text-emerald-400' : 'bg-red-400/15 text-red-400'}`}>
+                <div className={`relative w-8 h-8 rounded flex items-center justify-center mb-3 ${netPoints >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
                   <Award className="w-4 h-4" />
                 </div>
-                <p className={`relative text-[26px] sm:text-[28px] font-black leading-none ${netPoints >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <p className={`relative text-[26px] sm:text-[28px] font-black leading-none ${netPoints >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                   {netPoints > 0 ? '+' : ''}{netPoints}
                 </p>
-                <p className="relative text-[11px] font-bold uppercase tracking-[0.08em] text-white/40 mt-2">Net Score</p>
+                <p className="relative text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Net Score</p>
               </motion.div>
             </div>
 

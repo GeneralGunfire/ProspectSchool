@@ -2,20 +2,50 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   HeartHandshake, AlertOctagon, TrendingDown, Clock, ChevronDown, Phone,
-  CheckCircle2, Moon, Info, ShieldCheck,
+  CheckCircle2, Moon, Info, ShieldCheck, ArrowRight,
 } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherHomerooms } from '../../../lib/homeroom';
 import {
   fetchHomeroomWellbeingRoster, acknowledgeSafetyFlag, logSafetyFlagFirstContact,
-  snoozeRoutineAlert, markRoutineAlertAddressed,
-  type WellbeingRosterEntry, type AlertType,
+  snoozeRoutineAlert, markRoutineAlertAddressed, deriveConcernSummary,
+  type WellbeingRosterEntry, type AlertType, type ConcernLevel,
 } from '../../../lib/wellbeing';
 import { CRISIS_RESOURCES } from '../../../lib/wellbeingCrisisResources';
+import type { TeacherGuidanceTopicId } from '../../../lib/wellbeingTeacherGuidance';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-interface WellbeingHomeroomPageProps { session: TeacherSession; }
+interface WellbeingHomeroomPageProps {
+  session: TeacherSession;
+  onOpenGuidance: (topicId: TeacherGuidanceTopicId) => void;
+}
+
+const CONCERN_LABEL: Record<ConcernLevel, string> = {
+  low: 'Low concern',
+  some: 'Some concern',
+  high: 'High concern',
+};
+const CONCERN_TEXT: Record<ConcernLevel, string> = {
+  low: 'Recent check-ins suggest things are generally okay.',
+  some: 'Recent check-ins suggest things have been a bit tough.',
+  high: 'Recent check-ins suggest things are quite difficult right now. This student may need extra support.',
+};
+const CONCERN_STYLE: Record<ConcernLevel, string> = {
+  low: 'bg-emerald-100 text-emerald-700',
+  some: 'bg-amber-100 text-amber-700',
+  high: 'bg-red-100 text-red-700',
+};
+const CONCERN_AREA_LABEL: Record<string, string> = {
+  mood: 'Main pattern: low mood/low energy',
+  anxiety: 'Main pattern: high worry/stress',
+  sudden_change: 'Main pattern: sudden change from usual level',
+};
+const NEXT_ACTION: Record<ConcernLevel, string> = {
+  low: 'No specific action needed now. Continue to notice any changes.',
+  some: 'Consider a brief, low-key check-in using the suggested script. If patterns continue, consider looping in the SBST/LSA and/or contacting parents.',
+  high: 'Prioritise a private conversation this week using the suggested script. Involve SBST/LSA and contact parents/guardians; consider external support if needed.',
+};
 
 const ALERT_LABEL: Record<AlertType, string> = {
   sustained_elevation: 'Sustained elevation',
@@ -37,7 +67,7 @@ const VALIDATE_SCRIPT = `"It makes sense you'd feel this way given what you're g
 const LIMITS_SCRIPT = `"Because I'm worried about your safety, I can't keep this just between us. I need to involve [parent/guardian/another adult] so you can get proper support."`;
 const NEXT_STEP_SCRIPT = `"Let's together decide who else should know and what help might make sense. There are also people outside school we can contact who specialise in this."`;
 
-export default function WellbeingHomeroomPage({ session }: WellbeingHomeroomPageProps) {
+export default function WellbeingHomeroomPage({ session, onOpenGuidance }: WellbeingHomeroomPageProps) {
   const [cohortId, setCohortId] = useState<number | null>(null);
   const [roster, setRoster] = useState<WellbeingRosterEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,6 +132,7 @@ export default function WellbeingHomeroomPage({ session }: WellbeingHomeroomPage
                     onChanged={load}
                     expanded={expandedStudent === entry.studentId}
                     onToggle={() => setExpandedStudent(expandedStudent === entry.studentId ? null : entry.studentId)}
+                    onOpenGuidance={onOpenGuidance}
                   />
                 ))}
               </Section>
@@ -117,6 +148,7 @@ export default function WellbeingHomeroomPage({ session }: WellbeingHomeroomPage
                     onChanged={load}
                     expanded={expandedStudent === entry.studentId}
                     onToggle={() => setExpandedStudent(expandedStudent === entry.studentId ? null : entry.studentId)}
+                    onOpenGuidance={onOpenGuidance}
                   />
                 ))}
               </Section>
@@ -180,9 +212,13 @@ function Section({ title, tone, count, children }: { title: string; tone: 'dange
 }
 
 function SafetyFlagCard({
-  entry, teacherId, onChanged, expanded, onToggle,
-}: { entry: WellbeingRosterEntry; teacherId: number; onChanged: () => void; expanded: boolean; onToggle: () => void }) {
+  entry, teacherId, onChanged, expanded, onToggle, onOpenGuidance,
+}: {
+  entry: WellbeingRosterEntry; teacherId: number; onChanged: () => void; expanded: boolean; onToggle: () => void;
+  onOpenGuidance: (topicId: TeacherGuidanceTopicId) => void;
+}) {
   const flag = entry.openSafetyFlag!;
+  const summary = deriveConcernSummary(entry.recentHistory, entry.openRoutineAlerts.find(a => a.status === 'open') ?? null, true);
   const [ackBusy, setAckBusy] = useState(false);
   const [contactNotes, setContactNotes] = useState('');
   const [contactBusy, setContactBusy] = useState(false);
@@ -219,6 +255,13 @@ function SafetyFlagCard({
         </button>
       </div>
 
+      <div className="px-4 sm:px-5 pb-3 space-y-1">
+        {summary.primaryConcernArea && (
+          <p className="text-[12.5px] text-red-800">{CONCERN_AREA_LABEL[summary.primaryConcernArea]}</p>
+        )}
+        <p className="text-[12.5px] text-red-800">{summary.trendLabel}</p>
+      </div>
+
       {!flag.acknowledgedAt && (
         <div className="px-4 sm:px-5 pb-4">
           <button
@@ -237,6 +280,15 @@ function SafetyFlagCard({
             className="overflow-hidden">
             <div className="px-4 sm:px-5 pb-5 space-y-4 border-t border-red-200 pt-4">
               <ScriptBlock />
+
+              {summary.guidanceTopicId && (
+                <button
+                  onClick={() => onOpenGuidance(summary.guidanceTopicId!)}
+                  className="flex items-center gap-1.5 text-[12.5px] font-bold text-red-700 hover:text-red-900"
+                >
+                  See tips for talking about this <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
 
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-wide text-red-700 mb-2">If risk appears imminent</p>
@@ -304,10 +356,14 @@ function ScriptLine({ label, text }: { label: string; text: string }) {
 }
 
 function RoutineAlertCard({
-  entry, teacherId, onChanged, expanded, onToggle,
-}: { entry: WellbeingRosterEntry; teacherId: number; onChanged: () => void; expanded: boolean; onToggle: () => void }) {
+  entry, teacherId, onChanged, expanded, onToggle, onOpenGuidance,
+}: {
+  entry: WellbeingRosterEntry; teacherId: number; onChanged: () => void; expanded: boolean; onToggle: () => void;
+  onOpenGuidance: (topicId: TeacherGuidanceTopicId) => void;
+}) {
   const alert = entry.openRoutineAlerts.find(a => a.status === 'open')!;
   const Icon = ALERT_ICON[alert.alertType];
+  const summary = deriveConcernSummary(entry.recentHistory, alert, false);
   const [busy, setBusy] = useState(false);
 
   async function handleSnooze(days: number) {
@@ -332,12 +388,16 @@ function RoutineAlertCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[15px] font-bold text-brand-dark">{entry.name} {entry.surname}</p>
-          <p className="text-[12px] font-bold text-amber-700 uppercase tracking-wide mt-0.5">{ALERT_LABEL[alert.alertType]}</p>
-          <ul className="mt-1.5 space-y-0.5">
-            {alert.reasons.map((r, i) => (
-              <li key={i} className="text-[12.5px] text-stone-600">{r}</li>
-            ))}
-          </ul>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`text-[10.5px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full ${CONCERN_STYLE[summary.concernLevel]}`}>
+              {CONCERN_LABEL[summary.concernLevel]}
+            </span>
+          </div>
+          <p className="text-[12.5px] text-stone-600 mt-1.5">{CONCERN_TEXT[summary.concernLevel]}</p>
+          {summary.primaryConcernArea && (
+            <p className="text-[12.5px] text-stone-600 mt-1">{CONCERN_AREA_LABEL[summary.primaryConcernArea]}</p>
+          )}
+          <p className="text-[12px] text-stone-400 mt-1">{summary.trendLabel}</p>
         </div>
         <button onClick={onToggle} className="shrink-0 p-1.5 rounded-lg text-amber-600 hover:bg-amber-100">
           <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`} />
@@ -348,7 +408,29 @@ function RoutineAlertCard({
         {expanded && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
             <div className="px-4 sm:px-5 pb-5 space-y-4 border-t border-amber-200 pt-4">
+              <div>
+                <p className="text-[12px] font-bold uppercase tracking-wide text-amber-700 mb-1">Suggested next action</p>
+                <p className="text-[13px] text-stone-700 leading-relaxed">{NEXT_ACTION[summary.concernLevel]}</p>
+              </div>
+
+              {summary.guidanceTopicId && (
+                <button
+                  onClick={() => onOpenGuidance(summary.guidanceTopicId!)}
+                  className="flex items-center gap-1.5 text-[12.5px] font-bold text-amber-700 hover:text-amber-900"
+                >
+                  See tips for talking about this <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+
               <ScriptBlock />
+
+              <details className="text-[11.5px] text-stone-400">
+                <summary className="cursor-pointer select-none">Detection detail ({ALERT_LABEL[alert.alertType]})</summary>
+                <ul className="mt-1.5 space-y-0.5 pl-3">
+                  {alert.reasons.map((r, i) => <li key={i}>{r}</li>)}
+                </ul>
+              </details>
+
               <div className="flex flex-wrap gap-2">
                 <button onClick={handleAddressed} disabled={busy}
                   className="px-3 py-1.5 rounded-lg bg-brand-dark text-white text-[12.5px] font-bold disabled:opacity-40">

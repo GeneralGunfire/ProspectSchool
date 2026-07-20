@@ -2,8 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ClipboardCheck, Clock, ChevronRight, ArrowLeft, Check,
-  AlertTriangle, CheckCircle2, HourglassIcon, Sparkles,
+  AlertTriangle, CheckCircle2, HourglassIcon, Sparkles, Bot,
 } from 'lucide-react';
+import { AiTutorChat } from '../../../features/aiTutor/AiTutorChat';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import {
@@ -117,8 +118,6 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
     return (
       <div className="student-home min-h-full pb-16 relative">
         <div className="relative overflow-hidden">
-          <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
           <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Topic Tests</p>
             <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
@@ -142,8 +141,6 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
 
         {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
         <div className="relative overflow-hidden">
-          <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
 
           <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
@@ -191,7 +188,10 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
 
         {stage === 'results' && result && full && (
           <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3, ease }}>
-            <ResultsScreen result={result} totalQuestions={full.questions.length} onBack={backToList} />
+            <ResultsScreen
+              result={result} totalQuestions={full.questions.length} onBack={backToList}
+              session={session} topicLabel={selected?.topic.label ?? full.title} topicKey={selected?.topic.topic_key ?? null}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -371,9 +371,15 @@ function TakingScreen({
 
 // ── Results ───────────────────────────────────────────────────
 
-function ResultsScreen({ result, totalQuestions, onBack }: { result: StudentAttempt; totalQuestions: number; onBack: () => void }) {
+function ResultsScreen({
+  result, totalQuestions, onBack, session, topicLabel, topicKey,
+}: {
+  result: StudentAttempt; totalQuestions: number; onBack: () => void;
+  session: StudentSession; topicLabel: string; topicKey: string | null;
+}) {
   const masteryLevel = result.mastery_level ?? 'not_started';
   const isConfirmedRetest = result.next_retest_due_at != null && result.retest_confirmed_at != null;
+  const [askAiOpen, setAskAiOpen] = useState(false);
 
   return (
     <div>
@@ -412,11 +418,26 @@ function ResultsScreen({ result, totalQuestions, onBack }: { result: StudentAtte
       </div>
 
       <button
+        onClick={() => setAskAiOpen(true)}
+        className="mt-4 w-full py-3 rounded-lg font-black text-sm text-white bg-brand-dark flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
+      >
+        <Bot className="w-4 h-4" /> Ask AI to explain this topic
+      </button>
+
+      <button
         onClick={onBack}
-        className="mt-6 w-full py-3 rounded-lg font-black text-sm text-brand-dark border-2 border-brand-border hover:border-stone-300 transition-colors"
+        className="mt-3 w-full py-3 rounded-lg font-black text-sm text-brand-dark border-2 border-brand-border hover:border-stone-300 transition-colors"
       >
         Back to Topic Tests
       </button>
+
+      <AiTutorChat
+        open={askAiOpen} onClose={() => setAskAiOpen(false)}
+        studentId={session.student_id} schoolId={session.school_id} grade={session.grade}
+        subject={null} topicKey={topicKey} topicLabel={topicLabel}
+        entryPoint="topic_test_result"
+        initialDraft={`Can you help me understand ${topicLabel}? I just did a topic test on it.`}
+      />
     </div>
   );
 }

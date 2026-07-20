@@ -85,9 +85,21 @@ export interface TutoringRequest {
   schoolId: number;
   subjectId: number;
   topicId: number;
+  grade: number | null;
   conductAcknowledgedAt: string | null;
   preferKnownStudents: boolean | null;
   status: 'open' | 'matched' | 'cancelled';
+  fulfilledByRelationshipId: number | null;
+  createdAt: string;
+}
+
+function rowToRequest(r: any): TutoringRequest {
+  return {
+    id: r.id, studentId: r.student_id, schoolId: r.school_id, subjectId: r.subject_id, topicId: r.topic_id,
+    grade: r.grade ?? null, conductAcknowledgedAt: r.conduct_acknowledged_at ?? null,
+    preferKnownStudents: r.prefers_known_students ?? null, status: r.status,
+    fulfilledByRelationshipId: r.fulfilled_by_relationship_id ?? null, createdAt: r.created_at,
+  };
 }
 
 export type GapCategory = 'good_gap' | 'small_gap' | 'flagged_large_gap';
@@ -110,6 +122,9 @@ export interface TutoringRelationship {
   subjectTeacherId: number | null;
   preScorePct: number;
   preScoreAttemptId: number | null;
+  // 'pending_approval' remains in the type only to represent legacy rows
+  // created before teacher approval was removed from this feature — new
+  // relationships never use it (see createRelationshipFromMatch below).
   status: 'pending_approval' | 'active' | 'completed' | 'ended_early' | 'declined';
   startedAt: string | null;
   endedAt: string | null;
@@ -305,22 +320,18 @@ export async function fetchTutorTopics(tutorProfileId: number): Promise<TutorTop
 
 export async function createTutoringRequest(
   studentId: number, schoolId: number, subjectId: number, topicId: number,
-  conductAcknowledged: boolean, preferKnownStudents: boolean | null,
+  conductAcknowledged: boolean, preferKnownStudents: boolean | null, grade: number,
 ): Promise<TutoringRequest | null> {
   const { data, error } = await supabaseAdmin
     .from('peer_tutoring_requests')
     .insert({
-      student_id: studentId, school_id: schoolId, subject_id: subjectId, topic_id: topicId,
+      student_id: studentId, school_id: schoolId, subject_id: subjectId, topic_id: topicId, grade,
       conduct_acknowledged_at: conductAcknowledged ? new Date().toISOString() : null,
       prefers_known_students: preferKnownStudents,
     })
     .select('*').single();
   if (error || !data) return null;
-  return {
-    id: data.id, studentId: data.student_id, schoolId: data.school_id, subjectId: data.subject_id,
-    topicId: data.topic_id, conductAcknowledgedAt: data.conduct_acknowledged_at ?? null,
-    preferKnownStudents: data.prefers_known_students ?? null, status: data.status,
-  };
+  return rowToRequest(data);
 }
 
 // ── Supabase-backed: matching ───────────────────────────────────────────────
@@ -443,16 +454,42 @@ async function computeTimetableOverlapMap(
   return map;
 }
 
+/** Bug 1 dedup guard: true if this exact (tutor, tutee, topic) pairing
+ * already has an open relationship (active, or a legacy pending_approval
+ * row). Checked before every insert as defense-in-depth alongside the DB's
+ * partial unique index (uq_peer_tutoring_relationships_open_pairing,
+ * .planning/sql/2026-07-20_peer_tutoring_fixes.sql) — the DB constraint is
+ * the real guarantee (app-code-only checks are exactly how this bug
+ * happened originally), this is just a clean pre-check so callers get a
+ * clear message instead of a raw constraint-violation error. */
+export async function hasOpenRelationship(tutorStudentId: number, tuteeStudentId: number, topicId: number): Promise<boolean> {
+  const { data } = await supabaseAdmin
+    .from('peer_tutoring_relationships')
+    .select('id')
+    .eq('tutor_student_id', tutorStudentId).eq('tutee_student_id', tuteeStudentId).eq('topic_id', topicId)
+    .in('status', ['active', 'pending_approval'])
+    .maybeSingle();
+  return !!data;
+}
+
 /**
- * Creates a relationship from a chosen match. If requiresApproval, status
- * starts as 'pending_approval' and a teacher must approve before sessions can
- * begin; otherwise it starts 'active' immediately. Captures the subject
- * teacher (via teacher_students for the tutee) and the tutee's current
- * topic-test score as the pre_score baseline (research section 6).
+ * Creates a relationship from a chosen match (either a live search match, or
+ * a tutor fulfilling a logged open request — see fulfillRequest below).
+ * Teacher approval was removed from this feature entirely (2026-07-20
+ * redesign) — every relationship reaching this function has already passed
+ * evaluateMatch()'s ability-gap and grade-difference eligibility checks (an
+ * ineligible candidate never becomes a MatchResult with eligible: true), so
+ * every relationship created here starts 'active' immediately. Captures the
+ * subject teacher (via teacher_students for the tutee) and the tutee's
+ * current topic-test score as the pre_score baseline (research section 6).
  */
 export async function createRelationshipFromMatch(
   request: TutoringRequest, match: MatchResult,
-): Promise<TutoringRelationship | null> {
+): Promise<{ success: true; relationship: TutoringRelationship } | { success: false; error: string }> {
+  if (await hasOpenRelationship(match.candidate.tutorStudentId, request.studentId, request.topicId)) {
+    return { success: false, error: 'You already have an active tutoring match for this topic with this tutor.' };
+  }
+
   const { data: teacherLink } = await supabaseAdmin
     .from('teacher_students').select('teacher_id').eq('student_id', request.studentId).eq('subject_id', request.subjectId).limit(1).maybeSingle();
 
@@ -475,51 +512,32 @@ export async function createRelationshipFromMatch(
       ability_gap: match.abilityGap,
       grade_difference: match.gradeDifference,
       gap_category: match.gapCategory,
-      requires_approval: match.requiresApproval,
+      requires_approval: false,
       subject_teacher_id: teacherLink?.teacher_id ?? null,
       pre_score_pct: preScorePct,
       pre_score_attempt_id: preAttempt?.id ?? null,
-      status: match.requiresApproval ? 'pending_approval' : 'active',
-      started_at: match.requiresApproval ? null : new Date().toISOString(),
+      status: 'active',
+      started_at: new Date().toISOString(),
     })
     .select('*').single();
 
-  if (error || !data) { console.error('[peerTutoring] createRelationshipFromMatch error:', error?.message); return null; }
+  if (error) {
+    // 23505 = unique_violation — the DB constraint caught a race the
+    // hasOpenRelationship pre-check missed (two near-simultaneous submits).
+    // Same clear message either way; the guarantee is the constraint, not
+    // which layer happens to report it.
+    if ((error as any).code === '23505') {
+      return { success: false, error: 'You already have an active tutoring match for this topic with this tutor.' };
+    }
+    console.error('[peerTutoring] createRelationshipFromMatch error:', error.message);
+    return { success: false, error: 'Could not create the match. Please try again.' };
+  }
 
-  await supabaseAdmin.from('peer_tutoring_requests').update({ status: 'matched' }).eq('id', request.id);
+  await supabaseAdmin.from('peer_tutoring_requests').update({ status: 'matched', fulfilled_by_relationship_id: data.id }).eq('id', request.id);
 
   const rel = rowToRelationship(data);
-  if (rel.requiresApproval && rel.subjectTeacherId) {
-    createNotification(
-      rel.schoolId, 'teacher', rel.subjectTeacherId,
-      'Peer tutoring match needs approval',
-      `A tutoring match (${rel.gapCategory === 'flagged_large_gap' ? 'large ability gap' : 'cross-grade'}) is waiting for your approval.`,
-    );
-  }
-  return rel;
-}
-
-export async function approveRelationship(relationshipId: number, teacherId: number): Promise<{ success: true } | { success: false; error: string }> {
-  const { data: rel } = await supabaseAdmin.from('peer_tutoring_relationships').select('subject_teacher_id, tutee_student_id, school_id').eq('id', relationshipId).maybeSingle();
-  if (!rel) return { success: false, error: 'Relationship not found.' };
-  if (rel.subject_teacher_id !== teacherId) return { success: false, error: 'Only the subject teacher for this relationship can approve it.' };
-
-  const { error } = await supabaseAdmin
-    .from('peer_tutoring_relationships')
-    .update({ approved_by: teacherId, approved_at: new Date().toISOString(), status: 'active', started_at: new Date().toISOString() })
-    .eq('id', relationshipId);
-  if (error) return { success: false, error: 'Failed to approve.' };
-
-  createNotification(rel.school_id, 'student', rel.tutee_student_id, 'Tutoring match approved', 'Your teacher approved your tutoring match — you can now schedule a session.');
-  return { success: true };
-}
-
-export async function declineRelationship(relationshipId: number, teacherId: number): Promise<{ success: true } | { success: false; error: string }> {
-  const { data: rel } = await supabaseAdmin.from('peer_tutoring_relationships').select('subject_teacher_id').eq('id', relationshipId).maybeSingle();
-  if (!rel) return { success: false, error: 'Relationship not found.' };
-  if (rel.subject_teacher_id !== teacherId) return { success: false, error: 'Only the subject teacher for this relationship can decline it.' };
-  const { error } = await supabaseAdmin.from('peer_tutoring_relationships').update({ status: 'declined' }).eq('id', relationshipId);
-  return error ? { success: false, error: 'Failed to decline.' } : { success: true };
+  createNotification(rel.schoolId, 'student', rel.tutorStudentId, 'New tutoring match', 'You\'ve been matched with a student who needs help — check "My relationships" to get started.');
+  return { success: true, relationship: rel };
 }
 
 export async function fetchRelationshipsForStudent(studentId: number): Promise<TutoringRelationship[]> {
@@ -835,7 +853,85 @@ export async function fetchRelationshipsForSubjectTeacher(teacherId: number): Pr
   return (data ?? []).map(rowToRelationship);
 }
 
-export async function fetchPendingApprovalsForTeacher(teacherId: number): Promise<TutoringRelationship[]> {
-  const { data } = await supabaseAdmin.from('peer_tutoring_relationships').select('*').eq('subject_teacher_id', teacherId).eq('status', 'pending_approval').order('created_at', { ascending: true });
-  return (data ?? []).map(rowToRelationship);
+// ── Unmet requests: log + browse/fulfil ─────────────────────────────────────
+// New feature (2026-07-20): a failed tutor search (findTutorMatches returns
+// no eligible candidates) leaves the request row in 'open' status rather
+// than losing it — it was already inserted by createTutoringRequest before
+// matching runs, so "logging" an unmet request is simply *not* immediately
+// matching it, not a separate insert. A tutor can later browse open requests
+// for subjects/topics they're registered for and fulfil one directly.
+
+/** Open requests for topics a given tutor is registered to tutor — the
+ * browse view's data source. Requires the tutor to have completed
+ * onboarding (orientation + conduct ack), same gate findTutorMatches()
+ * already applies to search-based matching — reused here, not bypassed. */
+export async function fetchOpenRequestsForTutor(tutorStudentId: number): Promise<TutoringRequest[]> {
+  const profile = await fetchTutorProfile(tutorStudentId);
+  if (!profile || !profile.isActive || !profile.orientationCompletedAt || !profile.conductAcknowledgedAt) return [];
+
+  const topics = await fetchTutorTopics(profile.id);
+  if (topics.length === 0) return [];
+
+  const topicIds = topics.map((t) => t.topicId);
+  const { data } = await supabaseAdmin
+    .from('peer_tutoring_requests')
+    .select('*')
+    .in('topic_id', topicIds)
+    .eq('status', 'open')
+    .neq('student_id', tutorStudentId)
+    .order('created_at', { ascending: true });
+  return (data ?? []).map(rowToRequest);
+}
+
+/**
+ * A tutor fulfils an open request directly from the browse view, creating a
+ * relationship the same way a live search match does. Re-validates
+ * eligibility via evaluateMatch (a request being old doesn't exempt it from
+ * the same ability-gap/grade-difference rules a fresh search would apply)
+ * and re-checks the request is still open (another tutor may have just
+ * taken it) before creating the relationship.
+ */
+export async function fulfillRequest(
+  requestId: number, tutorStudentId: number,
+): Promise<{ success: true; relationship: TutoringRelationship } | { success: false; error: string }> {
+  const { data: requestRow } = await supabaseAdmin.from('peer_tutoring_requests').select('*').eq('id', requestId).maybeSingle();
+  if (!requestRow) return { success: false, error: 'Request not found.' };
+  const request = rowToRequest(requestRow);
+  if (request.status !== 'open') return { success: false, error: 'This request has already been taken by another tutor.' };
+
+  const profile = await fetchTutorProfile(tutorStudentId);
+  if (!profile || !profile.isActive || !profile.orientationCompletedAt || !profile.conductAcknowledgedAt) {
+    return { success: false, error: 'Complete tutor orientation and the code of conduct before fulfilling requests.' };
+  }
+
+  const { data: tutorTopicRow } = await supabaseAdmin
+    .from('peer_tutor_topics').select('demonstrated_score_pct')
+    .eq('tutor_profile_id', profile.id).eq('topic_id', request.topicId).maybeSingle();
+  if (!tutorTopicRow) return { success: false, error: 'You are not registered to tutor this topic.' };
+
+  const { data: tuteeStudent } = await supabaseAdmin.from('students').select('id, grade, cohort_id').eq('id', request.studentId).maybeSingle();
+  if (!tuteeStudent) return { success: false, error: 'Student not found.' };
+
+  const { data: tutorStudent } = await supabaseAdmin.from('students').select('id, grade').eq('id', tutorStudentId).maybeSingle();
+  if (!tutorStudent) return { success: false, error: 'Tutor not found.' };
+
+  const { data: tuteeAttempts } = await supabaseAdmin
+    .from('student_attempts').select('score_pct').eq('student_id', request.studentId).eq('topic_id', request.topicId)
+    .not('submitted_at', 'is', null).order('submitted_at', { ascending: false }).limit(1);
+  const tuteeScorePct = tuteeAttempts?.[0]?.score_pct ?? 0;
+
+  const candidate: MatchCandidate = {
+    tutorStudentId,
+    tutorGrade: tutorStudent.grade,
+    tutorScorePct: tutorTopicRow.demonstrated_score_pct,
+    sameClassAsTutee: false,
+    priorPositiveInteraction: false,
+    timetableOverlapScore: 0,
+  };
+  const match = evaluateMatch(tuteeStudent.grade, tuteeScorePct, candidate);
+  if (!match.eligible) {
+    return { success: false, error: match.rejectionReason ?? 'You are not eligible to tutor this student on this topic.' };
+  }
+
+  return createRelationshipFromMatch(request, match);
 }

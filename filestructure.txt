@@ -441,14 +441,20 @@
     |-- research
         |-- AI_TUTOR_FEATURE_RESEARCH.md
         |-- GRADE10_MATHS_CAPS_TOPIC_LIST.md
+        |-- LIBRARY_PARTNER_HANDOFF.md
         |-- LIBRARY_TEACHING_EXECUTION_PLAN.md
         |-- PEER_TUTORING_FEATURE_RESEARCH.md
         |-- TOPIC_TESTS_QUESTION_RESEARCH.md
         |-- WELLBEING_FEATURE_RESEARCH.md
+        |-- WELLBEING_HELP_EXPANSION_RESEARCH.md
     |-- sql
         |-- 2026-07-19_peer_tutoring.sql
         |-- 2026-07-19_risk_scores_table.sql
         |-- 2026-07-19_wellbeing_checkins.sql
+        |-- 2026-07-20_ai_tutor.sql
+        |-- 2026-07-20_peer_tutoring_dedupe_existing.sql
+        |-- 2026-07-20_peer_tutoring_fixes.sql
+        |-- 2026-07-20_wellbeing_parent_access_log.sql
     |-- STUDENT_PORTAL_DESIGN_ROLLOUT.md
     |-- TOPIC_TESTS_PLAN.md
 |-- .vercel
@@ -487,6 +493,8 @@
     |-- Research_Report.md
     |-- Research_Report_Cover.html
 |-- FEATURES.md
+|-- finalsb.png
+|-- finalsbmobile.png
 |-- graphify-out
     |-- .graphify_labels.json
     |-- .graphify_root
@@ -584,6 +592,8 @@
 |-- scripts
     |-- seedTopicTests.ts
     |-- validateCatalog.mjs
+    |-- verify-ai-tutor-schema.mjs
+    |-- verify-ai-tutor-synthetic.mjs
     |-- verify-peer-tutoring-matching.mjs
     |-- verify-peer-tutoring-schema.mjs
     |-- verify-risk-engine-synthetic.mjs
@@ -613,6 +623,8 @@
     |-- data
         |-- apsData.ts
     |-- features
+        |-- aiTutor
+            |-- AiTutorChat.tsx
         |-- careers
             |-- components
                 |-- CareerCard.tsx
@@ -724,6 +736,16 @@
     |-- index.css
     |-- lib
         |-- actionCenter.ts
+        |-- aiTutor
+            |-- aiTutor.ts
+            |-- fallbackTopics.ts
+            |-- groqClient.ts
+            |-- grounding.ts
+            |-- logInteraction.ts
+            |-- moderation.ts
+            |-- practiceGeneration.ts
+            |-- studentProfile.ts
+            |-- systemPrompt.ts
         |-- announcements.ts
         |-- auth.ts
         |-- behaviour.ts
@@ -760,6 +782,8 @@
         |-- utils.ts
         |-- wellbeing.ts
         |-- wellbeingCrisisResources.ts
+        |-- wellbeingHelpContent.ts
+        |-- wellbeingTeacherGuidance.ts
     |-- main.tsx
     |-- pages
         |-- auth
@@ -797,6 +821,7 @@
                 |-- ParentMarksPage.tsx
                 |-- ParentTimetablePage.tsx
                 |-- ParentWellbeingConsentPage.tsx
+                |-- ParentWellbeingSummaryPage.tsx
             |-- ParentDashboard.tsx
             |-- PlatformAdminDashboard.tsx
             |-- PortalEntry.tsx
@@ -818,6 +843,7 @@
                 |-- StudentResourcesPage.tsx
                 |-- StudentTimetablePage.tsx
                 |-- StudentTopicTestsV2Page.tsx
+                |-- StudentWellbeingHelpPage.tsx
                 |-- StudentWellbeingPage.tsx
                 |-- SubjectSelectionPage.tsx
             |-- StudentDashboard.tsx
@@ -836,6 +862,7 @@
                 |-- StudentProgressPage.tsx
                 |-- SubjectApprovalsPage.tsx
                 |-- TeacherHomePage.tsx
+                |-- TeacherWellbeingGuidancePage.tsx
                 |-- TimetablePage.tsx
                 |-- TopicTestsV2Page.tsx
                 |-- WellbeingHomeroomPage.tsx

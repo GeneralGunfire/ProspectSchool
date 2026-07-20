@@ -112,8 +112,6 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
           No buttons in this band (house rule). Resource count is shown as
           a static readout pill, matching the reference page's APS chip. */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
 
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
 

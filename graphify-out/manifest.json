@@ -105,13 +105,13 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\components\\LessonEnrichment.tsx": {
-    "mtime": 1783372253.601923,
-    "ast_hash": "93eee7fee23fd451be372083159a632d",
+    "mtime": 1784468211.5280104,
+    "ast_hash": "6facc3664cf4e8b07edc1b0b12084e8d",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\components\\QuizBlock.tsx": {
-    "mtime": 1783372228.4565444,
-    "ast_hash": "492554e8f5e386b6a5947f8720159d5f",
+    "mtime": 1784468331.2190626,
+    "ast_hash": "5c1e2f6074bde765a92d2e907457f0d7",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\components\\blocks\\hero-section-5.demo.tsx": {
@@ -880,8 +880,8 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\pages\\portal\\student\\LibraryPage.tsx": {
-    "mtime": 1784433369.7334163,
-    "ast_hash": "f30814cc7ce5c4991cdcb1a46ec4be8b",
+    "mtime": 1784468962.7975352,
+    "ast_hash": "8e458e5d4605e2cfb3778d6f4f3705ce",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\pages\\portal\\student\\MyFuturePage.tsx": {
@@ -1085,8 +1085,8 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\filestructure.txt": {
-    "mtime": 1784433763.7646735,
-    "ast_hash": "dead8806749d82eee682cc22954158e4",
+    "mtime": 1784471462.0805128,
+    "ast_hash": "62cba421d06311cf2b351d668615f67c",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\index.html": {
@@ -1525,12 +1525,12 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\graphify-out\\converted\\a0af27ef-research-plan-template-20240131 (1)_9b79fe9b.md": {
-    "mtime": 1784433746.1740088,
+    "mtime": 1784471448.7554953,
     "ast_hash": "fdca5a3f7b0738b8dbbe5edbe85f7674",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\graphify-out\\converted\\b8eb3333-abstract20240131_4dd48f6a.md": {
-    "mtime": 1784433746.2269745,
+    "mtime": 1784471448.8539498,
     "ast_hash": "3f16c661d85097611b094529aaaef03e",
     "semantic_hash": ""
   },
@@ -1550,7 +1550,7 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\graphify-out\\converted\\f6af32fa-how-to-write-a-report-eng20240131_e23ec291.md": {
-    "mtime": 1784433746.3783908,
+    "mtime": 1784471449.367449,
     "ast_hash": "64006f961566abca6b0440e9f7cefa3d",
     "semantic_hash": ""
   },
@@ -1675,8 +1675,8 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\components\\lesson\\LessonShell.tsx": {
-    "mtime": 1784433191.9212518,
-    "ast_hash": "0c6e6bb786b16a0b455def1eadcbbcf4",
+    "mtime": 1784470786.3409927,
+    "ast_hash": "816eb110374412a31181fd1a29557ba6",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\components\\lesson\\MisconceptionFeedback.tsx": {
@@ -1685,18 +1685,18 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\components\\lesson\\Scratchpad.tsx": {
-    "mtime": 1784433075.1229076,
-    "ast_hash": "753beb9fe8f216001f2ab5694cafe8eb",
+    "mtime": 1784469826.9597335,
+    "ast_hash": "47b8f5c63ff0928f5189544782aa7af7",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\components\\lesson\\SelfRegulation.tsx": {
-    "mtime": 1784433098.0547645,
-    "ast_hash": "8ec066d8526ef410deead475c56ff920",
+    "mtime": 1784469827.2080834,
+    "ast_hash": "49ee2704b71e7f2fab720dc578734d54",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\components\\lesson\\WorkedExample.tsx": {
-    "mtime": 1784433030.289257,
-    "ast_hash": "2ce1a26aeecd6d9cbff440b8824a9605",
+    "mtime": 1784469827.6679711,
+    "ast_hash": "97c6902c6df5233005f1cff9ffdfd1d8",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\data\\library\\types.ts": {
@@ -1710,13 +1710,13 @@
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\pages\\LibraryHubPage.tsx": {
-    "mtime": 1784433362.779215,
-    "ast_hash": "11844c1ef37912e5444c287798ad9177",
+    "mtime": 1784470973.7675967,
+    "ast_hash": "3a3b880e2ec57acd779b9e9c245aaebd",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\pages\\learning\\algebra\\grade10\\term1\\RealNumberSystem.tsx": {
-    "mtime": 1784433346.8053474,
-    "ast_hash": "bc01c888193be92387f0cccb0f39b8c7",
+    "mtime": 1784468401.2407312,
+    "ast_hash": "ad04c2c2bbb67e8daec33304cc76e80f",
     "semantic_hash": ""
   },
   "C:\\CODING\\InDevelopment\\prospect\\src\\lib\\peerTutoring.ts": {
@@ -1827,6 +1827,16 @@
   "C:\\CODING\\InDevelopment\\prospect\\public\\videos\\hero-bg.mp4": {
     "mtime": 1784395327.5436504,
     "ast_hash": "f880f2bce9d781792540206c37282d5c",
+    "semantic_hash": ""
+  },
+  "C:\\CODING\\InDevelopment\\prospect\\src\\features\\study\\data\\library\\registry.ts": {
+    "mtime": 1784468885.291031,
+    "ast_hash": "12c787434b447f3dcde8fc1912198fda",
+    "semantic_hash": ""
+  },
+  "C:\\CODING\\InDevelopment\\prospect\\.planning\\research\\LIBRARY_PARTNER_HANDOFF.md": {
+    "mtime": 1784471327.4804919,
+    "ast_hash": "a3709ae83705e07e5e857fa236240637",
     "semantic_hash": ""
   }
 }

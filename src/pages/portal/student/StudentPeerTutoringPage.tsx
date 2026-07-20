@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Users, GraduationCap, HandHeart, ListChecks, Award, ShieldAlert, CheckCircle2, Clock, ChevronRight, X } from 'lucide-react';
+import { Users, GraduationCap, HandHeart, ListChecks, Award, ShieldAlert, CheckCircle2, Clock, ChevronRight, X, Search } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import type { StudentSession } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
@@ -9,16 +9,17 @@ import {
   offerTutorTopic, fetchTutorTopics, createTutoringRequest, findTutorMatches, createRelationshipFromMatch,
   fetchRelationshipsForStudent, fetchSessionsForRelationship, scheduleSession, startSession,
   completeSessionStep, endSession, confirmSession, fetchBadgesForStudent, reportConcern,
+  fetchOpenRequestsForTutor, fulfillRequest,
   SESSION_TEMPLATE_STEPS, BADGE_THRESHOLDS, countVerifiedSessionsForTutor,
   type TutorProfile, type TutorTopic, type MatchResult, type TutoringRelationship, type TutoringSession,
-  type TutorBadge, type ConcernCategory,
+  type TutorBadge, type ConcernCategory, type TutoringRequest,
 } from '../../../lib/peerTutoring';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface Props { session: StudentSession }
 
-type Tab = 'overview' | 'find' | 'tutor' | 'mine';
+type Tab = 'overview' | 'find' | 'tutor' | 'mine' | 'requests';
 
 interface SubjectOption { id: number; label: string }
 interface TopicOption { id: number; label: string; subject_id: number; grade: number }
@@ -70,8 +71,6 @@ export default function StudentPeerTutoringPage({ session }: Props) {
   return (
     <div className="student-home min-h-full pb-16 relative">
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
         <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
             className="flex items-center gap-2 min-w-0">
@@ -95,6 +94,8 @@ export default function StudentPeerTutoringPage({ session }: Props) {
             { id: 'overview', label: 'Overview', icon: Users },
             { id: 'find', label: 'Find a tutor', icon: HandHeart },
             { id: 'tutor', label: 'Become a tutor', icon: GraduationCap },
+            ...(tutorProfile?.orientationCompletedAt && tutorProfile?.conductAcknowledgedAt
+              ? [{ id: 'requests' as Tab, label: 'Students who need help', icon: Search }] : []),
             { id: 'mine', label: 'My relationships', icon: ListChecks },
           ] as { id: Tab; label: string; icon: typeof Users }[]).map(({ id, label, icon: Icon }) => (
             <button key={id} onClick={() => setTab(id)}
@@ -118,6 +119,8 @@ export default function StudentPeerTutoringPage({ session }: Props) {
         ) : tab === 'tutor' ? (
           <BecomeTutorTab session={session} tutorProfile={tutorProfile} tutorTopics={tutorTopics}
             subjects={subjects} topics={topics} onChanged={reload} />
+        ) : tab === 'requests' ? (
+          <RequestsToFulfillTab session={session} topics={topics} onFulfilled={reload} />
         ) : (
           <MyRelationshipsTab session={session} relationships={relationships} onStartSession={setActiveSessionId} onChanged={reload} />
         )}
@@ -133,7 +136,6 @@ function OverviewTab({ tutorProfile, badges, relationships, onGoTo }: {
   relationships: TutoringRelationship[]; onGoTo: (t: Tab) => void;
 }) {
   const activeCount = relationships.filter((r) => r.status === 'active').length;
-  const pendingCount = relationships.filter((r) => r.status === 'pending_approval').length;
 
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="space-y-4">
@@ -150,13 +152,10 @@ function OverviewTab({ tutorProfile, badges, relationships, onGoTo }: {
         </button>
       </div>
 
-      {(activeCount > 0 || pendingCount > 0) && (
+      {activeCount > 0 && (
         <div className="paper-card rounded p-5">
           <p className="text-[13px] font-bold text-brand-dark mb-1">Your tutoring relationships</p>
-          <p className="text-[12.5px] text-stone-500">
-            {activeCount > 0 && `${activeCount} active`}{activeCount > 0 && pendingCount > 0 && ' · '}
-            {pendingCount > 0 && `${pendingCount} awaiting teacher approval`}
-          </p>
+          <p className="text-[12.5px] text-stone-500">{activeCount} active</p>
           <button onClick={() => onGoTo('mine')} className="mt-3 text-[12.5px] font-bold text-accent flex items-center gap-1">
             View all <ChevronRight className="w-3.5 h-3.5" />
           </button>
@@ -201,23 +200,31 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
   const [matches, setMatches] = useState<MatchResult[] | null>(null);
   const [searching, setSearching] = useState(false);
   const [matchedMessage, setMatchedMessage] = useState<string | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const filteredTopics = topics.filter((t) => subjectId == null || t.subject_id === subjectId);
 
   async function handleSearch() {
-    if (!subjectId || !topicId || !conductAcked) return;
+    if (!subjectId || !topicId || !conductAcked || searching) return;
     setSearching(true);
-    const request = await createTutoringRequest(session.student_id, session.school_id, subjectId, topicId, conductAcked, preferKnown);
-    if (!request) { setSearching(false); return; }
+    setSearchError(null);
+    const request = await createTutoringRequest(session.student_id, session.school_id, subjectId, topicId, conductAcked, preferKnown, session.grade);
+    if (!request) {
+      setSearching(false);
+      setSearchError('Could not submit your request. Please try again.');
+      return;
+    }
     const results = await findTutorMatches(request);
     setMatches(results);
     if (results.length > 0) {
-      const rel = await createRelationshipFromMatch(request, results[0]);
-      if (rel) {
-        setMatchedMessage(rel.requiresApproval
-          ? 'Match found — this pairing needs your subject teacher\'s approval before you can start (large ability gap or cross-grade match).'
-          : 'Match found! You can schedule your first session from "My relationships."');
+      const outcome = await createRelationshipFromMatch(request, results[0]);
+      if (outcome.success) {
+        setMatchedMessage('Match found! You can schedule your first session from "My relationships."');
         onMatched();
+      } else {
+        // Dedup guard (Bug 1 fix) tripped, or another transient failure —
+        // either way this is real, visible feedback, not a silent no-op.
+        setSearchError(outcome.error);
       }
     }
     setSearching(false);
@@ -238,7 +245,10 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="paper-card rounded p-8 flex flex-col items-center text-center">
         <Clock className="w-9 h-9 text-stone-300 mb-3" />
         <h2 className="text-[17px] font-semibold text-brand-dark mb-1">No tutors available right now</h2>
-        <p className="text-[13.5px] text-stone-500 max-w-sm">No one has offered to tutor this topic yet. Check back later, or ask your teacher to encourage a strong student to sign up.</p>
+        <p className="text-[13.5px] text-stone-500 max-w-sm">
+          No one has offered to tutor this topic yet. We've saved your request — a tutor who signs up for this
+          topic can see it and reach out. You'll be matched automatically if one becomes available.
+        </p>
       </motion.div>
     );
   }
@@ -282,10 +292,97 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
         <span className="text-[12.5px] text-stone-600">I agree to be respectful, stay on topic, and never share personal contact details with my tutor.</span>
       </label>
 
+      {searchError && <p className="text-[13px] text-red-600 font-medium">{searchError}</p>}
+
       <button onClick={handleSearch} disabled={!subjectId || !topicId || !conductAcked || searching}
         className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
         {searching ? 'Searching…' : 'Find a tutor'}
       </button>
+    </motion.div>
+  );
+}
+
+// ── Students who need help (browse + fulfil open requests) ────────────────
+// A tutor who has completed onboarding can browse open requests for topics
+// they're registered to tutor and pick one up directly — this is the
+// "log unmet requests, let tutors browse them" feature. Reuses the same
+// createRelationshipFromMatch path (via fulfillRequest) as a live search
+// match, so it gets the same dedup guard and eligibility re-check.
+
+function RequestsToFulfillTab({ session, topics, onFulfilled }: {
+  session: StudentSession; topics: TopicOption[]; onFulfilled: () => void;
+}) {
+  const [requests, setRequests] = useState<TutoringRequest[] | null>(null);
+  const [fulfillingId, setFulfillingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [fulfilledMessage, setFulfilledMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchOpenRequestsForTutor(session.student_id).then(setRequests);
+  }, [session.student_id]);
+
+  async function handleFulfill(requestId: number) {
+    setFulfillingId(requestId);
+    setError(null);
+    const outcome = await fulfillRequest(requestId, session.student_id);
+    setFulfillingId(null);
+    if (!outcome.success) { setError(outcome.error); return; }
+    setFulfilledMessage('You\'re matched! Find this student under "My relationships" to schedule your first session.');
+    onFulfilled();
+    fetchOpenRequestsForTutor(session.student_id).then(setRequests);
+  }
+
+  if (fulfilledMessage) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="paper-card rounded p-8 flex flex-col items-center text-center">
+        <CheckCircle2 className="w-10 h-10 text-green-600 mb-3" />
+        <h2 className="text-[17px] font-semibold text-brand-dark mb-1">Match created</h2>
+        <p className="text-[13.5px] text-stone-500 max-w-sm">{fulfilledMessage}</p>
+        <button onClick={() => setFulfilledMessage(null)} className="mt-4 text-[12.5px] font-bold text-accent">
+          Back to requests
+        </button>
+      </motion.div>
+    );
+  }
+
+  if (requests === null) {
+    return (
+      <div className="paper-card rounded p-6 space-y-3">
+        <Shimmer className="h-4 w-1/2" /><Shimmer className="h-4 w-2/3" />
+      </div>
+    );
+  }
+
+  if (requests.length === 0) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="paper-card rounded p-8 flex flex-col items-center text-center">
+        <Search className="w-9 h-9 text-stone-300 mb-3" />
+        <h2 className="text-[17px] font-semibold text-brand-dark mb-1">No open requests right now</h2>
+        <p className="text-[13.5px] text-stone-500 max-w-sm">No one currently needs help on the topics you tutor. Check back later.</p>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="space-y-3">
+      {error && <p className="text-[13px] text-red-600 font-medium">{error}</p>}
+      {requests.map((r) => {
+        const topic = topics.find((t) => t.id === r.topicId);
+        return (
+          <div key={r.id} className="paper-card rounded p-5 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[14px] font-bold text-brand-dark">{topic?.label ?? `Topic #${r.topicId}`}</p>
+              <p className="text-[12px] text-stone-500 mt-0.5">
+                {r.grade ? `Grade ${r.grade} · ` : ''}Requested {new Date(r.createdAt).toLocaleDateString('en-ZA')}
+              </p>
+            </div>
+            <button onClick={() => handleFulfill(r.id)} disabled={fulfillingId === r.id}
+              className="px-4 py-2 rounded-lg bg-brand-dark text-white text-[12.5px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40 shrink-0">
+              {fulfillingId === r.id ? 'Matching…' : 'Help this student'}
+            </button>
+          </div>
+        );
+      })}
     </motion.div>
   );
 }
@@ -490,7 +587,7 @@ function RelationshipCard({ session, rel, onStartSession, onChanged }: {
         <div>
           <p className="text-[12px] text-stone-500">{role}</p>
           <p className="text-[14px] font-bold text-brand-dark mt-0.5">
-            {rel.status === 'pending_approval' && 'Awaiting teacher approval'}
+            {rel.status === 'pending_approval' && 'Awaiting approval (legacy)'}
             {rel.status === 'active' && 'Active tutoring relationship'}
             {rel.status === 'completed' && 'Completed'}
             {(rel.status === 'ended_early' || rel.status === 'declined') && 'Ended'}

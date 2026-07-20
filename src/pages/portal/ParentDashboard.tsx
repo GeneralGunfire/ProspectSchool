@@ -10,7 +10,7 @@ import ParentMarksPage from './parent/ParentMarksPage';
 import ParentHomeworkPage from './parent/ParentHomeworkPage';
 import ParentAnnouncementsPage from './parent/ParentAnnouncementsPage';
 import ParentTimetablePage from './parent/ParentTimetablePage';
-import ParentWellbeingConsentPage from './parent/ParentWellbeingConsentPage';
+import ParentWellbeingSummaryPage from './parent/ParentWellbeingSummaryPage';
 
 type ActivePage = 'home' | 'attendance' | 'behaviour' | 'marks' | 'homework' | 'announcements' | 'timetable' | 'wellbeing';
 
@@ -298,7 +298,7 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
               {activePage === 'home'          && <ParentHomePage session={session} child={activeChild} onNavigate={p => setPage(p as ActivePage)} />}
               {activePage === 'attendance'    && <ParentAttendancePage child={activeChild} />}
               {activePage === 'behaviour'     && <ParentBehaviourPage child={activeChild} />}
-              {activePage === 'wellbeing'     && <ParentWellbeingConsentPage session={session} child={activeChild} />}
+              {activePage === 'wellbeing'     && <ParentWellbeingSummaryPage session={session} child={activeChild} />}
               {activePage === 'marks'         && <ParentMarksPage session={session} child={activeChild} />}
               {activePage === 'homework'      && <ParentHomeworkPage session={session} child={activeChild} />}
               {activePage === 'timetable'     && <ParentTimetablePage session={session} child={activeChild} />}

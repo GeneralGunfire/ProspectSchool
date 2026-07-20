@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { Users, CheckCircle2, XCircle, ShieldAlert, AlertTriangle, Clock } from 'lucide-react';
+import { Users, ShieldAlert, AlertTriangle } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import {
-  fetchPendingApprovalsForTeacher, fetchRelationshipsForSubjectTeacher, approveRelationship, declineRelationship,
+  fetchRelationshipsForSubjectTeacher,
   fetchSessionsForRelationship, detectSuspiciousPatterns, fetchOutcomeForRelationship,
   fetchConcernsForTeacher, acknowledgeConcern, resolveConcern,
   type TutoringRelationship, type TutoringSession, type SuspiciousPatternFlag, type TutoringOutcome, type TutoringConcern,
@@ -18,7 +18,6 @@ interface StudentName { id: number; name: string; surname: string }
 
 export default function PeerTutoringPage({ session }: Props) {
   const [loading, setLoading] = useState(true);
-  const [pending, setPending] = useState<TutoringRelationship[]>([]);
   const [all, setAll] = useState<TutoringRelationship[]>([]);
   const [concerns, setConcerns] = useState<TutoringConcern[]>([]);
   const [names, setNames] = useState<Map<number, StudentName>>(new Map());
@@ -28,12 +27,10 @@ export default function PeerTutoringPage({ session }: Props) {
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const [p, a, c] = await Promise.all([
-      fetchPendingApprovalsForTeacher(session.teacher_id),
+    const [a, c] = await Promise.all([
       fetchRelationshipsForSubjectTeacher(session.teacher_id),
       fetchConcernsForTeacher(session.teacher_id),
     ]);
-    setPending(p);
     setAll(a);
     setConcerns(c);
 
@@ -104,14 +101,6 @@ export default function PeerTutoringPage({ session }: Props) {
             </Section>
           )}
 
-          {pending.length > 0 && (
-            <Section title="Awaiting your approval" icon={Clock} tone="default">
-              {pending.map((rel) => (
-                <ApprovalRow key={rel.id} rel={rel} names={names} teacherId={session.teacher_id} onChanged={reload} />
-              ))}
-            </Section>
-          )}
-
           <Section title="All relationships" icon={Users} tone="default">
             {all.length === 0 ? (
               <p className="text-[13px] text-stone-400 px-1">No tutoring relationships yet.</p>
@@ -140,29 +129,6 @@ function Section({ title, icon: Icon, tone, children }: { title: string; icon: t
       </p>
       <div className="space-y-2">{children}</div>
     </motion.div>
-  );
-}
-
-function ApprovalRow({ rel, names, teacherId, onChanged }: { rel: TutoringRelationship; names: Map<number, StudentName>; teacherId: number; onChanged: () => void }) {
-  return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-lg bg-stone-50 border border-brand-border">
-      <div>
-        <p className="text-[13px] font-bold text-brand-dark">{studentLabel(names, rel.tutorStudentId)} → {studentLabel(names, rel.tuteeStudentId)}</p>
-        <p className="text-[11.5px] text-stone-500 mt-0.5">
-          Ability gap: {rel.abilityGap}pts ({rel.gapCategory.replace(/_/g, ' ')}) · Grade difference: {rel.gradeDifference}
-        </p>
-      </div>
-      <div className="flex gap-2 shrink-0">
-        <button onClick={async () => { await approveRelationship(rel.id, teacherId); onChanged(); }}
-          className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-[12px] font-bold hover:opacity-90 transition-opacity flex items-center gap-1">
-          <CheckCircle2 className="w-3.5 h-3.5" /> Approve
-        </button>
-        <button onClick={async () => { await declineRelationship(rel.id, teacherId); onChanged(); }}
-          className="px-3 py-1.5 rounded-lg bg-white border border-brand-border text-[12px] font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1">
-          <XCircle className="w-3.5 h-3.5" /> Decline
-        </button>
-      </div>
-    </div>
   );
 }
 

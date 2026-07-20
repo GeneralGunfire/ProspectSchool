@@ -1,6 +1,6 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useRef, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag, HeartHandshake, ChevronDown, Bot, Users } from 'lucide-react';
+import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag, HeartHandshake, ChevronDown, Bot, Users, LifeBuoy } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
 import SubjectSelectionPage from './student/SubjectSelectionPage';
@@ -12,6 +12,7 @@ import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
 import StudentPastPapersPage from './student/StudentPastPapersPage';
 import StudentHomeroomPage from './student/StudentHomeroomPage';
 import StudentWellbeingPage from './student/StudentWellbeingPage';
+import StudentWellbeingHelpPage from './student/StudentWellbeingHelpPage';
 import StudentBehaviourPage from './student/StudentBehaviourPage';
 import StudentTimetablePage from './student/StudentTimetablePage';
 import StudentTopicTestsV2Page from './student/StudentTopicTestsV2Page';
@@ -22,7 +23,7 @@ import NotificationBell from '../../shared/components/NotificationBell';
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
-type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-selection' | 'marketplace' | 'wellbeing' | 'ai-tutor' | 'peer-tutoring';
+type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-selection' | 'marketplace' | 'wellbeing' | 'wellbeing-help' | 'ai-tutor' | 'peer-tutoring';
 
 interface StudentDashboardProps {
   onNavigate: (page: string) => void;
@@ -46,6 +47,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   // APS & Unis now lives inside My Future — this tells MyFuturePage which
   // sub-view to open on mount when a link elsewhere in the portal targets 'aps'.
   const [futureSubView, setFutureSubView] = useState<'aps' | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const s = getStudentSession();
@@ -55,6 +57,13 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
       fetchCohortHomeroomTeacher(s.cohort_id).then((t) => setHasHomeroom(!!t));
     }
   }, []);
+
+  // Every page/sub-page switch should start scrolled to the top — without
+  // this, the scroll position carries over from whatever page was open
+  // before, so a new page can open mid-scroll or at the bottom.
+  useEffect(() => {
+    scrollAreaRef.current?.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [activePage, innerPage]);
 
   if (!session) return null;
 
@@ -84,6 +93,10 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
   ];
   const personalItems: NavItem[] = [
     ...(hasHomeroom ? [{ id: 'wellbeing' as ActivePage, label: 'Wellbeing', icon: HeartHandshake }] : []),
+    // Always accessible — not gated behind hasHomeroom, consent, or having
+    // completed a check-in (research: WELLBEING_HELP_EXPANSION_RESEARCH.md
+    // sections 1, 2 — this is a hard requirement, not a preference).
+    { id: 'wellbeing-help', label: 'Wellbeing Tools', icon: LifeBuoy },
     { id: 'future', label: 'My Future', icon: Sparkles },
     ...(session?.grade === 9 ? [{ id: 'subject-selection' as ActivePage, label: 'Subject Selection', icon: ListChecks }] : []),
   ];
@@ -413,11 +426,12 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         </AnimatePresence>
 
         {/* Page content — scrollable */}
-        <div className="flex-1 overflow-y-auto student-dashboard-bg">
+        <div ref={scrollAreaRef} className="flex-1 overflow-y-auto student-dashboard-bg">
           {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
           {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
-          {activePage === 'wellbeing'     && <StudentWellbeingPage session={session} />}
+          {activePage === 'wellbeing'     && <StudentWellbeingPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+          {activePage === 'wellbeing-help' && <StudentWellbeingHelpPage session={session} />}
           {activePage === 'behaviour'     && <StudentBehaviourPage session={session} />}
           {activePage === 'timetable'     && <StudentTimetablePage session={session} />}
           {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}

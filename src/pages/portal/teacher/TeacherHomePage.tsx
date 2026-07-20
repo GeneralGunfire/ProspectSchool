@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import {
-  Users, CalendarDays, ClipboardList, ChevronRight,
+  Users, CalendarDays, ClipboardList, ChevronRight, ArrowUpRight,
   Megaphone, TrendingUp, AlertTriangle, CheckCircle2,
-  Clock, Zap, BookOpen, FileText,
+  Clock, Zap, BookOpen, FileText, UserPlus,
 } from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { fetchSchoolEvents, fetchHomeworkCompletionCount, type SchoolEvent } from '../../../lib/events';
@@ -29,6 +29,50 @@ function formatDate(d: string) {
 }
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
+// Animated count-up — same recipe as the student dashboard's stat rings,
+// so the teacher home page's numbers land with the same premium reveal
+// instead of appearing flat/instant.
+function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let frame: number;
+    const start = performance.now();
+    const duration = 900;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{display}{suffix}</>;
+}
+
+// SVG progress ring — same recipe as the student dashboard's Progress
+// card, ported here so the teacher home page's class-average snapshot
+// shares the same premium visual language instead of a bare percentage.
+function Ring({ pct, size = 64, stroke = 6, trackColor = 'rgba(56,65,79,0.10)', color = 'var(--color-accent)' }:
+  { pct: number; size?: number; stroke?: number; trackColor?: string; color?: string }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c * (1 - clamped / 100) }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+      />
+    </svg>
+  );
+}
 
 const EVENT_TYPE_COLORS: Record<string, { pill: string; dot: string }> = {
   homework:   { pill: 'bg-blue-50 text-blue-700',       dot: 'bg-blue-500' },
@@ -90,7 +134,6 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   // and stays dismissed on the next visit instead of re-triaging every time.
   const [actionIdByKey, setActionIdByKey] = useState<Map<string, number>>(new Map());
   const [dismissed,     setDismissed]     = useState<Set<string>>(new Set());
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   function dismiss(key: string) {
     const id = actionIdByKey.get(key);
@@ -242,38 +285,45 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   }
 
   const nextEvent = upcomingEvents[0] ?? null;
+  const heroDate = today.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' });
+  const greeting = (() => {
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  })();
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-emblem.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Overview</p>
-            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
-              Welcome back, {session.name}.
-            </h1>
-            <p className="text-[13px] text-white/60 mt-2.5 font-medium">{session.school_name}</p>
+      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
+          Same recipe as the student dashboard home page: quiet eyebrow
+          line, large Instrument Sans greeting, no crest image or blur
+          band — the page's own photo background (set on the dashboard's
+          scroll container) shows through instead. */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+            className="flex items-center gap-2 min-w-0"
+          >
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
+              {session.school_name} · {heroDate}
+            </p>
           </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.06 }}
+            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+          >
+            {greeting}, {session.name}.
+          </motion.h1>
         </div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -286,31 +336,30 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         </div>
       ) : (
       <>
-      {/* ── 4 stat cards ─────────────────────────────────────────── */}
+      {/* ── 4 stat cards — animated counters, matching the student
+          dashboard's card recipe (consistent p-5, hover lift via
+          .paper-card) with the same restrained, icon-free label style ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        {/* Next Event — dark card */}
+        {/* Next Event */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.04 }}
-          className="paper-card rounded p-5 flex flex-col justify-between min-h-30 relative overflow-hidden"
-          style={{ background: 'var(--color-brand-dark)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)' }}
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
-          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full pointer-events-none blur-2xl opacity-25"
-            style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Next Event</p>
           {nextEvent ? (
             <>
-              <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-700 text-stone-400'}`}>
+              <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-100 text-stone-500'}`}>
                 {nextEvent.event_type}
               </span>
               <div className="mt-1">
-                <p className="font-black text-white text-sm leading-tight">{nextEvent.title}</p>
-                <p className="text-stone-500 text-[11px] mt-0.5">{formatDate(nextEvent.event_date)}</p>
+                <p className="font-black text-brand-dark text-sm leading-tight">{nextEvent.title}</p>
+                <p className="text-stone-400 text-[11px] mt-0.5">{formatDate(nextEvent.event_date)}</p>
               </div>
             </>
           ) : (
-            <p className="text-stone-600 text-sm font-bold mt-auto">No upcoming events</p>
+            <p className="text-stone-400 text-sm font-bold mt-auto">No upcoming events</p>
           )}
         </motion.div>
 
@@ -318,13 +367,13 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.08 }}
-          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Students</p>
-          <p className="font-black text-4xl text-brand-dark">{studentCount}</p>
+          <p className="font-black text-4xl text-brand-dark"><Counter value={studentCount} /></p>
           <button onClick={() => onNavigate('classes')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
-            View Classes <ChevronRight className="w-3 h-3" />
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            View Classes <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
 
@@ -332,15 +381,15 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.12 }}
-          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Mark Sheets</p>
           <p className="font-black text-4xl text-brand-dark">
-            {recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)}
+            <Counter value={recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)} />
           </p>
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
-            Enter Marks <ChevronRight className="w-3 h-3" />
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            Enter Marks <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
 
@@ -348,16 +397,58 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease, delay: 0.16 }}
-          className="paper-card rounded p-4 flex flex-col justify-between min-h-30"
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
-          <p className="font-black text-4xl text-brand-dark">{upcomingEvents.length}</p>
+          <p className="font-black text-4xl text-brand-dark"><Counter value={upcomingEvents.length} /></p>
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors flex items-center gap-0.5 mt-1">
-            View Calendar <ChevronRight className="w-3 h-3" />
+            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            View Calendar <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
       </div>
+
+      {/* ── Recent Mark Sheets ────────────────────────────────────── */}
+      {recentSheets.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.17 }}
+          className="paper-card rounded p-5"
+        >
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Mark Sheets</p>
+            <span className="flex-1 h-px bg-brand-border" />
+            <button onClick={() => onNavigate('marks')}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+              All marks <ArrowUpRight className="w-3 h-3" />
+            </button>
+          </div>
+          <div className="space-y-1">
+            {recentSheets.map((group, i) => (
+              <motion.div key={group.key}
+                initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease, delay: 0.2 + i * 0.05 }}
+                className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t' : ''}`}
+                style={{ borderColor: 'var(--color-brand-border)' }}
+              >
+                <div className="w-8 h-8 rounded bg-amber-50 flex items-center justify-center shrink-0">
+                  <ClipboardList className="w-4 h-4 text-amber-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-bold text-brand-dark truncate">
+                    {group.subject_label}
+                    <span className="font-semibold text-[rgba(31,36,33,0.5)]"> · Gr {group.grade}</span>
+                  </p>
+                  <p className="text-[11px] text-stone-500">
+                    {group.sheets.length} sheet{group.sheets.length !== 1 ? 's' : ''}
+                    {group.sheets[0]?.title ? ` · ${group.sheets[0].title}` : ''}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* ── Students Requiring Attention (with Assign) ───────────── */}
       {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length > 0 && (
@@ -366,17 +457,15 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.18 }}
           className="paper-card rounded p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-stone-500 shrink-0" />
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
-                <p className="text-[10px] text-stone-500 mt-0.5">Recommended interventions — click Assign to activate</p>
-              </div>
+          <div className="mb-4">
+            <div className="flex items-center gap-2.5">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
+              <span className="flex-1 h-px bg-brand-border" />
+              <span className="text-[11px] font-black text-red-500 shrink-0">
+                {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
+              </span>
             </div>
-            <span className="text-[11px] font-bold text-red-500">
-              {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
-            </span>
+            <p className="text-[10px] text-stone-500 mt-0.5">Recommended interventions — click Assign to activate</p>
           </div>
           <div className="space-y-2">
             {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).slice(0, 6).map((s, i) => {
@@ -387,7 +476,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               const RecIcon = rec ? (TYPE_ICON[rec.type] ?? BookOpen) : Zap;
 
               return (
-                <div key={i} className={`rounded border ${
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease, delay: 0.2 + i * 0.04 }}
+                  className={`rounded border ${
                   s.reason === 'below_pass'    ? 'bg-red-50 border-red-100' :
                   s.reason === 'declining'     ? 'bg-amber-50 border-amber-100' :
                                                  'bg-orange-50 border-orange-100'
@@ -425,7 +517,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                             ? 'bg-stone-100 text-stone-400 cursor-default'
                             : isAssigning
                             ? 'bg-stone-100 text-stone-500 cursor-default'
-                            : 'bg-brand-dark text-white hover:bg-stone-700 active:scale-95'
+                            : 'bg-accent text-white hover:bg-accent-soft active:scale-95'
                         }`}
                       >
                         {isDone ? (
@@ -468,7 +560,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                       </p>
                     </div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
@@ -490,14 +582,15 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.20 }}
           className="paper-card rounded p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Interventions Requiring Follow-Up</p>
-              <p className="text-[10px] text-stone-500 mt-0.5">Stale or completed without an outcome recorded</p>
+          <div className="mb-4">
+            <div className="flex items-center gap-2.5">
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Follow-Up Queue</p>
+              <span className="flex-1 h-px bg-brand-border" />
+              <span className="text-[11px] font-black text-amber-600 shrink-0">
+                {stale.filter(inv => !dismissed.has(inv.interventionId)).length}
+              </span>
             </div>
-            <span className="flex items-center gap-1 text-[11px] font-bold text-amber-500">
-              <Clock className="w-3 h-3" /> {stale.filter(inv => !dismissed.has(inv.interventionId)).length}
-            </span>
+            <p className="text-[10px] text-stone-500 mt-0.5">Stale or completed without an outcome recorded</p>
           </div>
           <div className="space-y-2">
             {stale.filter(inv => !dismissed.has(inv.interventionId)).map((inv, i) => (
@@ -550,12 +643,15 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.22 }}
           className="paper-card rounded p-5"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div>
+          <div className="mb-4">
+            <div className="flex items-center gap-2.5">
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">No Recent Assessments</p>
-              <p className="text-[10px] text-stone-500 mt-0.5">Subjects with no mark sheet in the last 30 days</p>
+              <span className="flex-1 h-px bg-brand-border" />
+              <span className="text-[11px] font-black text-orange-600 shrink-0">
+                {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).length}
+              </span>
             </div>
-            <AlertTriangle className="w-4 h-4 text-orange-400" />
+            <p className="text-[10px] text-stone-500 mt-0.5">Subjects with no mark sheet in the last 30 days</p>
           </div>
           <div className="space-y-2">
             {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).slice(0, 5).map((gap, i) => (
@@ -595,9 +691,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.24 }}
           className="paper-card rounded p-5"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
+          <div className="flex items-center gap-2.5 mb-4">
             <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Impact</p>
+            <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="grid grid-cols-3 gap-3 mb-3">
             <div className="bg-stone-50 rounded p-3 text-center">
@@ -645,7 +741,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.26 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">What Works Best</p>
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">What Works Best</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
           <div className="space-y-2.5">
             {roiRows.map((row, i) => (
               <div key={row.type} className="flex items-center gap-3">
@@ -686,42 +785,81 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.28 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Class Health</p>
-          <div className="space-y-3">
-            {classHealth.slice(0, 6).map((h, i) => {
-              const changeColor = h.recentChange === null ? 'text-stone-400'
-                : h.recentChange >= 2  ? 'text-emerald-500'
-                : h.recentChange <= -2 ? 'text-red-400'
-                : 'text-stone-500';
-              const avgColor = h.classAvg >= 70 ? 'text-emerald-600' : h.classAvg >= 50 ? 'text-amber-600' : 'text-red-500';
+          <div className="flex items-center gap-2.5 mb-6">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Class Health</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
+
+          <div className="grid lg:grid-cols-[auto_1fr] gap-6 lg:gap-10 items-start">
+            {/* Overall ring — average across all subjects, same centerpiece
+                treatment as the student dashboard's Progress card */}
+            {(() => {
+              const overallAvg = Math.round(classHealth.reduce((acc, h) => acc + h.classAvg, 0) / classHealth.length);
+              const totalAtRisk = classHealth.reduce((acc, h) => acc + h.atRiskCount, 0);
+              const ringColor = overallAvg >= 70 ? '#10b981' : overallAvg >= 50 ? '#f59e0b' : '#ef4444';
               return (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-xs font-black text-brand-dark">{h.subject}</p>
-                      <span className="text-[10px] font-bold text-stone-500">Gr {h.grade}</span>
-                      {h.atRiskCount > 0 && (
-                        <span className="text-[10px] font-black text-red-500">{h.atRiskCount} at risk</span>
-                      )}
-                    </div>
-                    <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full transition-all duration-700 ${h.classAvg >= 70 ? 'bg-emerald-500' : h.classAvg >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
-                        style={{ width: `${Math.min(h.classAvg, 100)}%` }}
-                      />
+                <div className="flex flex-row lg:flex-col items-center gap-4 lg:gap-3 shrink-0">
+                  <div className="relative shrink-0">
+                    <Ring pct={overallAvg} size={110} stroke={9} color={ringColor} />
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="font-black text-2xl text-brand-dark leading-none"><Counter value={overallAvg} suffix="%" /></span>
+                      <span className="text-[9px] font-black uppercase tracking-[0.14em] text-stone-400 mt-1">class avg</span>
                     </div>
                   </div>
-                  <div className="shrink-0 text-right">
-                    <p className={`text-sm font-black ${avgColor}`}>{h.classAvg}%</p>
-                    {h.recentChange !== null && (
-                      <p className={`text-[10px] font-bold ${changeColor}`}>
-                        {h.recentChange > 0 ? `+${h.recentChange}%` : `${h.recentChange}%`}
+                  {totalAtRisk > 0 && (
+                    <div className="text-center lg:text-center">
+                      <p className="text-[11px] text-stone-500">
+                        <span className="font-black text-red-500">{totalAtRisk}</span> student{totalAtRisk !== 1 ? 's' : ''} at risk
                       </p>
-                    )}
-                  </div>
+                      <p className="text-[10px] text-stone-400 mt-0.5">across {classHealth.length} subject{classHealth.length !== 1 ? 's' : ''}</p>
+                    </div>
+                  )}
                 </div>
               );
-            })}
+            })()}
+
+            {/* Per-subject bars */}
+            <div className="min-w-0 space-y-3">
+              {classHealth.slice(0, 6).map((h, i) => {
+                const changeColor = h.recentChange === null ? 'text-stone-400'
+                  : h.recentChange >= 2  ? 'text-emerald-500'
+                  : h.recentChange <= -2 ? 'text-red-400'
+                  : 'text-stone-500';
+                const avgColor = h.classAvg >= 70 ? 'text-emerald-600' : h.classAvg >= 50 ? 'text-amber-600' : 'text-red-500';
+                return (
+                  <motion.div key={i}
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease, delay: 0.3 + i * 0.04 }}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-xs font-black text-brand-dark">{h.subject}</p>
+                        <span className="text-[10px] font-bold text-stone-500">Gr {h.grade}</span>
+                        {h.atRiskCount > 0 && (
+                          <span className="text-[10px] font-black text-red-500">{h.atRiskCount} at risk</span>
+                        )}
+                      </div>
+                      <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }} animate={{ width: `${Math.min(h.classAvg, 100)}%` }}
+                          transition={{ duration: 0.8, ease, delay: 0.3 + i * 0.04 }}
+                          className={`h-full rounded-full ${h.classAvg >= 70 ? 'bg-emerald-500' : h.classAvg >= 50 ? 'bg-amber-500' : 'bg-red-400'}`}
+                        />
+                      </div>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className={`text-sm font-black ${avgColor}`}>{h.classAvg}%</p>
+                      {h.recentChange !== null && (
+                        <p className={`text-[10px] font-bold ${changeColor}`}>
+                          {h.recentChange > 0 ? `+${h.recentChange}%` : `${h.recentChange}%`}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </motion.div>
       )}
@@ -733,7 +871,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.30 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Homework Completion</p>
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Homework Completion</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
           <div className="space-y-3">
             {homeworkStats.map(({ event, completionCount, totalStudents }, i) => {
               const pct = totalStudents > 0 ? Math.round((completionCount / totalStudents) * 100) : 0;
@@ -763,22 +904,28 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         transition={{ duration: 0.4, ease, delay: 0.32 }}
         className="paper-card rounded p-5"
       >
-        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Quick Actions</p>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-2.5 mb-4">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Quick Actions</p>
+          <span className="flex-1 h-px bg-brand-border" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {[
-            { label: 'Add Student',       icon: Users,        page: 'classes',       color: 'text-blue-600' },
-            { label: 'Post Announcement', icon: Megaphone,    page: 'announcements', color: 'text-purple-600' },
-            { label: 'Create Event',      icon: CalendarDays, page: 'calendar',      color: 'text-emerald-600' },
-            { label: 'Enter Marks',       icon: ClipboardList,page: 'marks',         color: 'text-amber-600' },
-          ].map(({ label, icon: Icon, page, color }) => (
-            <button
+            { label: 'Add Student',       icon: UserPlus,     page: 'classes' },
+            { label: 'Post Announcement', icon: Megaphone,    page: 'announcements' },
+            { label: 'Create Event',      icon: CalendarDays, page: 'calendar' },
+            { label: 'Enter Marks',       icon: ClipboardList,page: 'marks' },
+            { label: 'Past Papers',       icon: FileText,     page: 'past-papers' },
+            { label: 'Class Library',     icon: BookOpen,     page: 'library' },
+          ].map(({ label, icon: Icon, page }) => (
+            <motion.button
               key={page}
+              whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }}
               onClick={() => onNavigate(page)}
               className="flex items-center gap-2.5 px-3 py-3 rounded bg-stone-50 hover:bg-stone-100 border border-brand-border/60 transition-colors text-left"
             >
-              <Icon className={`w-4 h-4 shrink-0 ${color}`} />
+              <Icon className="w-4 h-4 shrink-0 text-stone-500" />
               <span className="text-[12px] font-black text-stone-700">{label}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </motion.div>
@@ -790,12 +937,23 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.34 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Upcoming Events</p>
-          <div className="space-y-2">
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
+            <span className="flex-1 h-px bg-brand-border" />
+            <button onClick={() => onNavigate('calendar')}
+              className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+              Calendar <ArrowUpRight className="w-3 h-3" />
+            </button>
+          </div>
+          <div className="space-y-1">
             {upcomingEvents.map((ev, i) => {
               const colors = EVENT_TYPE_COLORS[ev.event_type] ?? EVENT_TYPE_COLORS.other;
               return (
-                <div key={i} className="flex items-center gap-3 py-2 border-b border-stone-50 last:border-0">
+                <motion.div key={i}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease, delay: 0.36 + i * 0.04 }}
+                  className="flex items-center gap-3 py-2.5 border-b border-brand-border last:border-0"
+                >
                   <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-black text-brand-dark truncate">{ev.title}</p>
@@ -804,7 +962,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${colors.pill}`}>
                     {ev.event_type}
                   </span>
-                </div>
+                </motion.div>
               );
             })}
           </div>

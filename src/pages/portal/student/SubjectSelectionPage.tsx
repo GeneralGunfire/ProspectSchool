@@ -248,8 +248,6 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
 
         <div className="relative max-w-4xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Grade 10 · {year}</p>

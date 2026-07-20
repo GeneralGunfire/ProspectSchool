@@ -132,8 +132,6 @@ function StudentHomeSkeleton({ session }: { session: StudentSession }) {
   return (
     <div className="student-home min-h-full pb-16 relative">
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: easeOut }}
             className="flex items-center gap-2 min-w-0">
@@ -584,9 +582,6 @@ export default function StudentHomePage({ session, onNavigate }: StudentHomePage
           continuing faintly past the fold so it blends into the first
           card rather than cutting off at a hard edge. */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
-
         <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
 
           {/* Eyebrow row — quiet single line above the greeting */}

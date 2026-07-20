@@ -13,6 +13,7 @@
 // check ownership at all) because this is minors' health-adjacent data.
 
 import { supabaseAdmin } from './supabase';
+import type { TeacherGuidanceTopicId } from './wellbeingTeacherGuidance';
 
 // ── Tunable constants (research section 1 & 3) ────────────────────────────
 
@@ -89,6 +90,21 @@ function median(nums: number[]): number {
 }
 
 /**
+ * Baseline PHQ-4 = median of a student's first N check-ins (excluding the
+ * very latest if there's fewer than N+1 total, so a student's first-ever
+ * check-in never gets compared against itself as its own baseline).
+ * Extracted from detectRoutineAlert so deriveConcernSummary can reuse the
+ * exact same baseline — behavior-preserving extraction, not a logic change.
+ */
+export function computeBaselinePhq4(history: WellbeingCheckin[]): number {
+  if (history.length === 0) return 0;
+  const sorted = [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const latest = sorted[sorted.length - 1];
+  const baselineSource = sorted.slice(0, Math.max(1, sorted.length - 1)).slice(0, BASELINE_CHECKIN_COUNT);
+  return baselineSource.length > 0 ? median(baselineSource.map(c => c.phq4Score)) : latest.phq4Score;
+}
+
+/**
  * Detects routine (non-crisis) alerts per research section 3, given a
  * student's full check-in history (oldest first). Pure function — no I/O.
  * Returns at most one alert per call, prioritised new_high_distress >
@@ -101,11 +117,7 @@ export function detectRoutineAlert(history: WellbeingCheckin[]): RoutineAlertRes
   const sorted = [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const latest = sorted[sorted.length - 1];
 
-  // Baseline = median of the first N check-ins (excluding the very latest if
-  // there's fewer than N+1 total, so a student's first-ever check-in never
-  // gets compared against itself as its own baseline).
-  const baselineSource = sorted.slice(0, Math.max(1, sorted.length - 1)).slice(0, BASELINE_CHECKIN_COUNT);
-  const baselinePhq4 = baselineSource.length > 0 ? median(baselineSource.map(c => c.phq4Score)) : latest.phq4Score;
+  const baselinePhq4 = computeBaselinePhq4(history);
 
   // ── New high distress: first time PHQ-4 >= 9 ──
   const priorHadHighDistress = sorted.slice(0, -1).some(c => c.phq4Score >= NEW_HIGH_DISTRESS_MIN);
@@ -310,6 +322,21 @@ async function logAccess(studentId: number, schoolId: number, teacherId: number,
   }).then(() => {});
 }
 
+/** Same as logAccess but for a parent accessor. accessor_teacher_id
+ * references public.teachers(id) — a parent_id must NOT be written into it
+ * (wrong FK target, and would misattribute the access-log row to whichever
+ * teacher happens to share that numeric id). Uses the separate
+ * accessor_parent_id column added in
+ * .planning/sql/2026-07-20_wellbeing_parent_access_log.sql. */
+async function logParentAccess(studentId: number, schoolId: number, parentId: number, accessType: string): Promise<void> {
+  supabaseAdmin.from('wellbeing_access_log').insert({
+    student_id: studentId,
+    school_id: schoolId,
+    accessor_parent_id: parentId,
+    access_type: accessType,
+  }).then(() => {});
+}
+
 /** Teacher-facing fetch of one student's check-in history — refuses unless
  * `teacherId` is that student's homeroom teacher, and logs the access. */
 export async function fetchStudentCheckinHistoryForTeacher(
@@ -332,6 +359,11 @@ export interface WellbeingRosterEntry {
   latestCheckin: WellbeingCheckin | null;
   openSafetyFlag: SafetyFlag | null;
   openRoutineAlerts: RoutineAlert[];
+  // Last BASELINE_CHECKIN_COUNT + 1 check-ins (oldest first), for
+  // deriveConcernSummary's trend calculation on the teacher roster view.
+  // Populated from the same checkins query fetchHomeroomWellbeingRoster
+  // already runs — no extra fetch.
+  recentHistory: WellbeingCheckin[];
 }
 
 export interface SafetyFlag {
@@ -408,8 +440,14 @@ export async function fetchHomeroomWellbeingRoster(
   ]);
 
   const latestByStudent = new Map<number, WellbeingCheckin>();
+  const recentHistoryByStudent = new Map<number, WellbeingCheckin[]>();
+  // checkins is ordered created_at DESC; take the newest (BASELINE_CHECKIN_COUNT + 1)
+  // per student, then reverse to oldest-first for deriveConcernSummary.
   for (const row of checkins ?? []) {
     if (!latestByStudent.has(row.student_id)) latestByStudent.set(row.student_id, mapCheckinRow(row));
+    const list = recentHistoryByStudent.get(row.student_id) ?? [];
+    if (list.length < BASELINE_CHECKIN_COUNT + 1) list.push(mapCheckinRow(row));
+    recentHistoryByStudent.set(row.student_id, list);
   }
   const safetyByStudent = new Map<number, SafetyFlag>();
   for (const row of safetyFlags ?? []) safetyByStudent.set(row.student_id, mapSafetyFlagRow(row));
@@ -431,6 +469,7 @@ export async function fetchHomeroomWellbeingRoster(
     latestCheckin: latestByStudent.get(s.id) ?? null,
     openSafetyFlag: safetyByStudent.get(s.id) ?? null,
     openRoutineAlerts: alertsByStudent.get(s.id) ?? [],
+    recentHistory: (recentHistoryByStudent.get(s.id) ?? []).slice().reverse(),
   }));
 }
 
@@ -575,4 +614,124 @@ export async function fetchConsentHistory(studentId: number): Promise<ConsentRec
     .eq('student_id', studentId)
     .order('recorded_at', { ascending: false });
   return (data ?? []).map(r => ({ id: r.id, decision: r.decision, recordedAt: r.recorded_at }));
+}
+
+// ── Plain-language concern summary (research: WELLBEING_HELP_EXPANSION_
+// RESEARCH.md sections 3-5) ─────────────────────────────────────────────────
+// Pure derivation over data the existing scoring/alert logic already
+// produces — no new scoring logic, reuses the exported thresholds above.
+// Used by both the teacher 5-section summary card and the parent two-tier
+// summary view, so "never show raw answers" is structurally guaranteed:
+// ConcernSummary never carries a CheckinAnswers field.
+
+export type ConcernLevel = 'low' | 'some' | 'high';
+export type PrimaryConcernArea = 'mood' | 'anxiety' | 'sudden_change' | null;
+
+export interface ConcernSummary {
+  concernLevel: ConcernLevel;
+  primaryConcernArea: PrimaryConcernArea;
+  trendLabel: string;   // "Improving" | "Declining" | "Steady" | "Not enough data yet"
+  guidanceTopicId: TeacherGuidanceTopicId | null;
+}
+
+export function deriveConcernSummary(
+  history: WellbeingCheckin[],           // oldest-first
+  latestOpenAlert: RoutineAlert | null,
+  hasOpenSafetyFlag: boolean,
+): ConcernSummary {
+  if (history.length === 0) {
+    return { concernLevel: 'low', primaryConcernArea: null, trendLabel: 'Not enough data yet', guidanceTopicId: null };
+  }
+
+  const sorted = [...history].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  const latest = sorted[sorted.length - 1];
+
+  // ── Concern level ──
+  let concernLevel: ConcernLevel;
+  if (hasOpenSafetyFlag || latestOpenAlert?.alertType === 'new_high_distress' || latest.phq4Score >= NEW_HIGH_DISTRESS_MIN) {
+    concernLevel = 'high';
+  } else if (latestOpenAlert !== null || latest.phq2Score >= PHQ2_FLAG_MIN || latest.gad2Score >= GAD2_FLAG_MIN) {
+    concernLevel = 'some';
+  } else {
+    concernLevel = 'low';
+  }
+
+  // ── Primary concern area ──
+  let primaryConcernArea: PrimaryConcernArea;
+  if (latestOpenAlert?.alertType === 'marked_decline' || latestOpenAlert?.alertType === 'new_high_distress') {
+    primaryConcernArea = 'sudden_change';
+  } else if (latest.phq2Score > latest.gad2Score) {
+    primaryConcernArea = 'mood';
+  } else if (latest.gad2Score > latest.phq2Score) {
+    primaryConcernArea = 'anxiety';
+  } else {
+    primaryConcernArea = null; // tie, including both 0
+  }
+
+  // ── Trend ──
+  const baseline = computeBaselinePhq4(history);
+  const meaningfulShift = MARKED_DECLINE_POINTS / 2; // half the "marked decline" bar counts as a real trend, not noise
+  let trendLabel: string;
+  if (sorted.length < 2) {
+    trendLabel = 'Not enough data yet';
+  } else if (baseline - latest.phq4Score >= meaningfulShift) {
+    trendLabel = 'Declining over recent check-ins';
+  } else if (latest.phq4Score - baseline >= meaningfulShift) {
+    trendLabel = 'Improving over recent check-ins';
+  } else {
+    trendLabel = 'Steady over recent check-ins';
+  }
+
+  // ── Guidance topic link ──
+  let guidanceTopicId: TeacherGuidanceTopicId | null;
+  if (concernLevel === 'high') {
+    // Safety/new-high-distress flows already carry their own inline script
+    // on the homeroom page — no separate guidance-page link needed.
+    guidanceTopicId = latestOpenAlert?.alertType === 'marked_decline' ? 'mood_dropped_suddenly' : null;
+  } else if (latestOpenAlert?.alertType === 'marked_decline') {
+    guidanceTopicId = 'mood_dropped_suddenly';
+  } else if (latestOpenAlert?.alertType === 'sustained_elevation' && primaryConcernArea === 'anxiety') {
+    guidanceTopicId = 'very_worried_stressed';
+  } else if (latestOpenAlert?.alertType === 'sustained_elevation') {
+    guidanceTopicId = 'low_mood_unmotivated';
+  } else if (concernLevel === 'some') {
+    guidanceTopicId = 'one_tough_week';
+  } else {
+    guidanceTopicId = null;
+  }
+
+  return { concernLevel, primaryConcernArea, trendLabel, guidanceTopicId };
+}
+
+/** Parent-facing fetch of one child's wellbeing summary inputs — refuses
+ * unless parentId is linked to studentId via parent_students (same check as
+ * recordParentConsent), and logs the access the same way teacher roster/
+ * timeline views are logged (POPIA section 7 of the expansion research). */
+export async function fetchChildWellbeingSummaryForParent(
+  studentId: number,
+  schoolId: number,
+  parentId: number,
+): Promise<{ history: WellbeingCheckin[]; openSafetyFlag: SafetyFlag | null; openRoutineAlerts: RoutineAlert[] } | { error: string }> {
+  const { data: link } = await supabaseAdmin
+    .from('parent_students')
+    .select('parent_id')
+    .eq('parent_id', parentId)
+    .eq('student_id', studentId)
+    .maybeSingle();
+
+  if (!link) return { error: 'You are not linked to this learner.' };
+
+  const [{ data: checkins }, { data: safetyFlags }, { data: routineAlerts }] = await Promise.all([
+    supabaseAdmin.from('wellbeing_checkins').select('*').eq('student_id', studentId).order('created_at', { ascending: true }),
+    supabaseAdmin.from('wellbeing_safety_flags').select('*').eq('student_id', studentId).is('acknowledged_at', null).limit(1),
+    supabaseAdmin.from('wellbeing_routine_alerts').select('*').eq('student_id', studentId).in('status', ['open', 'snoozed']),
+  ]);
+
+  await logParentAccess(studentId, schoolId, parentId, 'view_parent_summary');
+
+  return {
+    history: (checkins ?? []).map(mapCheckinRow),
+    openSafetyFlag: safetyFlags && safetyFlags.length > 0 ? mapSafetyFlagRow(safetyFlags[0]) : null,
+    openRoutineAlerts: (routineAlerts ?? []).map(mapRoutineAlertRow),
+  };
 }

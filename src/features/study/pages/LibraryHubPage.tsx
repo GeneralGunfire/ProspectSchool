@@ -126,6 +126,13 @@ export default function LibraryHubPage({
   const grade = session.grade;
   const availableSubjectIds = subjectsForGrade(grade);
 
+  // This drill-down (subjects -> terms -> topics) is local state, not a
+  // StudentDashboard `innerPage` change, so it needs its own scroll-to-top —
+  // otherwise clicking into a subject/term can leave the page mid-scroll.
+  useEffect(() => {
+    document.querySelector('.student-dashboard-bg')?.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [view]);
+
   useEffect(() => {
     if (!studySession || view.level !== 'topics') return;
     const topics = topicsForSubjectGradeTerm(view.subjectId, grade, view.term);

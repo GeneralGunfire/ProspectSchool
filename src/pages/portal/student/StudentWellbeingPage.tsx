@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HeartHandshake, Phone, ShieldCheck, CheckCircle2, Clock, ShieldOff } from 'lucide-react';
+import { HeartHandshake, Phone, ShieldCheck, CheckCircle2, Clock, ShieldOff, ChevronDown, Sparkles, ArrowRight } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import type { StudentSession } from '../../../lib/auth';
 import {
-  submitCheckin, fetchOwnCheckinHistory, hasCompletedAnyCheckin, hasActiveConsent,
+  submitCheckin, fetchOwnCheckinHistory, hasCompletedAnyCheckin, hasActiveConsent, scoreCheckin,
+  PHQ2_FLAG_MIN, GAD2_FLAG_MIN,
   type CheckinAnswers, type WellbeingCheckin,
 } from '../../../lib/wellbeing';
 import { CRISIS_RESOURCES } from '../../../lib/wellbeingCrisisResources';
+import { NORMALISING_MESSAGE, START_HERE_TOOLS, HELP_TOPICS, type HelpTopicId, type MicroTool } from '../../../lib/wellbeingHelpContent';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-interface StudentWellbeingPageProps { session: StudentSession; }
+interface StudentWellbeingPageProps { session: StudentSession; onNavigate: (page: string) => void; }
 
 const SCALE_LABELS = ['Not at all', 'Several days', 'More than half the days', 'Nearly every day'];
 
@@ -47,12 +49,13 @@ function CrisisResourceList() {
   );
 }
 
-export default function StudentWellbeingPage({ session }: StudentWellbeingPageProps) {
+export default function StudentWellbeingPage({ session, onNavigate }: StudentWellbeingPageProps) {
   const [loading, setLoading] = useState(true);
   const [needsInfoScreen, setNeedsInfoScreen] = useState(false);
   const [infoAcked, setInfoAcked] = useState(false);
   const [history, setHistory] = useState<WellbeingCheckin[]>([]);
   const [step, setStep] = useState<'form' | 'safety-response' | 'done'>('form');
+  const [submittedAnswers, setSubmittedAnswers] = useState<CheckinAnswers | null>(null);
   const [answers, setAnswers] = useState<Partial<CheckinAnswers>>({});
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,6 +88,7 @@ export default function StudentWellbeingPage({ session }: StudentWellbeingPagePr
     const result = await submitCheckin(session.student_id, session.school_id, answers as CheckinAnswers);
     setSubmitting(false);
     if (!result.success) { setError(result.error); return; }
+    setSubmittedAnswers(answers as CheckinAnswers);
     if (result.safetyTriggered) {
       setStep('safety-response');
     } else {
@@ -97,8 +101,6 @@ export default function StudentWellbeingPage({ session }: StudentWellbeingPagePr
   return (
     <div className="student-home min-h-full pb-16 relative">
       <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
         <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
             className="flex items-center gap-2 min-w-0">
@@ -128,7 +130,7 @@ export default function StudentWellbeingPage({ session }: StudentWellbeingPagePr
         ) : needsInfoScreen && !infoAcked ? (
           <InfoConsentScreen onContinue={() => setInfoAcked(true)} />
         ) : step === 'done' ? (
-          <DoneCard />
+          <PostCheckinScreen answers={submittedAnswers} onNavigate={onNavigate} />
         ) : step === 'safety-response' ? (
           <SafetyResponseCard />
         ) : alreadyToday ? (
@@ -316,14 +318,108 @@ function SafetyResponseCard() {
   );
 }
 
-function DoneCard() {
+// Post-check-in screen, shown for every non-crisis submission regardless of
+// score (research: WELLBEING_HELP_EXPANSION_RESEARCH.md section 1). Draws
+// from the same content library as StudentWellbeingHelpPage.tsx — same
+// tools, two entry points — plus a gentle, specific nudge toward relevant
+// topics for elevated-but-non-crisis scores. Nothing here is locked; the
+// full library is always one tap away via onNavigate.
+function PostCheckinScreen({ answers, onNavigate }: { answers: CheckinAnswers | null; onNavigate: (page: string) => void }) {
+  const nudgeTopicIds: HelpTopicId[] = [];
+  if (answers) {
+    const { phq2, gad2 } = scoreCheckin(answers);
+    if (phq2 >= PHQ2_FLAG_MIN) nudgeTopicIds.push('low_mood');
+    if (gad2 >= GAD2_FLAG_MIN) nudgeTopicIds.push('worry_anxiety');
+  }
+  const nudgeTopics = HELP_TOPICS.filter(t => nudgeTopicIds.includes(t.id));
+
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
-      className="paper-card rounded p-8 flex flex-col items-center text-center">
-      <CheckCircle2 className="w-10 h-10 text-green-600 mb-3" />
-      <h2 className="text-[17px] font-semibold text-brand-dark mb-1">Check-in complete</h2>
-      <p className="text-[13.5px] text-stone-500">Thanks for sharing how you're doing. See you next time.</p>
+      className="space-y-5">
+      <div className="paper-card rounded p-8 flex flex-col items-center text-center">
+        <CheckCircle2 className="w-10 h-10 text-green-600 mb-3" />
+        <h2 className="text-[17px] font-semibold text-brand-dark mb-1">Check-in complete</h2>
+        <p className="text-[13.5px] text-stone-500 max-w-sm">{NORMALISING_MESSAGE}</p>
+      </div>
+
+      {nudgeTopics.length > 0 && (
+        <div className="rounded-xl bg-accent/5 border border-accent/20 p-5 space-y-2">
+          <p className="text-[13px] font-semibold text-brand-dark">
+            Your answers suggest things have been a bit tough lately, especially around{' '}
+            {nudgeTopics.map(t => t.label.split(' /')[0].toLowerCase()).join(' and ')}. You might find these tools
+            especially helpful.
+          </p>
+          <div className="space-y-2 pt-1">
+            {nudgeTopics.flatMap(t => t.microTools.slice(0, 2)).map(tool => (
+              <MicroToolRow key={tool.id} tool={tool} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div>
+        <p className="text-[13px] font-black uppercase tracking-wide text-stone-500 mb-3">Start here</p>
+        <div className="space-y-2">
+          {START_HERE_TOOLS.slice(0, 3).map(tool => <MicroToolRow key={tool.id} tool={tool} />)}
+        </div>
+      </div>
+
+      <button
+        onClick={() => onNavigate('wellbeing-help')}
+        className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+      >
+        See all wellbeing tools <ArrowRight className="w-4 h-4" />
+      </button>
+
+      <TalkToSomeoneBoxInline />
     </motion.div>
+  );
+}
+
+function MicroToolRow({ tool }: { tool: MicroTool }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="paper-card rounded overflow-hidden">
+      <button onClick={() => setExpanded(e => !e)} className="w-full flex items-center gap-3 p-3.5 text-left">
+        <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+          <Sparkles className="w-3.5 h-3.5 text-accent" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[13px] font-bold text-brand-dark">{tool.title}</p>
+          <p className="text-[11px] text-stone-500">{tool.durationMinutes} min</p>
+        </div>
+        <ChevronDown className={`w-4 h-4 text-stone-400 shrink-0 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden">
+            <ol className="px-3.5 pb-3.5 pl-[3rem] space-y-1 list-decimal">
+              {tool.steps.map((s, i) => <li key={i} className="text-[12.5px] text-stone-600 leading-snug">{s}</li>)}
+            </ol>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function TalkToSomeoneBoxInline() {
+  return (
+    <div className="rounded-xl bg-stone-50 border border-brand-border p-4 space-y-2.5">
+      <p className="text-[13px] font-semibold text-brand-dark">Talk to someone</p>
+      <p className="text-[12.5px] text-stone-600 leading-relaxed">
+        These tools can help, but they're not a replacement for talking to someone if things feel heavy — your
+        homeroom teacher, a parent/guardian, or a trusted adult are all good places to start.
+      </p>
+      <div className="grid sm:grid-cols-2 gap-1.5">
+        {CRISIS_RESOURCES.slice(0, 4).map(r => (
+          <a key={r.name} href={`tel:${r.phone}`} className="flex items-center gap-2 p-2 rounded-lg bg-white border border-brand-border text-[12px] font-semibold text-brand-dark">
+            <Phone className="w-3.5 h-3.5 shrink-0 text-stone-400" /> {r.name} — {r.phoneDisplay}
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
 

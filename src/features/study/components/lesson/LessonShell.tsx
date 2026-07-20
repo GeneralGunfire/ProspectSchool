@@ -6,7 +6,8 @@
 
 import { useState, useEffect, useRef, createContext, useContext } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ArrowLeft, X, PenLine } from 'lucide-react';
+import { ArrowRight, ArrowLeft, X, PenLine, Bot } from 'lucide-react';
+import { AiTutorChat } from '../../../aiTutor/AiTutorChat';
 import { KnowledgeCheck, LearningOutcomes, SummaryCard } from '../../../../components/LessonEnrichment';
 import QuizBlock, { type QuizQuestion } from '../../../../components/QuizBlock';
 import type { LessonContent, PracticeItem, FadingProblem } from '../../data/library/types';
@@ -136,6 +137,7 @@ export function LessonShell({ content, onExit }: { content: LessonContent; onExi
   const [quizScorePct, setQuizScorePct] = useState<number | null>(null);
   const [weakObjectives, setWeakObjectives] = useState<string[]>([]);
   const [remediationTarget, setRemediationTarget] = useState<string | null>(null);
+  const [askAiOpen, setAskAiOpen] = useState(false);
 
   // Tracks which interactive items (by id) have been resolved in the CURRENT
   // phase, so "Continue" stays disabled until every embedded question/example
@@ -143,6 +145,13 @@ export function LessonShell({ content, onExit }: { content: LessonContent; onExi
   const [answeredIds, setAnsweredIds] = useState<Set<string>>(new Set());
   const markAnswered = (id: string) => setAnsweredIds(prev => (prev.has(id) ? prev : new Set(prev).add(id)));
   useEffect(() => { setAnsweredIds(new Set()); }, [phase]);
+
+  // Every phase change should start scrolled to the top of the lesson —
+  // otherwise advancing to a new phase can land mid-scroll or at the bottom
+  // of wherever the previous phase's content happened to end.
+  useEffect(() => {
+    document.querySelector('.student-dashboard-bg')?.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [phase]);
 
   const activateRequired = content.activate.diagnosticQuestions.map((_, i) => `activate-${i}`);
   const demo1Required = [
@@ -226,6 +235,23 @@ export function LessonShell({ content, onExit }: { content: LessonContent; onExi
       <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-5">
         <PhaseProgress phase={phase} />
       </div>
+
+      {session && (
+        <>
+          <button
+            onClick={() => setAskAiOpen(true)}
+            className="fixed bottom-5 right-5 z-30 flex items-center gap-2 px-4 py-3 rounded-full bg-brand-dark text-white text-[13px] font-bold shadow-lg hover:opacity-90 active:scale-[0.97] transition-all"
+          >
+            <Bot className="w-4 h-4" /> Ask AI
+          </button>
+          <AiTutorChat
+            open={askAiOpen} onClose={() => setAskAiOpen(false)}
+            studentId={session.student_id} schoolId={session.school_id} grade={content.meta.grade}
+            subject={content.meta.subject} topicKey={content.meta.topicId} topicLabel={content.meta.topicName}
+            entryPoint="library_lesson"
+          />
+        </>
+      )}
 
       <AnimatePresence mode="wait">
         <motion.div
