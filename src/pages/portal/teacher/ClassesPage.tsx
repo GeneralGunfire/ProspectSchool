@@ -69,8 +69,6 @@ export default function ClassesPage({ session }: ClassesPageProps) {
   const [tiers, setTiers] = useState<StudentTierSummary[]>([]);
   const [tiersLoading, setTiersLoading] = useState(false);
 
-  const [imgLoaded, setImgLoaded] = useState(false);
-
   // Parent contact log
   const [lastContacts, setLastContacts]       = useState<Map<number, string>>(new Map());
   const [contactModal, setContactModal]       = useState<Student | null>(null);
@@ -356,7 +354,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
           </motion.div>
           <div className="flex items-center gap-2">
             <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 bg-white/10 border border-white/20 text-white text-sm font-black px-5 py-2.5 rounded backdrop-blur-sm hover:bg-white/15 transition-colors">
+              className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-5 py-2.5 rounded hover:bg-stone-50 transition-colors">
               <UserPlus className="w-4 h-4" /> Assign Student
             </motion.button>
             <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
@@ -377,7 +375,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
             onClick={() => setFilterCohort('')}
             className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-150 ${
               filterCohort === ''
-                ? 'bg-brand-dark text-white shadow-sm'
+                ? 'bg-accent text-white shadow-sm'
                 : 'bg-white border border-brand-border text-stone-500 hover:border-stone-400'
             }`}
           >
@@ -394,7 +392,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 onClick={() => setFilterCohort(active ? '' : c)}
                 className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-150 ${
                   active
-                    ? 'bg-brand-dark text-white shadow-sm'
+                    ? 'bg-accent text-white shadow-sm'
                     : 'bg-white border border-brand-border text-stone-500 hover:border-stone-400'
                 }`}
               >
@@ -444,7 +442,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
             disabled={tiersLoading}
             className={`flex items-center gap-1.5 px-3 py-2.5 rounded border text-xs font-black transition-all ${
               groupByTier
-                ? 'bg-brand-dark text-white border-brand-dark'
+                ? 'bg-accent text-white border-accent'
                 : 'bg-white text-stone-500 border-brand-border hover:border-stone-400'
             } disabled:opacity-40`}
             title="Group students by performance tier"
@@ -672,7 +670,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                           return (
                             <button key={s.code} type="button" onClick={() => toggleSubject(s.code)}
                               className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
-                                selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
+                                selected ? 'bg-accent text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                               }`}>
                               <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
                                 {selected && <Check className="w-2.5 h-2.5" />}
@@ -692,7 +690,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     Cancel
                   </button>
                   <button type="submit" form="student-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {submitting
                       ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
                       : <>{modalMode === 'add' ? 'Add Student' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
@@ -773,7 +771,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                             return (
                               <button key={s.code} type="button" onClick={() => toggleAssignSubject(s.code)}
                                 className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
-                                  selected ? 'bg-brand-dark text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
+                                  selected ? 'bg-accent text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
                                 }`}>
                                 <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
                                   {selected && <Check className="w-2.5 h-2.5" />}
@@ -795,7 +793,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   </button>
                   {assignStep === 'code' ? (
                     <button type="submit" form="assign-code-form" disabled={assignLookingUp}
-                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                       {assignLookingUp
                         ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Looking up...</>
                         : <>Find Student <ArrowRight className="w-4 h-4" /></>
@@ -803,7 +801,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     </button>
                   ) : (
                     <button type="submit" form="assign-subjects-form" disabled={assignSubmitting}
-                      className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                       {assignSubmitting
                         ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Assigning...</>
                         : <>Assign Student <ArrowRight className="w-4 h-4" /></>
@@ -853,7 +851,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                         onClick={() => setContactMethod(m)}
                         className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all ${
                           contactMethod === m
-                            ? 'bg-brand-dark text-white'
+                            ? 'bg-accent text-white'
                             : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
@@ -874,7 +872,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                   <button
                     onClick={handleLogContact}
                     disabled={contactSaving}
-                    className="w-full py-2 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                    className="w-full py-2 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
                   >
                     {contactSaving ? 'Saving…' : 'Log Contact'}
                   </button>

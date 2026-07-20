@@ -115,7 +115,7 @@ export default function ParentWellbeingConsentPage({ session, child }: ParentWel
                 <button
                   onClick={() => handleDecision('granted')}
                   disabled={busy || status === 'granted'}
-                  className="flex-1 py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-3 rounded-xl bg-accent text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   {status === 'granted' ? 'Consent granted' : 'Grant consent'}

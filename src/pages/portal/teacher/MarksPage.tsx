@@ -48,7 +48,6 @@ type View = 'groups' | 'sheet';
 export default function MarksPage({ session }: MarksPageProps) {
   const [groups, setGroups] = useState<MarkSheetGroup[]>([]);
   const [loading, setLoading] = useState(true);
-  const [imgLoaded, setImgLoaded] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [termStatus, setTermStatus] = useState<TermWeightStatus[]>([]);
@@ -344,7 +343,7 @@ export default function MarksPage({ session }: MarksPageProps) {
             <motion.button
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               onClick={() => { setCreateModal(true); setFormError(''); }}
-              className="shrink-0 flex items-center gap-2 text-white text-sm font-black px-4 py-2.5 rounded border border-white/15 bg-white/[0.05] hover:bg-white/[0.1] transition-colors"
+              className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
             >
               <Plus className="w-4 h-4" /> New Sheet
             </motion.button>
@@ -721,7 +720,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-black transition-all disabled:opacity-40 ${
                               isSaved
                                 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                                : 'bg-brand-dark text-white hover:bg-stone-700'
+                                : 'bg-accent text-white hover:bg-accent-soft'
                             }`}
                           >
                             {isSaved
@@ -803,7 +802,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                         key={g}
                         onClick={() => setForm(f => ({ ...f, grade: String(g) }))}
                         className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.grade === String(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          form.grade === String(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         Grade {g}
@@ -845,7 +844,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                         key={t}
                         onClick={() => setForm(f => ({ ...f, term: String(t) }))}
                         className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.term === String(t) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          form.term === String(t) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         Term {t}
@@ -886,7 +885,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Creating…' : 'Create & Open'}
                 </button>

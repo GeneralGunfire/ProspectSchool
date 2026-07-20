@@ -281,27 +281,29 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                     </button>
                   </div>
 
-                  {/* Nav — same Home-top-level + accordion structure as the desktop sidebar */}
-                  <nav className="flex-1 px-3 py-3 overflow-y-auto space-y-1">
+                  {/* Nav — same Home-top-level + accordion structure as the
+                      desktop sidebar, with slightly denser rows on mobile
+                      so all groups fit without scrolling on most phones. */}
+                  <nav className="flex-1 px-2.5 py-2.5 overflow-y-auto space-y-0.5">
                     <button
                       onClick={() => setPage('home')}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
+                      className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
                         activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                       }`}
                       style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
                     >
-                      <Home className={`w-4.5 h-4.5 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
+                      <Home className={`w-4 h-4 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
                       <span>Home</span>
                     </button>
 
-                    <div className="pt-2 space-y-1">
+                    <div className="pt-1.5 space-y-0.5">
                       {navGroups.map(group => {
                         const isOpen = openGroup === group.key;
                         return (
                           <div key={group.key}>
                             <button
                               onClick={() => toggleGroup(group.key)}
-                              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[10px] text-[11px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
+                              className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-[10px] text-[10px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
                             >
                               {group.label}
                               <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -315,21 +317,21 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                                   transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
                                   className="overflow-hidden"
                                 >
-                                  <div className="space-y-1 pb-1">
+                                  <div className="space-y-0.5 pb-1">
                                     {group.items.map(({ id, label, icon: Icon }) => {
                                       const active = activePage === id;
                                       return (
                                         <button
                                           key={id}
                                           onClick={() => setPage(id)}
-                                          className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
+                                          className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
                                             active
                                               ? 'bg-brand-dark text-white'
                                               : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                                           }`}
                                           style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
                                         >
-                                          <Icon className={`w-4.5 h-4.5 shrink-0 ${active ? 'text-white' : ''}`} />
+                                          <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                                           <span className="flex-1 text-left">{label}</span>
                                         </button>
                                       );
@@ -371,7 +373,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
         </AnimatePresence>
 
         {/* Page content */}
-        <div className={`flex-1 overflow-y-auto ${activePage === 'home' ? 'student-dashboard-bg' : ''}`}>
+        <div className="flex-1 overflow-y-auto student-dashboard-bg">
           {activePage === 'home'          && <TeacherHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           {activePage === 'announcements' && <AnnouncementsPage session={session} />}
           {activePage === 'classes'       && <ClassesPage session={session} />}

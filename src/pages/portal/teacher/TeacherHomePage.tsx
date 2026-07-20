@@ -3,12 +3,16 @@ import { motion } from 'motion/react';
 import {
   Users, CalendarDays, ClipboardList, ChevronRight, ArrowUpRight,
   Megaphone, TrendingUp, AlertTriangle, CheckCircle2,
-  Clock, Zap, BookOpen, FileText, UserPlus,
+  Clock, Zap, BookOpen, FileText, UserPlus, School,
 } from 'lucide-react';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { fetchSchoolEvents, fetchHomeworkCompletionCount, type SchoolEvent } from '../../../lib/events';
 import { fetchTeacherStudents } from '../../../lib/students';
 import { fetchTeacherMarkSheets, type MarkSheetGroup } from '../../../lib/marks';
+import {
+  fetchTeacherHomerooms, fetchCohortRoster, fetchAttendanceForDate,
+  type AttendanceRecord,
+} from '../../../lib/homeroom';
 import {
   fetchTeacherImpactSummary, fetchTeacherClassHealth,
   fetchTeacherInterventionROI,
@@ -26,6 +30,14 @@ function formatDate(d: string) {
   return new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', {
     weekday: 'short', day: 'numeric', month: 'short',
   });
+}
+
+function daysUntil(dateStr: string, todayStr: string): string {
+  const diff = new Date(dateStr + 'T00:00:00').getTime() - new Date(todayStr + 'T00:00:00').getTime();
+  const d = Math.round(diff / 86400000);
+  if (d === 0) return 'Today';
+  if (d === 1) return 'Tomorrow';
+  return `${d} days`;
 }
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
@@ -101,6 +113,20 @@ interface HomeworkStat {
   totalStudents: number;
 }
 
+interface ClassGroup {
+  cohortName: string;
+  grade: number | null;
+  studentCount: number;
+}
+
+interface AttendanceSnapshot {
+  present: number;
+  late: number;
+  absent: number;
+  excused: number;
+  total: number;
+}
+
 // Per at-risk student: recommended type + rationale loaded lazily
 interface AtRiskRec {
   type: string;
@@ -127,6 +153,8 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   const [stale,          setStale]          = useState<StaleIntervention[]>([]);
   const [gaps,           setGaps]           = useState<AssessmentGap[]>([]);
   const [loading,        setLoading]        = useState(true);
+  const [classGroups,    setClassGroups]    = useState<ClassGroup[]>([]);
+  const [attendance,     setAttendance]     = useState<AttendanceSnapshot | null>(null);
 
   // Durable dismiss state — maps the same dedup key syncTeacherActions uses
   // (risk:studentId:subject / the intervention id itself / gap:subjectId:grade)
@@ -155,7 +183,23 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         fetchTeacherMarkSheets(session.teacher_id, session.school_id),
       ]);
 
-      if (studentsResult.success) setStudentCount(studentsResult.students.length);
+      if (studentsResult.success) {
+        setStudentCount(studentsResult.students.length);
+
+        // Quick Class Access — group the teacher's students by cohort so
+        // classes are visible directly on the home page instead of only
+        // as a bare headcount.
+        const groupMap = new Map<string, ClassGroup>();
+        for (const s of studentsResult.students) {
+          const name = s.cohort?.name ?? `Grade ${s.grade}`;
+          const existing = groupMap.get(name);
+          if (existing) existing.studentCount += 1;
+          else groupMap.set(name, { cohortName: name, grade: s.grade, studentCount: 1 });
+        }
+        setClassGroups(
+          [...groupMap.values()].sort((a, b) => (a.grade ?? 0) - (b.grade ?? 0) || a.cohortName.localeCompare(b.cohortName)),
+        );
+      }
 
       const upcoming = events.filter(e => e.event_date >= todayStr).slice(0, 4);
       setUpcomingEvents(upcoming);
@@ -179,6 +223,26 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
       setHomeworkStats(stats);
       setRecentSheets(sheetsResult.slice(0, 3));
       setLoading(false);
+
+      // Non-blocking — today's attendance snapshot, scoped to the teacher's
+      // homeroom cohort(s) if they have any. Hidden entirely on the page if
+      // the teacher isn't a homeroom teacher (no attendance to show).
+      fetchTeacherHomerooms(session.teacher_id).then(async homerooms => {
+        if (homerooms.length === 0) return;
+        const rosters = await Promise.all(homerooms.map(h => fetchCohortRoster(h.id)));
+        const studentIds = rosters.flat().map(s => s.id);
+        if (studentIds.length === 0) return;
+        const records: Map<number, AttendanceRecord> = await fetchAttendanceForDate(studentIds, todayStr);
+        const snapshot: AttendanceSnapshot = { present: 0, late: 0, absent: 0, excused: 0, total: studentIds.length };
+        for (const id of studentIds) {
+          const status = records.get(id)?.status;
+          if (status === 'present') snapshot.present += 1;
+          else if (status === 'late') snapshot.late += 1;
+          else if (status === 'absent') snapshot.absent += 1;
+          else if (status === 'excused') snapshot.excused += 1;
+        }
+        setAttendance(snapshot);
+      });
 
       // Non-blocking analytics. syncTeacherActions wraps fetchAtRiskStudents /
       // fetchStaleInterventions / fetchAssessmentGaps and additionally persists
@@ -290,6 +354,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
     const h = new Date().getHours();
     return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
   })();
+
+  // Upcoming Deadlines — exams/assessments only, separate from the general
+  // Upcoming Events list further down the page.
+  const deadlines = upcomingEvents.filter(e => e.event_type === 'exam' || e.event_type === 'assessment');
 
   return (
     <div className="student-home min-h-full pb-16 relative">
@@ -408,6 +476,93 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         </motion.div>
       </div>
 
+      {/* ── Attendance Snapshot + Quick Class Access — matched pair ─── */}
+      {(attendance || classGroups.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          {attendance && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease, delay: 0.15 }}
+              className="paper-card rounded p-5"
+            >
+              <div className="flex items-center gap-2.5 mb-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Attendance Today</p>
+                <span className="flex-1 h-px bg-brand-border" />
+                <button onClick={() => onNavigate('homeroom')}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+                  Homeroom <ArrowUpRight className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="flex items-center gap-5">
+                {(() => {
+                  const presentPct = attendance.total > 0 ? Math.round((attendance.present / attendance.total) * 100) : 0;
+                  const ringColor = presentPct >= 90 ? '#10b981' : presentPct >= 75 ? '#f59e0b' : '#ef4444';
+                  return (
+                    <div className="relative shrink-0">
+                      <Ring pct={presentPct} size={80} stroke={7} color={ringColor} />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="font-black text-lg text-brand-dark leading-none"><Counter value={presentPct} suffix="%" /></span>
+                      </div>
+                    </div>
+                  );
+                })()}
+                <div className="flex-1 grid grid-cols-2 gap-x-4 gap-y-2">
+                  {[
+                    { label: 'Present', value: attendance.present, dot: 'bg-emerald-500' },
+                    { label: 'Late',    value: attendance.late,    dot: 'bg-amber-500' },
+                    { label: 'Absent',  value: attendance.absent,  dot: 'bg-red-400' },
+                    { label: 'Sick',    value: attendance.excused, dot: 'bg-sky-400' },
+                  ].map(({ label, value, dot }) => (
+                    <div key={label} className="flex items-center gap-1.5">
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+                      <span className="text-xs font-bold text-stone-600">{value} {label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {classGroups.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease, delay: 0.18 }}
+              className="paper-card rounded p-5"
+            >
+              <div className="flex items-center gap-2.5 mb-4">
+                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">My Classes</p>
+                <span className="flex-1 h-px bg-brand-border" />
+                <button onClick={() => onNavigate('classes')}
+                  className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+                  All classes <ArrowUpRight className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="space-y-1">
+                {classGroups.slice(0, 4).map((g, i) => (
+                  <motion.button key={g.cohortName}
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease, delay: 0.22 + i * 0.05 }}
+                    onClick={() => onNavigate('classes')}
+                    className={`w-full flex items-center gap-3 py-2 text-left ${i > 0 ? 'border-t' : ''}`}
+                    style={{ borderColor: 'var(--color-brand-border)' }}
+                  >
+                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
+                      <School className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] font-bold text-brand-dark truncate">{g.cohortName}</p>
+                      <p className="text-[11px] text-stone-500">{g.studentCount} student{g.studentCount !== 1 ? 's' : ''}</p>
+                    </div>
+                    <ChevronRight className="w-3.5 h-3.5 text-stone-300 shrink-0" />
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </div>
+      )}
+
       {/* ── Recent Mark Sheets ────────────────────────────────────── */}
       {recentSheets.length > 0 && (
         <motion.div
@@ -459,9 +614,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         >
           <div className="mb-4">
             <div className="flex items-center gap-2.5">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Needs Attention</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Student Alerts</p>
               <span className="flex-1 h-px bg-brand-border" />
-              <span className="text-[11px] font-black text-red-500 shrink-0">
+              <span className="text-[11px] font-black text-stone-500 shrink-0">
                 {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
               </span>
             </div>
@@ -480,15 +635,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                   initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.35, ease, delay: 0.2 + i * 0.04 }}
                   className={`rounded border ${
-                  s.reason === 'below_pass'    ? 'bg-red-50 border-red-100' :
-                  s.reason === 'declining'     ? 'bg-amber-50 border-amber-100' :
-                                                 'bg-orange-50 border-orange-100'
-                }`}>
+                  s.reason === 'below_pass' ? 'bg-amber-50 border-amber-100' : 'border-brand-border'
+                }`} style={s.reason !== 'below_pass' ? { background: 'var(--color-paper-raise)' } : undefined}>
                   {/* Top row: avatar + name + avg + assign button */}
                   <div className="flex items-center gap-3 px-3 py-2.5">
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white text-[10px] font-black ${
-                      s.reason === 'below_pass' ? 'bg-red-500' :
-                      s.reason === 'declining'  ? 'bg-amber-500' : 'bg-orange-500'
+                      s.reason === 'below_pass' ? 'bg-amber-500' : 'bg-stone-400'
                     }`}>
                       {s.name[0]}{s.surname[0]}
                     </div>
@@ -860,6 +1012,43 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 );
               })}
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Upcoming Deadlines — exams/assessments only, separate from
+          the general Upcoming Events list further down ─────────────── */}
+      {deadlines.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease, delay: 0.29 }}
+          className="paper-card rounded p-5"
+        >
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Deadlines</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
+          <div className="space-y-1">
+            {deadlines.map((ev, i) => {
+              const colors = EVENT_TYPE_COLORS[ev.event_type] ?? EVENT_TYPE_COLORS.other;
+              return (
+                <motion.div key={ev.id}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease, delay: 0.31 + i * 0.04 }}
+                  className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t' : ''}`}
+                  style={{ borderColor: 'var(--color-brand-border)' }}
+                >
+                  <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${colors.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-black text-brand-dark truncate">{ev.title}</p>
+                    <p className="text-[10px] text-stone-500">{formatDate(ev.event_date)}</p>
+                  </div>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 ${colors.pill}`}>
+                    {daysUntil(ev.event_date, todayStr)}
+                  </span>
+                </motion.div>
+              );
+            })}
           </div>
         </motion.div>
       )}

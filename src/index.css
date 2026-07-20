@@ -838,39 +838,35 @@ html {
 }
 
 /* Student dashboard content area — background image sits behind every page
-   rendered inside StudentDashboard's scrollable content pane. Mobile gets
-   its own portrait-oriented image; background-attachment is `scroll` on
-   mobile (fixed is unreliable/janky on mobile Safari) and `fixed` on
-   desktop/tablet where it reads as a stable backdrop. */
+   rendered inside StudentDashboard's (or TeacherDashboard's) scrollable
+   content pane. Mobile gets its own portrait-oriented image.
+   `background-attachment: fixed` on a nested scrollable element (not
+   `body` itself) is well supported on modern mobile browsers including
+   iOS Safari 13+, so the same approach works on both breakpoints — the
+   image stays pinned to the pane's viewport instead of scrolling away
+   with the content underneath it. */
+.student-dashboard-bg {
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 @media (max-width: 767px) {
   .student-dashboard-bg {
     background-image: url('/images/student-dashboard-bg-mobile.png');
-    background-size: cover;
-    background-position: top center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-  }
-  .student-dashboard-bg .student-home {
-    background: transparent;
-    background-attachment: initial;
   }
 }
-
 @media (min-width: 768px) {
   .student-dashboard-bg {
     background-image: url('/images/student-dashboard-bg-desktop.png');
-    background-size: cover;
-    background-position: top center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
   }
-  /* Let the dashboard background show through — each page's own opaque
-     .student-home background is only meant for standalone use elsewhere
-     in the app (e.g. if a page is ever rendered outside this shell). */
-  .student-dashboard-bg .student-home {
-    background: transparent;
-    background-attachment: initial;
-  }
+}
+/* Let the dashboard background show through — each page's own opaque
+   .student-home background is only meant for standalone use elsewhere
+   in the app (e.g. if a page is ever rendered outside this shell). */
+.student-dashboard-bg .student-home {
+  background: transparent;
+  background-attachment: initial;
 }
 
 /* Extremely faint dot grid across the page — premium paper texture, not

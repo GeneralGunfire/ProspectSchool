@@ -107,7 +107,6 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'mastered' | 'struggling' | 'active'>('name');
   const [filterCohort, setFilterCohort] = useState<string>('');
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Profile state
   const [activeTab, setActiveTab] = useState<ProfileTab>('progress');
@@ -316,31 +315,26 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   }
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-library.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none" style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Library</p>
-            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>Students</h1>
-            <p className="text-[13px] text-white/60 mt-2.5 font-medium">Click any student to view their full profile.</p>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Library</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+              Students
+            </h1>
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Click any student to view their full profile.</p>
           </motion.div>
         </div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -359,84 +353,90 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
         <>
           {/* Summary stats */}
           <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-            <div className="paper-card rounded p-4">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
+              className="paper-card rounded p-4">
               <p className="text-2xl font-black text-brand-dark leading-none">{students.length}</p>
               <p className="text-[11px] font-bold text-stone-500 mt-1">Total Students</p>
-            </div>
-            <div className="paper-card rounded p-4">
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.04 }}
+              className="paper-card rounded p-4">
               <p className="text-2xl font-black text-emerald-600 leading-none">
                 {students.reduce((s, st) => s + st.topics_mastered, 0)}
               </p>
               <p className="text-[11px] font-bold text-stone-500 mt-1">Topics Mastered</p>
-            </div>
-            <div className="paper-card rounded p-4">
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.08 }}
+              className="paper-card rounded p-4">
               <p className="text-2xl font-black text-amber-600 leading-none">
                 {students.filter(st => st.topics_struggling > 0).length}
               </p>
               <p className="text-[11px] font-bold text-stone-500 mt-1">Need Support</p>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Class switcher — pill tabs, e.g. 10A / 10B */}
+          {/* Class switcher — matches the student dashboard's pill-tab
+              recipe, wraps instead of cramming into a horizontal scroller. */}
           {cohortOptions.length > 0 && (
-            <div className="flex items-center gap-2 mb-4 overflow-x-auto pb-1">
-              <button
-                onClick={() => setFilterCohort('')}
-                className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-150 ${
-                  filterCohort === ''
-                    ? 'bg-brand-dark text-white shadow-sm'
-                    : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
-                }`}
-              >
-                All Classes
-                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${filterCohort === '' ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
-                  {students.length}
-                </span>
-              </button>
-              {cohortOptions.map(c => {
-                const active = filterCohort === c;
-                return (
-                  <button
-                    key={c}
-                    onClick={() => setFilterCohort(active ? '' : c)}
-                    className={`shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-all duration-150 ${
-                      active
-                        ? 'bg-brand-dark text-white shadow-sm'
-                        : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-accent' : 'bg-stone-300'}`} />
-                    {c}
-                    <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
-                      {cohortCounts.get(c) ?? 0}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="paper-card rounded p-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  onClick={() => setFilterCohort('')}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-colors ${
+                    filterCohort === ''
+                      ? 'bg-accent text-white shadow-sm'
+                      : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
+                  }`}
+                >
+                  All Classes
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${filterCohort === '' ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
+                    {students.length}
+                  </span>
+                </button>
+                {cohortOptions.map(c => {
+                  const active = filterCohort === c;
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => setFilterCohort(active ? '' : c)}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-colors ${
+                        active
+                          ? 'bg-accent text-white shadow-sm'
+                          : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : 'bg-stone-300'}`} />
+                      {c}
+                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
+                        {cohortCounts.get(c) ?? 0}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
 
           {/* Search + sort */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
+          <div className="paper-card rounded p-3 flex flex-col sm:flex-row gap-3">
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search students…"
               className="flex-1 px-4 py-2.5 rounded border border-brand-border bg-white text-sm font-medium text-brand-dark placeholder:text-stone-500 focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-accent/30 transition-all"
             />
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-2 flex-wrap">
               {([
                 { key: 'name', label: 'Name' },
-                { key: 'mastered', label: 'Mastered ↓' },
-                { key: 'struggling', label: 'Struggling ↓' },
+                { key: 'mastered', label: 'Mastered' },
+                { key: 'struggling', label: 'Struggling' },
                 { key: 'active', label: 'Last Active' },
               ] as const).map(s => (
                 <button
                   key={s.key}
                   onClick={() => setSortBy(s.key)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] transition-all ${
+                  className={`px-3.5 py-2 rounded text-[12px] transition-colors ${
                     sortBy === s.key
-                      ? 'bg-brand-dark text-white font-black'
+                      ? 'bg-accent text-white font-black'
                       : 'bg-white border border-brand-border text-stone-600 font-bold hover:border-stone-400'
                   }`}
                 >
@@ -446,22 +446,23 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
             </div>
           </div>
 
-          {/* Student rows */}
-          <div className="space-y-1.5">
+          {/* Student rows — one paper-card per row, generously spaced,
+              no entrance motion so nothing on this page ever appears to
+              slide, flip, or rotate in. */}
+          <div className="space-y-2.5">
             {filtered.length === 0 ? (
-              <p className="text-sm text-stone-500 text-center py-10">No students match your search.</p>
-            ) : filtered.map((student, i) => (
-              <motion.div
+              <div className="paper-card rounded p-10 text-center">
+                <p className="text-sm font-bold text-stone-500">No students match your search.</p>
+              </div>
+            ) : filtered.map((student) => (
+              <div
                 key={student.student_id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.025, ease: [0.23, 1, 0.32, 1] }}
                 onClick={() => selectStudent(student)}
-                className="group bg-white rounded border border-brand-border px-4 py-3 flex items-center gap-4 hover:border-stone-300 hover:shadow-sm cursor-pointer transition-all"
+                className="group paper-card rounded px-4 sm:px-5 py-4 flex items-center gap-4 cursor-pointer"
               >
                 {/* Avatar */}
-                <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center shrink-0">
-                  <span className="text-xs font-black text-stone-600">{initials(student)}</span>
+                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
+                  <span className="text-xs font-black text-white">{initials(student)}</span>
                 </div>
 
                 {/* Name */}
@@ -469,35 +470,31 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                   <p className="text-sm font-black text-brand-dark truncate">
                     {student.student_surname}, {student.student_name}
                   </p>
-                  <p className="text-[10px] text-stone-500 mt-0.5">{student.student_code}</p>
-                </div>
-
-                {/* Grade */}
-                <div className="hidden sm:block text-sm text-stone-500 w-20 shrink-0">
-                  Gr {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''}
+                  <p className="text-[11px] text-stone-500 mt-0.5">
+                    Gr {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
+                  </p>
                 </div>
 
                 {/* Mastered */}
-                <div className="hidden sm:flex items-center gap-1 w-16 shrink-0">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span className="text-sm font-black text-emerald-600">{student.topics_mastered}</span>
+                <div className="hidden sm:flex flex-col items-center gap-0.5 w-16 shrink-0">
+                  <span className="text-base font-black text-emerald-600">{student.topics_mastered}</span>
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Mastered</span>
                 </div>
 
                 {/* Struggling */}
-                <div className="hidden sm:flex items-center gap-1 w-16 shrink-0">
-                  {student.topics_struggling > 0 ? (
-                    <>
-                      <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span className="text-sm font-black text-amber-600">{student.topics_struggling}</span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-stone-500">—</span>
-                  )}
+                <div className="hidden sm:flex flex-col items-center gap-0.5 w-16 shrink-0">
+                  <span className={`text-base font-black ${student.topics_struggling > 0 ? 'text-amber-600' : 'text-stone-300'}`}>
+                    {student.topics_struggling > 0 ? student.topics_struggling : '—'}
+                  </span>
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Struggling</span>
                 </div>
 
                 {/* Last active */}
-                <div className="hidden md:block text-[11px] text-stone-500 w-20 shrink-0 text-right">
-                  {student.last_accessed ? timeAgo(student.last_accessed) : <span className="text-stone-500">No activity</span>}
+                <div className="hidden md:flex flex-col items-center gap-0.5 w-20 shrink-0">
+                  <span className="text-[11px] font-bold text-stone-600">
+                    {student.last_accessed ? timeAgo(student.last_accessed) : '—'}
+                  </span>
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Last Active</span>
                 </div>
 
                 {/* Intervention chips */}
@@ -531,8 +528,8 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                   );
                 })()}
 
-                <ChevronRight className="w-4 h-4 text-stone-200 group-hover:text-stone-600 transition-colors shrink-0" />
-              </motion.div>
+                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-accent transition-colors shrink-0" />
+              </div>
             ))}
           </div>
         </>
@@ -617,110 +614,117 @@ function StudentProfile({
   ];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 24 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-      className="max-w-3xl mx-auto px-4 py-6 sm:p-6 md:p-8"
-    >
-      {/* Back */}
-      <button
-        onClick={onBack}
-        className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 hover:text-brand-dark transition-colors mb-5 flex items-center gap-1"
-      >
-        ← Students
-      </button>
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* Hero card */}
-      <div className="bg-brand-dark rounded-3xl px-7 py-6 mb-5">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+      {/* ═══ Hero — same recipe as every other teacher page (quiet
+          eyebrow, Instrument Sans title, no dark card, no entrance
+          motion) instead of a separate dark "hero card" component ═══ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-4xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 hover:text-brand-dark transition-colors mb-3"
+          >
+            ← Students
+          </button>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shrink-0">
+            <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center shrink-0">
               <span className="text-lg font-black text-white">{initials(student)}</span>
             </div>
-            <div>
-              <p className="text-xl font-black text-white">{student.student_surname}, {student.student_name}</p>
-              <p className="text-sm text-stone-500 mt-0.5">
+            <div className="min-w-0">
+              <h1
+                className="text-brand-dark text-[26px] sm:text-[34px] leading-[1.12]"
+                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+              >
+                {student.student_surname}, {student.student_name}
+              </h1>
+              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-1 font-medium">
                 Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {[
-              { label: 'Started',        value: student.topics_started,    color: 'text-white' },
-              { label: 'Mastered',       value: student.topics_mastered,   color: 'text-emerald-400' },
-              { label: 'Needs Practice', value: student.topics_struggling, color: 'text-amber-400' },
-              { label: 'Last Active',    value: timeAgo(student.last_accessed), color: 'text-stone-500' },
-            ].map(stat => (
-              <div key={stat.label} className="bg-white/10 rounded-2xl px-4 py-3 text-center min-w-20">
-                <p className={`text-sm font-black ${stat.color} leading-none`}>{stat.value}</p>
-                <p className="text-[10px] text-stone-500 mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
-
-        {/* ── Comparison strip — shown once marks data is loaded ── */}
-        {comparisonRows.length > 0 && (
-          <div className="mt-5 pt-4 border-t border-white/10">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">vs Class Average</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {comparisonRows.map(row => {
-                const deltaPositive = row.delta !== null && row.delta > 0;
-                const deltaNegative = row.delta !== null && row.delta < 0;
-                const deltaColor = deltaPositive ? 'text-emerald-400' : deltaNegative ? 'text-red-400' : 'text-stone-500';
-                const avgColor   = row.studentAvg >= 70 ? 'text-emerald-400'
-                                 : row.studentAvg >= 50 ? 'text-amber-400'
-                                 : 'text-red-400';
-                return (
-                  <div key={row.subject} className="bg-white/5 rounded px-3 py-2.5">
-                    <p className="text-[10px] font-black text-stone-500 truncate mb-1">{row.subject}</p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
-                      {row.classAvg !== null && (
-                        <span className="text-[10px] text-stone-500">vs {row.classAvg}%</span>
-                      )}
-                    </div>
-                    {row.delta !== null && (
-                      <p className={`text-[10px] font-black mt-0.5 ${deltaColor}`}>
-                        {deltaPositive ? `+${row.delta}` : row.delta} vs class
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* Tab bar */}
-      <div className="flex gap-1 mb-5 bg-stone-100 rounded-2xl p-1 overflow-x-auto">
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+
+      {/* Stat strip — plain paper-cards, matching every other stat row
+          in the app, instead of a separate dark hero card. */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'Started',        value: student.topics_started,    color: 'text-brand-dark' },
+          { label: 'Mastered',       value: student.topics_mastered,   color: 'text-emerald-600' },
+          { label: 'Needs Practice', value: student.topics_struggling, color: 'text-amber-600' },
+          { label: 'Last Active',    value: timeAgo(student.last_accessed), color: 'text-brand-dark' },
+        ].map(stat => (
+          <div key={stat.label} className="paper-card rounded p-4 text-center">
+            <p className={`text-lg font-black ${stat.color} leading-none`}>{stat.value}</p>
+            <p className="text-[10px] font-bold text-stone-500 mt-1.5 uppercase tracking-wide">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Comparison strip — shown once marks data is loaded */}
+      {comparisonRows.length > 0 && (
+        <div className="paper-card rounded p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">vs Class Average</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {comparisonRows.map(row => {
+              const deltaPositive = row.delta !== null && row.delta > 0;
+              const deltaNegative = row.delta !== null && row.delta < 0;
+              const deltaColor = deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-red-500' : 'text-stone-400';
+              const avgColor   = row.studentAvg >= 70 ? 'text-emerald-600'
+                               : row.studentAvg >= 50 ? 'text-amber-600'
+                               : 'text-red-500';
+              return (
+                <div key={row.subject} className="rounded px-3 py-2.5" style={{ background: 'var(--color-paper-raise)' }}>
+                  <p className="text-[10px] font-black text-stone-500 truncate mb-1">{row.subject}</p>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
+                    {row.classAvg !== null && (
+                      <span className="text-[10px] text-stone-400">vs {row.classAvg}%</span>
+                    )}
+                  </div>
+                  {row.delta !== null && (
+                    <p className={`text-[10px] font-black mt-0.5 ${deltaColor}`}>
+                      {deltaPositive ? `+${row.delta}` : row.delta} vs class
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Tab bar — wraps to multiple rows instead of squeezing into a
+          horizontal scroller with hidden labels, so every tab stays
+          legible and reachable without a sideways swipe. */}
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 p-1.5 rounded-2xl bg-stone-100">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded text-[13px] transition-all shrink-0 ${
+            className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 px-2 py-2.5 sm:py-2 rounded-xl text-[11px] sm:text-[12px] transition-colors ${
               activeTab === t.key
-                ? 'bg-brand-dark text-white font-black shadow-sm'
-                : 'text-stone-500 font-bold hover:text-brand-dark'
+                ? 'bg-accent text-white font-black shadow-sm'
+                : 'bg-white text-stone-500 font-bold hover:text-brand-dark hover:bg-stone-50'
             }`}
           >
             <t.icon className="w-3.5 h-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t.label}</span>
+            <span className="leading-tight text-center">{t.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Tab content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.18 }}
-        >
+      {/* Tab content — no entrance/exit motion at all; switching tabs
+          swaps content instantly with zero animation, which is the only
+          way to guarantee nothing reads as a "flip" or "rotate". */}
+      <div>
           {activeTab === 'progress'      && <ProgressTab student={student} teacherId={session.teacher_id} onOpenTopicTest={onOpenTopicTest} />}
           {activeTab === 'marks'         && <MarksTab marks={marks} />}
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
@@ -745,9 +749,9 @@ function StudentProfile({
               onContactsChange={onContactsChange}
             />
           )}
-        </motion.div>
-      </AnimatePresence>
-    </motion.div>
+      </div>
+      </div>
+    </div>
   );
 }
 
@@ -1392,7 +1396,7 @@ function ContactsTab({
               onClick={() => setMethod(m)}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all ${
                 method === m
-                  ? 'bg-brand-dark text-white'
+                  ? 'bg-accent text-white'
                   : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
               }`}
             >
@@ -1412,7 +1416,7 @@ function ContactsTab({
         <button
           onClick={handleLog}
           disabled={saving}
-          className="w-full py-2 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+          className="w-full py-2 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
         >
           {saving ? 'Saving…' : 'Log Contact'}
         </button>

@@ -98,7 +98,7 @@ function ConsentNeededCard({ onManageConsent }: { onManageConsent: () => void })
       <p className="text-[13.5px] text-stone-500 max-w-sm mb-4">
         Grant consent for the wellbeing check-in to see a summary here.
       </p>
-      <button onClick={onManageConsent} className="px-4 py-2 rounded-xl bg-brand-dark text-white text-[13px] font-bold hover:opacity-90">
+      <button onClick={onManageConsent} className="px-4 py-2 rounded-xl bg-accent text-white text-[13px] font-bold hover:opacity-90">
         Manage consent
       </button>
     </motion.div>

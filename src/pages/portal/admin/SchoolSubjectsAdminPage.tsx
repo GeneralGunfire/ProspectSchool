@@ -12,6 +12,7 @@ import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
 
 const GRADES = [8, 9, 10, 11, 12];
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface SchoolSubjectsAdminPageProps { session: AdminSession; }
 
@@ -124,30 +125,35 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
   };
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[180px] sm:min-h-[220px]">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
-            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
-              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex items-end justify-between gap-4 flex-wrap">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
               Subjects by Grade
             </h1>
-            <p className="text-white/60 text-sm mt-2 max-w-lg">
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-lg">
               {editMode
                 ? 'Check subjects to offer them, tap Elective/Compulsory to flip it. Nothing is saved until you click Save.'
                 : 'Choose which subjects your school offers at each grade. Click Edit to make changes.'}
             </p>
-          </div>
+          </motion.div>
 
           {!loading && (
             <div className="flex items-center gap-2 shrink-0">
               {editMode && <SaveStatusPill dirty={dirty} saving={saving} />}
               {!editMode ? (
                 <motion.button onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                  className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[#2a3350]">
+                  className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
                   <PencilLine className="w-4 h-4" /> Edit Subjects
                 </motion.button>
               ) : (
@@ -169,7 +175,7 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
         {saveError && (
           <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
@@ -201,7 +207,7 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
               placeholder="e.g. Robotics"
               className="flex-1 min-w-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
             <button type="submit" disabled={addingCustom || !customName.trim()}
-              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-brand-dark text-white text-sm font-black rounded-xl hover:bg-brand-dark/90 transition-all disabled:opacity-40">
+              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-accent text-white text-sm font-black rounded-xl hover:bg-accent-soft transition-all disabled:opacity-40">
               <Plus className="w-4 h-4" /> Add
             </button>
           </form>
@@ -244,7 +250,7 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
                         <td className="px-5 py-3.5">
                           <button onClick={() => toggleOffered(s.id)} disabled={!editMode}
                             className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all disabled:cursor-default ${
-                              offeredNow ? 'bg-brand-dark border-brand-dark' : 'bg-stone-50 border-brand-border hover:border-stone-300'
+                              offeredNow ? 'bg-accent border-accent' : 'bg-stone-50 border-brand-border hover:border-stone-300'
                             } ${!editMode ? 'hover:border-brand-border' : ''}`}>
                             {offeredNow && <Check className="w-3.5 h-3.5 text-white" />}
                           </button>
@@ -253,7 +259,7 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
                           <button onClick={() => toggleCompulsory(s.id)} disabled={!editMode || !offeredNow}
                             className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold rounded-lg transition-all disabled:cursor-not-allowed ${
                               !offeredNow ? 'opacity-30' : ''
-                            } ${row?.is_compulsory ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500'} ${editMode && offeredNow ? 'hover:bg-stone-200' : ''}`}>
+                            } ${row?.is_compulsory ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500'} ${editMode && offeredNow ? 'hover:bg-stone-200' : ''}`}>
                             {row?.is_compulsory && <ShieldCheck className="w-2.5 h-2.5" />}
                             {row?.is_compulsory ? 'Compulsory' : 'Elective'}
                           </button>

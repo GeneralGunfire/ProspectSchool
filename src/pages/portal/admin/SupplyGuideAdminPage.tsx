@@ -44,7 +44,6 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
   const [toast, setToast]         = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SupplyGuideItem | null>(null);
   const [deleting, setDeleting]   = useState(false);
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => { fetchSubjects().then(setSubjects); }, []);
   useEffect(() => { reload(); }, [gradeFilter]);
@@ -117,7 +116,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
   }
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
       {/* Toast */}
       <AnimatePresence>
@@ -125,38 +124,32 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
           <motion.div
             initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-accent text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-marketplace.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">School Supplies</p>
-            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
-              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">School Supplies</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
               Supply Guide
             </h1>
-          </div>
+          </motion.div>
           <motion.button
             whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
             onClick={() => { closeModal(); setModal(true); }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]"
+            className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft"
           >
             <Plus className="w-4 h-4" /> Add Item
           </motion.button>
@@ -164,7 +157,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {/* Grade filter */}
       <div className="flex items-center gap-1 bg-stone-100 rounded p-1 w-fit flex-wrap">
@@ -420,7 +413,7 @@ export default function SupplyGuideAdminPage({ session }: SupplyGuideAdminPagePr
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Saving…' : 'Add Item'}
                 </button>

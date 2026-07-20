@@ -37,7 +37,6 @@ interface ResourcesPageProps {
 export default function ResourcesPage({ session }: ResourcesPageProps) {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
-  const [imgLoaded, setImgLoaded] = useState(false);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [cohorts, setCohorts] = useState<Cohort[]>([]);
   const [allStudents, setAllStudents] = useState<{ id: number; name: string; surname: string }[]>([]);
@@ -178,7 +177,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
   const TypeIcon = { file: Paperclip, link: Link2, note: FileText };
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
       {/* ── Toast ─────────────────────────────────────────────── */}
       <AnimatePresence>
@@ -188,7 +187,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-brand-dark text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-accent text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
           >
             <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
             {toast}
@@ -196,50 +195,37 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
         )}
       </AnimatePresence>
 
-      {/* ═══ Hero — full-width crested banner ═══════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-resources.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0.05) 0%, transparent 35%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="absolute -bottom-32 -left-24 w-[24rem] h-[24rem] rounded-full blur-3xl opacity-[0.08] pointer-events-none"
-          style={{ background: 'radial-gradient(circle, var(--color-accent), transparent 70%)' }} />
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full">
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="flex flex-wrap items-end justify-between gap-4"
+            className="min-w-0"
           >
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-white/45">Resources</p>
-              <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[36px] mt-2 leading-[1.1]" style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
-                Class Resources
-              </h1>
-              <p className="text-[13px] text-white/60 mt-2.5 font-medium">
-                Files, links and notes shared with your students.
-              </p>
-            </div>
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              onClick={() => { setCreateModal(true); setFormError(''); setForm(emptyForm); setAttachmentFile(null); }}
-              className="shrink-0 flex items-center gap-2 text-white text-sm font-black px-4 py-2.5 rounded border border-white/15 bg-white/[0.05] hover:bg-white/[0.1] transition-colors"
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Resources</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
             >
-              <Plus className="w-4 h-4" /> Add Resource
-            </motion.button>
+              Class Resources
+            </h1>
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
+              Files, links and notes shared with your students.
+            </p>
           </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            onClick={() => { setCreateModal(true); setFormError(''); setForm(emptyForm); setAttachmentFile(null); }}
+            className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
+          >
+            <Plus className="w-4 h-4" /> Add Resource
+          </motion.button>
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {!loading && resources.length > 0 && (
         <div className="flex gap-2 flex-wrap">
@@ -399,7 +385,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       const active = form.resource_type === t;
                       return (
                         <button key={t} onClick={() => setForm(f => ({ ...f, resource_type: t }))}
-                          className={`flex items-center gap-2 px-3 py-2.5 rounded text-sm font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded text-sm font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           <Icon className="w-4 h-4 shrink-0" />
                           {m.label}
                         </button>
@@ -417,7 +403,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       const active = form.category === c;
                       return (
                         <button key={c} onClick={() => setForm(f => ({ ...f, category: c }))}
-                          className={`px-3 py-2.5 rounded text-sm font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                          className={`px-3 py-2.5 rounded text-sm font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           {m.label}
                         </button>
                       );
@@ -509,7 +495,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                       return (
                         <button key={opt.value}
                           onClick={() => setForm(f => ({ ...f, target_type: opt.value, target_grades: [], target_cohort_ids: [], target_subject_ids: [], target_student_ids: [] }))}
-                          className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                          className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           <Icon className="w-3.5 h-3.5 shrink-0" />{opt.label}
                         </button>
                       );
@@ -520,7 +506,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                     <div className="flex flex-wrap gap-1.5">
                       {GRADES.map(g => (
                         <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           Grade {g}
                         </button>
                       ))}
@@ -530,7 +516,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                     <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                       {cohorts.map(c => (
                         <button key={c.id} onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
                       ))}
@@ -543,7 +529,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
                           {subjects.map(s => (
                             <button key={s.id} onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                               {s.label}
                             </button>
                           ))}
@@ -554,7 +540,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         <div className="flex flex-wrap gap-1.5">
                           {GRADES.map(g => (
                             <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                               Grade {g}
                             </button>
                           ))}
@@ -568,8 +554,8 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                         const active = form.target_student_ids.includes(s.id);
                         return (
                           <button key={s.id} onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-brand-dark text-white' : 'hover:bg-stone-100 text-stone-700'}`}>
-                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>{active ? '✓' : ''}</span>
+                            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-accent text-white' : 'hover:bg-stone-100 text-stone-700'}`}>
+                            <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-accent' : 'border-stone-300'}`}>{active ? '✓' : ''}</span>
                             {s.surname}, {s.name}
                           </button>
                         );
@@ -585,7 +571,7 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
                 <button onClick={() => setCreateModal(false)}
                   className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
                 <button onClick={handleCreate} disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
+                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50">
                   {saving ? 'Saving…' : 'Add Resource'}
                 </button>
               </div>

@@ -81,7 +81,6 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   // Mobile: one day shown at a time, switched via arrows/tabs — the grid
   // itself is desktop-only (hidden below md).
   const [mobileDay, setMobileDay] = useState<number>(1);
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -343,34 +342,28 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
     onDuplicateTo: handleDuplicateTo, editMode };
 
   return (
-    <div className="student-home min-h-full pb-16">
+    <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — full-width crested banner ═════════════════════ */}
-      <div className="relative overflow-hidden bg-brand-dark border-b border-brand-border grain-surface flex flex-col justify-end min-h-[220px] sm:min-h-[260px] lg:min-h-[280px]">
-        <div className="absolute inset-0 pointer-events-none">
-          <motion.img src="/images/nizamiye-timetable.png" alt=""
-            onLoad={() => setImgLoaded(true)}
-            initial={{ opacity: 0 }} animate={{ opacity: imgLoaded ? 0.62 : 0 }}
-            transition={{ duration: 0.6, ease }}
-            className="w-full h-full object-cover" />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(100deg, rgba(21,23,28,0.82) 0%, rgba(21,23,28,0.62) 35%, rgba(21,23,28,0.3) 62%, rgba(21,23,28,0.66) 100%)' }} />
-          <div className="absolute inset-0"
-            style={{ background: 'linear-gradient(180deg, rgba(21,23,28,0) 0%, transparent 45%, rgba(21,23,28,0.75) 100%)' }} />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-8 sm:pb-10 w-full flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45 leading-none">Admin</p>
-            <h1 className="font-display font-extrabold text-white text-[28px] sm:text-[40px] mt-3 leading-[1.1]"
-              style={{ letterSpacing: '-0.02em', textShadow: '0 2px 20px rgba(0,0,0,0.35)' }}>
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex items-end justify-between gap-4 flex-wrap">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
               Timetable
             </h1>
-            <p className="text-[10px] sm:text-[11px] text-white/60 mt-1.5 font-medium max-w-md">
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-md">
               {editMode
                 ? <><span className="sm:hidden">Tap a card to edit it. Nothing is saved until you tap Save.</span><span className="hidden sm:inline">Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</span></>
                 : 'Tap Edit Timetable to make changes.'}
             </p>
-          </div>
+          </motion.div>
 
           {selectedCohort && !loading && (
             <div className="flex items-center gap-2 shrink-0">
@@ -380,7 +373,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
               {!editMode ? (
                 <motion.button
                   onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                  className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]"
+                  className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft"
                 >
                   <PencilLine className="w-4 h-4" /> Edit Timetable
                 </motion.button>
@@ -409,7 +402,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {saveError && (
         <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded">
@@ -453,7 +446,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                 onClick={() => { if (!editMode) setSelectedCohortId(c.id); }}
                 disabled={editMode}
                 className={`shrink-0 px-4 py-2 rounded text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed ${
-                  selectedCohortId === c.id ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-600 hover:bg-white/70'
+                  selectedCohortId === c.id ? 'bg-accent text-white shadow-sm' : 'text-stone-600 hover:bg-white/70'
                 }`}
               >
                 {c.name} <span className="opacity-60 font-bold">Gr {c.grade}</span>
@@ -574,7 +567,7 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                           key={d.value}
                           onClick={() => setMobileDay(d.value)}
                           className={`py-2 rounded text-[11px] font-black transition-colors ${
-                            mobileDay === d.value ? 'bg-brand-dark text-white shadow-sm' : 'text-stone-500 hover:bg-white/70'
+                            mobileDay === d.value ? 'bg-accent text-white shadow-sm' : 'text-stone-500 hover:bg-white/70'
                           }`}
                         >
                           {d.label.slice(0, 3)}
@@ -673,7 +666,7 @@ function EmptyTimetableState({ onStartEditing }: { onStartEditing: () => void })
       <p className="text-sm text-stone-500 mb-5">Enter edit mode to start adding subjects and breaks.</p>
       <button
         onClick={onStartEditing}
-        className="inline-flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded hover:bg-brand-dark/90 transition-colors"
+        className="inline-flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-accent-soft transition-colors"
       >
         <Sparkles className="w-4 h-4" /> Start Building
       </button>
@@ -1012,7 +1005,7 @@ function SlotModal({
                     </button>
                   )}
                   <button onClick={typeof editingId === 'number' ? handleSaveEdit : handleAdd}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all">
                     {typeof editingId === 'number' ? 'Update' : 'Add Subject Group'}
                   </button>
                 </div>
@@ -1068,7 +1061,7 @@ function DuplicatePopover({
               <button
                 key={p.id}
                 onClick={() => onPick(d.value, p.period_number)}
-                className="px-2 py-1 rounded-lg text-[10px] font-bold bg-stone-100 text-stone-600 hover:bg-brand-dark hover:text-white transition-colors"
+                className="px-2 py-1 rounded-lg text-[10px] font-bold bg-stone-100 text-stone-600 hover:bg-accent hover:text-white transition-colors"
               >
                 {p.period_number}
               </button>

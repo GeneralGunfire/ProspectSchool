@@ -71,7 +71,6 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   const [cohorts, setCohorts]   = useState<Cohort[]>([]);
   const [allStudents, setAllStudents] = useState<{ id: number; name: string; surname: string }[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   // Modal state
   const [modal, setModal] = useState<'create' | 'edit' | 'view' | null>(null);
@@ -397,7 +396,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-dark text-white text-xs font-black rounded hover:bg-brand-dark/90 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-black rounded hover:bg-accent-soft transition-colors"
           >
             <Plus className="w-3.5 h-3.5" /> Create Event
           </button>
@@ -431,7 +430,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'grid' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'grid' ? 'bg-accent text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" /> Grid
@@ -439,7 +438,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'list' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'list' ? 'bg-accent text-white' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <List className="w-3.5 h-3.5" /> List
@@ -538,7 +537,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                                  isToday ? 'bg-brand-dark text-white' : 'text-stone-500 group-hover:text-stone-700'
+                                  isToday ? 'bg-accent text-white' : 'text-stone-500 group-hover:text-stone-700'
                                 }`}>
                                   {day}
                                 </span>
@@ -587,7 +586,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming</p>
               <button
                 onClick={() => openCreate(todayStr)}
-                className="flex items-center gap-1 text-[11px] font-black bg-brand-dark text-white px-2.5 py-1 rounded-lg hover:bg-brand-dark/90 transition-colors"
+                className="flex items-center gap-1 text-[11px] font-black bg-accent text-white px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-colors"
               >
                 <Plus className="w-3 h-3" /> Create
               </button>
@@ -892,7 +891,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors"
                   >
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </button>
@@ -1110,7 +1109,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           target_student_ids: [],
                         }))}
                         className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
-                          active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -1128,7 +1127,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={g}
                           onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           Grade {g}
                         </button>
@@ -1146,7 +1145,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={c.id}
                           onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
@@ -1166,7 +1165,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={s.id}
                               onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               {s.label}
                             </button>
@@ -1182,7 +1181,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={g}
                               onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-brand-dark text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               Grade {g}
                             </button>
@@ -1203,7 +1202,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={s.id}
                           onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-brand-dark text-white' : 'hover:bg-stone-100 text-stone-700'}`}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-accent text-white' : 'hover:bg-stone-100 text-stone-700'}`}
                         >
                           <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>
                             {active ? '✓' : ''}
@@ -1225,7 +1224,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
+                className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50">
                 {saving ? 'Saving…' : modal === 'create' ? 'Create Event' : 'Save Changes'}
               </button>
             </div>

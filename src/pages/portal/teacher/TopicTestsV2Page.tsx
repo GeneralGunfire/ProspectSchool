@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ClipboardCheck, Send, CheckCircle2, ChevronRight, ArrowLeft, Trash2, CircleDashed, X, Plus, Check, Sparkles, Eye } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Send, CheckCircle2, ChevronRight, ArrowLeft, Trash2, CircleDashed, X, Plus, Check, Sparkles, Eye } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import type { TeacherSession } from '../../../lib/auth';
 import {
@@ -15,6 +16,7 @@ import {
 import { MASTERY_LABEL, MASTERY_COLOR, type AttemptPurpose, type Difficulty, type MasteryLevel } from '../../../lib/topicTestScoring';
 
 const FLAG_THRESHOLD = 0.70; // posterior below this = flagged for intervention, per research spec
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 interface TopicTestsV2PageProps { session: TeacherSession; }
 
@@ -47,9 +49,22 @@ export default function TopicTestsV2Page({ session }: TopicTestsV2PageProps) {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-4">
-        <Shimmer className="h-24 w-full" />
-        <Shimmer className="h-40 w-full" />
+      <div className="student-home min-h-full pb-16 relative">
+        <div className="relative overflow-hidden">
+          <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Assessment</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+              Topic Tests
+            </h1>
+          </div>
+        </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-4 pt-2 sm:pt-3">
+          <Shimmer className="h-24 w-full rounded" />
+          <Shimmer className="h-40 w-full rounded" />
+        </div>
       </div>
     );
   }
@@ -79,24 +94,69 @@ export default function TopicTestsV2Page({ session }: TopicTestsV2PageProps) {
     );
   }
 
+  const activeAssignments = assignments.filter((a) => a.is_active);
+
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <ClipboardCheck className="w-5 h-5 text-accent" />
-          <h1 className="text-xl font-black text-brand-dark">Topic Tests</h1>
+    <div className="student-home min-h-full pb-16 relative">
+
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease }}
+          >
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Assessment</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+              Topic Tests
+            </h1>
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
+              Diagnostic tests with misconception-tagged distractors.
+            </p>
+          </motion.div>
+          <motion.button
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease, delay: 0.06 }}
+            whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+            onClick={() => setBuilding(true)}
+            className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
+          >
+            <Plus className="w-4 h-4" /> Build Custom Test
+          </motion.button>
         </div>
-        <button
-          onClick={() => setBuilding(true)}
-          className="px-4 py-2 rounded-lg font-black text-xs text-white flex items-center gap-1.5"
-          style={{ background: 'var(--color-accent)' }}
-        >
-          <Plus className="w-3.5 h-3.5" /> Build custom test
-        </button>
       </div>
 
-      <section>
-        <h2 className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Available tests</h2>
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+
+      {/* ── Stat strip ────────────────────────────────────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Test Catalog</p>
+          <p className="font-black text-4xl text-brand-dark">{tests.length}</p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.04 }}
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Active Assignments</p>
+          <p className="font-black text-4xl text-brand-dark">{activeAssignments.length}</p>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.08 }}
+          className="paper-card rounded p-5 flex flex-col justify-between min-h-30 col-span-2 sm:col-span-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Subjects Covered</p>
+          <p className="font-black text-4xl text-brand-dark">{subjectGrades.length}</p>
+        </motion.div>
+      </div>
+
+      {/* ── Available tests ───────────────────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.1 }}>
+        <div className="flex items-center gap-2.5 mb-3">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Available Tests</p>
+          <span className="flex-1 h-px bg-brand-border" />
+        </div>
         {tests.length === 0 ? (
           <div className="paper-card rounded p-8 text-center text-sm text-stone-500">No tests in the catalog yet.</div>
         ) : (
@@ -108,34 +168,41 @@ export default function TopicTestsV2Page({ session }: TopicTestsV2PageProps) {
             onPreview={setPreviewTest}
           />
         )}
-      </section>
+      </motion.div>
 
-      <section>
-        <h2 className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Prescribed / assigned tests</h2>
-        {assignments.filter((a) => a.is_active).length === 0 ? (
+      {/* ── Prescribed / assigned tests ───────────────────────────── */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.14 }}>
+        <div className="flex items-center gap-2.5 mb-3">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Prescribed / Assigned Tests</p>
+          <span className="flex-1 h-px bg-brand-border" />
+        </div>
+        {activeAssignments.length === 0 ? (
           <div className="paper-card rounded p-8 text-center text-sm text-stone-500">Nothing assigned yet — students won't see any tests until you assign one.</div>
         ) : (
           <div className="space-y-2">
-            {assignments.filter((a) => a.is_active).map((a) => {
+            {activeAssignments.map((a, i) => {
               const test = tests.find((t) => t.id === a.topic_test_id);
               const sg = subjectGrades.find((s) => s.subject_id === a.subject_id);
               return (
-                <button
+                <motion.button
                   key={a.id}
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease, delay: 0.16 + i * 0.04 }}
                   onClick={() => setOpenAssignment(a)}
-                  className="paper-card rounded w-full text-left p-4 flex items-center justify-between gap-3 hover:shadow-md transition-shadow"
+                  className="paper-card rounded w-full text-left p-4 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-brand-dark truncate">{test?.title ?? `Test #${a.topic_test_id}`}</p>
                     <p className="text-[11px] text-stone-500 mt-1">{sg?.subject_label ?? 'Subject'} · Grade {a.grade}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
-                </button>
+                </motion.button>
               );
             })}
           </div>
         )}
-      </section>
+      </motion.div>
+      </div>
 
       {assignModalTest && (
         <AssignModal
@@ -410,23 +477,35 @@ function AssignmentDetail({
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-xs font-bold text-stone-500 hover:text-brand-dark mb-4">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back
-      </button>
+    <div className="student-home min-h-full pb-16 relative">
 
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">{subjectLabel} · Grade {assignment.grade}</p>
-          <h1 className="text-lg font-black text-brand-dark mt-1">{testTitle}</h1>
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <button onClick={onBack} className="flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.12em] text-stone-500 hover:text-brand-dark transition-colors mb-3">
+              <ArrowLeft className="w-3.5 h-3.5" /> Topic Tests
+            </button>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{subjectLabel} · Grade {assignment.grade}</p>
+            <h1
+              className="text-brand-dark text-[28px] sm:text-[36px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+              {testTitle}
+            </h1>
+          </motion.div>
+          <motion.button
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
+            onClick={handleRemove}
+            className="shrink-0 flex items-center gap-1.5 px-4 py-2.5 rounded font-black text-xs text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Remove Assignment
+          </motion.button>
         </div>
-        <button
-          onClick={handleRemove}
-          className="shrink-0 px-3 py-2 rounded-lg font-black text-xs text-red-500 border-2 border-red-200 hover:bg-red-50 transition-colors flex items-center gap-1.5"
-        >
-          <Trash2 className="w-3.5 h-3.5" /> Remove assignment
-        </button>
       </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {pendingCount > 0 && (
         <div className="paper-card rounded p-4 mb-6 flex items-center justify-between gap-3 bg-amber-50/60 border-amber-200">
@@ -551,6 +630,7 @@ function AssignmentDetail({
           })}
         </div>
       )}
+      </div>
     </div>
   );
 }
@@ -622,12 +702,28 @@ function BuildTestPage({
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto">
-      <button onClick={onBack} className="flex items-center gap-1 text-xs font-bold text-stone-500 hover:text-brand-dark mb-4">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back
-      </button>
+    <div className="student-home min-h-full pb-16 relative">
 
-      <h1 className="text-lg font-black text-brand-dark mb-6">Build custom test</h1>
+      {/* ═══ Hero ═══════════════════════════════════════════════ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+            <button onClick={onBack} className="flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.12em] text-stone-500 hover:text-brand-dark transition-colors mb-3">
+              <ArrowLeft className="w-3.5 h-3.5" /> Topic Tests
+            </button>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Assessment</p>
+            <h1
+              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
+              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
+            >
+              Build Custom Test
+            </h1>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* ═══ Body ═══════════════════════════════════════════════ */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       <div className="space-y-4 mb-6">
         <div>
@@ -748,6 +844,7 @@ function BuildTestPage({
           </button>
         </>
       )}
+      </div>
 
       {authoring && selectedTopic && (
         <AuthorQuestionModal

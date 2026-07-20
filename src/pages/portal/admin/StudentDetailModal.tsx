@@ -292,7 +292,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                   Cancel
                 </button>
                 <button type="submit" form="student-edit-form" disabled={submitting}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                  className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                   {submitting
                     ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     : <>Save Changes <ArrowRight className="w-4 h-4" /></>

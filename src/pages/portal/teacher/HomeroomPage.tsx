@@ -10,6 +10,46 @@ import {
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
+// Animated count-up — same recipe used across the teacher/student dashboards.
+function Counter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let frame: number;
+    const start = performance.now();
+    const duration = 900;
+    function tick(now: number) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(Math.round(value * eased));
+      if (t < 1) frame = requestAnimationFrame(tick);
+    }
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <>{display}{suffix}</>;
+}
+
+// SVG progress ring — same recipe as TeacherHomePage's Class Health ring.
+function Ring({ pct, size = 80, stroke = 7, trackColor = 'rgba(56,65,79,0.10)', color = 'var(--color-accent)' }:
+  { pct: number; size?: number; stroke?: number; trackColor?: string; color?: string }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke={color} strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c * (1 - clamped / 100) }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+      />
+    </svg>
+  );
+}
+
 interface HomeroomPageProps { session: TeacherSession; }
 
 // Per-student marking buttons — non_school_day is deliberately excluded here,
@@ -69,7 +109,6 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   const [markingHoliday, setMarkingHoliday] = useState(false);
   const [confirmHoliday, setConfirmHoliday] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [imgLoaded, setImgLoaded] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -164,6 +203,14 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   const presentCount = [...attendance.values()].filter((a) => a.status === 'present').length;
   const isNonSchoolDay = roster.length > 0 && roster.every((s) => attendance.get(s.id)?.status === 'non_school_day');
 
+  // Attendance Snapshot — breakdown for the currently-viewed date, same
+  // ring+counts recipe used on TeacherHomePage's Attendance Today card.
+  const lateCount   = [...attendance.values()].filter((a) => a.status === 'late').length;
+  const absentCount = [...attendance.values()].filter((a) => a.status === 'absent').length;
+  const sickCount   = [...attendance.values()].filter((a) => a.status === 'excused').length;
+  const presentPct  = roster.length > 0 ? Math.round((presentCount / roster.length) * 100) : 0;
+  const ringColor   = presentPct >= 90 ? '#10b981' : presentPct >= 75 ? '#f59e0b' : '#ef4444';
+
   return (
     <div className="student-home min-h-full pb-16 relative">
 
@@ -202,7 +249,49 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
         </div>
       ) : (
         <>
-      <div className="flex items-center justify-end gap-2 flex-wrap">
+      {/* ── Attendance Snapshot — ring + breakdown for the viewed date,
+          gives an at-a-glance read before scrolling to the roster ──── */}
+      {roster.length > 0 && !isNonSchoolDay && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease }}
+          className="paper-card rounded p-5"
+        >
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Attendance Snapshot</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="relative shrink-0">
+              <Ring pct={presentPct} color={ringColor} />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="font-black text-lg text-brand-dark leading-none"><Counter value={presentPct} suffix="%" /></span>
+              </div>
+            </div>
+            <div className="flex-1 grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-2">
+              {[
+                { label: 'Present', value: presentCount, dot: 'bg-emerald-500' },
+                { label: 'Late',    value: lateCount,    dot: 'bg-amber-500' },
+                { label: 'Absent',  value: absentCount,  dot: 'bg-red-400' },
+                { label: 'Sick',    value: sickCount,    dot: 'bg-sky-400' },
+              ].map(({ label, value, dot }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
+                  <span className="text-xs font-bold text-stone-600">{value} {label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Date nav + actions — wrapped in the same paper-card recipe
+          the rest of the dashboard uses, instead of a bare bordered box ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease, delay: 0.05 }}
+        className="paper-card rounded p-4 flex items-center justify-end gap-2 flex-wrap"
+      >
         <div className="flex items-center gap-2">
           <button onClick={() => setDate((d) => addDays(d, -1))}
             className="p-2.5 rounded border border-brand-border bg-white hover:bg-stone-50 text-stone-600 transition-colors">
@@ -223,7 +312,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
             </button>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {saveError && (
         <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded">
@@ -304,7 +393,10 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                 const rowSummary = summary.get(s.id);
                 const pct = rowSummary ? attendancePercent(rowSummary) : null;
                 return (
-                  <tr key={s.id} style={i === roster.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  <motion.tr key={s.id}
+                    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, ease, delay: Math.min(i, 12) * 0.03 }}
+                    style={i === roster.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}>
                     <td className="px-5 py-3.5 font-bold text-brand-dark">{s.surname}, {s.name}</td>
                     <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{s.student_code}</td>
                     <td className="px-5 py-3.5">
@@ -342,7 +434,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                         })}
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
@@ -380,7 +472,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
                     Cancel
                   </button>
                   <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-brand-dark rounded hover:bg-brand-dark/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
                     {markingHoliday
                       ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       : 'Confirm'
