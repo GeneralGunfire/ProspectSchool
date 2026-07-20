@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Pin, Megaphone } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchStudentAnnouncements, trackAnnouncementViews, type Announcement } from '../../../lib/announcements';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { StudentSession } from '../../../lib/auth';
@@ -31,7 +31,7 @@ function detectCategory(a: Announcement): string {
 
 const CATEGORY_ACCENTS: Record<string, string> = {
   Exam:     'bg-red-400',
-  Homework: 'bg-blue-400',
+  Homework: 'bg-brand-dark',
   Urgent:   'bg-amber-400',
   Event:    'bg-violet-400',
   General:  'bg-stone-200',

@@ -27,7 +27,7 @@ function gradeLabel(mark: number | null, total: number): { label: string; color:
   if (mark === null) return { label: 'Pending', color: 'text-stone-500', bg: 'bg-stone-100' };
   const p = (mark / total) * 100;
   if (p >= 80) return { label: 'Outstanding', color: 'text-emerald-700', bg: 'bg-emerald-50' };
-  if (p >= 70) return { label: 'Merit',       color: 'text-blue-700',    bg: 'bg-blue-50' };
+  if (p >= 70) return { label: 'Merit',       color: 'text-brand-dark',  bg: 'bg-brand-dark/5' };
   if (p >= 60) return { label: 'Adequate',    color: 'text-sky-700',     bg: 'bg-sky-50' };
   if (p >= 50) return { label: 'Moderate',    color: 'text-amber-700',   bg: 'bg-amber-50' };
   if (p >= 40) return { label: 'Elementary',  color: 'text-orange-700',  bg: 'bg-orange-50' };
@@ -36,7 +36,7 @@ function gradeLabel(mark: number | null, total: number): { label: string; color:
 
 function barColor(p: number): string {
   if (p >= 80) return '#10b981';
-  if (p >= 70) return '#3b82f6';
+  if (p >= 70) return '#1F2421';
   if (p >= 60) return '#0ea5e9';
   if (p >= 50) return '#f59e0b';
   if (p >= 40) return '#f97316';
@@ -317,14 +317,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 : healthScore >= 50 ? 'Watch'
                 :                     'Needs Attention';
     const color = healthScore >= 80 ? 'text-emerald-600'
-                : healthScore >= 65 ? 'text-blue-600'
+                : healthScore >= 65 ? 'text-brand-dark'
                 : healthScore >= 50 ? 'text-amber-600'
                 :                     'text-red-500';
     subjectHealthScores.set(subject, { score: healthScore, label, color });
   }
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-marks student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
@@ -970,7 +970,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {markedItems.length >= 3 && (() => {
                             const gradeBands = [
                               { label: 'Outstanding', min: 80,  max: 101, color: 'bg-emerald-500' },
-                              { label: 'Merit',       min: 70,  max: 80,  color: 'bg-blue-500' },
+                              { label: 'Merit',       min: 70,  max: 80,  color: 'bg-brand-dark' },
                               { label: 'Adequate',    min: 60,  max: 70,  color: 'bg-sky-500' },
                               { label: 'Moderate',    min: 50,  max: 60,  color: 'bg-amber-500' },
                               { label: 'Elementary',  min: 40,  max: 50,  color: 'bg-orange-500' },
@@ -1145,7 +1145,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                         <div className={`w-3.5 h-3.5 rounded-full border-2 border-white shrink-0 mt-1 z-10 ${
                                           p === null ? 'bg-stone-300' :
                                           p >= 80   ? 'bg-emerald-500' :
-                                          p >= 70   ? 'bg-blue-500' :
+                                          p >= 70   ? 'bg-brand-dark' :
                                           p >= 50   ? 'bg-amber-500' : 'bg-red-500'
                                         }`} />
                                         <div className="flex-1 min-w-0 flex items-start justify-between gap-3 hover:bg-stone-50 rounded px-2 py-1 -mx-2 -my-1 transition-colors">

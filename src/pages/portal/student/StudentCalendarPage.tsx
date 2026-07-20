@@ -5,6 +5,7 @@ import {
   Activity, ClipboardList, BookOpen, Palette,
 } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
+import { Spinner } from '../../../shared/components/Spinner';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
   fetchStudentEvents, getAttachmentDownloadUrl,
@@ -40,13 +41,13 @@ function formatDayFull(d: string) {
 }
 
 const TYPE_PILL: Record<string, string> = {
-  homework:   'bg-blue-50 text-blue-700',
+  homework:   'bg-brand-dark/5 text-brand-dark',
   assessment: 'bg-emerald-50 text-emerald-700',
   exam:       'bg-red-50 text-red-700',
   other:      'bg-stone-100 text-stone-600',
 };
 const TYPE_CELL_BG: Record<string, string> = {
-  homework:   'bg-blue-50 text-blue-700',
+  homework:   'bg-brand-dark/5 text-brand-dark',
   assessment: 'bg-emerald-50 text-emerald-700',
   exam:       'bg-red-50 text-red-700',
   other:      'bg-stone-100 text-stone-600',
@@ -289,7 +290,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
   }[];
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-calendar student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
           No buttons in this band (house rule). Month-nav, today, and
@@ -397,7 +398,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             {[
-              { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-blue-600' },
+              { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-brand-dark' },
               { label: 'Assessments', value: thisWeekAssessments.length, color: 'text-emerald-600' },
               { label: 'Exams',       value: thisWeekExams.length,       color: 'text-red-600' },
               {
@@ -416,7 +417,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             <p className="text-xs text-[rgba(31,36,33,0.5)]">
               Busiest day: <span className="text-brand-dark font-bold">{busiestDayLabel}</span>
               {estimatedHours >= 6 && <span className="text-amber-600 font-bold ml-2">— Heavy week</span>}
-              {estimatedHours >= 3 && estimatedHours < 6 && <span className="text-blue-600 font-bold ml-2">— Manageable</span>}
+              {estimatedHours >= 3 && estimatedHours < 6 && <span className="text-brand-dark font-bold ml-2">— Manageable</span>}
               {estimatedHours < 3 && <span className="text-emerald-600 font-bold ml-2">— Light week</span>}
             </p>
           )}
@@ -473,7 +474,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               const urgency = days === 0 ? { dot: 'bg-red-500',   label: 'Today',        text: 'text-red-600' }
                             : days === 1 ? { dot: 'bg-red-400',   label: 'Tomorrow',     text: 'text-red-500' }
                             : days <= 3  ? { dot: 'bg-amber-500', label: `${days} days`, text: 'text-amber-600' }
-                            : days <= 7  ? { dot: 'bg-blue-400',  label: `${days} days`, text: 'text-blue-600' }
+                            : days <= 7  ? { dot: 'bg-brand-dark',  label: `${days} days`, text: 'text-brand-dark' }
                             :              { dot: 'bg-stone-300',  label: `${days} days`, text: 'text-stone-500' };
               const typeLabel = EVENT_LABELS[ev.event_type];
               return (
@@ -613,7 +614,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
       )}
 
       {/* ── Calendar grid / list ─────────────────────────────── */}
-      <div className="flex flex-col xl:flex-row gap-5">
+      <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex-1 min-w-0">
 
           {/* LIST VIEW */}
@@ -628,7 +629,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
               >
                 {loading ? (
                   <div className="flex items-center justify-center py-24">
-                    <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
+                    <Spinner />
                   </div>
                 ) : allSorted.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-24">
@@ -654,7 +655,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                               initial={{ opacity: 0, y: 8 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: i * 0.03, duration: 0.2 }}
-                              className={`bg-white rounded border border-brand-border px-4 py-3 flex items-center gap-3 mb-2 hover:border-stone-300 transition-colors ${done ? 'opacity-60' : ''}`}
+                              className={`paper-card rounded px-4 py-3 flex items-center gap-3 mb-2 ${done ? 'opacity-60' : ''}`}
                             >
                               <span className={`w-2 h-2 rounded-full shrink-0 ${c.dot}`} />
                               <div className="flex-1 min-w-0">
@@ -724,7 +725,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
 
                   {loading ? (
                     <div className="h-64 flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-brand-border border-t-brand-dark rounded-full animate-spin" />
+                      <Spinner />
                     </div>
                   ) : (
                     <AnimatePresence mode="wait" initial={false}>
@@ -791,7 +792,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           </AnimatePresence>
         </div>
 
-        {/* ── Mobile/tablet day-detail sheet — the sidebar below is xl:only,
+        {/* ── Mobile/tablet day-detail sheet — the sidebar below is lg:only,
              so under 1280px this is the only way to see a selected day's events. ── */}
         <AnimatePresence>
           {selectedDay && (
@@ -800,12 +801,12 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => { setSelectedDay(null); setSelectedEvent(null); }}
-                className="xl:hidden fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-40"
+                className="lg:hidden fixed inset-0 bg-brand-dark/40 backdrop-blur-sm z-40"
               />
               <motion.div
                 initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
                 transition={{ duration: 0.28, ease }}
-                className="xl:hidden fixed inset-x-0 bottom-0 z-50 max-h-[75vh] flex flex-col rounded-t-2xl bg-white border-t border-brand-border overflow-hidden"
+                className="lg:hidden fixed inset-x-0 bottom-0 z-50 max-h-[75vh] flex flex-col rounded-t-2xl bg-white border-t border-brand-border overflow-hidden"
                 style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-brand-border/60 shrink-0">
@@ -913,10 +914,10 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
              equivalent, so they render at all widths; the Day-detail/
              Upcoming block stays xl-only since mobile already gets the
              day's events via the bottom sheet above. ── */}
-        <div className="w-full xl:w-72 shrink-0 space-y-4">
+        <div className="w-full lg:w-72 shrink-0 space-y-4">
 
           {/* Day detail or upcoming events — desktop only, mirrors the mobile bottom sheet */}
-          <div className="hidden xl:block space-y-4">
+          <div className="hidden lg:block space-y-4">
           <AnimatePresence mode="wait">
             {selectedDay ? (
               <motion.div

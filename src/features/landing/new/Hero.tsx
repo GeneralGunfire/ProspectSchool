@@ -76,7 +76,15 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
           Full-width title treatment — no video, no side panel. Light
           surface so the alternation sequence starts light → dark down
           the page (LearnerFeatureCards, immediately below, is dark). */}
-      <div className="bg-brand-bg hidden md:flex relative min-h-screen items-center justify-center">
+      <div
+        className="hidden md:flex relative min-h-screen items-center justify-center"
+        style={{
+          backgroundImage: 'url(/backgrounds/hero-bg-desktop.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"

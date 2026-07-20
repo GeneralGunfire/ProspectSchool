@@ -116,7 +116,7 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
 
   if (loading && stage === 'list') {
     return (
-      <div className="student-home min-h-full pb-16 relative">
+      <div className="student-topic-tests student-home min-h-full pb-16 relative">
         <div className="relative overflow-hidden">
           <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Topic Tests</p>
@@ -137,7 +137,7 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
 
   if (stage === 'list') {
     return (
-      <div className="student-home min-h-full pb-16 relative">
+      <div className="student-topic-tests student-home min-h-full pb-16 relative">
 
         {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
         <div className="relative overflow-hidden">
@@ -168,7 +168,8 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto">
+    <div className="student-topic-tests student-home min-h-full pb-16 relative">
+      <div className="p-4 sm:p-6 max-w-3xl mx-auto">
       <AnimatePresence mode="wait">
         {stage === 'intro' && selected && full && (
           <motion.div key="intro" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3, ease }}>
@@ -195,6 +196,7 @@ export default function StudentTopicTestsV2Page({ session }: StudentTopicTestsV2
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

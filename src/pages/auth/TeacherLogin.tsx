@@ -59,41 +59,51 @@ export default function TeacherLogin({ onNavigate }: { onNavigate: (page: string
             </motion.div>
           )}
 
-          <CodeField
-            label="School Code"
-            icon={School}
-            placeholder="e.g. GHS001"
-            value={formData.schoolCode}
-            onChange={v => setFormData({ ...formData, schoolCode: v })}
-            autoComplete="organization"
-          />
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.35 }}>
+            <CodeField
+              label="School Code"
+              icon={School}
+              placeholder="e.g. GHS001"
+              value={formData.schoolCode}
+              onChange={v => setFormData({ ...formData, schoolCode: v })}
+              autoComplete="organization"
+            />
+          </motion.div>
 
-          <CodeField
-            label="Teacher Code"
-            icon={BadgeCheck}
-            placeholder="e.g. TCH-001"
-            value={formData.teacherCode}
-            onChange={v => setFormData({ ...formData, teacherCode: v })}
-            autoComplete="username"
-          />
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17, duration: 0.35 }}>
+            <CodeField
+              label="Teacher Code"
+              icon={BadgeCheck}
+              placeholder="e.g. TCH-001"
+              value={formData.teacherCode}
+              onChange={v => setFormData({ ...formData, teacherCode: v })}
+              autoComplete="username"
+            />
+          </motion.div>
 
-          <PinInput
-            value={formData.pin}
-            onChange={pin => setFormData({ ...formData, pin })}
-            visible={showPin}
-            onToggleVisible={() => setShowPin(s => !s)}
-          />
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, duration: 0.35 }}>
+            <PinInput
+              value={formData.pin}
+              onChange={pin => setFormData({ ...formData, pin })}
+              visible={showPin}
+              onToggleVisible={() => setShowPin(s => !s)}
+            />
+          </motion.div>
 
-          <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <motion.label
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.35 }}
+            className="flex items-center gap-2.5 cursor-pointer select-none"
+          >
             <input type="checkbox" checked={rememberMe}
               onChange={e => setRememberMe(e.target.checked)}
               className="check"
             />
             <span className="text-[12px] font-medium text-brand-eyebrow">Remember school &amp; teacher code</span>
-          </label>
+          </motion.label>
 
           <motion.button
             type="submit" disabled={loading}
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36, duration: 0.35 }}
             whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
             className="w-full bg-accent text-accent-foreground font-black py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent/20 hover:brightness-105"
           >

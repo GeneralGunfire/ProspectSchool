@@ -256,7 +256,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     const isUrgent = remaining <= 300 && phase === 'active';
 
     return (
-      <div className="student-home min-h-screen bg-stone-50 flex flex-col">
+      <div className="student-pastpapers student-home min-h-screen bg-stone-50 flex flex-col">
 
         {/* Practice top bar */}
         <div className="bg-brand-dark px-5 py-3 flex items-center justify-between shrink-0">
@@ -538,7 +538,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   }
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-pastpapers student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">

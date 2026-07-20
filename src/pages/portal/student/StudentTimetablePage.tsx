@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { CalendarClock } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import { DAYS, fetchSchoolPeriods, fetchStudentTimetable, type TimetablePeriod, type TimetableEntryDetailed } from '../../../lib/timetable';
 

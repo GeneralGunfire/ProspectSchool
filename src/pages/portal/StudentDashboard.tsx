@@ -3,23 +3,27 @@ import { motion, AnimatePresence } from 'motion/react';
 import { LogOut, Home, CalendarDays, ClipboardList, BookOpen, FolderOpen, Megaphone, Sparkles, FileText, Menu, X, ClipboardCheck, School, Award, CalendarClock, ListChecks, ShoppingBag, HeartHandshake, ChevronDown, Bot, Users, LifeBuoy } from 'lucide-react';
 import { getStudentSession, studentLogout, type StudentSession } from '../../lib/auth';
 import { fetchCohortHomeroomTeacher } from '../../lib/homeroom';
-import SubjectSelectionPage from './student/SubjectSelectionPage';
 import StudentHomePage from './student/StudentHomePage';
-import StudentCalendarPage from './student/StudentCalendarPage';
-import StudentMarksPage from './student/StudentMarksPage';
-import StudentResourcesPage from './student/StudentResourcesPage';
-import StudentAnnouncementsPage from './student/StudentAnnouncementsPage';
-import StudentPastPapersPage from './student/StudentPastPapersPage';
-import StudentHomeroomPage from './student/StudentHomeroomPage';
-import StudentWellbeingPage from './student/StudentWellbeingPage';
-import StudentWellbeingHelpPage from './student/StudentWellbeingHelpPage';
-import StudentBehaviourPage from './student/StudentBehaviourPage';
-import StudentTimetablePage from './student/StudentTimetablePage';
-import StudentTopicTestsV2Page from './student/StudentTopicTestsV2Page';
-import StudentPeerTutoringPage from './student/StudentPeerTutoringPage';
-import MarketplacePage from './shared/MarketplacePage';
 import NotificationBell from '../../shared/components/NotificationBell';
 
+// Every inner page except StudentHomePage (the first page a student sees,
+// so it stays eagerly bundled) is code-split — previously all 15+ pages
+// were statically imported, meaning a student paid the bundle cost of
+// every dashboard page upfront just to load Home.
+const SubjectSelectionPage      = lazy(() => import('./student/SubjectSelectionPage'));
+const StudentCalendarPage       = lazy(() => import('./student/StudentCalendarPage'));
+const StudentMarksPage          = lazy(() => import('./student/StudentMarksPage'));
+const StudentResourcesPage      = lazy(() => import('./student/StudentResourcesPage'));
+const StudentAnnouncementsPage  = lazy(() => import('./student/StudentAnnouncementsPage'));
+const StudentPastPapersPage     = lazy(() => import('./student/StudentPastPapersPage'));
+const StudentHomeroomPage       = lazy(() => import('./student/StudentHomeroomPage'));
+const StudentWellbeingPage      = lazy(() => import('./student/StudentWellbeingPage'));
+const StudentWellbeingHelpPage  = lazy(() => import('./student/StudentWellbeingHelpPage'));
+const StudentBehaviourPage      = lazy(() => import('./student/StudentBehaviourPage'));
+const StudentTimetablePage      = lazy(() => import('./student/StudentTimetablePage'));
+const StudentTopicTestsV2Page   = lazy(() => import('./student/StudentTopicTestsV2Page'));
+const StudentPeerTutoringPage   = lazy(() => import('./student/StudentPeerTutoringPage'));
+const MarketplacePage           = lazy(() => import('./shared/MarketplacePage'));
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
 
@@ -430,22 +434,22 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         {/* Page content — scrollable */}
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto student-dashboard-bg">
           {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
-          {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
-          {activePage === 'wellbeing'     && <StudentWellbeingPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'wellbeing-help' && <StudentWellbeingHelpPage session={session} />}
-          {activePage === 'behaviour'     && <StudentBehaviourPage session={session} />}
-          {activePage === 'timetable'     && <StudentTimetablePage session={session} />}
-          {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
-          {activePage === 'topic-tests'   && <StudentTopicTestsV2Page session={session} />}
-          {activePage === 'peer-tutoring' && <StudentPeerTutoringPage session={session} />}
-          {activePage === 'marketplace'   && <MarketplacePage sellerType="student" sellerId={session.student_id} schoolId={session.school_id} studentGrade={session.grade} />}
-          {activePage === 'subject-selection' && <SubjectSelectionPage session={session} />}
-          {activePage === 'future'        && (
-            <Suspense fallback={<Spinner />}>
+          <Suspense fallback={<Spinner />}>
+            {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
+            {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
+            {activePage === 'wellbeing'     && <StudentWellbeingPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+            {activePage === 'wellbeing-help' && <StudentWellbeingHelpPage session={session} />}
+            {activePage === 'behaviour'     && <StudentBehaviourPage session={session} />}
+            {activePage === 'timetable'     && <StudentTimetablePage session={session} />}
+            {activePage === 'calendar'      && <StudentCalendarPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+            {activePage === 'marks'         && <StudentMarksPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+            {activePage === 'resources'     && <StudentResourcesPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+            {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
+            {activePage === 'topic-tests'   && <StudentTopicTestsV2Page session={session} />}
+            {activePage === 'peer-tutoring' && <StudentPeerTutoringPage session={session} />}
+            {activePage === 'marketplace'   && <MarketplacePage sellerType="student" sellerId={session.student_id} schoolId={session.school_id} studentGrade={session.grade} />}
+            {activePage === 'subject-selection' && <SubjectSelectionPage session={session} />}
+            {activePage === 'future'        && (
               <MyFuturePage
                 session={session}
                 initialSubView={futureSubView}
@@ -455,13 +459,11 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   setPage(p as ActivePage);
                 }}
               />
-            </Suspense>
-          )}
-          {activePage === 'library'       && (
-            <Suspense fallback={<Spinner />}>
+            )}
+            {activePage === 'library'       && (
               <LibraryPage session={session} innerPage={innerPage} onNavigate={handleLibraryNavigate} />
-            </Suspense>
-          )}
+            )}
+          </Suspense>
         </div>
 
       </div>

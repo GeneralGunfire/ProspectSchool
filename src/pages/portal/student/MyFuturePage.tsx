@@ -1,7 +1,7 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, ChevronLeft, type LucideIcon } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
 import { computeQuizResults, type QuizResults } from '../../../features/careers/data/quizScoringLogic';
@@ -213,7 +213,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
 
   if (loading) {
     return (
-      <div className="student-home min-h-full pb-16 relative">
+      <div className="student-my-future student-home min-h-full pb-16 relative">
         <div className="relative overflow-hidden">
           <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
@@ -287,7 +287,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   // ── Page ──────────────────────────────────────────────────────────────────
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-my-future student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
           No buttons in this band (house rule). Stat readouts below the

@@ -19,10 +19,12 @@ import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
 import Dropdown from '../../../shared/components/Dropdown';
 
+const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
 // ── NQF level badge colour ────────────────────────────────────────────────────
 function nqfColor(level: number) {
   if (level >= 7) return 'bg-emerald-100 text-emerald-800';
-  if (level >= 6) return 'bg-blue-100 text-blue-800';
+  if (level >= 6) return 'bg-brand-dark/10 text-brand-dark';
   if (level >= 5) return 'bg-indigo-100 text-indigo-800';
   if (level >= 4) return 'bg-amber-100 text-amber-800';
   if (level >= 3) return 'bg-orange-100 text-orange-800';
@@ -32,7 +34,7 @@ function nqfColor(level: number) {
 function apsColor(aps: number) {
   if (aps === 0) return 'text-stone-300';
   if (aps >= 40) return 'text-emerald-600';
-  if (aps >= 30) return 'text-blue-600';
+  if (aps >= 30) return 'text-brand-dark';
   if (aps >= 24) return 'text-amber-600';
   return 'text-red-500';
 }
@@ -203,9 +205,9 @@ function DegreeCard({
 
           {/* Notes */}
           {degree.notes && (
-            <div className="flex items-start gap-2 bg-blue-50 rounded px-3 py-2">
-              <Info className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-700">{degree.notes}</p>
+            <div className="flex items-start gap-2 bg-brand-dark/5 rounded px-3 py-2">
+              <Info className="w-3.5 h-3.5 text-brand-dark/60 shrink-0 mt-0.5" />
+              <p className="text-xs text-brand-dark/80">{degree.notes}</p>
             </div>
           )}
 
@@ -369,46 +371,45 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
   const qualifyingCount = filteredDegrees.filter(m => m.match.qualifies).length;
 
   return (
-    <div className="px-4 py-6 sm:p-6 md:p-8 max-w-6xl w-full mx-auto">
-      <div>
+    <div className="student-home min-h-full pb-16 relative">
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="mb-6 flex items-start justify-between gap-4"
-        >
-          <div>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">APS & Universities</p>
-            <h1 className="text-brand-dark text-[28px] sm:text-[34px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-              APS Calculator
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
-              Enter your Grade 12 marks to see which programmes you qualify for.
-            </p>
-          </div>
-          {aps > 0 && apsGoal > 0 && (
-            <div className="shrink-0">
-              <div className={`rounded px-3 py-2 sm:px-4 sm:py-3 text-center border-2 ${
-                aps >= apsGoal
-                  ? 'bg-emerald-50 border-emerald-200'
-                  : 'bg-amber-50 border-amber-200'
-              }`}>
-                <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-stone-500 mb-0.5">
+      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
+      <div className="relative overflow-hidden">
+        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease }}
+            className="flex flex-wrap items-start justify-between gap-4"
+          >
+            <div className="min-w-0">
+              <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">APS & Universities</p>
+              <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
+                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
+                APS Calculator
+              </h1>
+              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
+                Enter your Grade 12 marks to see which programmes you qualify for.
+              </p>
+            </div>
+            {aps > 0 && apsGoal > 0 && (
+              <div className="shrink-0 border border-brand-border bg-white/70 rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center">
+                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-[rgba(31,36,33,0.5)] mb-0.5">
                   {aps >= apsGoal ? 'Goal Reached' : 'Goal'}
                 </p>
-                <p className={`font-black text-lg sm:text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
+                <p className={`font-black text-base sm:text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
                   {aps} / {apsGoal}
                 </p>
                 {aps < apsGoal && (
-                  <p className="text-[9px] sm:text-[10px] text-stone-500 mt-0.5">{apsGoal - aps} to go</p>
+                  <p className="text-[9px] sm:text-[10px] text-[rgba(31,36,33,0.5)] mt-0.5">{apsGoal - aps} to go</p>
                 )}
               </div>
-            </div>
-          )}
-        </motion.div>
+            )}
+          </motion.div>
+        </div>
+      </div>
 
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3">
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
 
           {/* ── Left: Subject Input ── */}
@@ -465,7 +466,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
             {/* APS Score card */}
             <div className={`rounded border-2 p-6 text-center transition-all ${
               aps >= 40 ? 'border-emerald-300 bg-emerald-50' :
-              aps >= 30 ? 'border-blue-300 bg-blue-50' :
+              aps >= 30 ? 'border-brand-dark/20 bg-brand-dark/5' :
               aps >= 24 ? 'border-amber-300 bg-amber-50' :
               'border-brand-border bg-white'
             }`}>

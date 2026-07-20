@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Info, Lock, Send, CheckCircle2, AlertTriangle, Clock, ChevronDown, Gauge, TrendingUp, BarChart3, MessageSquareQuote } from 'lucide-react';
 import type { StudentSession } from '../../../lib/auth';
+import { Spinner } from '../../../shared/components/Spinner';
 import {
   fetchActiveWindow, isWindowCurrentlyOpen, fetchSubjectCatalog,
   fetchStudentSelection, saveDraftSelection, submitSelection,
@@ -213,15 +214,15 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (loading) {
     return (
-      <div className="student-home flex items-center justify-center py-24">
-        <div className="w-5 h-5 border-2 border-brand-border border-t-accent rounded-full animate-spin" />
+      <div className="subject-selection student-home min-h-full pb-16 relative flex items-center justify-center py-24">
+        <Spinner />
       </div>
     );
   }
 
   if (!eligible) {
     return (
-      <div className="student-home px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
         <div className="paper-card rounded p-12 text-center">
           <Lock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not available</h2>
@@ -233,7 +234,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (!windowOpen && !selection) {
     return (
-      <div className="student-home px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
         <div className="paper-card rounded p-12 text-center">
           <Clock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not open yet</h2>
@@ -244,7 +245,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
   }
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="subject-selection student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
       <div className="relative overflow-hidden">
@@ -397,7 +398,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
             {saved ? 'Saved' : 'Save Draft'}
           </motion.button>
           <motion.button onClick={handleSubmit} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 bg-brand-dark text-white text-sm font-black px-5 py-2.5 rounded hover:bg-brand-dark/90 transition-colors disabled:opacity-60">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-[var(--color-accent-soft)] transition-colors disabled:opacity-60">
             <Send className="w-4 h-4" /> {isSubmitted ? 'Resubmit' : 'Submit for Approval'}
           </motion.button>
         </div>

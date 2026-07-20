@@ -106,7 +106,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   });
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-resources student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
           No buttons in this band (house rule). Resource count is shown as
@@ -200,8 +200,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
             <p className="text-[13px] text-[rgba(31,36,33,0.4)]">Your teachers haven't uploaded any materials yet.</p>
             <button
               onClick={() => onNavigate('library')}
-              className="mt-5 flex items-center gap-2 px-4 py-2.5 text-white text-[13px] font-bold rounded transition-colors"
-              style={{ background: 'var(--color-accent)' }}
+              className="edge-glow mt-5 flex items-center gap-2 px-4 py-2.5 bg-accent text-white text-[13px] font-bold rounded transition-colors hover:bg-[var(--color-accent-soft)]"
             >
               <BookOpen className="w-3.5 h-3.5" />
               Open Library Instead

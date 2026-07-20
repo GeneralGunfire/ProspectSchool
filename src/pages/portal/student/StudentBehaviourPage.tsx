@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Plus, Minus, Award } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import { fetchStudentBehaviour, type BehaviourEntry } from '../../../lib/behaviour';
 
@@ -56,7 +56,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
               className="inline-flex items-center gap-2 mt-4 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
               <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">NET</span>
-              <span className={`font-black text-sm ${netPoints >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+              <span className={`font-black text-sm ${netPoints >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                 {netPoints > 0 ? '+' : ''}{netPoints}
               </span>
             </motion.div>

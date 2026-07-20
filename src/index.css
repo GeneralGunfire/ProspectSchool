@@ -967,7 +967,16 @@ html {
    pages — plain CSS background-image so it always paints (no <picture>/
    z-index stacking to get wrong), with a mobile crop swapped in below
    768px so the wave band stays in frame on narrow viewports. */
+/* Scoped accent override — the global :root --accent is bright blue (a
+   shadcn demo-component default), which isn't the site's brand color.
+   Repoint it to the same warm charcoal used everywhere else (sidebar
+   active state, landing page, student dashboard) so Sign In buttons and
+   input focus rings on the login/portal pages match, instead of falling
+   through to the unrelated blue default. */
 .auth-bg {
+  --color-accent: #1f2421;
+  --color-accent-soft: #343b36;
+  --color-accent-foreground: #ffffff;
   background-image: url('/backgrounds/auth-bg-desktop.png');
   background-size: cover;
   background-position: center;

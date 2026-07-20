@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { Users, GraduationCap, HandHeart, ListChecks, Award, ShieldAlert, CheckCircle2, Clock, ChevronRight, X, Search } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
@@ -69,7 +69,7 @@ export default function StudentPeerTutoringPage({ session }: Props) {
   }
 
   return (
-    <div className="student-home min-h-full pb-16 relative">
+    <div className="student-peer-tutoring student-home min-h-full pb-16 relative">
       <div className="relative overflow-hidden">
         <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}

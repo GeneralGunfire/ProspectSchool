@@ -61,7 +61,7 @@ export default function PlatformLogin({ onNavigate }: { onNavigate: (page: strin
               </motion.div>
             )}
 
-            <div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.35 }}>
               <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 mb-2">Name</label>
               <input
                 type="text" required
@@ -71,9 +71,9 @@ export default function PlatformLogin({ onNavigate }: { onNavigate: (page: strin
                 placeholder="Your name"
                 autoCorrect="off"
               />
-            </div>
+            </motion.div>
 
-            <div>
+            <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.17, duration: 0.35 }}>
               <label className="block text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 mb-2">Password</label>
               <div className="relative">
                 <input
@@ -88,10 +88,11 @@ export default function PlatformLogin({ onNavigate }: { onNavigate: (page: strin
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-            </div>
+            </motion.div>
 
             <motion.button
               type="submit" disabled={loading}
+              initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24, duration: 0.35 }}
               whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
               className="w-full bg-brand-dark text-white font-black py-3.5 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-stone-900/10 hover:brightness-110"
             >

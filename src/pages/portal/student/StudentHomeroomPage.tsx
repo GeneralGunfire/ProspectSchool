@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Check, Clock, X as XIcon, Thermometer, CalendarOff, UserRound } from 'lucide-react';
-import { Shimmer } from './StudentHomePage';
+import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import {
   fetchCohortHomeroomTeacher, fetchStudentAttendanceHistory,
@@ -13,7 +13,7 @@ const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 interface StudentHomeroomPageProps { session: StudentSession; }
 
 const STATUS_CONFIG: Record<AttendanceStatus, { label: string; icon: typeof Check; className: string }> = {
-  present:        { label: 'Present',        icon: Check,       className: 'bg-green-50 text-green-700' },
+  present:        { label: 'Present',        icon: Check,       className: 'bg-emerald-50 text-emerald-600' },
   late:           { label: 'Late',           icon: Clock,       className: 'bg-amber-50 text-amber-700' },
   absent:         { label: 'Absent',         icon: XIcon,       className: 'bg-red-50 text-red-700' },
   excused:        { label: 'Sick',           icon: Thermometer, className: 'bg-sky-50 text-sky-700' },
