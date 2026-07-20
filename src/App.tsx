@@ -81,10 +81,10 @@ const FreeToolsNav = ({ onNavigate, activePage }: { onNavigate: (page: Page) => 
 const PageTransition = ({ children, pageKey }: { children: ReactNode; pageKey: string }) => (
   <motion.div
     key={pageKey}
-    initial={{ opacity: 0, y: 12 }}
+    initial={{ opacity: 0, y: 8 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: -8 }}
-    transition={{ duration: 0.25, ease: 'easeOut' }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.15, ease: 'easeOut' }}
   >
     {children}
   </motion.div>
@@ -207,8 +207,15 @@ export default function App() {
     <>
       {isAssetsLoaded && (
         <div className="relative min-h-screen bg-white">
+          {/* mode="wait" was forcing the outgoing page to fully exit-animate
+              before the incoming page's lazy chunk even started fetching —
+              on portal→login (a fresh lazy import each time) that serial
+              wait was the real cause of the sluggish page-switch feel, not
+              just the animation itself. Default (overlapping) mode lets the
+              new chunk start loading and mounting immediately while the old
+              page fades out, so the switch feels roughly 2x as fast. */}
           <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center"><Spinner /></div>}>
-            <AnimatePresence mode="wait">
+            <AnimatePresence initial={false}>
               {renderPage()}
             </AnimatePresence>
           </Suspense>

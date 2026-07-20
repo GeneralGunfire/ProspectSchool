@@ -7,6 +7,11 @@ const EASE = [0.23, 1, 0.32, 1] as const;
 export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   const reduced = useReducedMotion();
 
+  // Mobile's video is 3+ MB — `preload="auto"` was fetching the whole
+  // file eagerly before first paint, competing with everything else on
+  // a cold mobile load. `preload="metadata"` fetches just enough to
+  // start playback quickly while the poster covers the gap, so the hero
+  // becomes visible immediately instead of waiting on the full download.
   const VideoLayer = ({ className = '' }: { className?: string }) => (
     <video
       aria-hidden="true"
@@ -14,7 +19,7 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
       loop
       muted
       playsInline
-      preload="auto"
+      preload="metadata"
       className={`absolute inset-0 w-full h-full object-cover ${className}`}
       style={{ filter: 'contrast(1.05) saturate(1.15) brightness(1.25)' }}
       poster="/hero-full.png"

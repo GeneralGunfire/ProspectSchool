@@ -53,13 +53,19 @@ const NavContent = ({ onNavigate, logoSrc, textClass, linkClass, ctaClass }: {
 export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
   return (
     <div className="fixed top-4 left-0 right-0 z-50 px-4">
-      {/* Mobile — dark glass, matches the dark video hero */}
+      {/* Mobile — dark glass, matches the dark video hero. This nav is
+          `position: fixed`, so it stays composited on-screen for the
+          entire scroll — a heavy blur() here gets re-sampled every scroll
+          frame and is a real mobile jank source. Lighter blur radius
+          (8px vs desktop's 20px) keeps the glass look at a fraction of
+          the compositing cost; background opacity bumped up slightly to
+          compensate visually for the reduced blur. */}
       <nav
         className="md:hidden max-w-3xl mx-auto rounded-full"
         style={{
-          background: 'color-mix(in srgb, #0B0F14 72%, transparent)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          background: 'color-mix(in srgb, #0B0F14 82%, transparent)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.10)',
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.3), 0 16px 40px -16px rgba(0,0,0,0.6)',
         }}

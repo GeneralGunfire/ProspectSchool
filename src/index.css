@@ -716,9 +716,18 @@ html {
   --color-depth-wash: rgba(56, 65, 79, 0.07);
   /* One clear, cool, minimal gradient for the whole page — a soft
      blue-grey wash top-to-bottom rather than per-section fills, so
-     scrolling never shows a seam between sections. */
+     scrolling never shows a seam between sections. `background-attachment:
+     fixed` is a well-known mobile scroll-jank cause (forces main-thread
+     repaint of the background on every scroll frame instead of GPU
+     compositing, especially on iOS Safari) — scoped to desktop only via
+     a media query; mobile gets the same gradient painted normally
+     (scrolls with the page, no repaint-per-frame cost). */
   background: linear-gradient(180deg, #eef1f2 0%, #e7ebec 45%, #e2e6e8 100%);
-  background-attachment: fixed;
+}
+@media (min-width: 768px) {
+  .landing-page {
+    background-attachment: fixed;
+  }
 }
 
 /* Same faint dot-grid texture as .student-home, scoped to the landing page. */
@@ -784,14 +793,25 @@ html {
   border-radius: 10px;
   position: relative;
   isolation: isolate;
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 1px 2px rgba(0, 0, 0, 0.25),
     0 10px 24px -6px rgba(0, 0, 0, 0.35),
     0 32px 56px -20px rgba(0, 0, 0, 0.45);
   transition: border-color 0.3s ease, box-shadow 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1);
+}
+/* backdrop-filter: blur() is desktop-only — this card repeats up to 9x on
+   one screen (LearnerFeatureCards) and every instance is an independent
+   GPU-composited blur layer that gets re-sampled as it scrolls in/out of
+   view. On mobile GPUs, many of these on-screen at once was the actual
+   cause of scroll jank on the landing page — worse than any single fixed
+   element, since it scales with card count, not a flat cost. Desktop
+   hardware handles it fine, so the frosted-glass look stays there. */
+@media (min-width: 768px) {
+  .landing-page .paper-card-dark {
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+  }
 }
 .landing-page .paper-card-dark:hover {
   border-color: rgba(255, 255, 255, 0.18);
