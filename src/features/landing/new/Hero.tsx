@@ -56,23 +56,46 @@ export const Hero = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
               className="text-white text-[2.5rem] leading-[1.08] tracking-[-0.02em] font-extrabold text-balance"
               style={{ fontFamily: 'var(--font-display)' }}
             >
-              Welcome to Prospect
+              Every mark, every lesson,{' '}
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-400 via-sky-500 to-blue-500">
+                  one platform.
+                </span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 320 14"
+                  className="absolute left-0 -bottom-2 w-full h-3 text-amber-400/80"
+                  preserveAspectRatio="none"
+                >
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="mt-5 text-white/80 text-[16px] leading-relaxed max-w-xl mx-auto">
-              The platform your school has been waiting for — marks, homework, and the road ahead, all in one place.
+            <p className="mt-6 text-white/80 text-[16px] leading-relaxed max-w-xl mx-auto">
+              Marks, homework, and career guidance — together in one place, so students, teachers, and parents always know where things stand.
             </p>
           </FadeIn>
 
           <FadeIn delay={0.3}>
-            <button
-              onClick={() => onNavigate('portal')}
-              className="mt-9 inline-flex items-center justify-center bg-white text-brand-dark font-bold text-[14px] px-7 py-3.5 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all cursor-pointer"
-            >
-              Get Started
-            </button>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={() => onNavigate('portal')}
+                className="group inline-flex items-center justify-center gap-2 bg-white text-brand-dark font-bold text-[14px] px-7 py-3.5 rounded-full hover:bg-white/90 active:scale-[0.97] transition-all cursor-pointer"
+              >
+                Get Started
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+              </button>
+              <button
+                onClick={() => onNavigate('careers')}
+                className="inline-flex items-center justify-center gap-2 text-white/90 font-bold text-[14px] px-5 py-3.5 rounded-full border border-white/30 hover:bg-white/10 active:scale-[0.97] transition-all cursor-pointer"
+              >
+                <PlayCircle className="w-4 h-4" />
+                Explore Careers
+              </button>
+            </div>
           </FadeIn>
         </motion.div>
       </div>

@@ -8,6 +8,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, CheckCircle2 } from 'lucide-react';
 import type { WorkedExampleContent } from '../../data/library/types';
+import { FunctionGraph } from './FunctionGraph';
+import { BoxPlot } from './BoxPlot';
+import { VennDiagram } from './VennDiagram';
+import { TreeDiagram } from './TreeDiagram';
+import { GeometricDiagram } from './GeometricDiagram';
+import { ProofShell } from './ProofShell';
+import { CircuitDiagram } from './CircuitDiagram';
+import { ParticleDiagram } from './ParticleDiagram';
+import { EquationBalancer } from './EquationBalancer';
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
@@ -46,6 +55,52 @@ export function WorkedExample({
         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-1">Worked Example</p>
         <p className="text-[14px] font-bold text-[#1e293b] leading-snug">{example.prompt}</p>
       </div>
+
+      {example.graph && (
+        <div className="px-5 pt-4">
+          <FunctionGraph {...example.graph} />
+        </div>
+      )}
+      {example.boxPlot && (
+        <div className="px-5 pt-4">
+          <BoxPlot {...example.boxPlot} />
+        </div>
+      )}
+      {example.venn && (
+        <div className="px-5 pt-4">
+          <VennDiagram {...example.venn} />
+        </div>
+      )}
+      {example.tree && (
+        <div className="px-5 pt-4">
+          <TreeDiagram {...example.tree} />
+        </div>
+      )}
+      {example.diagram && (
+        <div className="px-5 pt-4">
+          <GeometricDiagram {...example.diagram} />
+        </div>
+      )}
+      {example.proof && (
+        <div className="px-5 pt-4">
+          <ProofShell proof={example.proof} />
+        </div>
+      )}
+      {example.circuit && (
+        <div className="px-5 pt-4">
+          <CircuitDiagram {...example.circuit} />
+        </div>
+      )}
+      {example.particle && (
+        <div className="px-5 pt-4">
+          <ParticleDiagram {...example.particle} />
+        </div>
+      )}
+      {example.equationBalancer && (
+        <div className="px-5 pt-4">
+          <EquationBalancer equation={example.equationBalancer} />
+        </div>
+      )}
 
       <div className="px-5 py-4 space-y-2.5">
         <AnimatePresence initial={false}>

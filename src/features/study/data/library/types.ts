@@ -35,6 +35,153 @@ export interface WorkedExampleContent {
   prompt: string;
   steps: WorkedStep[];
   answer: string;
+  /** Optional interactive plot shown alongside this example (see
+   *  components/lesson/FunctionGraph.tsx). Only used by graph-based topics
+   *  (Term 2 Functions/Trigonometry) — text-only topics omit this entirely. */
+  graph?: GraphSpec;
+  /** Optional box-and-whisker plot(s) (Term 3 Statistics). */
+  boxPlot?: BoxPlotSpec;
+  /** Optional two-set Venn diagram (Term 3 Probability). */
+  venn?: VennSpec;
+  /** Optional probability tree diagram (Term 3 Probability). */
+  tree?: TreeSpec;
+  /** Optional labelled static diagram (Geometry: Euclidean + Analytical). */
+  diagram?: DiagramSpec;
+  /** Optional interactive statement/reason proof exercise (Geometry: Euclidean). */
+  proof?: ProofSpec;
+  /** Optional circuit diagram (Physical Sciences: Electric Circuits). */
+  circuit?: CircuitSpec;
+  /** Optional particle/atomic model diagram (Physical Sciences: Chemistry). */
+  particle?: ParticleDiagramSpec;
+  /** Optional interactive equation-balancing exercise (Physical Sciences: Chemistry). */
+  equationBalancer?: EquationSpec;
+}
+
+// ── Graph rendering (Term 2: Functions, Trigonometry graphs) ─────────────────
+
+export interface GraphFeaturePoint { x: number; y: number; label: string; }
+export interface GraphAsymptote { axis: 'x' | 'y'; value: number; label?: string; }
+export interface GraphSliderConfig { label: string; min: number; max: number; step: number; initial: number; }
+
+export interface GraphSpec {
+  fn: (x: number, sliderValue?: number) => number;
+  domain: [number, number];
+  yDomain?: [number, number];
+  discontinuities?: number[];
+  features?: GraphFeaturePoint[];
+  asymptotes?: GraphAsymptote[];
+  slider?: GraphSliderConfig;
+}
+
+// ── Statistics/Probability visuals (Term 3) ───────────────────────────────────
+
+export interface BoxPlotDataPoint {
+  label: string;
+  min: number;
+  q1: number;
+  median: number;
+  q3: number;
+  max: number;
+}
+
+export interface BoxPlotSpec {
+  plots: BoxPlotDataPoint[];
+  domain: [number, number];
+}
+
+export interface VennSpec {
+  labelA: string;
+  labelB: string;
+  counts?: { onlyA?: number; onlyB?: number; both?: number; neither?: number };
+  highlight?: 'A' | 'B' | 'intersection' | 'union' | 'complement' | 'none';
+}
+
+export interface TreeNodeSpec {
+  label: string;
+  probability: number;
+  children?: TreeNodeSpec[];
+}
+
+export interface TreeSpec {
+  root: TreeNodeSpec;
+  showCumulative?: boolean;
+}
+
+// ── Geometry visuals (Euclidean + Analytical) ─────────────────────────────────
+
+export interface DiagramPointSpec { id: string; x: number; y: number; label?: string; labelOffset?: [number, number]; }
+export interface DiagramSegmentSpec { from: string; to: string; ticks?: number; dashed?: boolean; parallelMarks?: number; }
+export interface DiagramAngleSpec { at: string; from: string; to: string; label?: string; rightAngle?: boolean; }
+
+export interface DiagramSpec {
+  points: DiagramPointSpec[];
+  segments: DiagramSegmentSpec[];
+  angles?: DiagramAngleSpec[];
+  viewBox?: [number, number, number, number];
+}
+
+export interface ProofStepSpec {
+  statement: string;
+  correctReason: string;
+  reasonOptions: string[];
+}
+
+export interface ProofSpec {
+  given: string[];
+  prove: string;
+  steps: ProofStepSpec[];
+}
+
+// ── Physical Sciences visuals ──────────────────────────────────────────────────
+
+export type CircuitComponentType = 'cell' | 'resistor' | 'lamp' | 'switch' | 'ammeter' | 'voltmeter' | 'wire-junction';
+
+export interface CircuitComponentSpec {
+  id: string;
+  type: CircuitComponentType;
+  x: number;
+  y: number;
+  rotation?: number;
+  label?: string;
+  closed?: boolean;
+}
+
+export interface CircuitWireSpec {
+  from: string;
+  to: string;
+}
+
+export interface CircuitSpec {
+  components: CircuitComponentSpec[];
+  wires: CircuitWireSpec[];
+  viewBox?: [number, number, number, number];
+}
+
+export interface StateModelSpec {
+  mode: 'state';
+  state: 'solid' | 'liquid' | 'gas';
+  particleCount?: number;
+}
+
+export interface AtomModelSpec {
+  mode: 'atom';
+  protons: number;
+  neutrons: number;
+  electronsPerShell: number[];
+  label?: string;
+}
+
+export type ParticleDiagramSpec = StateModelSpec | AtomModelSpec;
+
+export interface EquationSpeciesSpec {
+  formula: string;
+  elements: Record<string, number>;
+  correctCoefficient: number;
+}
+
+export interface EquationSpec {
+  reactants: EquationSpeciesSpec[];
+  products: EquationSpeciesSpec[];
 }
 
 /** A fading-practice problem: same shape as a worked example, but `revealSteps`

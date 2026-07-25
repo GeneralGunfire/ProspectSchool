@@ -51,7 +51,20 @@ const AuthIntroPanel = () => (
     >
       <span className="eyebrow">Prospect Portal</span>
       <h2 className="font-black text-brand-dark text-[2.5rem] leading-[1.1] mt-4" style={{ letterSpacing: '-0.03em' }}>
-        One platform, every part of the school.
+        One platform, every{' '}
+        <span className="relative inline-block">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+            part of the school.
+          </span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 320 14"
+            className="absolute left-0 -bottom-2 w-full h-3 text-amber-500/70"
+            preserveAspectRatio="none"
+          >
+            <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          </svg>
+        </span>
       </h2>
       <p className="mt-4 text-brand-eyebrow text-[15px] leading-relaxed max-w-[36ch]">
         Students, parents, teachers, and admins each get a dashboard built for them — sign in on the right to pick up where you left off.

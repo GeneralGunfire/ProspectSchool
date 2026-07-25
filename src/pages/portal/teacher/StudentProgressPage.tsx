@@ -704,12 +704,12 @@ function StudentProfile({
       {/* Tab bar — wraps to multiple rows instead of squeezing into a
           horizontal scroller with hidden labels, so every tab stays
           legible and reachable without a sideways swipe. */}
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5 p-1.5 rounded-2xl bg-stone-100">
+      <div className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-stone-100">
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 px-2 py-2.5 sm:py-2 rounded-xl text-[11px] sm:text-[12px] transition-colors ${
+            className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[11px] sm:text-[12px] whitespace-nowrap transition-colors ${
               activeTab === t.key
                 ? 'bg-accent text-white font-black shadow-sm'
                 : 'bg-white text-stone-500 font-bold hover:text-brand-dark hover:bg-stone-50'
