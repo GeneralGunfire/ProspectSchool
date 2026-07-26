@@ -222,7 +222,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (!eligible) {
     return (
-      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-[1300px] w-full mx-auto">
         <div className="paper-card rounded p-12 text-center">
           <Lock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not available</h2>
@@ -234,7 +234,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
 
   if (!windowOpen && !selection) {
     return (
-      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-3xl w-full mx-auto">
+      <div className="subject-selection student-home min-h-full pb-16 relative px-4 py-6 sm:p-6 md:p-8 max-w-[1300px] w-full mx-auto">
         <div className="paper-card rounded p-12 text-center">
           <Clock className="w-8 h-8 text-stone-300 mx-auto mb-3" />
           <h2 className="text-lg font-black text-brand-dark">Not open yet</h2>
@@ -248,9 +248,9 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
     <div className="subject-selection student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden border-b border-brand-border">
 
-        <div className="relative max-w-4xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Grade 10 · {year}</p>
           <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
             style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
@@ -262,7 +262,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 pb-6">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 pb-6">
 
       {/* Status banner */}
       {selection && (
@@ -398,7 +398,7 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
             {saved ? 'Saved' : 'Save Draft'}
           </motion.button>
           <motion.button onClick={handleSubmit} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-[var(--color-accent-soft)] transition-colors disabled:opacity-60">
+            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-[var(--color-accent-light)] transition-colors disabled:opacity-60">
             <Send className="w-4 h-4" /> {isSubmitted ? 'Resubmit' : 'Submit for Approval'}
           </motion.button>
         </div>

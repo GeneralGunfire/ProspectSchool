@@ -108,57 +108,26 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
   return (
     <div className="student-resources student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
-          No buttons in this band (house rule). Resource count is shown as
-          a static readout pill, matching the reference page's APS chip. */}
-      <div className="relative overflow-hidden">
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-
-          {/* Eyebrow row — quiet single line above the title */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
-              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-            </p>
-          </motion.div>
-
-          {/* Title — Fraunces serif, regular weight */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-          >
-            Study resources
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium"
-          >
-            Materials, links and notes shared by your teachers.
-          </motion.p>
-
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+              Study resources
+            </h1>
+            <p className="text-[14px] text-muted mt-1">Materials, links and notes shared by your teachers.</p>
+          </div>
           {!loading && resources.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease, delay: 0.1 }}
-              className="inline-flex items-center gap-2 mt-4 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5"
-            >
-              <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">Available</span>
-              <span className="font-black text-sm text-brand-dark">{resources.length} resource{resources.length !== 1 ? 's' : ''}</span>
-            </motion.div>
+            <div className="text-right shrink-0">
+              <p className="text-[12px] text-muted-2">Available</p>
+              <p className="text-[20px] leading-none text-brand-dark" style={{ fontWeight: 700 }}>{resources.length}</p>
+            </div>
           )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {loading ? (
           <div className="space-y-5">
@@ -197,10 +166,10 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
           <div className="paper-card rounded p-5 sm:p-7 flex flex-col items-center justify-center py-20 text-center">
             <FolderOpen className="w-9 h-9 text-stone-200 mb-4" />
             <p className="text-[16px] font-semibold text-brand-dark mb-1">No resources yet.</p>
-            <p className="text-[13px] text-[rgba(31,36,33,0.4)]">Your teachers haven't uploaded any materials yet.</p>
+            <p className="text-[13px] text-muted-2">Your teachers haven't uploaded any materials yet.</p>
             <button
               onClick={() => onNavigate('library')}
-              className="edge-glow mt-5 flex items-center gap-2 px-4 py-2.5 bg-accent text-white text-[13px] font-bold rounded transition-colors hover:bg-[var(--color-accent-soft)]"
+              className="edge-glow mt-5 flex items-center gap-2 px-4 py-2.5 bg-accent text-white text-[13px] font-bold rounded transition-colors hover:bg-[var(--color-accent-light)]"
             >
               <BookOpen className="w-3.5 h-3.5" />
               Open Library Instead
@@ -215,8 +184,8 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.06, ease }}
               >
-                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-3">
-                  Recently Viewed
+                <p className="text-[15px] font-semibold text-brand-dark mb-3">
+                  Recently viewed
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                   {recentResources.map(r => {
@@ -235,7 +204,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                         </div>
                         <div className="min-w-0">
                           <p className="text-[13px] font-semibold text-brand-dark truncate">{r.title}</p>
-                          <p className="text-[11px] text-[rgba(31,36,33,0.4)] truncate">{r.subject_label ?? meta.label}</p>
+                          <p className="text-[11px] text-muted-2 truncate">{r.subject_label ?? meta.label}</p>
                         </div>
                       </motion.button>
                     );
@@ -321,7 +290,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
               </div>
 
               {/* Result count */}
-              <p className="text-[12px] font-semibold text-[rgba(31,36,33,0.5)] pt-1">
+              <p className="text-[12px] font-semibold text-muted pt-1">
                 {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
                 {filterSubject !== 'all' && ` · ${filterSubject}`}
               </p>
@@ -367,7 +336,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[15px] font-semibold text-brand-dark truncate">{r.title}</p>
-                          <p className="text-[12px] text-[rgba(31,36,33,0.4)] truncate">
+                          <p className="text-[12px] text-muted-2 truncate">
                             {r.subject_label ? `${r.subject_label} · ` : ''}{meta.label}
                             {wasViewed && ' · Viewed'}
                           </p>
@@ -411,7 +380,7 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                                   {r.note_content}
                                 </p>
                               )}
-                              <p className="text-[12px] text-[rgba(31,36,33,0.35)] mb-3">{formatDate(r.created_at)}</p>
+                              <p className="text-[12px] text-muted-2 mb-3">{formatDate(r.created_at)}</p>
 
                               {!isNote && (
                                 <motion.button whileTap={{ scale: 0.97 }}

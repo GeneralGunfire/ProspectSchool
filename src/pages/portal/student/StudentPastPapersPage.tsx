@@ -305,7 +305,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               animate={{ opacity: 1, y: 0 }}
               className="max-w-sm w-full"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Practice Mode</p>
+              <p className="text-[15px] font-semibold text-brand-dark mb-2">Practice Mode</p>
               <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
                 {paper.title}
               </h2>
@@ -314,7 +314,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               )}
 
               <div className="paper-card rounded p-5 mb-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+                <p className="text-[15px] font-semibold text-brand-dark mb-3">
                   Set Timer
                 </p>
                 <div className="flex gap-2 flex-wrap mb-3">
@@ -414,7 +414,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
             >
               {practice.selfScore === null ? (
                 <>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Self Mark</p>
+                  <p className="text-[15px] font-semibold text-brand-dark mb-2">Self Mark</p>
                   <h2 className="font-black text-brand-dark text-2xl mb-1" style={{ letterSpacing: '-0.02em' }}>
                     How did you do?
                   </h2>
@@ -423,7 +423,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   </p>
 
                   <div className="paper-card rounded p-5 mb-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Your Score</p>
+                    <p className="text-[15px] font-semibold text-brand-dark mb-3">Your Score</p>
                     <div className="flex items-center gap-3 mb-4">
                       <input
                         type="number"
@@ -540,40 +540,26 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
   return (
     <div className="student-pastpapers student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
-              {session.school_name} · Grade {session.grade}
-            </p>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Past exam papers
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
-            Practice with real papers uploaded by your school.
-          </motion.p>
-
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+              Past exam papers
+            </h1>
+            <p className="text-[14px] text-muted mt-1">Practice with real papers uploaded by your school.</p>
+          </div>
           {!loading && papers.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.14 }}
-              className="inline-flex items-center gap-2 mt-4 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
-              <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">PAPERS</span>
-              <span className="font-black text-sm text-brand-dark">{papers.length}</span>
-            </motion.div>
+            <div className="text-right shrink-0">
+              <p className="text-[12px] text-muted-2">Papers</p>
+              <p className="text-[20px] leading-none text-brand-dark" style={{ fontWeight: 700 }}>{papers.length}</p>
+            </div>
           )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {!loading && papers.length > 0 && (
         <>
@@ -583,14 +569,14 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05, ease }}
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+              <p className="text-[15px] font-semibold text-brand-dark mb-3">
                 Recommended For You
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {recommended.map(p => {
                   const diff = difficultyLabel(p);
                   return (
-                    <div key={p.id} className="paper-card rounded p-4 hover:border-stone-400 hover:shadow-sm transition-all">
+                    <div key={p.id} className="paper-card rounded p-4 hover:border-stone-400 transition-colors">
                       <div className="flex items-start justify-between mb-3">
                         <div className="w-8 h-8 rounded bg-stone-100 flex items-center justify-center">
                           <FileText className="w-4 h-4 text-stone-600" />
@@ -648,7 +634,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               transition={{ delay: 0.08, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+              <p className="text-[15px] font-semibold text-brand-dark mb-3">
                 Recently Opened
               </p>
               <div className="flex gap-2 overflow-x-auto pb-1">
@@ -678,7 +664,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
               transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
               className="mb-6"
             >
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+              <p className="text-[15px] font-semibold text-brand-dark mb-3">
                 Practice History
               </p>
               <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
@@ -761,7 +747,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   <div className="paper-card rounded p-5 space-y-5">
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Subject</p>
+                      <p className="text-[15px] font-semibold text-brand-dark mb-2">Subject</p>
                       <div className="flex flex-wrap gap-2">
                         {subjects.filter(s => papers.some(p => p.subject_id === s.id)).map(s => (
                           <button key={s.id}
@@ -777,7 +763,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Grade</p>
+                      <p className="text-[15px] font-semibold text-brand-dark mb-2">Grade</p>
                       <div className="flex flex-wrap gap-2">
                         {GRADES.filter(g => papers.some(p => p.grade === g)).map(g => (
                           <button key={g}
@@ -793,7 +779,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Year</p>
+                      <p className="text-[15px] font-semibold text-brand-dark mb-2">Year</p>
                       <div className="flex flex-wrap gap-2">
                         {yearOptions.map(y => (
                           <button key={y}
@@ -809,7 +795,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Term</p>
+                      <p className="text-[15px] font-semibold text-brand-dark mb-2">Term</p>
                       <div className="flex flex-wrap gap-2">
                         {TERMS.filter(t => papers.some(p => p.term === t)).map(t => (
                           <button key={t}
@@ -874,7 +860,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
         <div className="paper-card rounded p-5 sm:p-7 flex flex-col items-center justify-center py-20 text-center">
           <FolderOpen className="w-9 h-9 text-stone-200 mb-4" />
           <p className="text-[16px] font-semibold text-brand-dark">No past papers yet.</p>
-          <p className="text-[13px] text-[rgba(31,36,33,0.4)] mt-1">Papers uploaded by your teachers will appear here.</p>
+          <p className="text-[13px] text-muted-2 mt-1">Papers uploaded by your teachers will appear here.</p>
         </div>
       ) : filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">

@@ -374,8 +374,8 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
     <div className="student-home min-h-full pb-16 relative">
 
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+      <div className="relative overflow-hidden border-b border-brand-border">
+        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div
             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease }}
@@ -409,7 +409,7 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3">
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
 
           {/* ── Left: Subject Input ── */}

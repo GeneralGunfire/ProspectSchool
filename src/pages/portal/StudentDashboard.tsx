@@ -26,6 +26,7 @@ const StudentPeerTutoringPage   = lazy(() => import('./student/StudentPeerTutori
 const MarketplacePage           = lazy(() => import('./shared/MarketplacePage'));
 const LibraryPage  = lazy(() => import('./student/LibraryPage'));
 const MyFuturePage = lazy(() => import('./student/MyFuturePage'));
+const AiTutorPage  = lazy(() => import('./student/AiTutorPage'));
 
 type ActivePage = 'home' | 'calendar' | 'marks' | 'resources' | 'announcements' | 'pastpapers' | 'library' | 'aps' | 'future' | 'topic-tests' | 'homeroom' | 'behaviour' | 'timetable' | 'subject-selection' | 'marketplace' | 'wellbeing' | 'wellbeing-help' | 'ai-tutor' | 'peer-tutoring';
 
@@ -92,7 +93,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'library',    label: 'Library',     icon: BookOpen },
     { id: 'resources',  label: 'Resources',   icon: FolderOpen },
     { id: 'pastpapers', label: 'Past Papers', icon: FileText },
-    { id: 'ai-tutor',      label: 'AI Tutor',              icon: Bot,   disabled: true },
+    { id: 'ai-tutor',      label: 'AI Tutor',              icon: Bot },
     { id: 'peer-tutoring', label: 'Peer to Peer Tutoring', icon: Users },
   ];
   const personalItems: NavItem[] = [
@@ -153,19 +154,19 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           student dashboard uses (soft layered shadow, faint top-to-
           bottom gradient, hairline border) instead of a flat white
           box with a barely-there shadow. ── */}
-      <aside className="hidden md:flex w-72 shrink-0 h-full flex-col p-4" style={{ background: '#eaebec' }}>
-        <div className="flex-1 min-h-0 flex flex-col rounded-[14px]"
+      <aside className="hidden md:flex w-72 shrink-0 h-full flex-col p-2.5" style={{ background: '#eaebec' }}>
+        <div className="flex-1 min-h-0 flex flex-col rounded-[10px]"
           style={{
-            background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
+            background: '#ffffff',
             border: '1px solid var(--color-brand-border)',
-            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.10), 0 10px 24px -6px rgba(15,18,15,0.20), 0 32px 56px -20px rgba(15,18,15,0.28)',
+            boxShadow: '0 1px 2px rgba(15,18,15,0.06)',
           }}>
 
           {/* Logo */}
-          <div className="flex items-center justify-between gap-2 px-5 py-4 border-b border-brand-border shrink-0 rounded-t-[14px]">
+          <div className="flex items-center justify-between gap-2 px-5 py-4 border-b border-brand-border shrink-0">
             <button onClick={() => onNavigate('home')} className="flex items-center gap-2.5 cursor-pointer">
-              <img src="/logo3.png" alt="Prospect" className="w-8 h-8 rounded-lg object-cover shrink-0" />
-              <span className="font-serif-accent text-xl text-brand-dark leading-none">Prospect</span>
+              <img src="/logo3.png" alt="Prospect" className="w-7.5 h-7.5 rounded object-cover shrink-0" />
+              <span className="font-serif-accent text-[19px] text-brand-dark leading-none">Prospect</span>
             </button>
             <NotificationBell userType="student" userId={session.student_id} />
           </div>
@@ -177,23 +178,25 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           <nav className="flex-1 px-3 py-3 overflow-y-auto space-y-1">
             <button
               onClick={() => setPage('home')}
-              className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
-                activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[15.5px] font-medium transition-colors duration-100 ${
+                activePage === 'home' ? 'text-white font-semibold' : 'text-stone-500 hover:bg-stone-50 hover:text-brand-dark'
               }`}
-              style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+              style={activePage === 'home' ? {
+                background: 'linear-gradient(90deg, #0ea5e9, #2563eb)',
+              } : undefined}
             >
-              <Home className={`w-4.5 h-4.5 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
+              <Home className="w-5 h-5 shrink-0" />
               <span>Home</span>
             </button>
 
-            <div className="pt-2 space-y-1">
+            <div className="pt-2.5 space-y-1">
               {navGroups.map(group => {
                 const isOpen = openGroup === group.key;
                 return (
                   <div key={group.key}>
                     <button
                       onClick={() => toggleGroup(group.key)}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[10px] text-[11px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-md text-[12.5px] font-semibold text-stone-400 hover:text-stone-600 transition-colors"
                     >
                       {group.label}
                       <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -215,19 +218,21 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                                   key={id}
                                   onClick={() => !disabled && setPage(id)}
                                   disabled={disabled}
-                                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
+                                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[15.5px] font-medium transition-colors duration-100 ${
                                     disabled
                                       ? 'text-stone-300 cursor-not-allowed'
                                       : active
-                                        ? 'bg-brand-dark text-white'
-                                        : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                                        ? 'text-white font-semibold'
+                                        : 'text-stone-500 hover:bg-stone-50 hover:text-brand-dark'
                                   }`}
-                                  style={active && !disabled ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                  style={active && !disabled ? {
+                                    background: 'linear-gradient(90deg, #0ea5e9, #2563eb)',
+                                  } : undefined}
                                 >
-                                  <Icon className={`w-4.5 h-4.5 shrink-0 ${active && !disabled ? 'text-white' : ''}`} />
+                                  <Icon className="w-5 h-5 shrink-0" />
                                   <span className="flex-1 text-left">{label}</span>
                                   {disabled && (
-                                    <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-stone-300">Soon</span>
+                                    <span className="shrink-0 text-[9px] font-semibold text-stone-300">Soon</span>
                                   )}
                                 </button>
                               );
@@ -243,24 +248,24 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </nav>
 
           {/* Profile + logout */}
-          <div className="p-3 shrink-0 border-t border-brand-border rounded-b-[14px]">
+          <div className="p-3 shrink-0 border-t border-brand-border">
             <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
+              <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+                <span className="text-accent-foreground font-semibold text-[12px]">{initials}</span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-                <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 truncate">
-                  Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+                <p className="text-[15.5px] font-semibold text-brand-dark truncate">{session.name} {session.surname}</p>
+                <p className="text-[12px] text-stone-400 truncate">
+                  Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
                 </p>
               </div>
             </div>
             <button
               onClick={() => { studentLogout(); onNavigate('portal'); }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-md text-[15.5px] font-medium text-red-500 hover:bg-red-50 transition-colors"
             >
-              <LogOut className="w-4.5 h-4.5 shrink-0" />
-              Sign Out
+              <LogOut className="w-5 h-5 shrink-0" />
+              Sign out
             </button>
           </div>
         </div>
@@ -311,23 +316,23 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
               <motion.aside
                 initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
                 transition={{ duration: 0.32, ease: [0.23, 1, 0.32, 1] }}
-                className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-72 max-w-[82vw] flex flex-col p-3"
+                className="md:hidden fixed top-0 left-0 bottom-0 z-50 w-64 max-w-[82vw] flex flex-col p-2.5"
                 style={{ background: '#eaebec' }}
               >
-                <div className="flex-1 min-h-0 flex flex-col rounded-[14px] overflow-hidden"
+                <div className="flex-1 min-h-0 flex flex-col rounded-[10px] overflow-hidden"
                   style={{
-                    background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
+                    background: '#ffffff',
                     border: '1px solid var(--color-brand-border)',
-                    boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.9), 0 1px 2px rgba(15,18,15,0.10), 0 10px 24px -6px rgba(15,18,15,0.20), 0 32px 56px -20px rgba(15,18,15,0.28)',
+                    boxShadow: '0 1px 2px rgba(15,18,15,0.06)',
                   }}>
 
                   {/* Logo + close */}
-                  <div className="flex items-center justify-between gap-2 px-5 py-4 border-b border-brand-border shrink-0">
-                    <button onClick={() => onNavigate('home')} className="flex items-center gap-2.5 cursor-pointer">
-                      <img src="/logo3.png" alt="Prospect" className="w-8 h-8 rounded-lg object-cover shrink-0" />
-                      <span className="font-serif-accent text-xl text-brand-dark leading-none">Prospect</span>
+                  <div className="flex items-center justify-between gap-2 px-4 py-3.5 border-b border-brand-border shrink-0">
+                    <button onClick={() => onNavigate('home')} className="flex items-center gap-2 cursor-pointer">
+                      <img src="/logo3.png" alt="Prospect" className="w-6.5 h-6.5 rounded object-cover shrink-0" />
+                      <span className="font-serif-accent text-[17px] text-brand-dark leading-none">Prospect</span>
                     </button>
-                    <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-1.5 rounded-lg text-stone-500 hover:text-brand-dark hover:bg-brand-bg transition-colors">
+                    <button onClick={() => setMenuOpen(false)} aria-label="Close menu" className="p-1.5 rounded-md text-stone-500 hover:text-brand-dark hover:bg-stone-50 transition-colors">
                       <X className="w-5 h-5" />
                     </button>
                   </div>
@@ -335,15 +340,17 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   {/* Nav — same Home-top-level + accordion structure as the
                       desktop sidebar, with slightly denser rows on mobile
                       so all groups fit without scrolling on most phones. */}
-                  <nav className="flex-1 px-2.5 py-2.5 overflow-y-auto space-y-0.5">
+                  <nav className="flex-1 px-2 py-2 overflow-y-auto space-y-0.5">
                     <button
                       onClick={() => setPage('home')}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
-                        activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] font-medium transition-colors duration-100 ${
+                        activePage === 'home' ? 'text-white font-semibold' : 'text-stone-500 hover:bg-stone-50 hover:text-brand-dark'
                       }`}
-                      style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                      style={activePage === 'home' ? {
+                        background: 'linear-gradient(90deg, #0ea5e9, #2563eb)',
+                      } : undefined}
                     >
-                      <Home className={`w-4 h-4 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
+                      <Home className="w-4 h-4 shrink-0" />
                       <span>Home</span>
                     </button>
 
@@ -354,7 +361,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                           <div key={group.key}>
                             <button
                               onClick={() => toggleGroup(group.key)}
-                              className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-[10px] text-[10px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
+                              className="w-full flex items-center justify-between gap-2 px-3 py-1.5 rounded-md text-[10.5px] font-semibold text-stone-400 hover:text-stone-600 transition-colors"
                             >
                               {group.label}
                               <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -376,19 +383,21 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                                           key={id}
                                           onClick={() => !disabled && setPage(id)}
                                           disabled={disabled}
-                                          className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
+                                          className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13px] font-medium transition-colors duration-100 ${
                                             disabled
                                               ? 'text-stone-300 cursor-not-allowed'
                                               : active
-                                                ? 'bg-brand-dark text-white'
-                                                : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                                                ? 'text-white font-semibold'
+                                                : 'text-stone-500 hover:bg-stone-50 hover:text-brand-dark'
                                           }`}
-                                          style={active && !disabled ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                          style={active && !disabled ? {
+                                            background: 'linear-gradient(90deg, #0ea5e9, #2563eb)',
+                                          } : undefined}
                                         >
-                                          <Icon className={`w-4 h-4 shrink-0 ${active && !disabled ? 'text-white' : ''}`} />
+                                          <Icon className="w-4 h-4 shrink-0" />
                                           <span className="flex-1 text-left">{label}</span>
                                           {disabled && (
-                                            <span className="shrink-0 text-[9px] font-black uppercase tracking-wide text-stone-300">Soon</span>
+                                            <span className="shrink-0 text-[9px] font-semibold text-stone-300">Soon</span>
                                           )}
                                         </button>
                                       );
@@ -404,25 +413,25 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   </nav>
 
                   {/* Profile + logout */}
-                  <div className="p-3 shrink-0 border-t border-brand-border"
-                    style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
-                    <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-                      <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                        <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
+                  <div className="p-2.5 shrink-0 border-t border-brand-border"
+                    style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
+                    <div className="flex items-center gap-2.5 px-1.5 pb-2.5 mb-1 border-b border-brand-border">
+                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+                        <span className="text-accent-foreground font-semibold text-[11px]">{initials}</span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[14px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-wide text-stone-400 truncate">
-                          Gr {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+                        <p className="text-[13.5px] font-semibold text-brand-dark truncate">{session.name} {session.surname}</p>
+                        <p className="text-[11.5px] text-stone-400 truncate">
+                          Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={() => { studentLogout(); onNavigate('portal'); }}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-[10px] text-[14px] font-bold text-red-500 hover:bg-red-50 hover:text-red-600 transition-all"
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-[13.5px] font-medium text-red-500 hover:bg-red-50 transition-colors"
                     >
-                      <LogOut className="w-4.5 h-4.5 shrink-0" />
-                      Sign Out
+                      <LogOut className="w-4 h-4 shrink-0" />
+                      Sign out
                     </button>
                   </div>
                 </div>
@@ -435,7 +444,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
         <div ref={scrollAreaRef} className="flex-1 overflow-y-auto student-dashboard-bg">
           {activePage === 'home'          && <StudentHomePage session={session} onNavigate={p => setPage(p as ActivePage)} />}
           <Suspense fallback={<Spinner />}>
-            {activePage === 'announcements' && <StudentAnnouncementsPage session={session} />}
+            {activePage === 'announcements' && <StudentAnnouncementsPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
             {activePage === 'homeroom'      && <StudentHomeroomPage session={session} />}
             {activePage === 'wellbeing'     && <StudentWellbeingPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
             {activePage === 'wellbeing-help' && <StudentWellbeingHelpPage session={session} />}
@@ -447,6 +456,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
             {activePage === 'pastpapers'    && <StudentPastPapersPage session={session} onNavigate={p => setPage(p as ActivePage)} />}
             {activePage === 'topic-tests'   && <StudentTopicTestsV2Page session={session} />}
             {activePage === 'peer-tutoring' && <StudentPeerTutoringPage session={session} />}
+            {activePage === 'ai-tutor'      && <AiTutorPage session={session} />}
             {activePage === 'marketplace'   && <MarketplacePage sellerType="student" sellerId={session.student_id} schoolId={session.school_id} studentGrade={session.grade} />}
             {activePage === 'subject-selection' && <SubjectSelectionPage session={session} />}
             {activePage === 'future'        && (

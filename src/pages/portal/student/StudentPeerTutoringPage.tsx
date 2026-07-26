@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
+import type { ReactNode } from 'react';
 import { Users, GraduationCap, HandHeart, ListChecks, Award, ShieldAlert, CheckCircle2, Clock, ChevronRight, X, Search } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
@@ -16,6 +17,24 @@ import {
 } from '../../../lib/peerTutoring';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
+
+// Primary CTA recipe shared across this page's many single-action screens —
+// replaces the old ad hoc `rounded-xl bg-brand-dark ... hover:opacity-90`
+// buttons with the accent-color + motion feedback treatment used elsewhere
+// in the student portal (StudentWellbeingPage, StudentHomePage).
+function PrimaryButton({ onClick, disabled, className = '', children }: {
+  onClick?: () => void; disabled?: boolean; className?: string; children: ReactNode;
+}) {
+  return (
+    <motion.button
+      whileHover={disabled ? undefined : { y: -1 }} whileTap={disabled ? undefined : { scale: 0.97 }}
+      onClick={onClick} disabled={disabled}
+      className={`rounded bg-accent text-white font-bold transition-colors hover:bg-accent-light disabled:opacity-40 ${className}`}
+    >
+      {children}
+    </motion.button>
+  );
+}
 
 interface Props { session: StudentSession }
 
@@ -70,8 +89,8 @@ export default function StudentPeerTutoringPage({ session }: Props) {
 
   return (
     <div className="student-peer-tutoring student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+      <div className="relative overflow-hidden border-b border-brand-border">
+        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
             className="flex items-center gap-2 min-w-0">
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Peer Tutoring</p>
@@ -88,7 +107,7 @@ export default function StudentPeerTutoringPage({ session }: Props) {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
         <div className="flex gap-1.5 flex-wrap">
           {([
             { id: 'overview', label: 'Overview', icon: Users },
@@ -294,10 +313,10 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
 
       {searchError && <p className="text-[13px] text-red-600 font-medium">{searchError}</p>}
 
-      <button onClick={handleSearch} disabled={!subjectId || !topicId || !conductAcked || searching}
-        className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
+      <PrimaryButton onClick={handleSearch} disabled={!subjectId || !topicId || !conductAcked || searching}
+        className="w-full py-3 text-[14px]">
         {searching ? 'Searching…' : 'Find a tutor'}
-      </button>
+      </PrimaryButton>
     </motion.div>
   );
 }
@@ -376,10 +395,10 @@ function RequestsToFulfillTab({ session, topics, onFulfilled }: {
                 {r.grade ? `Grade ${r.grade} · ` : ''}Requested {new Date(r.createdAt).toLocaleDateString('en-ZA')}
               </p>
             </div>
-            <button onClick={() => handleFulfill(r.id)} disabled={fulfillingId === r.id}
-              className="px-4 py-2 rounded-lg bg-brand-dark text-white text-[12.5px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40 shrink-0">
+            <PrimaryButton onClick={() => handleFulfill(r.id)} disabled={fulfillingId === r.id}
+              className="px-4 py-2 text-[12.5px] shrink-0">
               {fulfillingId === r.id ? 'Matching…' : 'Help this student'}
-            </button>
+            </PrimaryButton>
           </div>
         );
       })}
@@ -417,10 +436,10 @@ function BecomeTutorTab({ session, tutorProfile, tutorTopics, subjects, topics, 
           <li>Don't just give answers — ask questions and guide, per your orientation.</li>
           <li>If something feels wrong, report it.</li>
         </ul>
-        <button onClick={async () => { await acknowledgeTutorConduct(session.student_id, session.school_id); onChanged(); }}
-          className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity">
+        <PrimaryButton onClick={async () => { await acknowledgeTutorConduct(session.student_id, session.school_id); onChanged(); }}
+          className="w-full py-3 text-[14px]">
           I agree to follow these rules
-        </button>
+        </PrimaryButton>
       </motion.div>
     );
   }
@@ -435,7 +454,7 @@ function BecomeTutorTab({ session, tutorProfile, tutorTopics, subjects, topics, 
             {tutorTopics.map((t) => {
               const topic = topics.find((x) => x.id === t.topicId);
               return (
-                <div key={t.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-stone-50 border border-brand-border">
+                <div key={t.id} className="flex items-center justify-between px-3 py-2 rounded" style={{ background: 'var(--color-paper-raise)', border: '1px solid var(--color-brand-border)' }}>
                   <span className="text-[13px] text-brand-dark font-medium">{topic?.label ?? `Topic #${t.topicId}`}</span>
                   <span className="text-[11.5px] text-stone-500">Your score: {t.demonstratedScorePct}%</span>
                 </div>
@@ -467,15 +486,15 @@ function TutorOrientation({ onComplete }: { onComplete: () => void }) {
         <p className="text-[15px] font-bold text-brand-dark mb-2">{slides[step].title}</p>
         <p className="text-[14px] text-stone-600 leading-relaxed">{slides[step].body}</p>
       </div>
-      <div className="rounded-xl bg-stone-50 border border-brand-border p-4 space-y-1.5">
+      <div className="rounded p-4 space-y-1.5" style={{ background: 'var(--color-paper-raise)', border: '1px solid var(--color-brand-border)' }}>
         <p className="text-[12px] font-bold uppercase tracking-wide text-stone-500">Cheat sheet</p>
         <p className="text-[12.5px] text-stone-600">Do: ask "why" and "how" questions · give the tutee time to think · praise effort.</p>
         <p className="text-[12.5px] text-stone-600">Don't: solve their homework for them · rush to the answer · make them feel judged.</p>
       </div>
-      <button onClick={() => step < slides.length - 1 ? setStep(step + 1) : onComplete()}
-        className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity">
+      <PrimaryButton onClick={() => step < slides.length - 1 ? setStep(step + 1) : onComplete()}
+        className="w-full py-3 text-[14px]">
         {step < slides.length - 1 ? 'Next' : 'Finish orientation'}
-      </button>
+      </PrimaryButton>
     </motion.div>
   );
 }
@@ -523,10 +542,10 @@ function OfferTopicForm({ tutorProfile, subjects, topics, onOffered }: {
         <input type="number" min={0} max={100} value={score ?? ''} onChange={(e) => setScore(e.target.value ? Number(e.target.value) : null)}
           className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white" />
       </div>
-      <button onClick={handleOffer} disabled={!subjectId || !topicId || score == null || saving}
-        className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
+      <PrimaryButton onClick={handleOffer} disabled={!subjectId || !topicId || score == null || saving}
+        className="w-full py-3 text-[14px]">
         {saving ? 'Saving…' : 'Offer to tutor'}
-      </button>
+      </PrimaryButton>
     </motion.div>
   );
 }
@@ -603,11 +622,11 @@ function RelationshipCard({ session, rel, onStartSession, onChanged }: {
           {unconfirmed && !isTutor ? (
             <ConfirmSessionButton session={session} tutoringSession={unconfirmed} onConfirmed={onChanged} />
           ) : (
-            <button onClick={handleScheduleAndStart} className="px-4 py-2 rounded-lg bg-brand-dark text-white text-[12.5px] font-bold hover:opacity-90 transition-opacity">
+            <PrimaryButton onClick={handleScheduleAndStart} className="px-4 py-2 text-[12.5px]">
               {scheduled ? 'Resume session' : 'Start a session'}
-            </button>
+            </PrimaryButton>
           )}
-          <button onClick={() => setShowReport(true)} className="px-4 py-2 rounded-lg bg-white border border-brand-border text-[12.5px] font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1.5">
+          <button onClick={() => setShowReport(true)} className="px-4 py-2 rounded border border-brand-border text-[12.5px] font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1.5" style={{ background: 'var(--color-paper-raise)' }}>
             <ShieldAlert className="w-3.5 h-3.5" /> Report a concern
           </button>
         </div>
@@ -628,7 +647,7 @@ function ConfirmSessionButton({ session, tutoringSession, onConfirmed }: { sessi
   const [open, setOpen] = useState(false);
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="px-4 py-2 rounded-lg bg-amber-500 text-white text-[12.5px] font-bold hover:opacity-90 transition-opacity">
+      <button onClick={() => setOpen(true)} className="px-4 py-2 rounded bg-amber-500 text-white text-[12.5px] font-bold hover:bg-amber-600 transition-colors">
         Confirm your last session
       </button>
     );
@@ -639,7 +658,7 @@ function ConfirmSessionButton({ session, tutoringSession, onConfirmed }: { sessi
       <div className="flex gap-2">
         {(['yes', 'partly', 'no'] as const).map((v) => (
           <button key={v} onClick={async () => { await confirmSession(tutoringSession.id, session.student_id, v); setOpen(false); onConfirmed(); }}
-            className="px-3.5 py-2 rounded-lg bg-white border border-brand-border text-[12.5px] font-bold text-brand-dark hover:border-accent transition-colors capitalize">
+            className="paper-card rounded px-3.5 py-2 text-[12.5px] font-bold text-brand-dark hover:border-accent transition-colors capitalize">
             {v}
           </button>
         ))}
@@ -688,10 +707,10 @@ function ReportConcernModal({ session, relationshipId, onClose }: { session: Stu
             </select>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4}
               placeholder="Tell us what happened…" className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white resize-none" />
-            <button onClick={handleSubmit} disabled={!description.trim() || submitting}
-              className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
+            <PrimaryButton onClick={handleSubmit} disabled={!description.trim() || submitting}
+              className="w-full py-3 text-[14px]">
               {submitting ? 'Sending…' : 'Send report'}
-            </button>
+            </PrimaryButton>
           </>
         )}
       </motion.div>
@@ -748,7 +767,7 @@ function SessionFlow({ session, relationshipId, sessionId, onExit }: {
               Next badge at {Object.entries(BADGE_THRESHOLDS).find(([, n]) => n > verifiedCount)?.[1] ?? '—'} verified sessions.
             </p>
           )}
-          <button onClick={onExit} className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity">Done</button>
+          <PrimaryButton onClick={onExit} className="w-full py-3 text-[14px]">Done</PrimaryButton>
         </motion.div>
       </div>
     );
@@ -768,10 +787,10 @@ function SessionFlow({ session, relationshipId, sessionId, onExit }: {
               </button>
             ))}
           </div>
-          <button onClick={finish} disabled={confidenceAfter == null}
-            className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
+          <PrimaryButton onClick={finish} disabled={confidenceAfter == null}
+            className="w-full py-3 text-[14px]">
             Finish session
-          </button>
+          </PrimaryButton>
         </motion.div>
       </div>
     );
@@ -812,9 +831,9 @@ function SessionFlow({ session, relationshipId, sessionId, onExit }: {
           ))}
         </div>
 
-        <button onClick={advance} className="w-full py-3 rounded-xl bg-brand-dark text-white text-[14px] font-bold hover:opacity-90 transition-opacity">
+        <PrimaryButton onClick={advance} className="w-full py-3 text-[14px]">
           {stepIndex < SESSION_TEMPLATE_STEPS.length - 1 ? 'Next step' : 'Continue to recap'}
-        </button>
+        </PrimaryButton>
       </motion.div>
     </div>
   );

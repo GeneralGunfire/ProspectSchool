@@ -44,33 +44,39 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
   const formatDate = (d: string) =>
     new Date(d + 'T00:00:00').toLocaleDateString('en-ZA', { weekday: 'short', day: 'numeric', month: 'short' });
 
+  const latestRecord = history[0] ?? null;
+
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          Homeroom
+        </h1>
+        <p className="text-[14px] text-muted mt-1">{session.cohort_name ?? `Grade ${session.grade}`} · your teacher and attendance record.</p>
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">My Class</p>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Homeroom
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium">
-            {session.cohort_name ?? `Grade ${session.grade}`} · your teacher and attendance record.
-          </motion.p>
-        </div>
+        {/* Quick status — same visual recipe as Home's focus block */}
+        {!loading && latestRecord && (
+          <div className="mt-4">
+            <div className="flex items-center gap-2 mb-1">
+              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                latestRecord.status === 'present' ? 'bg-accent'
+                : latestRecord.status === 'absent' ? 'bg-red-500'
+                : latestRecord.status === 'late' ? 'bg-amber-500'
+                :                                   'bg-stone-400'
+              }`} />
+              <span className="text-[12px] font-semibold text-muted">Last recorded · {formatDate(latestRecord.date)}</span>
+            </div>
+            <p className="text-brand-dark text-[20px] leading-snug" style={{ fontWeight: 600 }}>
+              {STATUS_CONFIG[latestRecord.status].label}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {loading ? (
           <div className="space-y-5">
@@ -110,7 +116,7 @@ export default function StudentHomeroomPage({ session }: StudentHomeroomPageProp
                 <UserRound className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-0.5">
+                <p className="text-[12px] text-muted-2 mb-0.5">
                   {session.cohort_name ?? `Grade ${session.grade}`}
                 </p>
                 {teacher ? (

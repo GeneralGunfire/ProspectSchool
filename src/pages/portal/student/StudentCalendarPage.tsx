@@ -292,36 +292,37 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
   return (
     <div className="student-calendar student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
-          No buttons in this band (house rule). Month-nav, today, and
-          grid/list toggle live in the control bar in the body below. */}
-      <div className="relative overflow-hidden">
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          My Schedule
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Your classes, homework, assessments and exams.</p>
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-
-          {/* Eyebrow row */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Calendar</p>
-          </motion.div>
-
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-          >
-            My Schedule
-          </motion.h1>
+        {/* Quick status — same visual recipe as Home's focus block, with
+            calendar-relevant content (next event) instead of homework. */}
+        <div className="mt-4">
+          {upcoming[0] ? (
+            <>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                  upcoming[0].event_type === 'exam' ? 'bg-red-500'
+                  : upcoming[0].event_type === 'assessment' ? 'bg-amber-500'
+                  :                                           'bg-accent'
+                }`} />
+                <span className="text-[12px] font-semibold text-muted">Next up · {daysUntil(upcoming[0].event_date) === 0 ? 'Today' : daysUntil(upcoming[0].event_date) === 1 ? 'Tomorrow' : `${daysUntil(upcoming[0].event_date)} days`}</span>
+              </div>
+              <p className="text-brand-dark text-[20px] leading-snug" style={{ fontWeight: 600 }}>{upcoming[0].title}</p>
+              <p className="text-muted text-[14px] mt-0.5">{formatDayFull(upcoming[0].event_date)}</p>
+            </>
+          ) : (
+            <p className="text-brand-dark text-[20px] leading-snug" style={{ fontWeight: 600 }}>Nothing scheduled right now</p>
+          )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3 pb-20 md:pb-0">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4 pb-20 md:pb-0">
 
       {/* ── Control bar: today / month nav / grid-list toggle ── */}
       <motion.div
@@ -393,8 +394,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           className="paper-card rounded p-5 mb-4"
         >
           <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[rgba(31,36,33,0.45)]">This Week</p>
+            <Activity className="w-4 h-4 text-brand-dark" />
+            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>This week</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
             {[
@@ -409,7 +410,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             ].map(stat => (
               <div key={stat.label} className="rounded px-3 py-2.5 text-center" style={{ background: 'var(--color-paper-raise)' }}>
                 <p className={`font-black text-xl leading-none ${stat.value === 0 ? 'text-stone-300' : stat.color}`}>{stat.value}</p>
-                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mt-1">{stat.label}</p>
+                <p className="text-[12px] text-muted-2 mt-1">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -440,8 +441,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 className="paper-card rounded p-4"
                 style={{ borderLeft: `3px solid ${accentBorder}` }}
               >
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[rgba(31,36,33,0.45)] mb-1">
-                  {ev!.event_type === 'exam' ? 'Next Exam' : 'Next Assessment'}
+                <p className="text-[12px] text-muted-2 mb-1">
+                  {ev!.event_type === 'exam' ? 'Next exam' : 'Next assessment'}
                 </p>
                 <p className="font-black text-brand-dark text-sm leading-tight mb-2">{ev!.title}</p>
                 <div className="flex items-end gap-1.5">
@@ -465,8 +466,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           className="paper-card rounded p-5 mb-4"
         >
           <div className="flex items-center gap-2 mb-4">
-            <ClipboardList className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Priority Deadlines</p>
+            <ClipboardList className="w-4 h-4 text-brand-dark" />
+            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>Priority deadlines</p>
           </div>
           <div className="space-y-2">
             {priorityDeadlines.map((ev) => {
@@ -500,7 +501,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           className="paper-card rounded p-4 mb-4"
           style={{ borderLeft: '3px solid #f59e0b' }}
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Schedule Warning</p>
+          <p className="text-[15px] text-amber-700 mb-2" style={{ fontWeight: 600 }}>Schedule warning</p>
           {conflictDays.filter(d => d.date >= todayStr).map(d => (
             <div key={d.date} className="flex items-start gap-2 mb-1 last:mb-0">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
@@ -519,7 +520,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           transition={{ delay: 0.14, ease: [0.23, 1, 0.32, 1] }}
           className="paper-card rounded p-4 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[rgba(31,36,33,0.45)] mb-1">Suggested Study Time</p>
+          <p className="text-[15px] text-brand-dark mb-1" style={{ fontWeight: 600 }}>Suggested study time</p>
           <p className="text-sm font-bold text-stone-700">
             <span className="text-brand-dark font-black">{lightestDayLabel}</span> is your lightest day this week — good time to study ahead.
             {goals.targetCareer && (
@@ -537,9 +538,9 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           className="paper-card rounded p-5 mb-4"
         >
           <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">
-              {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical Revision' : 'Recommended Revision'}
+            <BookOpen className="w-4 h-4 text-brand-dark" />
+            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>
+              {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical revision' : 'Recommended revision'}
             </p>
           </div>
           <div className="space-y-3">
@@ -595,17 +596,17 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
           transition={{ delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
           className="paper-card rounded p-4 mb-4"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Your Goals</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Your goals</p>
           <div className="flex flex-wrap gap-2">
             {goals.targetAps && (
               <div className="flex items-center gap-2 bg-violet-50 rounded px-3 py-2 border border-violet-100">
-                <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest">Target APS</span>
+                <span className="text-[11px] font-semibold text-violet-500">Target APS</span>
                 <span className="font-black text-violet-700">{goals.targetAps}</span>
               </div>
             )}
             {goals.targetCareer && (
               <div className="flex items-center gap-2 bg-stone-50 rounded px-3 py-2 border border-brand-border">
-                <span className="text-[10px] font-black text-stone-500 uppercase tracking-widest">Career</span>
+                <span className="text-[11px] font-semibold text-muted-2">Career</span>
                 <span className="font-black text-stone-700 text-sm">{goals.targetCareer}</span>
               </div>
             )}
@@ -1037,7 +1038,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                 className="paper-card rounded p-4"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
+                  <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Upcoming events</p>
                   <button onClick={() => setViewMode('list')}
                     className="text-[11px] font-black text-stone-500 hover:text-stone-600 transition-colors">
                     View all
@@ -1107,8 +1108,8 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
             className="paper-card rounded p-4"
           >
             <div className="flex items-center gap-2 mb-3">
-              <Palette className="w-3.5 h-3.5 text-stone-500" />
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Legend</p>
+              <Palette className="w-4 h-4 text-brand-dark" />
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Legend</p>
             </div>
             <div className="space-y-2">
               {(['homework','assessment','exam','other'] as const).map(type => {

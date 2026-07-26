@@ -25,8 +25,8 @@ export default function StudentWellbeingHelpPage({}: StudentWellbeingHelpPagePro
 
   return (
     <div className="student-wellbeing-help student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+      <div className="relative overflow-hidden border-b border-brand-border">
+        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
             className="flex items-center gap-2 min-w-0">
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Wellbeing Tools for Everyone</p>
@@ -43,7 +43,7 @@ export default function StudentWellbeingHelpPage({}: StudentWellbeingHelpPagePro
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
         {selectedTopic ? (
           <TopicDetail topic={selectedTopic} onBack={() => setSelectedTopic(null)} />
         ) : (
@@ -141,12 +141,12 @@ function TopicDetail({ topic, onBack }: { topic: HelpTopic; onBack: () => void }
         </div>
       </Section>
 
-      <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+      <div className="rounded bg-amber-50 border border-amber-200 p-4">
         <p className="text-[13px] font-semibold text-amber-900 mb-1">If this keeps happening</p>
         <p className="text-[12.5px] text-amber-800 leading-relaxed">{topic.keepHappeningBox}</p>
       </div>
 
-      <div className="rounded-xl bg-stone-50 border border-brand-border p-4">
+      <div className="rounded p-4" style={{ background: 'var(--color-paper-raise)', border: '1px solid var(--color-brand-border)' }}>
         <p className="text-[12px] font-bold uppercase tracking-wide text-stone-500 mb-1">A way to start the conversation</p>
         <p className="text-[13px] text-stone-600 italic leading-relaxed">{topic.talkToSomeoneBox}</p>
       </div>
@@ -169,7 +169,7 @@ function TalkToSomeoneBox() {
       <div className="space-y-2">
         {CRISIS_RESOURCES.map(r => (
           <a key={r.name} href={`tel:${r.phone}`}
-            className="flex items-center gap-3 p-3 rounded-xl bg-white border border-brand-border hover:border-accent transition-colors">
+            className="paper-card rounded flex items-center gap-3 p-3 hover:border-accent transition-colors">
             <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
               <Phone className="w-4 h-4 text-accent" />
             </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Instrument+Sans:wght@600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -6,6 +6,10 @@
   --font-display: "Plus Jakarta Sans", sans-serif;
   --font-instrument: "Instrument Sans", sans-serif;
   --font-mono-jetbrains: "JetBrains Mono", monospace;
+  /* Student dashboard's one UI typeface — kept separate from --font-sans
+     (used site-wide) so this change stays scoped to .student-home per the
+     "student dashboard only" direction. Serif stays on the logo only. */
+  --font-student: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* ── Landing page font pairing (blue redesign) ── */
   --font-brand-heading: "Fraunces", Georgia, serif;
@@ -79,6 +83,12 @@
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-2: #8A938F;
+  --color-success: #0F9D58;
+  --color-success-pale: #E7F4EE;
+  --color-navy: #0B2E6B;
+  --color-navy-foreground: #ffffff;
+  --color-accent-light: #3FC4F0;
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-destructive: hsl(var(--destructive));
@@ -836,23 +846,40 @@ html {
    is no separate "dark" card variant — emphasis comes from a left
    accent border or a small dot, never a different fill. */
 .student-home {
-  --color-accent: #43505f;              /* slate-blue — matches the My Future CTA card gradient's midtone */
-  --color-accent-soft: #4b5568;         /* lighter slate for hover states on dark surfaces */
+  font-family: var(--font-student);
+  /* One flat design system for the whole student portal — same tokens
+     used by the sidebar, dashboard, and every inner page (Announcements,
+     Marks, etc.) so nothing reads as a different product with a
+     different designer. Consolidated per direct design review: a calm
+     green-primary school-system palette, not a soft "editorial paper"
+     one-off. */
+  /* Brand accent is blue, matching the actual Prospect logo (public/logo3.png
+     — a two-tone royal blue mark), not an unrelated green picked as a
+     generic "school success" color. Green stays in the palette but is
+     demoted to a genuine status color only (positive/success values,
+     mark bands ≥70%) — it never fills a button or link. */
+  --color-accent: #1D5FE0;              /* brand blue — CTAs, links, active/interactive elements */
+  --color-accent-soft: #154CBD;         /* darker blue for hover states */
+  --color-accent-light: #3FC4F0;        /* light cyan-blue — the logo's second tone, for button highlights/lighter accents */
   --color-accent-foreground: #ffffff;
-  --color-brand-dark: #1f2421;          /* warm charcoal text, not pure black */
-  --color-brand-border: rgba(15, 23, 21, 0.07);   /* hairline on paper surfaces */
-  --color-brand-bg: #f7f6f2;
-  --color-paper-raise: #eef0f1;         /* raised chip surface on cards — cool grey, matches depth accent */
-  /* Depth accent — clean blue-grey (stone-blue, near the navy logo
-     family, no green), layered in alongside (not replacing) the
-     charcoal buttons: sidebar active glow, focus badges, ring accents,
-     subtle washes. Cool counterpoint to the warm paper bg. */
-  --color-depth: #38414f;
-  --color-depth-soft: #4e5a6c;
-  --color-depth-wash: rgba(56, 65, 79, 0.07);
-  background:
-    radial-gradient(1200px 700px at 50% 0%, rgba(56, 65, 79, 0.05), transparent 62%),
-    #eaebec;
+  --color-success: #0F9D58;             /* status green — positive values only (marks, completion) */
+  --color-success-pale: #E7F4EE;
+  --color-brand-dark: #1C2521;          /* primary text — darker than before for real contrast */
+  --color-brand-border: #DCE2DE;
+  --color-brand-bg: #F7F8F7;            /* page background — near-invisible, texture only */
+  --color-paper-raise: #F1F3F2;         /* subtle raised surface (chips, active nav) */
+  --color-muted: #66716C;               /* secondary text (body copy, descriptions) */
+  --color-muted-2: #8A938F;             /* metadata/timestamps — one step quieter than --color-muted */
+  /* Navy — dark blue derived from the logo's royal-blue stroke, deepened
+     for the sidebar's selected-nav-item background (previously a plain
+     gray chip). Distinct from --color-accent so nav selection reads as
+     "current location" while accent stays reserved for actions/links. */
+  --color-navy: #0B2E6B;
+  --color-navy-foreground: #ffffff;
+  --color-depth: #1C2521;               /* reserved for other emphasis, not used as an accent color */
+  --color-depth-soft: #333d38;
+  --color-depth-wash: rgba(28, 37, 33, 0.06);
+  background: var(--color-brand-bg);
   background-attachment: fixed;
   color-scheme: light;
 }
@@ -871,6 +898,8 @@ html {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+/* Restored the original abstract marble/liquid-swirl background per
+   request, each breakpoint back to its own dedicated crop. */
 @media (max-width: 767px) {
   .student-dashboard-bg {
     background-image: url('/images/student-dashboard-bg-mobile.png');
@@ -881,11 +910,8 @@ html {
     background-image: url('/images/student-dashboard-bg-desktop.png');
   }
 }
-/* Let the dashboard background show through — each page's own opaque
-   .student-home background is only meant for standalone use elsewhere
-   in the app (e.g. if a page is ever rendered outside this shell). */
 .student-dashboard-bg .student-home {
-  background: transparent;
+  background: rgba(247, 248, 247, 0.55);
   background-attachment: initial;
 }
 
@@ -923,27 +949,18 @@ html {
    natural window light rather than a sharp digital drop-shadow, (3) a
    whisper-faint top-to-bottom gradient to suggest thickness/roundness. */
 .student-home .paper-card {
-  background: linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%);
+  background: #ffffff;
   border: 1px solid var(--color-brand-border);
   border-radius: 10px;
   position: relative;
   isolation: isolate;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 1px 2px rgba(15, 18, 15, 0.10),
-    0 10px 24px -6px rgba(15, 18, 15, 0.20),
-    0 32px 56px -20px rgba(15, 18, 15, 0.28);
-  transition: border-color 0.3s ease, box-shadow 0.35s cubic-bezier(0.23,1,0.32,1), transform 0.35s cubic-bezier(0.23,1,0.32,1);
+  box-shadow: 0 1px 2px rgba(15, 18, 15, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .student-home .paper-card:hover {
-  transform: translateY(-5px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    0 2px 4px rgba(15, 18, 15, 0.12),
-    0 18px 36px -8px rgba(15, 18, 15, 0.28),
-    0 48px 80px -24px rgba(15, 18, 15, 0.36);
+  border-color: rgba(15, 23, 21, 0.14);
 }
-.student-home .paper-card:active { transform: translateY(-1px) scale(0.997); }
+.student-home .paper-card:active { opacity: 0.97; }
 
 /* Today's Focus — same paper-card surface as every other card now that
    the left accent border has been removed; no separate treatment. */

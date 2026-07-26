@@ -33,39 +33,28 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }} className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">My Behaviour</p>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Merits & Demerits
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
-            Your conduct record, as logged by your teachers.
-          </motion.p>
-
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+              Merits &amp; Demerits
+            </h1>
+            <p className="text-[14px] text-muted mt-1">Your conduct record, as logged by your teachers.</p>
+          </div>
           {entries.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.1 }}
-              className="inline-flex items-center gap-2 mt-4 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
-              <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">NET</span>
-              <span className={`font-black text-sm ${netPoints >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+            <div className="text-right shrink-0">
+              <p className="text-[12px] text-muted-2">Net score</p>
+              <p className={`text-[20px] leading-none ${netPoints >= 0 ? 'text-success' : 'text-red-600'}`} style={{ fontWeight: 700 }}>
                 {netPoints > 0 ? '+' : ''}{netPoints}
-              </span>
-            </motion.div>
+              </p>
+            </div>
           )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {loading ? (
           <div className="space-y-5">
@@ -100,6 +89,45 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
               </div>
             </motion.div>
           </div>
+        ) : entries.length === 0 ? (
+          <>
+            {/* Zero-data state — one compact readout row instead of three
+                near-empty cards each showing a lone "0". Three big cards for
+                three zeros reads as broken; one quiet row reads as "nothing
+                logged yet," which is the actual, unremarkable truth. */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease }}
+              className="paper-card rounded px-5 py-4 flex items-center justify-center gap-8 sm:gap-12"
+            >
+              <div className="text-center">
+                <p className="text-[20px] font-black text-stone-300 leading-none">0</p>
+                <p className="text-[12px] text-muted-2 mt-1.5">Merits</p>
+              </div>
+              <span className="w-px h-8" style={{ background: 'var(--color-brand-border)' }} />
+              <div className="text-center">
+                <p className="text-[20px] font-black text-stone-300 leading-none">0</p>
+                <p className="text-[12px] text-muted-2 mt-1.5">Demerits</p>
+              </div>
+              <span className="w-px h-8" style={{ background: 'var(--color-brand-border)' }} />
+              <div className="text-center">
+                <p className="text-[20px] font-black text-stone-300 leading-none">0</p>
+                <p className="text-[12px] text-muted-2 mt-1.5">Net Score</p>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease, delay: 0.08 }}
+              className="paper-card rounded p-8 flex flex-col items-center text-center"
+            >
+              <div className="w-11 h-11 rounded-full flex items-center justify-center mb-3" style={{ background: 'var(--color-paper-raise)' }}>
+                <Award className="w-5 h-5 text-stone-300" />
+              </div>
+              <p className="text-[15px] font-semibold text-brand-dark mb-1">No entries yet</p>
+              <p className="text-[13px] text-stone-500 max-w-xs">Merits and demerits from your teachers will appear here as they're logged.</p>
+            </motion.div>
+          </>
         ) : (
           <>
             {/* Stat cards */}
@@ -113,7 +141,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                   <Plus className="w-4 h-4" />
                 </div>
                 <p className="text-[26px] sm:text-[28px] font-black text-emerald-700 leading-none">{meritPoints}</p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Merits</p>
+                <p className="text-[12px] text-muted-2 mt-2">Merits</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -124,7 +152,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                   <Minus className="w-4 h-4" />
                 </div>
                 <p className={`text-[26px] sm:text-[28px] font-black leading-none ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Demerits</p>
+                <p className="text-[12px] text-muted-2 mt-2">Demerits</p>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
@@ -139,7 +167,7 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                 <p className={`relative text-[26px] sm:text-[28px] font-black leading-none ${netPoints >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                   {netPoints > 0 ? '+' : ''}{netPoints}
                 </p>
-                <p className="relative text-[11px] font-bold uppercase tracking-[0.08em] text-[rgba(31,36,33,0.45)] mt-2">Net Score</p>
+                <p className="relative text-[12px] text-muted-2 mt-2">Net Score</p>
               </motion.div>
             </div>
 
@@ -149,22 +177,12 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
               transition={{ duration: 0.45, ease, delay: 0.2 }}
               className="paper-card rounded p-5 sm:p-6"
             >
-              <div className="flex items-center gap-2.5 mb-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[rgba(31,36,33,0.4)]">Timeline</p>
-                <span className="flex-1 h-px" style={{ background: 'var(--color-brand-border)' }} />
-                <span className="text-[11px] font-bold text-stone-400">{entries.length} recorded</span>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>Timeline</p>
+                <span className="text-[13px] text-muted">{entries.length} recorded</span>
               </div>
 
-              {entries.length === 0 ? (
-                <div className="py-12 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center mb-4" style={{ background: 'var(--color-paper-raise)' }}>
-                    <Award className="w-5 h-5 text-stone-300" />
-                  </div>
-                  <p className="text-[15px] font-semibold text-brand-dark mb-1">No entries yet</p>
-                  <p className="text-[13px] text-stone-500">Merits and demerits from your teachers will appear here.</p>
-                </div>
-              ) : (
-                <div className="-mx-5 sm:-mx-6">
+              <div className="-mx-5 sm:-mx-6">
                   {entries.map((e, i) => (
                     <motion.div key={e.id}
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -187,16 +205,15 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                               {e.type === 'merit' ? '+' : '-'}{e.points}
                             </span>
                           </div>
-                          <span className="text-[12px] text-[rgba(31,36,33,0.35)] whitespace-nowrap shrink-0">{formatDate(e.created_at)}</span>
+                          <span className="text-[12px] text-muted-2 whitespace-nowrap shrink-0">{formatDate(e.created_at)}</span>
                         </div>
                         {e.reason && <p className="text-[13px] text-stone-600 font-medium mt-0.5">{e.reason}</p>}
-                        <p className="text-[12px] text-[rgba(31,36,33,0.4)] mt-0.5">{e.teacher_name ?? 'Teacher'} {e.teacher_surname ?? ''}</p>
+                        <p className="text-[12px] text-muted-2 mt-0.5">{e.teacher_name ?? 'Teacher'} {e.teacher_surname ?? ''}</p>
                         {e.note && <p className="text-[13px] text-stone-600 mt-1.5">{e.note}</p>}
                       </div>
                     </motion.div>
                   ))}
-                </div>
-              )}
+              </div>
             </motion.div>
           </>
         )}

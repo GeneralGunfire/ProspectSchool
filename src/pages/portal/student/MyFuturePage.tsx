@@ -214,8 +214,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   if (loading) {
     return (
       <div className="student-my-future student-home min-h-full pb-16 relative">
-        <div className="relative overflow-hidden">
-          <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+        <div className="relative overflow-hidden border-b border-brand-border">
+          <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
               className="flex items-center gap-2 min-w-0">
               <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
@@ -229,7 +229,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             </motion.h1>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-2 sm:pt-3 space-y-5">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-8 pt-2 sm:pt-3 space-y-5">
           {[0, 1, 2].map(i => (
             <motion.div key={i}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -292,9 +292,9 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
           No buttons in this band (house rule). Stat readouts below the
           title are static pills, not actions. */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden border-b border-brand-border">
 
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
+        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
 
           {/* Eyebrow row */}
           <motion.div
@@ -339,7 +339,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 space-y-6">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 space-y-6">
 
       {/* ── Goals section ── */}
       <Section delay={0.02}>

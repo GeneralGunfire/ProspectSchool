@@ -119,7 +119,7 @@ function PerformanceZoneBar({ avg }: { avg: number }) {
   const clamped = Math.max(0, Math.min(100, avg));
   return (
     <div className="px-5 pt-4 pb-2">
-      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Zone</p>
+      <p className="text-[15px] font-semibold text-brand-dark mb-2">Zone</p>
       <div className="relative h-3 rounded-full overflow-hidden flex">
         {ZONES.map(z => (
           <div key={z.from} style={{ width: `${z.to - z.from}%`, background: z.color }} />
@@ -326,60 +326,34 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
   return (
     <div className="student-marks student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Results</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex flex-wrap items-end justify-between gap-4 mt-2"
-          >
-            <div className="min-w-0">
-              <motion.h1
-                initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease, delay: 0.06 }}
-                className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] min-w-0"
-                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-              >
-                My Marks
-              </motion.h1>
-              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
-                How you're tracking across your subjects.
-              </p>
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <div className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+              My Marks
+            </h1>
+            <p className="text-[14px] text-muted mt-1">How you're tracking across your subjects.</p>
+          </div>
+          {overallAvg !== null && (
+            <div className="shrink-0 flex items-center gap-3 border border-brand-border bg-white/70 rounded px-4 py-2.5">
+              <div className="relative shrink-0">
+                <Ring pct={Math.round(overallAvg)} size={44} stroke={4} trackColor="rgba(31,36,33,0.08)" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[11px] font-bold text-brand-dark leading-none">{Math.round(overallAvg)}%</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-[12px] text-muted-2">Overall</p>
+                <p className="text-[13px] font-semibold text-brand-dark whitespace-nowrap">{markedResults.length} tracked</p>
+              </div>
             </div>
-            {overallAvg !== null && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease, delay: 0.1 }}
-                className="shrink-0 flex items-center gap-3 border border-brand-border bg-white/70 rounded px-4 py-2.5"
-              >
-                <div className="relative shrink-0">
-                  <Ring pct={Math.round(overallAvg)} size={40} stroke={4} trackColor="rgba(31,36,33,0.08)" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[10px] font-black text-brand-dark leading-none">{Math.round(overallAvg)}%</span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-[rgba(31,36,33,0.5)]">Overall</p>
-                  <p className="text-[11px] sm:text-[12px] font-bold text-brand-dark whitespace-nowrap">{markedResults.length} tracked</p>
-                </div>
-              </motion.div>
-            )}
-          </motion.div>
+          )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
 
       {loading ? (
         <div className="space-y-5">
@@ -423,7 +397,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             >
               <div className="flex items-center gap-2 mb-3">
                 <AlertTriangle className="w-3.5 h-3.5 text-stone-500" />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Subject Risk</p>
+                <p className="text-[15px] font-semibold text-brand-dark">Subject Risk</p>
               </div>
               <div className="space-y-2">
                 {examRiskSubjects.filter(s => s.risk === 'high' || s.risk === 'medium').map(risk => (
@@ -512,22 +486,22 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
               >
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Performance Journey</p>
+                  <p className="text-[15px] font-semibold text-brand-dark">Performance Journey</p>
                 </div>
                 <div className="flex items-center gap-4 mb-4">
                   <div className="flex-1 text-center bg-stone-50 rounded p-3">
-                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Early</p>
+                    <p className="text-[11px] text-muted-2 mb-1">Early</p>
                     <p className="font-black text-stone-700 text-xl">{startAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`font-black text-2xl ${change >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                     {change >= 0 ? '↑' : '↓'}
                   </div>
                   <div className="flex-1 text-center bg-stone-50 rounded p-3">
-                    <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-1">Recent</p>
+                    <p className="text-[11px] text-muted-2 mb-1">Recent</p>
                     <p className="font-black text-brand-dark text-xl">{currentAvg.toFixed(0)}%</p>
                   </div>
                   <div className={`flex-1 text-center rounded p-3 ${change >= 0 ? 'bg-emerald-50' : 'bg-red-50'}`}>
-                    <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-stone-500">Change</p>
+                    <p className="text-[11px] text-muted-2 mb-1">Change</p>
                     <p className={`font-black text-xl ${change >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                       {change >= 0 ? '+' : ''}{change.toFixed(1)}%
                     </p>
@@ -566,7 +540,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             >
               <div className="flex items-center gap-2 mb-3">
                 <Target className="w-3.5 h-3.5 text-stone-500" />
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">
+                <p className="text-[15px] font-semibold text-brand-dark">
                   Recommended Actions
                 </p>
               </div>
@@ -574,7 +548,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                 {actionItems.map((item, i) => (
                   <div key={i} className="paper-card rounded overflow-hidden">
                     <div className="px-5 pt-5 pb-4 border-b border-brand-border/60">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
+                      <p className="text-[15px] font-semibold text-brand-dark mb-1">
                         {item.headline}
                       </p>
                       {item.subject && item.avg !== undefined && (
@@ -629,12 +603,12 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
             return best.subject !== worst.subject ? (
               <div className="grid grid-cols-2 gap-3 mb-6 sm:gap-4">
                 <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #10b981' }}>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
+                  <p className="text-[15px] font-semibold text-success mb-1">Strongest</p>
                   <p className="font-black text-brand-dark text-sm leading-tight truncate">{best.subject}</p>
                   <p className="text-emerald-600 font-black text-2xl mt-1">{best.avg.toFixed(0)}%</p>
                 </div>
                 <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #f59e0b' }}>
-                  <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
+                  <p className="text-[15px] font-semibold text-amber-700 mb-1">Needs Attention</p>
                   <p className="font-black text-brand-dark text-sm leading-tight truncate">{worst.subject}</p>
                   <p className="text-amber-600 font-black text-2xl mt-1">{worst.avg.toFixed(0)}%</p>
                 </div>
@@ -845,7 +819,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                               },
                             ].map(stat => (
                               <div key={stat.label} className="bg-stone-50 rounded px-3 py-2.5 text-center">
-                                <p className="text-[10px] font-bold text-stone-500 uppercase tracking-widest mb-0.5">{stat.label}</p>
+                                <p className="text-[11px] text-muted-2 mb-0.5">{stat.label}</p>
                                 <p className="font-black text-brand-dark text-sm">{stat.value}</p>
                               </div>
                             ))}
@@ -876,20 +850,20 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                             <div className="px-5 pt-4 pb-3 flex flex-wrap gap-2">
                               {highestMark !== null && (
                                 <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
-                                  <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Best</span>
+                                  <span className="text-[11px] font-semibold text-muted-2">Best</span>
                                   <span className="text-xs font-black text-brand-dark">{highestMark}%</span>
                                 </div>
                               )}
                               {bestImprove !== null && (
                                 <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
                                   <TrendingUp className="w-3 h-3 text-emerald-500" />
-                                  <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">Best jump</span>
+                                  <span className="text-[11px] font-semibold text-success">Best jump</span>
                                   <span className="text-xs font-black text-emerald-700">+{bestImprove}%</span>
                                 </div>
                               )}
                               {markedItems.length > 0 && (
                                 <div className="flex items-center gap-1.5 bg-stone-50 border border-brand-border/60 rounded px-3 py-1.5">
-                                  <span className="text-[10px] font-black text-stone-500 uppercase tracking-wider">Completed</span>
+                                  <span className="text-[11px] font-semibold text-muted-2">Completed</span>
                                   <span className="text-xs font-black text-brand-dark">{markedItems.length}</span>
                                 </div>
                               )}
@@ -903,7 +877,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                 if (!imp || imp.completed === 0) return null;
                                 return (
                                   <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 rounded px-3 py-1.5">
-                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-wider">
+                                    <span className="text-[11px] font-semibold text-success">
                                       {imp.completed} recommendation{imp.completed !== 1 ? 's' : ''} completed
                                     </span>
                                     {imp.avgImprovement > 0 && (
@@ -925,7 +899,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {/* Chart */}
                           {chartData.length >= 2 && (
                             <div className="px-5 pt-4 pb-2 border-t border-brand-border/60">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Performance</p>
+                              <p className="text-[15px] font-semibold text-brand-dark mb-3">Performance</p>
                               <ResponsiveContainer width="100%" height={140}>
                                 <BarChart data={chartData} barCategoryGap="30%" margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                                   <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#a8a29e' }} axisLine={false} tickLine={false} />
@@ -947,7 +921,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {/* Assessment type breakdown */}
                           {hasTypeBreakdown && (
                             <div className="px-5 py-4 border-t border-brand-border/60">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">By Type</p>
+                              <p className="text-[15px] font-semibold text-brand-dark mb-3">By Type</p>
                               <div className="flex flex-wrap gap-2">
                                 {typeBreakdown.map(({ type, avg, count }) => {
                                   const color = avg >= 70 ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
@@ -987,7 +961,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                             const maxCount = Math.max(...counts.map(g => g.count));
                             return (
                               <div className="px-5 py-4 border-t border-brand-border/60">
-                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Grade Distribution</p>
+                                <p className="text-[15px] font-semibold text-brand-dark mb-3">Grade Distribution</p>
                                 <div className="space-y-2">
                                   {counts.map(g => (
                                     <div key={g.label} className="flex items-center gap-3">
@@ -1011,7 +985,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {/* Focus Area card */}
                           {hasTypeBreakdown && weakestType && strongestType && weakestType.type !== strongestType.type && (
                             <div className="mx-5 mb-4 bg-stone-50 rounded p-4 border border-brand-border/60">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Focus Area</p>
+                              <p className="text-[15px] font-semibold text-brand-dark mb-2">Focus Area</p>
                               <p className="text-sm font-bold text-brand-dark mb-1">
                                 Your {weakestType.type} average is {weakestType.avg}% vs {strongestType.avg}% for {strongestType.type}s.
                               </p>
@@ -1066,7 +1040,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                             return (
                               <div className="px-5 py-4 border-t border-brand-border/60">
-                                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Insights</p>
+                                <p className="text-[15px] font-semibold text-brand-dark mb-3">Insights</p>
                                 <div className="space-y-2">
                                   {insights.map((text, i) => (
                                     <div key={i} className="flex items-start gap-2">
@@ -1082,7 +1056,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                           {/* Three-scenario projection */}
                           {subjectAvg !== null && markedItems.length >= 2 && (
                             <div className="px-5 py-4 border-t border-brand-border/60">
-                              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+                              <p className="text-[15px] font-semibold text-brand-dark mb-3">
                                 What If Next Result Is...
                               </p>
                               <div className="grid grid-cols-3 gap-2">
@@ -1091,7 +1065,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                                   const diff = projected - subjectAvg;
                                   return (
                                     <div key={mark} className="bg-stone-50 rounded p-3 text-center border border-brand-border/60">
-                                      <p className="text-[10px] font-black text-stone-500 uppercase tracking-widest mb-1">{mark}%</p>
+                                      <p className="text-[11px] font-semibold text-muted-2 mb-1">{mark}%</p>
                                       <p className="font-black text-brand-dark text-lg leading-none">{projected.toFixed(1)}%</p>
                                       <p className={`text-[10px] font-bold mt-1 ${diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
                                         {diff >= 0 ? '+' : ''}{diff.toFixed(1)}%
@@ -1126,7 +1100,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
 
                           {/* Assessment timeline */}
                           <div className="px-5 pb-5 pt-3 border-t border-brand-border/60">
-                            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Results</p>
+                            <p className="text-[15px] font-semibold text-brand-dark mb-4">Results</p>
                             <div className="relative">
                               <div className="absolute left-[7px] top-2 bottom-2 w-px bg-stone-200" />
                               <div className="space-y-4">
@@ -1246,7 +1220,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   {/* Header */}
                   <div className="flex items-start justify-between mb-5">
                     <div className="flex-1 min-w-0 pr-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-1">
+                      <p className="text-[15px] font-semibold text-brand-dark mb-1">
                         {r.subject_label} · {r.sheet_scope ?? 'Assessment'}
                       </p>
                       <h2 className="font-black text-brand-dark text-xl leading-tight" style={{ letterSpacing: '-0.02em' }}>
@@ -1295,7 +1269,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   {/* Leading trend mini chart */}
                   {leadingIn.length > 0 && (
                     <div className="bg-stone-50 rounded p-4 mb-5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
+                      <p className="text-[15px] font-semibold text-brand-dark mb-3">
                         Trend Leading In
                       </p>
                       <div className="flex items-end gap-2">
@@ -1337,7 +1311,7 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                   {/* Teacher note */}
                   {r.note && (
                     <div className="border border-amber-200 bg-amber-50 rounded p-4">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-2">Teacher Note</p>
+                      <p className="text-[15px] font-semibold text-amber-700 mb-2">Teacher Note</p>
                       <p className="text-sm text-stone-700 leading-relaxed">{r.note}</p>
                     </div>
                   )}
