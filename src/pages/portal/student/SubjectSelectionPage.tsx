@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Info, Lock, Send, CheckCircle2, AlertTriangle, Clock, ChevronDown, Gauge, TrendingUp, BarChart3, MessageSquareQuote } from 'lucide-react';
+import { Info, Lock, CheckCircle2, AlertTriangle, Clock, ChevronDown, ChevronRight, Gauge, TrendingUp, BarChart3, MessageSquareQuote } from 'lucide-react';
 import type { StudentSession } from '../../../lib/auth';
 import { Spinner } from '../../../shared/components/Spinner';
 import {
@@ -247,22 +247,22 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
   return (
     <div className="subject-selection student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden border-b border-brand-border">
-
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Grade 10 · {year}</p>
-          <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Subject Selection
-          </h1>
-          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
-            Choose your Grade 10 subjects for next year. Your homeroom teacher will review before it's sent to admin.
-          </p>
-        </div>
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Subject Selection
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Grade 10 · {year} — your homeroom teacher reviews before it's sent to admin.</p>
       </div>
 
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 pb-6">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-2 sm:pt-3 pb-6">
 
       {/* Status banner */}
       {selection && (
@@ -391,15 +391,15 @@ export default function SubjectSelectionPage({ session }: SubjectSelectionPagePr
       {error && <p className="text-sm text-red-600 mt-6">{error}</p>}
 
       {!isLocked && (
-        <div className="flex items-center gap-3 mt-8 pt-6 border-t border-brand-border">
-          <motion.button onClick={handleSaveDraft} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="text-sm font-black text-brand-dark px-5 py-2.5 rounded border border-brand-border hover:bg-brand-border transition-colors disabled:opacity-60"
-            style={{ background: 'var(--color-paper-raise)' }}>
-            {saved ? 'Saved' : 'Save Draft'}
+        <div className="flex items-center gap-6 mt-8 pt-6 border-t border-brand-border">
+          <motion.button onClick={handleSaveDraft} disabled={saving || submitting} whileTap={{ scale: 0.98 }}
+            className="text-[14px] font-semibold text-muted transition-colors disabled:opacity-60">
+            {saved ? 'Saved' : 'Save draft'}
           </motion.button>
-          <motion.button onClick={handleSubmit} disabled={saving || submitting} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            className="edge-glow flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-[var(--color-accent-light)] transition-colors disabled:opacity-60">
-            <Send className="w-4 h-4" /> {isSubmitted ? 'Resubmit' : 'Submit for Approval'}
+          <motion.button onClick={handleSubmit} disabled={saving || submitting} whileTap={{ scale: 0.98 }}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-60"
+            style={{ color: 'var(--color-navy)' }}>
+            {isSubmitted ? 'Resubmit' : 'Submit for approval'} <ChevronRight className="w-3.5 h-3.5" />
           </motion.button>
         </div>
       )}

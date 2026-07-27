@@ -8,7 +8,7 @@
 
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Bot, ChevronRight, ChevronLeft, MessageCircleQuestion } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import type { StudentSession } from '../../../lib/auth';
 import { subjects } from '../../../features/study/data/subjects';
 import { fallbackTopicsFor } from '../../../lib/aiTutor/fallbackTopics';
@@ -39,20 +39,33 @@ export default function AiTutorPage({ session }: AiTutorPageProps) {
 
   return (
     <div className="student-home min-h-full">
-    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 pt-6 pb-16">
-      <div className="flex items-center gap-2.5 mb-1">
-        <Bot className="w-5 h-5 text-brand-dark" />
-        <h1
-          className="text-brand-dark text-[28px] sm:text-[34px] leading-[1.15]"
-          style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-        >
-          AI Study Helper
-        </h1>
-      </div>
-      <p className="text-[13px] text-stone-500 mb-6">
+    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-16">
+      <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+        <span className="relative inline-block">
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+            AI Study Helper
+          </span>
+          <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+            <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          </svg>
+        </span>
+      </h1>
+      <p className="text-[14px] text-muted mt-1 mb-6">
         Pick a subject and topic to start, or ask a general question. I'm bounded to our CAPS-aligned course
         content and I won't just hand you direct answers to graded work or past papers.
       </p>
+
+      {/* Ask anything — always-visible hero action, not just another row in the list */}
+      <button
+        onClick={() => openChat(null, null, 'General question')}
+        className="w-full paper-card rounded p-5 sm:p-6 flex items-center justify-between gap-4 mb-6 text-left transition-colors"
+      >
+        <div className="min-w-0">
+          <p className="text-[17px] font-semibold" style={{ color: 'var(--color-navy)' }}>Just ask a general question</p>
+          <p className="text-muted text-[13px] mt-0.5">No specific subject — start chatting right away</p>
+        </div>
+        <ChevronRight className="w-5 h-5 shrink-0" style={{ color: 'var(--color-navy)' }} />
+      </button>
 
       <AnimatePresence mode="wait">
         {view.level === 'subjects' && (
@@ -60,38 +73,28 @@ export default function AiTutorPage({ session }: AiTutorPageProps) {
             key="subjects"
             initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -12 }}
             transition={{ duration: 0.22, ease: EASE }}
-            className="space-y-2"
           >
-            <button
-              onClick={() => openChat(null, null, 'General question')}
-              className="paper-card rounded w-full text-left p-4 flex items-center justify-between gap-3"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <MessageCircleQuestion className="w-4.5 h-4.5 text-brand-dark shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-bold text-brand-dark">Just ask a general question</p>
-                  <p className="text-[11px] text-stone-500">No specific subject — start chatting right away</p>
-                </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
-            </button>
-
-            {subjectsWithTopics.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => setView({ level: 'topics', subjectId: s.id, subjectName: s.name })}
-                className="paper-card rounded w-full text-left p-4 flex items-center justify-between gap-3"
-              >
-                <div className="min-w-0">
+            <span className="relative inline-block mb-3">
+              <span className="text-[12px] text-muted-2">Pick a subject</span>
+              <svg aria-hidden="true" viewBox="0 0 140 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+                <path d="M1 5C30 2 80 1 139 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {subjectsWithTopics.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => setView({ level: 'topics', subjectId: s.id, subjectName: s.name })}
+                  className="paper-card rounded p-4 text-left hover:border-accent transition-colors"
+                >
                   <p className="text-sm font-bold text-brand-dark truncate">{s.name}</p>
                   <p className="text-[11px] text-stone-500 mt-0.5">{s.category}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
 
-            <p className="text-[11px] text-stone-400 text-center pt-2">
-              Don't see your subject listed yet? Choose "Just ask a general question" instead — I can still
+            <p className="text-[11px] text-stone-400 text-center pt-4">
+              Don't see your subject listed yet? Use "Just ask a general question" above instead — I can still
               help, just without our verified course materials for that subject.
             </p>
           </motion.div>
@@ -105,11 +108,17 @@ export default function AiTutorPage({ session }: AiTutorPageProps) {
           >
             <button
               onClick={() => setView({ level: 'subjects' })}
-              className="flex items-center gap-1 text-xs font-bold text-stone-500 hover:text-brand-dark mb-4"
+              className="flex items-center gap-1 text-xs font-semibold mb-4"
+              style={{ color: 'var(--color-accent-soft)' }}
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Back
             </button>
-            <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">{view.subjectName}</p>
+            <span className="relative inline-block mb-3">
+              <span className="text-[12px] text-muted-2">{view.subjectName}</span>
+              <svg aria-hidden="true" viewBox="0 0 140 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+                <path d="M1 5C30 2 80 1 139 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
             <div className="space-y-2">
               <button
                 onClick={() => openChat(view.subjectId, null, `${view.subjectName} — general question`)}
@@ -125,7 +134,7 @@ export default function AiTutorPage({ session }: AiTutorPageProps) {
                   className="paper-card rounded w-full text-left p-4 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Term {t.term}</p>
+                    <p className="text-[11px] text-muted-2">Term {t.term}</p>
                     <p className="text-sm font-bold text-brand-dark truncate">{t.topicName}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-stone-400 shrink-0" />

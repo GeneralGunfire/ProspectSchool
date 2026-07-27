@@ -24,20 +24,23 @@ export default function TeacherWellbeingGuidancePage({ initialTopic }: TeacherWe
 
   return (
     <div className="student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Homeroom</p>
-          <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Guidance
-          </h1>
-          <p className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium max-w-lg">
-            Short, practical guidance for common situations — what to notice, what to say, and when to involve others.
-          </p>
-        </div>
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Guidance
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1 max-w-lg">
+          Short, practical guidance for common situations — what to notice, what to say, and when to involve others.
+        </p>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         {selected ? (
           <TopicDetail topic={selected} onBack={() => setSelected(null)} />
         ) : (
@@ -63,7 +66,7 @@ function TopicDetail({ topic, onBack }: { topic: TeacherGuidanceTopic; onBack: (
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
       className="space-y-5">
-      <button onClick={onBack} className="flex items-center gap-1.5 text-[13px] font-bold text-stone-500 hover:text-brand-dark transition-colors">
+      <button onClick={onBack} className="flex items-center gap-1.5 text-[13px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
         <ChevronLeft className="w-4 h-4" /> Back to all topics
       </button>
 

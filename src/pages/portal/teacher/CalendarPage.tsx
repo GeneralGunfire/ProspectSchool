@@ -368,24 +368,23 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Calendar</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
               School Events
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Track homework, assessments, and important dates.</p>
-          </motion.div>
-        </div>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Track homework, assessments, and important dates.</p>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* ── Toolbar ─────────────────────────────────────────── */}
       <motion.div
@@ -396,9 +395,10 @@ export default function CalendarPage({ session }: CalendarPageProps) {
           {/* Create event button */}
           <button
             onClick={() => openCreate(todayStr)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-accent text-white text-xs font-black rounded hover:bg-accent-soft transition-colors"
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors mr-auto"
+            style={{ color: 'var(--color-navy)' }}
           >
-            <Plus className="w-3.5 h-3.5" /> Create Event
+            <Plus className="w-4 h-4" /> Create event
           </button>
 
           {/* Month nav */}
@@ -430,7 +430,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'grid' ? 'bg-accent text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'grid' ? 'bg-sky-50 text-sky-700' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" /> Grid
@@ -438,7 +438,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                viewMode === 'list' ? 'bg-accent text-white' : 'text-stone-500 hover:text-stone-700'
+                viewMode === 'list' ? 'bg-sky-50 text-sky-700' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
               <List className="w-3.5 h-3.5" /> List
@@ -537,7 +537,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                             >
                               <div className="flex items-center justify-between mb-1">
                                 <span className={`text-xs font-black w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
-                                  isToday ? 'bg-accent text-white' : 'text-stone-500 group-hover:text-stone-700'
+                                  isToday ? 'bg-sky-50 text-sky-700' : 'text-stone-500 group-hover:text-stone-700'
                                 }`}>
                                   {day}
                                 </span>
@@ -583,10 +583,11 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             className="paper-card rounded p-4"
           >
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming</p>
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Upcoming</p>
               <button
                 onClick={() => openCreate(todayStr)}
-                className="flex items-center gap-1 text-[11px] font-black bg-accent text-white px-2.5 py-1 rounded-lg hover:bg-accent-soft transition-colors"
+                className="flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                style={{ color: 'var(--color-navy)' }}
               >
                 <Plus className="w-3 h-3" /> Create
               </button>
@@ -604,9 +605,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       onClick={() => openView(ev)}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded border border-brand-border/60 hover:border-brand-border transition-colors text-left"
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-100'}`}>
-                        <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-                      </div>
+                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-bold text-brand-dark truncate">{ev.title}</p>
                         <p className="text-[11px] text-stone-500">{formatDate(ev.event_date)}</p>
@@ -628,7 +627,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
             transition={{ duration: 0.4, ease, delay: 0.15 }}
             className="paper-card rounded p-4"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">Legend</p>
+            <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>Legend</p>
             <div className="space-y-2">
               {EVENT_TYPES.map(t => {
                 const c = EVENT_COLORS[t.value];
@@ -843,7 +842,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                                     <button
                                       onClick={() => handleVerify(ev, row.student_id, true)}
                                       disabled={isVerifying}
-                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition-colors disabled:opacity-40"
+                                      className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded bg-white text-emerald-600 border border-emerald-200 text-xs font-black hover:bg-emerald-50 transition-colors disabled:opacity-40"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5" /> Verify Done
                                     </button>
@@ -888,18 +887,19 @@ export default function CalendarPage({ session }: CalendarPageProps) {
 
               {/* Footer — edit/delete */}
               <div className="shrink-0 px-6 pb-4 pt-2 border-t border-brand-border/60 mt-2">
-                <div className="flex gap-2">
+                <div className="flex items-center gap-6">
                   <button
                     onClick={() => { closeModal(); setTimeout(() => openEdit(ev), 50); }}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors"
+                    className="flex items-center gap-1 text-[14px] font-semibold transition-colors"
+                    style={{ color: 'var(--color-navy)' }}
                   >
                     <Pencil className="w-3.5 h-3.5" /> Edit
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(true)}
-                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded text-red-500 hover:bg-red-50 text-sm font-black transition-colors"
+                    className="flex items-center gap-1 text-[14px] font-semibold text-red-600 transition-colors"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5" /> Delete
                   </button>
                 </div>
 
@@ -912,13 +912,13 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                     >
                       <div className="p-4 bg-red-50 rounded border border-red-100">
                         <p className="text-sm font-bold text-red-700 mb-3">Delete this event? This cannot be undone.</p>
-                        <div className="flex gap-2">
+                        <div className="flex items-center gap-6">
                           <button onClick={handleDelete} disabled={saving}
-                            className="flex-1 py-2 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
-                            {saving ? 'Deleting…' : 'Yes, Delete'}
+                            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+                            {saving ? 'Deleting…' : 'Yes, delete'}
                           </button>
                           <button onClick={() => setDeleteConfirm(false)}
-                            className="flex-1 py-2 rounded bg-white border border-brand-border text-sm font-black text-stone-700 hover:bg-stone-50 transition-colors">
+                            className="text-[14px] font-semibold text-muted transition-colors">
                             Cancel
                           </button>
                         </div>
@@ -1109,7 +1109,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           target_student_ids: [],
                         }))}
                         className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
-                          active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -1127,7 +1127,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={g}
                           onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           Grade {g}
                         </button>
@@ -1145,7 +1145,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={c.id}
                           onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                          className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                         >
                           {c.name} <span className="opacity-60">(Gr {c.grade})</span>
                         </button>
@@ -1165,7 +1165,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={s.id}
                               onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               {s.label}
                             </button>
@@ -1181,7 +1181,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                           return (
                             <button key={g}
                               onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
+                              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}
                             >
                               Grade {g}
                             </button>
@@ -1202,7 +1202,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
                       return (
                         <button key={s.id}
                           onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-accent text-white' : 'hover:bg-stone-100 text-stone-700'}`}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-sky-50 text-sky-700' : 'hover:bg-stone-100 text-stone-700'}`}
                         >
                           <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>
                             {active ? '✓' : ''}
@@ -1218,14 +1218,15 @@ export default function CalendarPage({ session }: CalendarPageProps) {
               {error && <p className="text-sm font-bold text-red-500">{error}</p>}
             </div>
 
-            <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
+            <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex items-center gap-6">
               <button onClick={closeModal}
-                className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
+                className="text-[14px] font-semibold text-muted transition-colors">
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50">
-                {saving ? 'Saving…' : modal === 'create' ? 'Create Event' : 'Save Changes'}
+                className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+                style={{ color: 'var(--color-navy)' }}>
+                {saving ? 'Saving…' : modal === 'create' ? 'Create event' : 'Save changes'} <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           </motion.div>

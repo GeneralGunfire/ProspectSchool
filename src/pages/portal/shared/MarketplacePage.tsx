@@ -328,39 +328,24 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
         )}
       </AnimatePresence>
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
-
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">School Supplies</p>
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-          >
-            Marketplace
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium"
-          >
-            Buy, sell and request textbooks and supplies with your school community.
-          </motion.p>
-        </div>
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <p className="text-[12px] text-muted-2">School Supplies</p>
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Marketplace
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Buy, sell and request textbooks and supplies with your school community.</p>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-2 sm:pt-3">
 
       {/* Primary action — its own row, separate from the tab pills so it
           doesn't get cramped inside the same small card. */}
@@ -370,20 +355,20 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => { closeSellForm(); setTab('sell'); }}
-              className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
-              style={{ background: 'var(--color-accent)' }}
+              className="shrink-0 flex items-center gap-1 text-[13px] font-semibold transition-colors"
+              style={{ color: 'var(--color-navy)' }}
             >
-              <Plus className="w-4 h-4" /> Sell an Item
+              <Plus className="w-4 h-4" /> Sell an item
             </motion.button>
           )}
           {(tab === 'wanted' || tab === 'my-wanted') && (
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => { closeWantedForm(); setTab('post-wanted'); }}
-              className="shrink-0 flex items-center gap-2 text-white text-[13px] font-bold px-4 py-2.5 rounded transition-colors"
-              style={{ background: 'var(--color-accent)' }}
+              className="shrink-0 flex items-center gap-1 text-[13px] font-semibold transition-colors"
+              style={{ color: 'var(--color-navy)' }}
             >
-              <Plus className="w-4 h-4" /> Post a Request
+              <Plus className="w-4 h-4" /> Post a request
             </motion.button>
           )}
         </div>
@@ -538,19 +523,20 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
 
           {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex items-center gap-6 pt-2">
             <button
               onClick={() => { closeSellForm(); setTab('browse'); }}
-              className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+              className="text-[14px] font-semibold text-muted transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleCreate}
               disabled={saving}
-              className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+              style={{ color: 'var(--color-navy)' }}
             >
-              {saving ? 'Posting…' : 'Post Listing'}
+              {saving ? 'Posting…' : 'Post listing'} <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -601,19 +587,20 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
 
           {wantedFormError && <p className="text-sm font-bold text-red-500">{wantedFormError}</p>}
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex items-center gap-6 pt-2">
             <button
               onClick={() => { closeWantedForm(); setTab('wanted'); }}
-              className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+              className="text-[14px] font-semibold text-muted transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleCreateWanted}
               disabled={wantedSaving}
-              className="flex-1 py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+              style={{ color: 'var(--color-navy)' }}
             >
-              {wantedSaving ? 'Posting…' : 'Post Request'}
+              {wantedSaving ? 'Posting…' : 'Post request'} <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
@@ -672,9 +659,10 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                   {tab === 'wanted' && !isOwnRequest && w.status === 'open' && (
                     <button
                       onClick={() => handleImSellingThis(w)}
-                      className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black bg-brand-dark text-white hover:bg-stone-700 transition-colors"
+                      className="shrink-0 flex items-center gap-1 text-xs font-semibold transition-colors"
+                      style={{ color: 'var(--color-navy)' }}
                     >
-                      <Tag className="w-3.5 h-3.5" /> I'm Selling This
+                      <Tag className="w-3.5 h-3.5" /> I'm selling this
                     </button>
                   )}
                   {tab === 'my-wanted' && (
@@ -853,13 +841,12 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                           onClick={() => handleToggleInterest(l)}
                           disabled={l.status === 'sold'}
                           className={`mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded text-xs font-black transition-colors disabled:opacity-40 ${
-                            interested
-                              ? 'bg-red-50 border border-red-200 text-red-600'
-                              : 'bg-brand-dark text-white hover:bg-stone-700'
+                            interested ? 'bg-red-50 border border-red-200 text-red-600' : 'border border-brand-border'
                           }`}
+                          style={!interested ? { color: 'var(--color-navy)' } : undefined}
                         >
                           <Heart className={`w-3.5 h-3.5 ${interested ? 'fill-red-500' : ''}`} />
-                          {interested ? 'Interested' : "I'm Interested"}
+                          {interested ? 'Interested' : "I'm interested"}
                         </button>
                       )}
                     </>
@@ -1011,11 +998,12 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                       className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded text-sm font-black transition-colors disabled:opacity-40 ${
                         (interestedMap.get(detailListing.id) ?? false)
                           ? 'bg-red-50 border border-red-200 text-red-600'
-                          : 'bg-brand-dark text-white hover:bg-stone-700'
+                          : 'border border-brand-border'
                       }`}
+                      style={!(interestedMap.get(detailListing.id) ?? false) ? { color: 'var(--color-navy)' } : undefined}
                     >
                       <Heart className={`w-4 h-4 ${(interestedMap.get(detailListing.id) ?? false) ? 'fill-red-500' : ''}`} />
-                      {(interestedMap.get(detailListing.id) ?? false) ? 'Interested' : "I'm Interested"}
+                      {(interestedMap.get(detailListing.id) ?? false) ? 'Interested' : "I'm interested"}
                     </button>
                   )
                 )}
@@ -1089,17 +1077,17 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
             >
               <h2 className="text-base font-black text-brand-dark mb-1">Delete listing?</h2>
               <p className="text-sm text-stone-500 mb-5"><strong>{deleteTarget.title}</strong> will be permanently removed.</p>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-6">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="text-[14px] font-semibold text-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50"
                 >
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>
@@ -1126,16 +1114,16 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
             >
               <h2 className="text-base font-black text-brand-dark mb-1">Delete request?</h2>
               <p className="text-sm text-stone-500 mb-5"><strong>{deleteWantedTarget.title}</strong> will be permanently removed.</p>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-6">
                 <button
                   onClick={() => setDeleteWantedTarget(null)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="text-[14px] font-semibold text-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteWanted}
-                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors"
+                  className="text-[14px] font-semibold text-red-600 transition-colors"
                 >
                   Delete
                 </button>

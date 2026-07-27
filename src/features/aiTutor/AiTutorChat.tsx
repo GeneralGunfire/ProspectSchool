@@ -6,7 +6,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Send, Bot, Loader2, AlertCircle } from 'lucide-react';
+import { X, Send, Loader2, AlertCircle } from 'lucide-react';
 import {
   startConversation, sendMessage, fetchConversationMessages,
   type ConversationRecord, type EntryPoint,
@@ -105,22 +105,23 @@ export function AiTutorChat({
             initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 24 }}
             transition={{ duration: 0.28, ease: EASE }}
             onClick={(e) => e.stopPropagation()}
-            className="paper-card w-full sm:max-w-lg h-[85vh] sm:h-[640px] rounded-t-2xl sm:rounded-2xl flex flex-col overflow-hidden"
+            className="w-full sm:max-w-lg h-[85vh] sm:h-[640px] rounded-t-2xl sm:rounded-2xl flex flex-col overflow-hidden bg-white shadow-2xl"
+            style={{
+              background: 'linear-gradient(180deg, #ffffff 0%, #fdfcfa 100%)',
+              boxShadow: '0 1px 2px rgba(15,18,15,0.10), 0 10px 24px -6px rgba(15,18,15,0.20), 0 32px 56px -20px rgba(15,18,15,0.28)',
+            }}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 shrink-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <Bot className="w-4.5 h-4.5 text-brand-dark shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-black text-brand-dark truncate">AI Study Helper</p>
-                  {topicLabel && <p className="text-[11px] text-stone-500 truncate">{topicLabel}</p>}
-                </div>
+            <div className="flex items-center justify-between px-4 py-3.5 shrink-0" style={{ background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' }}>
+              <div className="min-w-0">
+                <p className="text-[14px] font-semibold text-white truncate">AI Study Helper</p>
+                {topicLabel && <p className="text-[11.5px] text-white/75 truncate">{topicLabel}</p>}
               </div>
-              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-stone-100 shrink-0">
-                <X className="w-4 h-4 text-stone-500" />
+              <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/15 shrink-0 transition-colors">
+                <X className="w-4 h-4 text-white" />
               </button>
             </div>
 
-            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-white">
               <div className="text-[11px] text-stone-400 text-center px-4">
                 I can help you understand this topic, but I won't just give you direct answers to graded work or
                 past papers — and I'm bounded to our course content, so I might not always know everything.
@@ -137,9 +138,10 @@ export function AiTutorChat({
                   <div
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                       m.role === 'user'
-                        ? 'bg-brand-dark text-white rounded-br-sm'
+                        ? 'text-white rounded-br-sm'
                         : 'bg-stone-100 text-brand-dark rounded-bl-sm'
                     }`}
+                    style={m.role === 'user' ? { background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' } : undefined}
                   >
                     {m.content}
                   </div>
@@ -161,7 +163,7 @@ export function AiTutorChat({
               )}
             </div>
 
-            <div className="border-t border-stone-200 p-3 shrink-0">
+            <div className="border-t border-stone-200 p-3 shrink-0 bg-white">
               <div className="flex items-end gap-2">
                 <textarea
                   value={draft}
@@ -172,12 +174,15 @@ export function AiTutorChat({
                   placeholder="Ask about this topic..."
                   rows={1}
                   disabled={initializing}
-                  className="flex-1 resize-none rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-dark/20 max-h-28"
+                  className="flex-1 resize-none rounded-xl border border-stone-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 max-h-28"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!draft.trim() || sending || initializing}
-                  className="p-2.5 rounded-xl bg-brand-dark text-white disabled:opacity-40 shrink-0"
+                  className="p-2.5 rounded-xl text-white disabled:opacity-40 shrink-0 transition-colors"
+                  style={{ background: 'var(--color-accent)' }}
+                  onMouseEnter={(e) => { if (draft.trim() && !sending && !initializing) e.currentTarget.style.background = 'var(--color-accent-light)'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--color-accent)'; }}
                 >
                   <Send className="w-4 h-4" />
                 </button>

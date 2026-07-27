@@ -135,9 +135,9 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
             <button
               onClick={() => setPage('home')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
-                activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                activePage === 'home' ? 'text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
               }`}
-              style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+              style={activePage === 'home' ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
             >
               <Home className={`w-4.5 h-4.5 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
               <span>Home</span>
@@ -173,10 +173,10 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                                   onClick={() => setPage(id)}
                                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
                                     active
-                                      ? 'bg-brand-dark text-white'
+                                      ? 'text-white'
                                       : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                                   }`}
-                                  style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                  style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                                 >
                                   <Icon className={`w-4.5 h-4.5 shrink-0 ${active ? 'text-white' : ''}`} />
                                   <span className="flex-1 text-left">{label}</span>
@@ -196,7 +196,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           {/* Profile + logout */}
           <div className="p-3 shrink-0 border-t border-brand-border rounded-b-[14px]">
             <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
                 <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -235,7 +235,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell userType="teacher" userId={session.teacher_id} />
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
               <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
             </div>
             <button
@@ -288,9 +288,9 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                     <button
                       onClick={() => setPage('home')}
                       className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
-                        activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                        activePage === 'home' ? 'text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                       }`}
-                      style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                      style={activePage === 'home' ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                     >
                       <Home className={`w-4 h-4 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
                       <span>Home</span>
@@ -326,10 +326,10 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                                           onClick={() => setPage(id)}
                                           className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
                                             active
-                                              ? 'bg-brand-dark text-white'
+                                              ? 'text-white'
                                               : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                                           }`}
-                                          style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                          style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                                         >
                                           <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                                           <span className="flex-1 text-left">{label}</span>
@@ -350,7 +350,7 @@ export default function TeacherDashboard({ onNavigate }: TeacherDashboardProps) 
                   <div className="p-3 shrink-0 border-t border-brand-border"
                     style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
                     <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-                      <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
                         <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
                       </div>
                       <div className="flex-1 min-w-0">

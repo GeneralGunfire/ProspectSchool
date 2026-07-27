@@ -39,10 +39,27 @@ type View =
 // adjust the gradient's bottom/opacity values independently of the other
 // portal pages — they must all match exactly. ──────────────────────────────
 function HeroStrip({
-  eyebrow, title, subtitle, onBack, size = 'default',
+  eyebrow, title, subtitle, onBack, size = 'default', highlight,
 }: {
-  eyebrow: string; title: string; subtitle?: string; onBack?: () => void; size?: 'default' | 'large';
+  eyebrow: string; title: string; subtitle?: string; onBack?: () => void; size?: 'default' | 'large'; highlight?: string;
 }) {
+  const titleNode = highlight && title.includes(highlight)
+    ? title.split(highlight).map((part, i, arr) => (
+      <span key={i}>
+        {part}
+        {i < arr.length - 1 && (
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              {highlight}
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        )}
+      </span>
+    ))
+    : title;
   const large = size === 'large';
   return (
     <div className="relative overflow-hidden">
@@ -75,7 +92,7 @@ function HeroStrip({
             className={`text-brand-dark leading-[1.12] min-w-0 ${large ? 'text-[38px] sm:text-[52px]' : 'text-[32px] sm:text-[42px]'}`}
             style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
           >
-            {title}
+            {titleNode}
           </motion.h1>
           {subtitle && (
             <p className={`text-[rgba(31,36,33,0.5)] mt-2.5 font-medium ${large ? 'text-[14px] sm:text-[15px]' : 'text-[13px]'}`}>
@@ -146,7 +163,7 @@ export default function LibraryHubPage({
   return (
     <div className="student-home min-h-full pb-16 relative">
       {view.level === 'subjects' && (
-        <HeroStrip eyebrow={`Study Library · Grade ${grade}`} title="Choose a subject" subtitle="More subjects and topics are added regularly." />
+        <HeroStrip eyebrow={`Study Library · Grade ${grade}`} title="Choose a subject" highlight="subject" subtitle="More subjects and topics are added regularly." />
       )}
       {view.level === 'terms' && (
         <HeroStrip

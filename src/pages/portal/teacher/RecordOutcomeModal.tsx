@@ -130,7 +130,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
             <div>
-              <h2 className="text-base font-black text-brand-dark">Record Outcome</h2>
+              <h2 className="text-base font-black text-brand-dark">Record outcome</h2>
               <p className="text-xs text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</p>
             </div>
             <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 transition-colors">
@@ -151,7 +151,7 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                   </p>
                 )}
 
-                <p className="text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 mb-3">Subject Averages</p>
+                <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>Subject averages</p>
 
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1">
@@ -201,9 +201,10 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="w-full py-2.5 rounded bg-brand-dark text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ color: 'var(--color-navy)' }}
             >
-              {saving ? 'Saving…' : 'Record Outcome'}
+              {saving ? 'Saving…' : 'Record outcome'}
             </button>
           </div>
         </div>

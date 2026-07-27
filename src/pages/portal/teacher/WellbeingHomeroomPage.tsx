@@ -94,23 +94,24 @@ export default function WellbeingHomeroomPage({ session, onOpenGuidance }: Wellb
 
   return (
     <div className="student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 pointer-events-none" style={{ bottom: '-220px',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.45) 40%, rgba(255,255,255,0.22) 75%, transparent 100%)' }} />
-        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Homeroom</p>
-          <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Wellbeing
-          </h1>
-          <p className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium max-w-xl">
-            An early signal, not a diagnosis. This helps you notice patterns you might otherwise miss — it does not
-            replace a caring conversation or professional support.
-          </p>
-        </div>
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Wellbeing
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1 max-w-xl">
+          An early signal, not a diagnosis. This helps you notice patterns you might otherwise miss — it does not
+          replace a caring conversation or professional support.
+        </p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-8 relative z-10 space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         {loading ? (
           <div className="paper-card rounded p-6 space-y-3">
             <div className="h-4 w-1/2 bg-stone-100 rounded animate-pulse" />
@@ -267,7 +268,7 @@ function SafetyFlagCard({
           <button
             onClick={handleAck}
             disabled={ackBusy}
-            className="px-4 py-2 rounded-lg bg-red-600 text-white text-[13px] font-bold hover:bg-red-700 disabled:opacity-50"
+            className="text-[13px] font-semibold text-red-600 transition-colors disabled:opacity-50"
           >
             {ackBusy ? 'Acknowledging…' : 'Acknowledge receipt'}
           </button>
@@ -433,7 +434,8 @@ function RoutineAlertCard({
 
               <div className="flex flex-wrap gap-2">
                 <button onClick={handleAddressed} disabled={busy}
-                  className="px-3 py-1.5 rounded-lg bg-brand-dark text-white text-[12.5px] font-bold disabled:opacity-40">
+                  className="text-[12.5px] font-semibold transition-colors disabled:opacity-40"
+                  style={{ color: 'var(--color-navy)' }}>
                   Mark addressed
                 </button>
                 <button onClick={() => handleSnooze(7)} disabled={busy}

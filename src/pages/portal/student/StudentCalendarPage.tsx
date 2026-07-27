@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft, ChevronRight, Calendar, List, Clock, Paperclip, X, CheckCircle2, Circle,
-  Activity, ClipboardList, BookOpen, Palette,
+  Palette,
 } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import { Spinner } from '../../../shared/components/Spinner';
@@ -295,7 +295,14 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
       {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
         <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
-          My Schedule
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              My Schedule
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
         </h1>
         <p className="text-[14px] text-muted mt-1">Your classes, homework, assessments and exams.</p>
 
@@ -324,299 +331,68 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
       {/* ═══ Body ═════════════════════════════════════════════════ */}
       <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4 pb-20 md:pb-0">
 
-      {/* ── Control bar: today / month nav / grid-list toggle ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease }}
-        className="flex items-center gap-2 flex-wrap"
-      >
-        {/* Today button */}
-        <button
-          onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); setSelectedDay(todayStr); }}
-          className="px-3.5 py-2 text-[13px] font-bold text-stone-600 rounded transition-colors border"
-          style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}
-        >
-          Today
-        </button>
-
-        {/* Month nav */}
-        <div className="flex items-center rounded border overflow-hidden" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
-          <button onClick={prevMonth} aria-label="Previous month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderRight: '1px solid var(--color-brand-border)' }}>
-            <ChevronLeft className="w-4 h-4 text-stone-600" />
-          </button>
-          <div className="relative overflow-hidden min-w-36 text-center px-1">
-            <AnimatePresence mode="popLayout" initial={false}>
-              <motion.span
-                key={monthKey}
-                initial={{ y: direction > 0 ? 16 : -16, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
-                transition={{ duration: 0.22, ease: 'easeOut' }}
-                className="block text-[14px] font-bold text-brand-dark py-1.5"
-              >
-                {MONTHS[month - 1]} {year}
-              </motion.span>
-            </AnimatePresence>
-          </div>
-          <button onClick={nextMonth} aria-label="Next month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderLeft: '1px solid var(--color-brand-border)' }}>
-            <ChevronRight className="w-4 h-4 text-stone-600" />
-          </button>
-        </div>
-
-        {/* Grid/List toggle */}
-        <div className="flex items-center rounded border p-0.5 gap-0.5" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
-              viewMode === 'grid' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
-            }`}
-            style={viewMode === 'grid' ? { background: 'var(--color-accent)' } : undefined}
-          >
-            <Calendar className="w-3.5 h-3.5" /> Grid
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
-              viewMode === 'list' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
-            }`}
-            style={viewMode === 'list' ? { background: 'var(--color-accent)' } : undefined}
-          >
-            <List className="w-3.5 h-3.5" /> List
-          </button>
-        </div>
-      </motion.div>
-
-      {/* ── Section 1: Workload Intelligence ────────────────── */}
-      {thisWeekEvents.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-5 mb-4"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-4 h-4 text-brand-dark" />
-            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>This week</p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-            {[
-              { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-brand-dark' },
-              { label: 'Assessments', value: thisWeekAssessments.length, color: 'text-emerald-600' },
-              { label: 'Exams',       value: thisWeekExams.length,       color: 'text-red-600' },
-              {
-                label: 'Est. Hours',
-                value: estimatedHours % 1 === 0 ? `${estimatedHours}h` : `${estimatedHours.toFixed(1)}h`,
-                color: 'text-amber-600',
-              },
-            ].map(stat => (
-              <div key={stat.label} className="rounded px-3 py-2.5 text-center" style={{ background: 'var(--color-paper-raise)' }}>
-                <p className={`font-black text-xl leading-none ${stat.value === 0 ? 'text-stone-300' : stat.color}`}>{stat.value}</p>
-                <p className="text-[12px] text-muted-2 mt-1">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-          {busiestDayLabel && (
-            <p className="text-xs text-[rgba(31,36,33,0.5)]">
-              Busiest day: <span className="text-brand-dark font-bold">{busiestDayLabel}</span>
-              {estimatedHours >= 6 && <span className="text-amber-600 font-bold ml-2">— Heavy week</span>}
-              {estimatedHours >= 3 && estimatedHours < 6 && <span className="text-brand-dark font-bold ml-2">— Manageable</span>}
-              {estimatedHours < 3 && <span className="text-emerald-600 font-bold ml-2">— Light week</span>}
-            </p>
-          )}
-        </motion.div>
-      )}
-
-      {/* ── Section 2: Countdown cards ──────────────────────── */}
-      {(nextExam || nextAssessment) && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-          {([nextExam, nextAssessment] as (SchoolEvent | null)[]).filter(Boolean).map((ev, i) => {
-            const days = daysUntil(ev!.event_date);
-            const accentBorder = days <= 3 ? '#ef4444' : days <= 7 ? '#f59e0b' : 'var(--color-brand-border)';
-            const daysColor    = days <= 3 ? 'text-red-600'
-                               : days <= 7 ? 'text-amber-600'
-                               :             'text-brand-dark';
-            return (
-              <motion.div key={ev!.id}
-                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + i * 0.05, ease: [0.23, 1, 0.32, 1] }}
-                className="paper-card rounded p-4"
-                style={{ borderLeft: `3px solid ${accentBorder}` }}
-              >
-                <p className="text-[12px] text-muted-2 mb-1">
-                  {ev!.event_type === 'exam' ? 'Next exam' : 'Next assessment'}
-                </p>
-                <p className="font-black text-brand-dark text-sm leading-tight mb-2">{ev!.title}</p>
-                <div className="flex items-end gap-1.5">
-                  <span className={`font-black text-3xl leading-none ${daysColor}`}>{days}</span>
-                  <span className="text-sm font-bold text-[rgba(31,36,33,0.5)] mb-0.5">
-                    {days === 1 ? 'day' : 'days'} remaining
-                  </span>
-                </div>
-                <p className="text-xs text-[rgba(31,36,33,0.45)] mt-1">{formatDayFull(ev!.event_date)}</p>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* ── Section 3: Priority Deadlines ───────────────────── */}
-      {priorityDeadlines.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-5 mb-4"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <ClipboardList className="w-4 h-4 text-brand-dark" />
-            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>Priority deadlines</p>
-          </div>
-          <div className="space-y-2">
-            {priorityDeadlines.map((ev) => {
-              const days = daysUntil(ev.event_date);
-              const urgency = days === 0 ? { dot: 'bg-red-500',   label: 'Today',        text: 'text-red-600' }
-                            : days === 1 ? { dot: 'bg-red-400',   label: 'Tomorrow',     text: 'text-red-500' }
-                            : days <= 3  ? { dot: 'bg-amber-500', label: `${days} days`, text: 'text-amber-600' }
-                            : days <= 7  ? { dot: 'bg-brand-dark',  label: `${days} days`, text: 'text-brand-dark' }
-                            :              { dot: 'bg-stone-300',  label: `${days} days`, text: 'text-stone-500' };
-              const typeLabel = EVENT_LABELS[ev.event_type];
-              return (
-                <div key={ev.id} className="flex items-center gap-3 py-1.5">
-                  <span className={`w-2 h-2 rounded-full shrink-0 ${urgency.dot}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-brand-dark truncate">{ev.title}</p>
-                    <p className="text-[11px] text-stone-500">{typeLabel}</p>
-                  </div>
-                  <span className={`text-[11px] font-black shrink-0 ${urgency.text}`}>{urgency.label}</span>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Section 4: Conflict Detection ───────────────────── */}
-      {conflictDays.filter(d => d.date >= todayStr).length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-4 mb-4"
-          style={{ borderLeft: '3px solid #f59e0b' }}
-        >
-          <p className="text-[15px] text-amber-700 mb-2" style={{ fontWeight: 600 }}>Schedule warning</p>
-          {conflictDays.filter(d => d.date >= todayStr).map(d => (
-            <div key={d.date} className="flex items-start gap-2 mb-1 last:mb-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
-              <p className="text-sm font-bold text-stone-700">
-                {d.label} has {d.count} deadlines — consider starting work earlier this week.
-              </p>
-            </div>
-          ))}
-        </motion.div>
-      )}
-
-      {/* ── Section 5: Study Suggestion ─────────────────────── */}
-      {lightestDayLabel && thisWeekEvents.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.14, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-4 mb-4"
-        >
-          <p className="text-[15px] text-brand-dark mb-1" style={{ fontWeight: 600 }}>Suggested study time</p>
-          <p className="text-sm font-bold text-stone-700">
-            <span className="text-brand-dark font-black">{lightestDayLabel}</span> is your lightest day this week — good time to study ahead.
-            {goals.targetCareer && (
-              <span className="text-stone-500"> Focus on subjects relevant to {goals.targetCareer}.</span>
-            )}
-          </p>
-        </motion.div>
-      )}
-
-      {/* ── Section 6: Revision Suggestions ─────────────────── */}
-      {revisionSuggestions.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.16, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-5 mb-4"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <BookOpen className="w-4 h-4 text-brand-dark" />
-            <p className="text-[17px] text-brand-dark" style={{ fontWeight: 600 }}>
-              {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical revision' : 'Recommended revision'}
-            </p>
-          </div>
-          <div className="space-y-3">
-            {revisionSuggestions.map((s, i) => (
-              <div key={i} className={`rounded p-3 ${
-                s.urgency === 'critical' ? 'bg-red-50 border border-red-200' :
-                s.urgency === 'high'     ? 'bg-amber-50 border border-amber-200' :
-                                           'bg-stone-50 border border-brand-border'
-              }`}>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                      <p className="font-black text-brand-dark text-sm">{s.subject}</p>
-                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                        s.urgency === 'critical' ? 'bg-red-100 text-red-700' :
-                        s.urgency === 'high'     ? 'bg-amber-100 text-amber-700' :
-                                                   'bg-stone-100 text-stone-500'
-                      }`}>
-                        {s.urgency === 'critical' ? 'Critical' : s.urgency === 'high' ? 'High Priority' : 'Recommended'}
-                      </span>
-                      <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-500">
-                        {s.avg}% avg
-                      </span>
-                    </div>
-                    <p className="text-xs text-stone-500">{s.reason}</p>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <button
-                      onClick={() => onNavigate('library')}
-                      className="px-3 py-1.5 rounded bg-brand-dark text-white text-[11px] font-black hover:opacity-90 transition-opacity"
-                    >
-                      Library
-                    </button>
-                    <button
-                      onClick={() => onNavigate('pastpapers')}
-                      className="px-3 py-1.5 rounded text-stone-700 text-[11px] font-black hover:bg-brand-border transition-colors border border-brand-border"
-                      style={{ background: 'var(--color-paper-raise)' }}
-                    >
-                      Papers
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Goal Reminder — shown when no revision suggestions and a goal is set ── */}
-      {revisionSuggestions.length === 0 && (goals.targetAps || goals.targetCareer) && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18, ease: [0.23, 1, 0.32, 1] }}
-          className="paper-card rounded p-4 mb-4"
-        >
-          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Your goals</p>
-          <div className="flex flex-wrap gap-2">
-            {goals.targetAps && (
-              <div className="flex items-center gap-2 bg-violet-50 rounded px-3 py-2 border border-violet-100">
-                <span className="text-[11px] font-semibold text-violet-500">Target APS</span>
-                <span className="font-black text-violet-700">{goals.targetAps}</span>
-              </div>
-            )}
-            {goals.targetCareer && (
-              <div className="flex items-center gap-2 bg-stone-50 rounded px-3 py-2 border border-brand-border">
-                <span className="text-[11px] font-semibold text-muted-2">Career</span>
-                <span className="font-black text-stone-700 text-sm">{goals.targetCareer}</span>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      {/* ── Calendar grid / list ─────────────────────────────── */}
+      {/* ── Calendar grid / list — the primary content, front and centre ── */}
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex-1 min-w-0">
+
+          {/* Control bar: today / month nav / grid-list toggle */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease }}
+            className="flex items-center gap-2 flex-wrap mb-3"
+          >
+            <button
+              onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); setSelectedDay(todayStr); }}
+              className="px-3.5 py-2 text-[13px] font-bold text-stone-600 rounded transition-colors border"
+              style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}
+            >
+              Today
+            </button>
+
+            <div className="flex items-center rounded border overflow-hidden" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
+              <button onClick={prevMonth} aria-label="Previous month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderRight: '1px solid var(--color-brand-border)' }}>
+                <ChevronLeft className="w-4 h-4 text-stone-600" />
+              </button>
+              <div className="relative overflow-hidden min-w-36 text-center px-1">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={monthKey}
+                    initial={{ y: direction > 0 ? 16 : -16, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: direction > 0 ? -16 : 16, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    className="block text-[14px] font-bold text-brand-dark py-1.5"
+                  >
+                    {MONTHS[month - 1]} {year}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+              <button onClick={nextMonth} aria-label="Next month" className="p-2.5 hover:bg-black/[0.03] transition-colors" style={{ borderLeft: '1px solid var(--color-brand-border)' }}>
+                <ChevronRight className="w-4 h-4 text-stone-600" />
+              </button>
+            </div>
+
+            <div className="flex items-center rounded border p-0.5 gap-0.5 ml-auto" style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
+                  viewMode === 'grid' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
+                }`}
+                style={viewMode === 'grid' ? { background: 'var(--color-accent)' } : undefined}
+              >
+                <Calendar className="w-3.5 h-3.5" /> Grid
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[13px] font-bold transition-all ${
+                  viewMode === 'list' ? 'text-white' : 'text-stone-500 hover:text-stone-700'
+                }`}
+                style={viewMode === 'list' ? { background: 'var(--color-accent)' } : undefined}
+              >
+                <List className="w-3.5 h-3.5" /> List
+              </button>
+            </div>
+          </motion.div>
 
           {/* LIST VIEW */}
           <AnimatePresence mode="wait" initial={false}>
@@ -917,6 +693,147 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
              day's events via the bottom sheet above. ── */}
         <div className="w-full lg:w-72 shrink-0 space-y-4">
 
+          {/* Insights — consolidated workload/deadline intelligence, one
+              compact panel instead of six stacked full-width cards, so the
+              calendar itself stays the primary focus of the page. */}
+          {(thisWeekEvents.length > 0 || priorityDeadlines.length > 0 || conflictDays.filter(d => d.date >= todayStr).length > 0 || revisionSuggestions.length > 0 || (goals.targetAps || goals.targetCareer)) && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease }}
+              className="paper-card rounded overflow-hidden"
+            >
+              <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
+                <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>This week</p>
+              </div>
+
+              {thisWeekEvents.length > 0 && (
+                <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { label: 'Homework',    value: thisWeekHomework.length,    color: 'text-brand-dark' },
+                      { label: 'Assessments', value: thisWeekAssessments.length, color: 'text-emerald-600' },
+                      { label: 'Exams',       value: thisWeekExams.length,       color: 'text-red-600' },
+                      {
+                        label: 'Est. hours',
+                        value: estimatedHours % 1 === 0 ? `${estimatedHours}h` : `${estimatedHours.toFixed(1)}h`,
+                        color: 'text-amber-600',
+                      },
+                    ].map(stat => (
+                      <div key={stat.label} className="rounded px-2.5 py-2 text-center" style={{ background: 'var(--color-paper-raise)' }}>
+                        <p className={`font-black text-lg leading-none ${stat.value === 0 ? 'text-stone-300' : stat.color}`}>{stat.value}</p>
+                        <p className="text-[10.5px] text-muted-2 mt-1">{stat.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  {busiestDayLabel && (
+                    <p className="text-[11px] text-muted mt-2">
+                      Busiest: <span className="text-brand-dark font-semibold">{busiestDayLabel}</span>
+                      {estimatedHours >= 6 && <span className="text-amber-600 font-semibold"> · Heavy</span>}
+                      {estimatedHours >= 3 && estimatedHours < 6 && <span className="text-brand-dark font-semibold"> · Manageable</span>}
+                      {estimatedHours < 3 && <span className="text-emerald-600 font-semibold"> · Light</span>}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {(nextExam || nextAssessment) && (
+                <div className="px-4 py-3 space-y-2.5" style={{ borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  {([nextExam, nextAssessment] as (SchoolEvent | null)[]).filter(Boolean).map((ev) => {
+                    const days = daysUntil(ev!.event_date);
+                    const daysColor = days <= 3 ? 'text-red-600' : days <= 7 ? 'text-amber-600' : 'text-brand-dark';
+                    return (
+                      <div key={ev!.id} className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-[11px] text-muted-2">{ev!.event_type === 'exam' ? 'Next exam' : 'Next assessment'}</p>
+                          <p className="text-[13px] font-semibold text-brand-dark truncate">{ev!.title}</p>
+                        </div>
+                        <span className={`font-black text-lg leading-none shrink-0 ${daysColor}`}>{days}<span className="text-[10px] font-semibold text-muted-2">d</span></span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {priorityDeadlines.length > 0 && (
+                <div className="px-4 py-3 space-y-1.5" style={{ borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  {priorityDeadlines.slice(0, 4).map((ev) => {
+                    const days = daysUntil(ev.event_date);
+                    const urgency = days === 0 ? { dot: 'bg-red-500',   label: 'Today' }
+                                  : days === 1 ? { dot: 'bg-red-400',   label: 'Tomorrow' }
+                                  : days <= 3  ? { dot: 'bg-amber-500', label: `${days}d` }
+                                  :              { dot: 'bg-stone-300', label: `${days}d` };
+                    return (
+                      <div key={ev.id} className="flex items-center gap-2">
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${urgency.dot}`} />
+                        <p className="flex-1 min-w-0 text-[12.5px] text-brand-dark truncate">{ev.title}</p>
+                        <span className="text-[10.5px] font-semibold text-muted-2 shrink-0">{urgency.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {conflictDays.filter(d => d.date >= todayStr).length > 0 && (
+                <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-paper-raise)', background: 'rgba(245,158,11,0.06)' }}>
+                  {conflictDays.filter(d => d.date >= todayStr).map(d => (
+                    <p key={d.date} className="text-[12px] text-amber-700 font-medium">
+                      {d.label}: {d.count} deadlines — start early.
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {lightestDayLabel && thisWeekEvents.length > 0 && (
+                <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  <p className="text-[12px] text-muted">
+                    <span className="text-brand-dark font-semibold">{lightestDayLabel}</span> is your lightest day — good time to study ahead.
+                  </p>
+                </div>
+              )}
+
+              {revisionSuggestions.length > 0 && (
+                <div className="px-4 py-3 space-y-2.5" style={{ borderBottom: '1px solid var(--color-paper-raise)' }}>
+                  <p className="text-[12px] text-muted-2">
+                    {revisionSuggestions.some(s => s.urgency === 'critical') ? 'Critical revision' : 'Recommended revision'}
+                  </p>
+                  {revisionSuggestions.map((s, i) => (
+                    <div key={i}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-[12.5px] font-semibold text-brand-dark">{s.subject}</p>
+                        <span className="text-[10px] text-muted-2">{s.avg}% avg</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <button onClick={() => onNavigate('library')} className="flex items-center gap-1 text-[11.5px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+                          Library <ChevronRight className="w-3 h-3" />
+                        </button>
+                        <button onClick={() => onNavigate('pastpapers')} className="flex items-center gap-1 text-[11.5px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+                          Papers <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {revisionSuggestions.length === 0 && (goals.targetAps || goals.targetCareer) && (
+                <div className="px-4 py-3 flex flex-wrap gap-2">
+                  {goals.targetAps && (
+                    <div className="flex items-center gap-1.5 bg-violet-50 rounded px-2.5 py-1.5 border border-violet-100">
+                      <span className="text-[10.5px] font-semibold text-violet-500">Target APS</span>
+                      <span className="font-black text-violet-700 text-[13px]">{goals.targetAps}</span>
+                    </div>
+                  )}
+                  {goals.targetCareer && (
+                    <div className="flex items-center gap-1.5 bg-stone-50 rounded px-2.5 py-1.5 border border-brand-border">
+                      <span className="text-[10.5px] font-semibold text-muted-2">Career</span>
+                      <span className="font-black text-stone-700 text-[12px]">{goals.targetCareer}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
+          )}
+
           {/* Day detail or upcoming events — desktop only, mirrors the mobile bottom sheet */}
           <div className="hidden lg:block space-y-4">
           <AnimatePresence mode="wait">
@@ -1067,9 +984,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
                                 setSelectedEvent(ev);
                               }
                             }}>
-                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${TYPE_PILL[ev.event_type]?.split(' ')[0] ?? 'bg-stone-100'}`}>
-                              <span className={`w-2 h-2 rounded-full ${c.dot}`} />
-                            </div>
+                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
                             <div className="flex-1 min-w-0">
                               <p className={`text-sm font-bold text-brand-dark truncate ${done ? 'line-through text-stone-500' : ''}`}>{ev.title}</p>
                               <p className="text-[11px] text-stone-500">{formatDate(ev.event_date)}</p>

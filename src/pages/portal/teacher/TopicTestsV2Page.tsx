@@ -120,11 +120,12 @@ export default function TopicTestsV2Page({ session }: TopicTestsV2PageProps) {
           <motion.button
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease, delay: 0.06 }}
-            whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setBuilding(true)}
-            className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
+            className="shrink-0 flex items-center gap-1 text-[14px] font-semibold transition-colors"
+            style={{ color: 'var(--color-navy)' }}
           >
-            <Plus className="w-4 h-4" /> Build Custom Test
+            <Plus className="w-4 h-4" /> Build custom test
           </motion.button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, BookOpen, GraduationCap, ArrowRight, TrendingUp, Briefcase, Award, ChevronLeft, type LucideIcon } from 'lucide-react';
+import { Sparkles, BookOpen, GraduationCap, ArrowRight, ChevronRight, TrendingUp, Briefcase, Award, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import { fetchStudentProgress, type StudyProgress } from '../../../lib/studyProgress';
 import { fetchQuizResults, fetchApsScore, fetchSavedBursaryIds } from '../../../lib/myFuture';
@@ -28,14 +28,16 @@ interface MyFuturePageProps {
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
-function Eyebrow({ children, icon: Icon }: { children: React.ReactNode; icon?: LucideIcon }) {
+function Eyebrow({ children }: { children: React.ReactNode; icon?: LucideIcon }) {
   return (
-    <div className="flex items-center gap-2 mb-3">
-      {Icon && <Icon className="w-3.5 h-3.5 text-stone-500" />}
-      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-stone-500">
+    <span className="relative inline-block mb-3">
+      <span className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>
         {children}
-      </p>
-    </div>
+      </span>
+      <svg aria-hidden="true" viewBox="0 0 140 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+        <path d="M1 5C30 2 80 1 139 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </svg>
+    </span>
   );
 }
 
@@ -52,12 +54,11 @@ function Section({ children, delay = 0 }: { children: React.ReactNode; delay?: n
 }
 
 function CtaCard({
-  icon: Icon,
   title,
   subtitle,
   onClick,
 }: {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   title: string;
   subtitle: string;
   onClick: () => void;
@@ -65,20 +66,13 @@ function CtaCard({
   return (
     <motion.button whileTap={{ scale: 0.99 }}
       onClick={onClick}
-      className="w-full text-left rounded px-6 py-5 flex items-center gap-4 transition-colors group relative overflow-hidden"
-      style={{
-        background: 'linear-gradient(155deg, #4b5568 0%, #3c4657 100%)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 2px rgba(0,0,0,0.12), 0 6px 14px -6px rgba(0,0,0,0.18)',
-      }}
+      className="w-full text-left paper-card rounded px-6 py-5 flex items-center gap-4 transition-colors group"
     >
-      <div className="w-10 h-10 rounded bg-white/10 flex items-center justify-center shrink-0">
-        <Icon className="w-5 h-5 text-white" />
-      </div>
       <div className="flex-1 min-w-0">
-        <p className="text-white font-semibold text-[14px]">{title}</p>
-        <p className="text-white/50 text-[12px] mt-0.5">{subtitle}</p>
+        <p className="font-semibold text-[14px]" style={{ color: 'var(--color-navy)' }}>{title}</p>
+        <p className="text-muted text-[12px] mt-0.5">{subtitle}</p>
       </div>
-      <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors shrink-0" />
+      <ArrowRight className="w-4 h-4 shrink-0" style={{ color: 'var(--color-navy)' }} />
     </motion.button>
   );
 }
@@ -214,22 +208,22 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   if (loading) {
     return (
       <div className="student-my-future student-home min-h-full pb-16 relative">
-        <div className="relative overflow-hidden border-b border-brand-border">
-          <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-              className="flex items-center gap-2 min-w-0">
-              <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
-                {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-              </p>
-            </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-              My Future
-            </motion.h1>
-          </div>
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                My Future
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[14px] text-muted mt-1">
+            {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+          </p>
         </div>
-        <div className="max-w-[1300px] mx-auto px-4 sm:px-8 pt-2 sm:pt-3 space-y-5">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-3 space-y-5">
           {[0, 1, 2].map(i => (
             <motion.div key={i}
               initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
@@ -266,7 +260,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             <div className="px-5 pt-5 pb-2">
               <button
                 onClick={() => { setSubView(null); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-stone-500 hover:text-brand-dark transition-colors"
+                className="flex items-center gap-1.5 text-[12.5px] font-semibold transition-colors"
+                style={{ color: 'var(--color-accent-soft)' }}
               >
                 <ChevronLeft className="w-3.5 h-3.5" /> My Future
               </button>
@@ -289,69 +284,57 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
   return (
     <div className="student-my-future student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══
-          No buttons in this band (house rule). Stat readouts below the
-          title are static pills, not actions. */}
-      <div className="relative overflow-hidden border-b border-brand-border">
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              My Future
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">
+          {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
+        </p>
 
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-
-          {/* Eyebrow row */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
-              {session.school_name} · Grade {session.grade}{session.cohort_name ? ` · ${session.cohort_name}` : ''}
-            </p>
-          </motion.div>
-
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-          >
-            My Future
-          </motion.h1>
-
-          {/* Stat pills — static readouts, not actions */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.1 }}
-            className="flex flex-wrap gap-2 mt-4"
-          >
-            {[
-              { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
-              { value: String(topicsMastered),              label: 'Mastered' },
-              { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
-            ].map(stat => (
-              <div key={stat.label}
-                className="inline-flex items-center gap-2 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
-                <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-[rgba(31,36,33,0.5)]">{stat.label}</span>
-                <span className="font-black text-sm text-brand-dark">{stat.value}</span>
-              </div>
-            ))}
-          </motion.div>
-        </div>
+        {/* Stat pills — static readouts, not actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease, delay: 0.1 }}
+          className="flex flex-wrap gap-2 mt-4"
+        >
+          {[
+            { value: apsData ? String(apsData.aps) : '—', label: 'APS' },
+            { value: String(topicsMastered),              label: 'Mastered' },
+            { value: topCareerScore !== null ? `${topCareerScore}%` : '—', label: 'Career Fit' },
+          ].map(stat => (
+            <div key={stat.label}
+              className="inline-flex items-center gap-2 border border-brand-border bg-white/70 rounded-full pl-3 pr-4 py-1.5">
+              <span className="text-[12px] text-muted-2">{stat.label}</span>
+              <span className="font-black text-sm text-brand-dark">{stat.value}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════ */}
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3 space-y-6">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-2 sm:pt-3 space-y-6">
 
       {/* ── Goals section ── */}
       <Section delay={0.02}>
         {!editingGoals ? (
           <div className="paper-card rounded p-5">
             <div className="flex items-center justify-between mb-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Goals</p>
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>My goals</p>
               <button
                 onClick={handleEditGoals}
-                className="text-[11px] font-black text-stone-500 hover:text-brand-dark transition-colors uppercase tracking-widest"
+                className="text-[12.5px] font-semibold transition-colors"
+                style={{ color: 'var(--color-accent-soft)' }}
               >
-                {goals.targetAps || goals.targetCareer ? 'Edit' : 'Set Goals'}
+                {goals.targetAps || goals.targetCareer ? 'Edit' : 'Set goals'}
               </button>
             </div>
 
@@ -365,7 +348,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   <div className="flex items-center gap-2 bg-violet-50 border border-violet-100 rounded px-4 py-2.5">
                     <GraduationCap className="w-4 h-4 text-violet-500 shrink-0" />
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-violet-400">Target APS</p>
+                      <p className="text-[11px] text-violet-400">Target APS</p>
                       <p className="font-black text-violet-700 text-lg leading-none">{goals.targetAps}</p>
                     </div>
                     {apsData && (
@@ -382,7 +365,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
                   <div className="flex items-center gap-2 bg-stone-50 border border-brand-border rounded px-4 py-2.5">
                     <Briefcase className="w-4 h-4 text-stone-500 shrink-0" />
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Target Career</p>
+                      <p className="text-[11px] text-muted-2">Target career</p>
                       <p className="font-black text-stone-800 text-sm leading-tight">{goals.targetCareer}</p>
                     </div>
                   </div>
@@ -393,7 +376,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
         ) : (
           /* Edit mode */
           <div className="paper-card rounded p-5">
-            <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Set Your Goals</p>
+            <p className="text-[15px] text-brand-dark mb-4" style={{ fontWeight: 600 }}>Set your goals</p>
 
             <div className="space-y-4">
               <div>
@@ -456,16 +439,17 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
               </div>
             </div>
 
-            <div className="flex gap-2 mt-5">
+            <div className="flex items-center gap-6 mt-5">
               <button
                 onClick={handleSaveGoals}
-                className="flex-1 py-2.5 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                className="flex items-center gap-1 text-[14px] font-semibold transition-colors"
+                style={{ color: 'var(--color-navy)' }}
               >
-                Save Goals
+                Save goals <ChevronRight className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setEditingGoals(false)}
-                className="px-4 py-2.5 rounded border border-brand-border text-stone-500 font-black text-sm hover:border-stone-400 transition-colors"
+                className="text-[14px] font-semibold text-muted transition-colors"
               >
                 Cancel
               </button>
@@ -484,11 +468,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             onClick={() => handleSubNavigate('quiz')}
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
-                <Sparkles className="w-4.5 h-4.5 text-stone-700" />
-              </div>
-              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
+            <div className="flex items-start justify-end mb-3">
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors" />
             </div>
             <p className="font-black text-brand-dark text-sm mb-0.5">Career Quiz</p>
             <p className="text-xs text-stone-500 leading-snug">
@@ -503,11 +484,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             onClick={() => handleSubNavigate('careers')}
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
-                <Briefcase className="w-4.5 h-4.5 text-stone-700" />
-              </div>
-              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
+            <div className="flex items-start justify-end mb-3">
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors" />
             </div>
             <p className="font-black text-brand-dark text-sm mb-0.5">Career Browser</p>
             <p className="text-xs text-stone-500 leading-snug">
@@ -522,11 +500,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             onClick={() => handleSubNavigate('bursaries')}
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
-                <Award className="w-4.5 h-4.5 text-stone-700" />
-              </div>
-              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
+            <div className="flex items-start justify-end mb-3">
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors" />
             </div>
             <p className="font-black text-brand-dark text-sm mb-0.5">Bursary Finder</p>
             <p className="text-xs text-stone-500 leading-snug">
@@ -541,11 +516,8 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             onClick={() => handleSubNavigate('aps')}
             className="paper-card rounded p-5 text-left hover:border-stone-400 transition-colors group"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
-                <GraduationCap className="w-4.5 h-4.5 text-stone-700" />
-              </div>
-              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-1" />
+            <div className="flex items-start justify-end mb-3">
+              <ArrowRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors" />
             </div>
             <p className="font-black text-brand-dark text-sm mb-0.5">APS Calculator</p>
             <p className="text-xs text-stone-500 leading-snug">
@@ -683,10 +655,10 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
             </p>
             <button
               onClick={() => onNavigate('library')}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-dark text-white text-sm font-bold rounded hover:bg-brand-dark/90 transition-colors"
+              className="inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+              style={{ color: 'var(--color-navy)' }}
             >
-              <BookOpen className="w-4 h-4" />
-              Open Library
+              Open library <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
@@ -780,7 +752,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           {/* Learner status header */}
           <div className={`px-5 py-4 border-b border-brand-border/60 flex items-center justify-between ${learnerStatus.bg}`}>
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-0.5">Overall Status</p>
+              <p className="text-[12px] text-muted-2 mb-0.5">Overall status</p>
               <p className={`font-black text-xl leading-none ${learnerStatus.color}`}>{learnerStatus.label}</p>
             </div>
             <div className={`rounded px-4 py-2 text-center border ${learnerStatus.border} bg-white`}>
@@ -849,7 +821,7 @@ export default function MyFuturePage({ session, onNavigate, initialSubView = nul
           <Eyebrow icon={TrendingUp}>Academic Journey</Eyebrow>
           <div className="paper-card rounded overflow-hidden">
             <div className="px-5 pt-4 pb-2">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Your Story So Far</p>
+              <p className="text-[15px] text-brand-dark mb-4" style={{ fontWeight: 600 }}>Your story so far</p>
               <div className="relative">
                 {/* vertical spine */}
                 <div className="absolute left-1.75 top-2 bottom-2 w-px bg-stone-100" />

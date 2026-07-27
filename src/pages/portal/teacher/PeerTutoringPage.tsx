@@ -69,11 +69,19 @@ export default function PeerTutoringPage({ session }: Props) {
   const openConcerns = concerns.filter((c) => c.status !== 'resolved');
 
   return (
-    <div className="p-6 sm:p-8 max-w-5xl mx-auto space-y-6">
+    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-16 space-y-4">
       <div>
-        <p className="text-[12px] text-stone-400 font-medium">Peer Tutoring</p>
-        <h1 className="text-[26px] font-semibold text-brand-dark mt-1">Oversight</h1>
-        <p className="text-[13px] text-stone-500 mt-1">Relationships and sessions where you're the subject teacher, plus any concerns reported by your homeroom students.</p>
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Peer Tutoring Oversight
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Relationships and sessions where you're the subject teacher, plus any concerns reported by your homeroom students.</p>
       </div>
 
       {loading ? (
@@ -165,7 +173,8 @@ function ConcernRow({ concern, names, teacherId, onChanged }: { concern: Tutorin
       <p className="text-[12.5px] text-stone-700">{concern.description}</p>
       {concern.status === 'open' && (
         <button onClick={async () => { await acknowledgeConcern(concern.id, teacherId); onChanged(); }}
-          className="px-3 py-1.5 rounded-lg bg-brand-dark text-white text-[12px] font-bold hover:opacity-90 transition-opacity">
+          className="text-[13px] font-semibold transition-colors"
+          style={{ color: 'var(--color-navy)' }}>
           Acknowledge
         </button>
       )}
@@ -175,12 +184,13 @@ function ConcernRow({ concern, names, teacherId, onChanged }: { concern: Tutorin
             <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Resolution notes…"
               className="w-full px-3 py-2 rounded-lg border border-brand-border text-[12.5px] bg-white resize-none" />
             <button onClick={async () => { await resolveConcern(concern.id, teacherId, notes); onChanged(); }} disabled={!notes.trim()}
-              className="px-3 py-1.5 rounded-lg bg-brand-dark text-white text-[12px] font-bold hover:opacity-90 transition-opacity disabled:opacity-40">
+              className="text-[13px] font-semibold transition-colors disabled:opacity-40"
+              style={{ color: 'var(--color-navy)' }}>
               Mark resolved
             </button>
           </div>
         ) : (
-          <button onClick={() => setResolving(true)} className="px-3 py-1.5 rounded-lg bg-white border border-brand-border text-[12px] font-bold text-brand-dark">
+          <button onClick={() => setResolving(true)} className="text-[13px] font-semibold text-muted transition-colors">
             Resolve
           </button>
         )

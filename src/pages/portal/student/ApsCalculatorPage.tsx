@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { GraduationCap, Plus, Trash2, ChevronDown, CheckCircle2, XCircle, Info, BookOpen, Filter, Target, TrendingUp } from 'lucide-react';
+import { GraduationCap, Plus, Trash2, ChevronDown, ChevronRight, CheckCircle2, XCircle, Info, BookOpen, Filter, Target, TrendingUp } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   NSC_SUBJECTS,
@@ -373,43 +373,40 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — wave-strip system, matches Home dashboard ═══ */}
-      <div className="relative overflow-hidden border-b border-brand-border">
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease }}
-            className="flex flex-wrap items-start justify-between gap-4"
-          >
-            <div className="min-w-0">
-              <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">APS & Universities</p>
-              <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-                APS Calculator
-              </h1>
-              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2.5 font-medium">
-                Enter your Grade 12 marks to see which programmes you qualify for.
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  APS Calculator
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+            <p className="text-[14px] text-muted mt-1">Enter your Grade 12 marks to see which programmes you qualify for.</p>
+          </div>
+          {aps > 0 && apsGoal > 0 && (
+            <div className="shrink-0 border border-brand-border bg-white/70 rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center">
+              <p className="text-[12px] text-muted-2 mb-0.5">
+                {aps >= apsGoal ? 'Goal reached' : 'Goal'}
               </p>
+              <p className={`font-black text-base sm:text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {aps} / {apsGoal}
+              </p>
+              {aps < apsGoal && (
+                <p className="text-[12px] text-muted-2 mt-0.5">{apsGoal - aps} to go</p>
+              )}
             </div>
-            {aps > 0 && apsGoal > 0 && (
-              <div className="shrink-0 border border-brand-border bg-white/70 rounded px-3.5 py-2 sm:px-4 sm:py-2.5 text-center">
-                <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.2em] text-[rgba(31,36,33,0.5)] mb-0.5">
-                  {aps >= apsGoal ? 'Goal Reached' : 'Goal'}
-                </p>
-                <p className={`font-black text-base sm:text-2xl leading-none ${aps >= apsGoal ? 'text-emerald-600' : 'text-amber-600'}`}>
-                  {aps} / {apsGoal}
-                </p>
-                {aps < apsGoal && (
-                  <p className="text-[9px] sm:text-[10px] text-[rgba(31,36,33,0.5)] mt-0.5">{apsGoal - aps} to go</p>
-                )}
-              </div>
-            )}
-          </motion.div>
+          )}
         </div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-2 sm:pt-3">
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
 
           {/* ── Left: Subject Input ── */}
@@ -421,22 +418,21 @@ export default function ApsCalculatorPage({ session }: { session?: { student_id:
                   <p className="text-[11px] text-stone-500 mt-0.5">{subjects.length} subject{subjects.length !== 1 ? 's' : ''}</p>
                 </div>
                 {session && (
-                  <button
-                    onClick={handleUseMyMarks}
-                    disabled={loadingMarks}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors ${
-                      marksLoaded
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-brand-dark text-white hover:bg-stone-700 disabled:opacity-50'
-                    }`}
-                  >
-                    {loadingMarks ? (
-                      <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <TrendingUp className="w-3 h-3" />
-                    )}
-                    {marksLoaded ? 'Marks Loaded' : 'Use My Marks'}
-                  </button>
+                  marksLoaded ? (
+                    <span className="flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <TrendingUp className="w-3 h-3" /> Marks loaded
+                    </span>
+                  ) : (
+                    <button
+                      onClick={handleUseMyMarks}
+                      disabled={loadingMarks}
+                      className="flex items-center gap-1 text-xs font-semibold transition-colors disabled:opacity-50"
+                      style={{ color: 'var(--color-navy)' }}
+                    >
+                      {loadingMarks && <div className="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin" />}
+                      Use my marks <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  )
                 )}
               </div>
 

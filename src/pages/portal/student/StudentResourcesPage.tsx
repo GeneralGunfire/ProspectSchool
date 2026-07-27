@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Paperclip, Link2, FileText, ExternalLink, FolderOpen, Search, X, BookOpen, ChevronDown } from 'lucide-react';
+import { Paperclip, Link2, FileText, FolderOpen, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import {
   fetchStudentResources, getResourceDownloadUrl, trackResourceDownload,
@@ -113,7 +113,14 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
-              Study resources
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  Study resources
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
             <p className="text-[14px] text-muted mt-1">Materials, links and notes shared by your teachers.</p>
           </div>
@@ -169,10 +176,10 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
             <p className="text-[13px] text-muted-2">Your teachers haven't uploaded any materials yet.</p>
             <button
               onClick={() => onNavigate('library')}
-              className="edge-glow mt-5 flex items-center gap-2 px-4 py-2.5 bg-accent text-white text-[13px] font-bold rounded transition-colors hover:bg-[var(--color-accent-light)]"
+              className="mt-5 flex items-center gap-1 text-[13px] font-semibold transition-colors"
+              style={{ color: 'var(--color-navy)' }}
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              Open Library Instead
+              Open library instead <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
@@ -386,11 +393,11 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
                                 <motion.button whileTap={{ scale: 0.97 }}
                                   onClick={() => handleOpen(r)}
                                   disabled={downloading === r.id}
-                                  className="flex items-center gap-1.5 px-3.5 py-2 rounded text-white text-[13px] font-bold transition-colors disabled:opacity-40"
-                                  style={{ background: 'var(--color-accent)' }}
+                                  className="flex items-center gap-1 text-[13px] font-semibold transition-colors disabled:opacity-40"
+                                  style={{ color: 'var(--color-navy)' }}
                                 >
-                                  <ExternalLink className="w-3.5 h-3.5" />
                                   {downloading === r.id ? 'Opening…' : r.resource_type === 'file' ? 'Open' : 'Visit'}
+                                  <ChevronRight className="w-3.5 h-3.5" />
                                 </motion.button>
                               )}
                             </div>

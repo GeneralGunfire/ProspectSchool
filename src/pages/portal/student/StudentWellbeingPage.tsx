@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HeartHandshake, Phone, ShieldCheck, CheckCircle2, Clock, ShieldOff, ChevronDown, Sparkles, ArrowRight } from 'lucide-react';
+import { HeartHandshake, Phone, ShieldCheck, CheckCircle2, Clock, ShieldOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import type { StudentSession } from '../../../lib/auth';
 import {
@@ -35,9 +35,7 @@ function CrisisResourceList() {
           href={`tel:${r.phone}`}
           className="paper-card rounded flex items-center gap-3 p-3 hover:border-accent transition-colors"
         >
-          <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-            <Phone className="w-4 h-4 text-accent" />
-          </div>
+          <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
           <div className="flex-1 min-w-0">
             <p className="text-[13.5px] font-bold text-brand-dark">{r.name}</p>
             <p className="text-[11.5px] text-stone-500">{r.description}</p>
@@ -100,25 +98,23 @@ export default function StudentWellbeingPage({ session, onNavigate }: StudentWel
 
   return (
     <div className="student-wellbeing student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden border-b border-brand-border">
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Wellbeing</p>
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            How are you doing?
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium max-w-lg">
-            A quick, private check-in. Your homeroom teacher may see this to help notice if things seem tough — it's not a test and there's no wrong answer.
-          </motion.p>
-        </div>
+
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              How are you doing?
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">A quick, private check-in — not a test, no wrong answers.</p>
       </div>
 
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         {loading ? (
           <div className="paper-card rounded p-6 space-y-3">
             <Shimmer className="h-4 w-1/2" />
@@ -198,9 +194,10 @@ function InfoConsentScreen({ onContinue }: { onContinue: () => void }) {
       <motion.button
         whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
         onClick={onContinue}
-        className="w-full py-3 rounded bg-accent text-white text-[14px] font-bold transition-colors hover:bg-accent-light"
+        className="w-full py-3 flex items-center justify-center gap-1 text-[14px] font-semibold transition-colors"
+        style={{ color: 'var(--color-navy)' }}
       >
-        I understand — continue
+        I understand — continue <ChevronRight className="w-3.5 h-3.5" />
       </motion.button>
     </motion.div>
   );
@@ -253,9 +250,10 @@ function CheckinForm({
           whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
           onClick={onSubmit}
           disabled={!allAnswered || submitting}
-          className="w-full py-3 rounded bg-accent text-white text-[14px] font-bold transition-colors hover:bg-accent-light disabled:opacity-40 disabled:cursor-not-allowed"
+          className="w-full py-3 flex items-center justify-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ color: 'var(--color-navy)' }}
         >
-          {submitting ? 'Submitting…' : 'Submit check-in'}
+          {submitting ? 'Submitting…' : 'Submit check-in'} <ChevronRight className="w-3.5 h-3.5" />
         </motion.button>
       </div>
     </motion.div>
@@ -360,7 +358,7 @@ function PostCheckinScreen({ answers, onNavigate }: { answers: CheckinAnswers | 
       )}
 
       <div>
-        <p className="text-[13px] font-black uppercase tracking-wide text-stone-500 mb-3">Start here</p>
+        <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>Start here</p>
         <div className="space-y-2">
           {START_HERE_TOOLS.slice(0, 3).map(tool => <MicroToolRow key={tool.id} tool={tool} />)}
         </div>
@@ -369,9 +367,10 @@ function PostCheckinScreen({ answers, onNavigate }: { answers: CheckinAnswers | 
       <motion.button
         whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
         onClick={() => onNavigate('wellbeing-help')}
-        className="w-full py-3 rounded bg-accent text-white text-[14px] font-bold transition-colors hover:bg-accent-light flex items-center justify-center gap-2"
+        className="w-full py-3 flex items-center justify-center gap-1 text-[14px] font-semibold transition-colors"
+        style={{ color: 'var(--color-navy)' }}
       >
-        See all wellbeing tools <ArrowRight className="w-4 h-4" />
+        See all wellbeing tools <ChevronRight className="w-3.5 h-3.5" />
       </motion.button>
 
       <TalkToSomeoneBoxInline />
@@ -384,9 +383,7 @@ function MicroToolRow({ tool }: { tool: MicroTool }) {
   return (
     <div className="paper-card rounded overflow-hidden">
       <button onClick={() => setExpanded(e => !e)} className="w-full flex items-center gap-3 p-3.5 text-left">
-        <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-accent" />
-        </div>
+        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-bold text-brand-dark">{tool.title}</p>
           <p className="text-[11px] text-stone-500">{tool.durationMinutes} min</p>

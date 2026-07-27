@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Plus, X, ChevronRight, ClipboardList,
-  Pencil, Trash2, CalendarDays, CheckCircle2, Circle,
+  Pencil, Trash2, CalendarDays, CheckCircle2,
   AlertTriangle, Zap,
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
@@ -320,39 +320,35 @@ export default function MarksPage({ session }: MarksPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Marks</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Mark Sheets
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              Create sheets, capture marks and track class performance.
-            </p>
-          </motion.div>
-          {view === 'groups' && (
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              onClick={() => { setCreateModal(true); setFormError(''); }}
-              className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
-            >
-              <Plus className="w-4 h-4" /> New Sheet
-            </motion.button>
-          )}
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Mark Sheets
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[14px] text-muted mt-1">Create sheets, capture marks and track class performance.</p>
         </div>
+        {view === 'groups' && (
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => { setCreateModal(true); setFormError(''); }}
+            className="shrink-0 flex items-center gap-1 text-[14px] font-semibold transition-colors"
+            style={{ color: 'var(--color-navy)' }}
+          >
+            <Plus className="w-4 h-4" /> New sheet
+          </motion.button>
+        )}
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* ── Groups view ───────────────────────────────────────── */}
       {view === 'groups' && (
@@ -397,9 +393,6 @@ export default function MarksPage({ session }: MarksPageProps) {
                       className="w-full flex items-center justify-between px-5 py-4 hover:bg-stone-50 transition-colors"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center shrink-0">
-                          <ClipboardList className="w-4 h-4 text-stone-500" />
-                        </div>
                         <div className="text-left">
                           <p className="text-sm font-black text-brand-dark">{group.subject_label}</p>
                           <p className="text-xs text-stone-500 font-bold">Grade {group.grade} · {group.sheets.length} sheet{group.sheets.length !== 1 ? 's' : ''}</p>
@@ -488,13 +481,14 @@ export default function MarksPage({ session }: MarksPageProps) {
           <div className="mb-6">
             <button
               onClick={backToGroups}
-              className="flex items-center gap-1.5 text-xs font-black text-stone-500 hover:text-stone-700 transition-colors mb-4 uppercase tracking-widest"
+              className="flex items-center gap-1 text-[12.5px] font-semibold transition-colors mb-4"
+              style={{ color: 'var(--color-navy)' }}
             >
               <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back
             </button>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-1">
+                <p className="text-[12px] text-muted-2 mb-1">
                   {subjects.find(s => s.id === activeSheet.subject_id)?.label ?? ''} · Grade {activeSheet.grade}
                 </p>
                 <h1 className="text-2xl font-black text-brand-dark tracking-tight">{activeSheet.title}</h1>
@@ -520,9 +514,8 @@ export default function MarksPage({ session }: MarksPageProps) {
             {/* ── Analytics card ───────────────────────────── */}
             {analytics && analytics.markedCount > 0 && (
               <div className="mt-4 paper-card rounded p-4">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">
-                  Assessment Analytics · {marked}/{sheetMarks.length} marked
-                  {unmarked > 0 && <span className="ml-2 text-amber-500">{unmarked} unmarked</span>}
+                <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>
+                  Assessment analytics <span className="text-[12px] text-muted-2 font-normal">· {marked}/{sheetMarks.length} marked{unmarked > 0 && <span className="ml-1 text-amber-500">· {unmarked} unmarked</span>}</span>
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   {[
@@ -591,14 +584,11 @@ export default function MarksPage({ session }: MarksPageProps) {
                     <button
                       onClick={handleCampaign}
                       disabled={campaignState === 'running'}
-                      className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${
-                        campaignState === 'running'
-                          ? 'bg-red-100 text-red-400 cursor-default'
-                          : 'bg-red-600 text-white hover:bg-red-700 active:scale-95'
-                      }`}
+                      className="flex items-center gap-2 text-[12.5px] font-semibold transition-colors disabled:opacity-50"
+                      style={{ color: 'var(--color-navy)' }}
                     >
                       {campaignState === 'running' ? (
-                        <><div className="w-3 h-3 border border-red-300 border-t-transparent rounded-full animate-spin" /> Assigning…</>
+                        <><div className="w-3 h-3 border border-current/30 border-t-current rounded-full animate-spin" /> Assigning…</>
                       ) : (
                         <><Zap className="w-3 h-3" /> Assign intervention to all {atRiskMarks.length}</>
                       )}
@@ -717,17 +707,16 @@ export default function MarksPage({ session }: MarksPageProps) {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleSaveMark(sm)}
                             disabled={isSaving || isInvalid}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-black transition-all disabled:opacity-40 ${
-                              isSaved
-                                ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                                : 'bg-accent text-white hover:bg-accent-soft'
+                            className={`flex items-center gap-1 px-3 py-1.5 rounded text-[12.5px] font-semibold transition-all disabled:opacity-40 ${
+                              isSaved ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : ''
                             }`}
+                            style={!isSaved ? { color: 'var(--color-navy)' } : undefined}
                           >
                             {isSaved
                               ? <><CheckCircle2 className="w-3.5 h-3.5" /> Saved</>
                               : isSaving
                               ? 'Saving…'
-                              : <><Circle className="w-3.5 h-3.5" /> Save</>
+                              : 'Save'
                             }
                           </motion.button>
                         </div>
@@ -802,7 +791,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                         key={g}
                         onClick={() => setForm(f => ({ ...f, grade: String(g) }))}
                         className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.grade === String(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          form.grade === String(g) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         Grade {g}
@@ -844,7 +833,7 @@ export default function MarksPage({ session }: MarksPageProps) {
                         key={t}
                         onClick={() => setForm(f => ({ ...f, term: String(t) }))}
                         className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.term === String(t) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                          form.term === String(t) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
                         }`}
                       >
                         Term {t}
@@ -875,19 +864,20 @@ export default function MarksPage({ session }: MarksPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="flex gap-2 px-6 pb-6">
+              <div className="flex items-center gap-6 px-6 pb-6">
                 <button
                   onClick={() => setCreateModal(false)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="text-[14px] font-semibold text-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+                  style={{ color: 'var(--color-navy)' }}
                 >
-                  {saving ? 'Creating…' : 'Create & Open'}
+                  {saving ? 'Creating…' : 'Create & open'} <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </motion.div>
@@ -916,13 +906,13 @@ export default function MarksPage({ session }: MarksPageProps) {
               <p className="text-sm text-stone-500 mb-5">
                 <strong>{deleteSheet.title}</strong> and all student marks will be permanently deleted.
               </p>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-6">
                 <button onClick={() => setDeleteSheet(null)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">
+                  className="text-[14px] font-semibold text-muted transition-colors">
                   Cancel
                 </button>
                 <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>
               </div>

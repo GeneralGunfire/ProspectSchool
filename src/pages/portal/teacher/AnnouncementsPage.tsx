@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Plus, X, Trash2, Pin, PinOff, Megaphone, CheckCircle2,
+  Plus, X, Trash2, Pin, PinOff, Megaphone, CheckCircle2, ChevronRight,
   Users, GraduationCap, BookOpen, User,
 } from 'lucide-react';
 import {
@@ -157,39 +157,39 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-5xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Teacher</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Announcements
-            </h1>
-          </motion.div>
-          <motion.button whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
-            className="flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-[var(--color-accent-soft)]">
-            <Plus className="w-4 h-4" /> Post Announcement
-          </motion.button>
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Announcements
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[14px] text-muted mt-1">Post updates for your students and track how many have read them.</p>
         </div>
+        <motion.button whileTap={{ scale: 0.97 }}
+          onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); }}
+          className="flex items-center gap-1 text-[14px] font-semibold shrink-0 transition-colors"
+          style={{ color: 'var(--color-navy)' }}>
+          <Plus className="w-4 h-4" /> Post announcement
+        </motion.button>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 bg-accent text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2.5 paper-card text-sm font-bold px-5 py-3 rounded-2xl shadow-xl">
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />{toast}
           </motion.div>
         )}
       </AnimatePresence>
@@ -213,9 +213,10 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
         <div className="space-y-6">
           {pinned.length > 0 && (
             <div>
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2.5 mb-3">
                 <Pin className="w-3.5 h-3.5 text-amber-500" />
-                <p className="text-xs font-black uppercase tracking-widest text-stone-500">Pinned</p>
+                <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Pinned</p>
+                <span className="flex-1 h-px bg-brand-border" />
               </div>
               <div className="space-y-2">
                 {pinned.map((a, i) => (
@@ -229,7 +230,12 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
           )}
           {unpinned.length > 0 && (
             <div>
-              {pinned.length > 0 && <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-3">Recent</p>}
+              {pinned.length > 0 && (
+                <div className="flex items-center gap-2.5 mb-3">
+                  <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Recent</p>
+                  <span className="flex-1 h-px bg-brand-border" />
+                </div>
+              )}
               <div className="space-y-2">
                 {unpinned.map((a, i) => (
                   <AnnouncementCard key={a.id} a={a} i={i} subjects={subjects}
@@ -301,12 +307,13 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
+              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex items-center gap-6">
                 <button onClick={() => setModal(false)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
                 <button onClick={handleCreate} disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-stone-700 transition-colors disabled:opacity-50">
-                  {saving ? 'Posting…' : 'Post'}
+                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+                  style={{ color: 'var(--color-navy)' }}>
+                  {saving ? 'Posting…' : 'Post'} <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </motion.div>
@@ -327,11 +334,11 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
               onClick={e => e.stopPropagation()}>
               <h2 className="text-base font-black text-brand-dark mb-1">Delete announcement?</h2>
               <p className="text-sm text-stone-500 mb-5"><strong>"{deleteTarget.title}"</strong> will be permanently removed.</p>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-6">
                 <button onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors">Cancel</button>
+                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
                 <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50">
+                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>
               </div>
@@ -373,7 +380,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
           return (
             <button key={opt.value}
               onClick={() => setForm(f => ({ ...f, target_type: opt.value, target_grades: [], target_cohort_ids: [], target_subject_ids: [], target_student_ids: [] }))}
-              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${active ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-black transition-all ${active ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               <Icon className="w-3.5 h-3.5 shrink-0" />{opt.label}
             </button>
           );
@@ -384,7 +391,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
         <div className="flex flex-wrap gap-1.5">
           {GRADES.map(g => (
             <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               Grade {g}
             </button>
           ))}
@@ -395,7 +402,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
         <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
           {cohorts.map(c => (
             <button key={c.id} onClick={() => setForm(f => ({ ...f, target_cohort_ids: toggle(f.target_cohort_ids, c.id) }))}
-              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+              className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_cohort_ids.includes(c.id) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
               {c.name} <span className="opacity-60">(Gr {c.grade})</span>
             </button>
           ))}
@@ -409,7 +416,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto">
               {subjects.map(s => (
                 <button key={s.id} onClick={() => setForm(f => ({ ...f, target_subject_ids: toggle(f.target_subject_ids, s.id) }))}
-                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_subject_ids.includes(s.id) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                   {s.label}
                 </button>
               ))}
@@ -420,7 +427,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             <div className="flex flex-wrap gap-1.5">
               {GRADES.map(g => (
                 <button key={g} onClick={() => setForm(f => ({ ...f, target_grades: toggle(f.target_grades, g) }))}
-                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-accent text-white' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${form.target_grades.includes(g) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'}`}>
                   Grade {g}
                 </button>
               ))}
@@ -435,7 +442,7 @@ export function AudienceSelector({ form, setForm, subjects, cohorts, allStudents
             const active = form.target_student_ids.includes(s.id);
             return (
               <button key={s.id} onClick={() => setForm(f => ({ ...f, target_student_ids: toggle(f.target_student_ids, s.id) }))}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-accent text-white' : 'hover:bg-stone-100 text-stone-700'}`}>
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-left transition-all ${active ? 'bg-sky-50 text-sky-700' : 'hover:bg-stone-100 text-stone-700'}`}>
                 <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 text-[10px] font-black ${active ? 'bg-white border-white text-brand-dark' : 'border-stone-300'}`}>{active ? '✓' : ''}</span>
                 {s.surname}, {s.name}
               </button>
@@ -498,13 +505,13 @@ function AnnouncementCard({ a, i, subjects, toggling, onPin, onDelete, eng, imp 
               eng.readRate >= 60 ? 'bg-amber-50 text-amber-600 border-amber-100' :
                                    'bg-red-50 text-red-500 border-red-100'
             }`}>
-              {eng.readRate}% read · n={eng.targetSize}
+              {eng.readRate}% read by {eng.targetSize} student{eng.targetSize !== 1 ? 's' : ''}
               {eng.unread > 0 && ` · ${eng.unread} unread`}
             </span>
           )}
           {imp && imp.delta > 5 && (
             <span className="text-[10px] font-black px-2 py-0.5 rounded-full border bg-blue-50 text-blue-600 border-blue-100">
-              +{imp.delta}% hw lift · n={imp.viewedCount}
+              +{imp.delta}% homework lift ({imp.viewedCount} viewed)
             </span>
           )}
         </div>

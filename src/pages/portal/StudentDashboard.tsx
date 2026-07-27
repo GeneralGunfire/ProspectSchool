@@ -250,7 +250,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           {/* Profile + logout */}
           <div className="p-3 shrink-0 border-t border-brand-border">
             <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-              <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
                 <span className="text-accent-foreground font-semibold text-[12px]">{initials}</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -291,7 +291,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell userType="student" userId={session.student_id} />
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
               <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
             </div>
             <button
@@ -416,7 +416,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
                   <div className="p-2.5 shrink-0 border-t border-brand-border"
                     style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
                     <div className="flex items-center gap-2.5 px-1.5 pb-2.5 mb-1 border-b border-brand-border">
-                      <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
                         <span className="text-accent-foreground font-semibold text-[11px]">{initials}</span>
                       </div>
                       <div className="flex-1 min-w-0">

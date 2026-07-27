@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft, ChevronDown } from 'lucide-react';
+import { FileText, Search, X, ExternalLink, FolderOpen, SlidersHorizontal, CheckCircle2, Timer, ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
 import { Shimmer } from './StudentHomePage';
 import {
   fetchAllPastPapers, getPastPaperDownloadUrl, type PastPaper,
@@ -339,9 +339,11 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
               <button
                 onClick={() => startPractice(paper, setupDuration)}
-                className="w-full py-4 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors"
+                className="w-full py-3 flex items-center justify-center gap-1 text-[14px] font-semibold transition-colors"
+                style={{ color: 'var(--color-navy)' }}
               >
                 Start — {setupDuration >= 60 ? `${setupDuration / 60}h${setupDuration % 60 ? ` ${setupDuration % 60}m` : ''}` : `${setupDuration}m`}
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={exitPractice}
@@ -468,9 +470,10 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                       }
                     }}
                     disabled={!setupScore || Number(setupScore) < 0}
-                    className="w-full py-3.5 rounded bg-brand-dark text-white font-black text-sm hover:bg-stone-700 transition-colors disabled:opacity-40"
+                    className="w-full py-3 flex items-center justify-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-40"
+                    style={{ color: 'var(--color-navy)' }}
                   >
-                    Save Result
+                    Save result <ChevronRight className="w-3.5 h-3.5" />
                   </button>
 
                   <button
@@ -545,7 +548,14 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
-              Past exam papers
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  Past exam papers
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
             <p className="text-[14px] text-muted mt-1">Practice with real papers uploaded by your school.</p>
           </div>
@@ -614,7 +624,8 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                         <button
                           onClick={() => handleOpen(p)}
                           disabled={downloading === p.id}
-                          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded bg-brand-dark text-white text-xs font-black hover:bg-stone-700 transition-colors disabled:opacity-40"
+                          className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-colors disabled:opacity-40"
+                          style={{ color: 'var(--color-navy)' }}
                         >
                           <ExternalLink className="w-3 h-3" />
                           {downloading === p.id ? '…' : 'Open'}
@@ -954,7 +965,8 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                           <button
                             onClick={() => handleOpen(p)}
                             disabled={downloading === p.id}
-                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded bg-brand-dark text-white text-xs font-black hover:bg-brand-dark/90 transition-colors disabled:opacity-40"
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-semibold transition-colors disabled:opacity-40"
+                            style={{ color: 'var(--color-navy)' }}
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                             {downloading === p.id ? 'Opening…' : 'Open'}

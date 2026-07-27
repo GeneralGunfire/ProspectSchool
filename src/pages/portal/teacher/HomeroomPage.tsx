@@ -214,29 +214,25 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Homeroom</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
               {loading ? 'Homeroom' : cohort ? cohort.name : 'Homeroom'}
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              {loading ? ' ' : !cohort ? 'You\'re not a homeroom teacher yet.' : `${roster.length} students ${isNonSchoolDay ? '· Not a school day' : `· ${presentCount} marked present`}`}
-            </p>
-          </motion.div>
-        </div>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">
+          {loading ? ' ' : !cohort ? 'You\'re not a homeroom teacher yet.' : `${roster.length} students ${isNonSchoolDay ? '· Not a school day' : `· ${presentCount} marked present`}`}
+        </p>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -258,7 +254,7 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Attendance Snapshot</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Attendance snapshot</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="flex items-center gap-5">
@@ -381,10 +377,10 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Month %</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Attendance</th>
+                <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Student</th>
+                <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Code</th>
+                <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Month %</th>
+                <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Attendance</th>
               </tr>
             </thead>
             <tbody>
@@ -459,22 +455,20 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
             >
               <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded bg-stone-100 flex items-center justify-center mb-4">
-                  <AlertCircle className="w-5 h-5 text-stone-500" />
-                </div>
                 <h2 className="text-base font-black text-brand-dark mb-1">Mark {displayDate} as not a school day?</h2>
                 <p className="text-sm text-stone-500 mb-6">
                   This replaces any attendance already marked for the whole class on this date, for example a public holiday or school closure. It won't count toward anyone's attendance percentage.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex items-center gap-6">
                   <button onClick={() => setConfirmHoliday(false)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
+                    className="text-[14px] font-semibold text-muted transition-colors">
                     Cancel
                   </button>
                   <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                    className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
+                    style={{ color: 'var(--color-navy)' }}>
                     {markingHoliday
-                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
                       : 'Confirm'
                     }
                   </button>

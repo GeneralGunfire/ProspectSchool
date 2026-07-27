@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ChevronRight, BookOpen, AlertTriangle,
+  ChevronRight, BookOpen, AlertTriangle, ArrowRight,
   CheckCircle2, Users, ClipboardList, CalendarDays,
   Megaphone, Pin, Phone, Trash2, Award, CalendarCheck,
   ClipboardCheck, TrendingUp,
@@ -317,24 +317,23 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Library</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
               Students
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Click any student to view their full profile.</p>
-          </motion.div>
-        </div>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Click any student to view their full profile.</p>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -356,21 +355,21 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
               className="paper-card rounded p-4">
               <p className="text-2xl font-black text-brand-dark leading-none">{students.length}</p>
-              <p className="text-[11px] font-bold text-stone-500 mt-1">Total Students</p>
+              <p className="text-[12px] text-muted-2 mt-1">Total students</p>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.04 }}
               className="paper-card rounded p-4">
               <p className="text-2xl font-black text-emerald-600 leading-none">
                 {students.reduce((s, st) => s + st.topics_mastered, 0)}
               </p>
-              <p className="text-[11px] font-bold text-stone-500 mt-1">Topics Mastered</p>
+              <p className="text-[12px] text-muted-2 mt-1">Topics mastered</p>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease, delay: 0.08 }}
               className="paper-card rounded p-4">
               <p className="text-2xl font-black text-amber-600 leading-none">
                 {students.filter(st => st.topics_struggling > 0).length}
               </p>
-              <p className="text-[11px] font-bold text-stone-500 mt-1">Need Support</p>
+              <p className="text-[12px] text-muted-2 mt-1">Need support</p>
             </motion.div>
           </div>
 
@@ -381,14 +380,15 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => setFilterCohort('')}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold border transition-colors ${
                     filterCohort === ''
-                      ? 'bg-accent text-white shadow-sm'
-                      : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
+                      ? 'bg-sky-50 border-sky-200'
+                      : 'bg-white border-brand-border text-stone-600 hover:border-stone-400'
                   }`}
+                  style={filterCohort === '' ? { color: 'var(--color-navy)' } : undefined}
                 >
                   All Classes
-                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${filterCohort === '' ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
+                  <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${filterCohort === '' ? 'bg-white text-sky-700' : 'bg-brand-bg text-stone-500'}`}>
                     {students.length}
                   </span>
                 </button>
@@ -398,15 +398,16 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                     <button
                       key={c}
                       onClick={() => setFilterCohort(active ? '' : c)}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold transition-colors ${
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-[13px] font-bold border transition-colors ${
                         active
-                          ? 'bg-accent text-white shadow-sm'
-                          : 'bg-white border border-brand-border text-stone-600 hover:border-stone-400'
+                          ? 'bg-sky-50 border-sky-200'
+                          : 'bg-white border-brand-border text-stone-600 hover:border-stone-400'
                       }`}
+                      style={active ? { color: 'var(--color-navy)' } : undefined}
                     >
-                      <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-white' : 'bg-stone-300'}`} />
+                      <span className={`w-1.5 h-1.5 rounded-full ${active ? 'bg-sky-500' : 'bg-stone-300'}`} />
                       {c}
-                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-white/15' : 'bg-brand-bg text-stone-500'}`}>
+                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-white text-sky-700' : 'bg-brand-bg text-stone-500'}`}>
                         {cohortCounts.get(c) ?? 0}
                       </span>
                     </button>
@@ -434,11 +435,12 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                 <button
                   key={s.key}
                   onClick={() => setSortBy(s.key)}
-                  className={`px-3.5 py-2 rounded text-[12px] transition-colors ${
+                  className={`px-3.5 py-2 rounded text-[12px] border transition-colors ${
                     sortBy === s.key
-                      ? 'bg-accent text-white font-black'
-                      : 'bg-white border border-brand-border text-stone-600 font-bold hover:border-stone-400'
+                      ? 'bg-sky-50 border-sky-200 font-black'
+                      : 'bg-white border-brand-border text-stone-600 font-bold hover:border-stone-400'
                   }`}
+                  style={sortBy === s.key ? { color: 'var(--color-navy)' } : undefined}
                 >
                   {s.label}
                 </button>
@@ -454,55 +456,55 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
               <div className="paper-card rounded p-10 text-center">
                 <p className="text-sm font-bold text-stone-500">No students match your search.</p>
               </div>
-            ) : filtered.map((student) => (
+            ) : filtered.map((student) => {
+              const chip = chips.get(student.student_id);
+              return (
               <div
                 key={student.student_id}
                 onClick={() => selectStudent(student)}
-                className="group paper-card rounded px-4 sm:px-5 py-4 flex items-center gap-4 cursor-pointer"
+                className="group paper-card rounded px-4 sm:px-5 py-3.5 cursor-pointer"
               >
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                  <span className="text-xs font-black text-white">{initials(student)}</span>
+                <div className="flex items-center gap-4">
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white text-[12px]"
+                    style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)', fontWeight: 700 }}>
+                    {initials(student)}
+                  </div>
+
+                  {/* Name */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-black text-brand-dark truncate">
+                      {student.student_surname}, {student.student_name}
+                    </p>
+                    <p className="text-[11px] text-stone-500 mt-0.5">
+                      Gr {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
+                    </p>
+                  </div>
+
+                  <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-accent transition-colors shrink-0" />
                 </div>
 
-                {/* Name */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-black text-brand-dark truncate">
-                    {student.student_surname}, {student.student_name}
-                  </p>
-                  <p className="text-[11px] text-stone-500 mt-0.5">
-                    Gr {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
-                  </p>
-                </div>
+                {/* Stats strip — always visible, no progressive hiding by breakpoint */}
+                <div className="flex items-center gap-4 mt-3 pt-3 flex-wrap" style={{ borderTop: '1px solid var(--color-paper-raise)' }}>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[13px] font-black text-emerald-600">{student.topics_mastered}</span>
+                    <span className="text-[11px] text-muted-2">mastered</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[13px] font-black ${student.topics_struggling > 0 ? 'text-amber-600' : 'text-stone-300'}`}>
+                      {student.topics_struggling > 0 ? student.topics_struggling : '—'}
+                    </span>
+                    <span className="text-[11px] text-muted-2">struggling</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-stone-600">
+                      {student.last_accessed ? timeAgo(student.last_accessed) : '—'}
+                    </span>
+                    <span className="text-[11px] text-muted-2">last active</span>
+                  </div>
 
-                {/* Mastered */}
-                <div className="hidden sm:flex flex-col items-center gap-0.5 w-16 shrink-0">
-                  <span className="text-base font-black text-emerald-600">{student.topics_mastered}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Mastered</span>
-                </div>
-
-                {/* Struggling */}
-                <div className="hidden sm:flex flex-col items-center gap-0.5 w-16 shrink-0">
-                  <span className={`text-base font-black ${student.topics_struggling > 0 ? 'text-amber-600' : 'text-stone-300'}`}>
-                    {student.topics_struggling > 0 ? student.topics_struggling : '—'}
-                  </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Struggling</span>
-                </div>
-
-                {/* Last active */}
-                <div className="hidden md:flex flex-col items-center gap-0.5 w-20 shrink-0">
-                  <span className="text-[11px] font-bold text-stone-600">
-                    {student.last_accessed ? timeAgo(student.last_accessed) : '—'}
-                  </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">Last Active</span>
-                </div>
-
-                {/* Intervention chips */}
-                {(() => {
-                  const chip = chips.get(student.student_id);
-                  if (!chip) return null;
-                  return (
-                    <div className="hidden lg:flex items-center gap-1.5 shrink-0">
+                  {chip && (chip.active > 0 || (chip.completed > 0 && chip.successRate > 0) || chip.avgGain > 0) && (
+                    <div className="flex items-center gap-1.5 ml-auto">
                       {chip.active > 0 && (
                         <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-100">
                           {chip.active} active
@@ -525,12 +527,11 @@ export default function StudentProgressPage({ session, onOpenTopicTest }: Studen
                         </span>
                       )}
                     </div>
-                  );
-                })()}
-
-                <ChevronRight className="w-4 h-4 text-stone-300 group-hover:text-accent transition-colors shrink-0" />
+                  )}
+                </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </>
       )}
@@ -616,38 +617,33 @@ function StudentProfile({
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — same recipe as every other teacher page (quiet
-          eyebrow, Instrument Sans title, no dark card, no entrance
-          motion) instead of a separate dark "hero card" component ═══ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-4xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1 text-[11px] font-black uppercase tracking-[0.18em] text-stone-500 hover:text-brand-dark transition-colors mb-3"
-          >
-            ← Students
-          </button>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center shrink-0">
-              <span className="text-lg font-black text-white">{initials(student)}</span>
-            </div>
-            <div className="min-w-0">
-              <h1
-                className="text-brand-dark text-[26px] sm:text-[34px] leading-[1.12]"
-                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-              >
-                {student.student_surname}, {student.student_name}
-              </h1>
-              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-1 font-medium">
-                Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
-              </p>
-            </div>
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1 text-[13px] font-semibold transition-colors mb-3"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          ← Students
+        </button>
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 text-white text-[16px]"
+            style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)', fontWeight: 700 }}>
+            {initials(student)}
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-brand-dark text-[26px] sm:text-[34px] leading-tight" style={{ fontWeight: 600 }}>
+              {student.student_surname}, {student.student_name}
+            </h1>
+            <p className="text-[14px] text-muted mt-1">
+              Grade {student.grade}{student.cohort_name ? ` · ${student.cohort_name}` : ''} · {student.student_code}
+            </p>
           </div>
         </div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* Stat strip — plain paper-cards, matching every other stat row
           in the app, instead of a separate dark hero card. */}
@@ -660,63 +656,28 @@ function StudentProfile({
         ].map(stat => (
           <div key={stat.label} className="paper-card rounded p-4 text-center">
             <p className={`text-lg font-black ${stat.color} leading-none`}>{stat.value}</p>
-            <p className="text-[10px] font-bold text-stone-500 mt-1.5 uppercase tracking-wide">{stat.label}</p>
+            <p className="text-[11px] text-muted-2 mt-1.5">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Comparison strip — shown once marks data is loaded */}
-      {comparisonRows.length > 0 && (
-        <div className="paper-card rounded p-5">
-          <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">vs Class Average</p>
-            <span className="flex-1 h-px bg-brand-border" />
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {comparisonRows.map(row => {
-              const deltaPositive = row.delta !== null && row.delta > 0;
-              const deltaNegative = row.delta !== null && row.delta < 0;
-              const deltaColor = deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-red-500' : 'text-stone-400';
-              const avgColor   = row.studentAvg >= 70 ? 'text-emerald-600'
-                               : row.studentAvg >= 50 ? 'text-amber-600'
-                               : 'text-red-500';
-              return (
-                <div key={row.subject} className="rounded px-3 py-2.5" style={{ background: 'var(--color-paper-raise)' }}>
-                  <p className="text-[10px] font-black text-stone-500 truncate mb-1">{row.subject}</p>
-                  <div className="flex items-baseline gap-1.5">
-                    <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
-                    {row.classAvg !== null && (
-                      <span className="text-[10px] text-stone-400">vs {row.classAvg}%</span>
-                    )}
-                  </div>
-                  {row.delta !== null && (
-                    <p className={`text-[10px] font-black mt-0.5 ${deltaColor}`}>
-                      {deltaPositive ? `+${row.delta}` : row.delta} vs class
-                    </p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Tab bar — wraps to multiple rows instead of squeezing into a
-          horizontal scroller with hidden labels, so every tab stays
-          legible and reachable without a sideways swipe. */}
-      <div className="flex flex-wrap gap-1.5 p-1.5 rounded-2xl bg-stone-100">
+      {/* Tab bar — text-only links, navy when active, matching the rest
+          of the app's button convention (no filled pills). Wraps instead
+          of scrolling sideways so every tab stays reachable on mobile. */}
+      <div className="flex flex-wrap gap-x-5 gap-y-2 overflow-x-auto -mx-1 px-1" style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
         {tabs.map(t => (
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[11px] sm:text-[12px] whitespace-nowrap transition-colors ${
-              activeTab === t.key
-                ? 'bg-accent text-white font-black shadow-sm'
-                : 'bg-white text-stone-500 font-bold hover:text-brand-dark hover:bg-stone-50'
-            }`}
+            className="flex items-center gap-1.5 pb-2.5 text-[13px] whitespace-nowrap transition-colors shrink-0"
+            style={{
+              color: activeTab === t.key ? 'var(--color-navy)' : 'var(--color-muted)',
+              fontWeight: activeTab === t.key ? 600 : 500,
+              borderBottom: activeTab === t.key ? '2px solid var(--color-navy)' : '2px solid transparent',
+              marginBottom: '-1px',
+            }}
           >
-            <t.icon className="w-3.5 h-3.5 shrink-0" />
-            <span className="leading-tight text-center">{t.label}</span>
+            {t.label}
           </button>
         ))}
       </div>
@@ -726,7 +687,7 @@ function StudentProfile({
           way to guarantee nothing reads as a "flip" or "rotate". */}
       <div>
           {activeTab === 'progress'      && <ProgressTab student={student} teacherId={session.teacher_id} onOpenTopicTest={onOpenTopicTest} />}
-          {activeTab === 'marks'         && <MarksTab marks={marks} />}
+          {activeTab === 'marks'         && <MarksTab marks={marks} comparisonRows={comparisonRows} />}
           {activeTab === 'homework'      && <HomeworkTab events={events} completions={completions} />}
           {activeTab === 'behaviour'     && <BehaviourTab entries={behaviour} />}
           {activeTab === 'attendance'    && <AttendanceTab records={attendance} />}
@@ -776,7 +737,7 @@ function ProgressTab({
         <div className="space-y-6">
           {Array.from(groups.entries()).map(([subject, rows]) => (
             <div key={subject}>
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">{subject}</p>
+              <p className="text-[15px] text-brand-dark mb-2 capitalize" style={{ fontWeight: 600 }}>{subject}</p>
               <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
                 {rows.map(row => {
                   const mastery = row.mastery_level;
@@ -855,7 +816,14 @@ function MarkTrendChart({ rows }: { rows: StudentResult[] }) {
   );
 }
 
-function MarksTab({ marks }: { marks: StudentResult[] | null }) {
+interface ComparisonRow {
+  subject:    string;
+  studentAvg: number;
+  classAvg:   number | null;
+  delta:      number | null;
+}
+
+function MarksTab({ marks, comparisonRows }: { marks: StudentResult[] | null; comparisonRows: ComparisonRow[] }) {
   if (marks === null) {
     return <LoadingSpinner />;
   }
@@ -867,9 +835,44 @@ function MarksTab({ marks }: { marks: StudentResult[] | null }) {
 
   return (
     <div className="space-y-6">
+      {comparisonRows.length > 0 && (
+        <div className="paper-card rounded p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>vs class average</p>
+            <span className="flex-1 h-px bg-brand-border" />
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {comparisonRows.map(row => {
+              const deltaPositive = row.delta !== null && row.delta > 0;
+              const deltaNegative = row.delta !== null && row.delta < 0;
+              const deltaColor = deltaPositive ? 'text-emerald-600' : deltaNegative ? 'text-red-500' : 'text-stone-400';
+              const avgColor   = row.studentAvg >= 70 ? 'text-emerald-600'
+                               : row.studentAvg >= 50 ? 'text-amber-600'
+                               : 'text-red-500';
+              return (
+                <div key={row.subject} className="rounded px-3 py-2.5" style={{ background: 'var(--color-paper-raise)' }}>
+                  <p className="text-[11px] text-muted-2 truncate mb-1 capitalize">{row.subject}</p>
+                  <div className="flex items-baseline gap-1.5">
+                    <span className={`text-base font-black ${avgColor}`}>{row.studentAvg}%</span>
+                    {row.classAvg !== null && (
+                      <span className="text-[10px] text-stone-400">vs {row.classAvg}%</span>
+                    )}
+                  </div>
+                  {row.delta !== null && (
+                    <p className={`text-[10px] font-black mt-0.5 ${deltaColor}`}>
+                      {deltaPositive ? `+${row.delta}` : row.delta} vs class
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {Array.from(groups.entries()).map(([subject, rows]) => (
         <div key={subject}>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">{subject}</p>
+          <p className="text-[15px] text-brand-dark mb-2 capitalize" style={{ fontWeight: 600 }}>{subject}</p>
           <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             <MarkTrendChart rows={rows} />
             {rows.map(row => {
@@ -931,7 +934,7 @@ function HomeworkTab({
     <div className="space-y-5">
       {pending.length > 0 && (
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Pending</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Pending</p>
           <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             {pending.map(e => (
               <div key={e.id} className="flex items-center gap-3 px-4 py-3">
@@ -950,7 +953,7 @@ function HomeworkTab({
       )}
       {completed.length > 0 && (
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Completed</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Completed</p>
           <div className="paper-card rounded divide-y divide-stone-100 overflow-hidden">
             {completed.map(e => (
               <div key={e.id} className="flex items-center gap-3 px-4 py-3">
@@ -986,15 +989,15 @@ function BehaviourTab({ entries }: { entries: BehaviourEntry[] | null }) {
       <div className="grid grid-cols-3 gap-3">
         <div className="paper-card rounded p-4 text-center">
           <p className="text-2xl font-black text-emerald-600">{meritPoints}</p>
-          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Merits</p>
+          <p className="text-[11px] text-muted-2 mt-1">Merits</p>
         </div>
         <div className="paper-card rounded p-4 text-center">
           <p className={`text-2xl font-black ${demeritPoints > 0 ? 'text-red-600' : 'text-stone-300'}`}>{demeritPoints}</p>
-          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Demerits</p>
+          <p className="text-[11px] text-muted-2 mt-1">Demerits</p>
         </div>
         <div className="paper-card rounded p-4 text-center">
           <p className={`text-2xl font-black ${net >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>{net > 0 ? `+${net}` : net}</p>
-          <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mt-1">Net</p>
+          <p className="text-[11px] text-muted-2 mt-1">Net</p>
         </div>
       </div>
 
@@ -1045,7 +1048,7 @@ function AttendanceTab({ records }: { records: AttendanceRecord[] | null }) {
       {rate !== null && (
         <div className="paper-card rounded p-5">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-black uppercase tracking-widest text-stone-500">Attendance Rate</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Attendance rate</p>
             <p className={`text-lg font-black ${rate >= 90 ? 'text-emerald-600' : rate >= 75 ? 'text-amber-600' : 'text-red-600'}`}>{rate}%</p>
           </div>
           <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
@@ -1163,7 +1166,7 @@ function InterventionsTab({
         <div className="paper-card rounded p-5">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Intervention Impact</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Intervention Impact</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {[
@@ -1192,7 +1195,7 @@ function InterventionsTab({
       {/* ── Active interventions ─────────────────────────── */}
       {active.length > 0 && (
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Active</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Active</p>
           <div className="space-y-2">
             {active.map(inv => (
               <div key={inv.id} className={`bg-white border rounded-2xl px-4 py-3.5 ${
@@ -1239,7 +1242,7 @@ function InterventionsTab({
       {/* ── Completed interventions ──────────────────────── */}
       {completed.length > 0 && (
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">Completed</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Completed</p>
           <div className="space-y-2">
             {completed.map(inv => {
               const outcome = outcomes.find(o => o.interventionId === inv.id);
@@ -1308,9 +1311,10 @@ function InterventionsTab({
                         previousAvg:    inv.previousAvg,
                         studentLabel,
                       })}
-                      className="text-[10px] font-black text-blue-500 hover:text-blue-700 mt-2 transition-colors"
+                      className="text-[11px] font-semibold mt-2 transition-colors"
+                      style={{ color: 'var(--color-navy)' }}
                     >
-                      Record Outcome →
+                      Record outcome →
                     </button>
                   )}
 
@@ -1386,7 +1390,7 @@ function ContactsTab({
       <div className="paper-card rounded p-5">
         <div className="flex items-center gap-2 mb-3">
           <Phone className="w-3.5 h-3.5 text-stone-500" />
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Log Parent Contact</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Log parent contact</p>
         </div>
 
         <div className="flex gap-1.5 flex-wrap mb-3">
@@ -1396,7 +1400,7 @@ function ContactsTab({
               onClick={() => setMethod(m)}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-black transition-all ${
                 method === m
-                  ? 'bg-accent text-white'
+                  ? 'bg-sky-50 text-sky-700'
                   : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
               }`}
             >
@@ -1416,9 +1420,10 @@ function ContactsTab({
         <button
           onClick={handleLog}
           disabled={saving}
-          className="w-full py-2 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
+          className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+          style={{ color: 'var(--color-navy)' }}
         >
-          {saving ? 'Saving…' : 'Log Contact'}
+          {saving ? 'Saving…' : 'Log contact'} <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -1427,7 +1432,7 @@ function ContactsTab({
         <EmptyState icon={Phone} text="No parent contacts logged yet." />
       ) : (
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-2">History</p>
+          <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>History</p>
           <div className="space-y-2">
             {contacts.map(c => (
               <div key={c.id} className="paper-card rounded px-4 py-3 flex items-start gap-3">

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HeartHandshake, ChevronDown, ChevronLeft, Phone, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronLeft } from 'lucide-react';
 import type { StudentSession } from '../../../lib/auth';
 import {
   NORMALISING_MESSAGE, HELP_HUB_INTRO, START_HERE_TOOLS, HELP_TOPICS,
@@ -25,25 +25,23 @@ export default function StudentWellbeingHelpPage({}: StudentWellbeingHelpPagePro
 
   return (
     <div className="student-wellbeing-help student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden border-b border-brand-border">
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Wellbeing Tools for Everyone</p>
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Tools that can help
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium max-w-lg">
-            {HELP_HUB_INTRO}
-          </motion.p>
-        </div>
+
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Tools that can help
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">{HELP_HUB_INTRO}</p>
       </div>
 
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         {selectedTopic ? (
           <TopicDetail topic={selectedTopic} onBack={() => setSelectedTopic(null)} />
         ) : (
@@ -85,7 +83,7 @@ export default function StudentWellbeingHelpPage({}: StudentWellbeingHelpPagePro
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
-      <h2 className="text-[13px] font-black uppercase tracking-wide text-stone-500 mb-3">{title}</h2>
+      <h2 className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>{title}</h2>
       {children}
     </motion.div>
   );
@@ -96,9 +94,7 @@ function MicroToolCard({ tool }: { tool: MicroTool }) {
   return (
     <div className="paper-card rounded overflow-hidden">
       <button onClick={() => setExpanded(e => !e)} className="w-full flex items-center gap-3 p-4 text-left">
-        <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-          <Sparkles className="w-3.5 h-3.5 text-accent" />
-        </div>
+        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
         <div className="flex-1 min-w-0">
           <p className="text-[13.5px] font-bold text-brand-dark">{tool.title}</p>
           <p className="text-[11.5px] text-stone-500">{tool.durationMinutes} min</p>
@@ -158,10 +154,7 @@ function TalkToSomeoneBox() {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}
       className="paper-card rounded p-5 sm:p-6 space-y-3">
-      <div className="flex items-center gap-2.5">
-        <HeartHandshake className="w-4.5 h-4.5 text-accent" />
-        <h2 className="text-[15px] font-semibold text-brand-dark">Talk to someone</h2>
-      </div>
+      <h2 className="text-[15px] font-semibold text-brand-dark">Talk to someone</h2>
       <p className="text-[13.5px] text-stone-600 leading-relaxed">
         These tools can help, but they're not a replacement for talking to someone if things feel heavy — your
         homeroom teacher, a parent/guardian, or a trusted adult are all good places to start.
@@ -170,9 +163,7 @@ function TalkToSomeoneBox() {
         {CRISIS_RESOURCES.map(r => (
           <a key={r.name} href={`tel:${r.phone}`}
             className="paper-card rounded flex items-center gap-3 p-3 hover:border-accent transition-colors">
-            <div className="w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-              <Phone className="w-4 h-4 text-accent" />
-            </div>
+            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: 'var(--color-accent)' }} />
             <div className="flex-1 min-w-0">
               <p className="text-[13.5px] font-bold text-brand-dark">{r.name}</p>
               <p className="text-[11.5px] text-stone-500">{r.description}</p>

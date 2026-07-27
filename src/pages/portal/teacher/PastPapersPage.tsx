@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Plus, X, Trash2, FileText, ExternalLink, FolderOpen, CheckCircle2, Paperclip,
+  Plus, X, Trash2, ExternalLink, FolderOpen, CheckCircle2, Paperclip,
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
@@ -150,44 +150,40 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
           <motion.div
             initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.22 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 bg-accent text-white text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-100 flex items-center gap-2.5 paper-card text-sm font-bold px-5 py-3 rounded-2xl shadow-xl"
           >
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />{toast}
+            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />{toast}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Past Papers</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Past Papers
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              Upload papers for students to browse and practise with.
-            </p>
-          </motion.div>
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); setFile(null); setMemoFile(null); }}
-            className="shrink-0 flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2.5 rounded transition-colors duration-200 hover:bg-accent-soft"
-          >
-            <Plus className="w-4 h-4" /> Upload Paper
-          </motion.button>
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Past Papers
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[14px] text-muted mt-1">Upload papers for students to browse and practise with.</p>
         </div>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={() => { setModal(true); setFormError(''); setForm(emptyForm); setFile(null); setMemoFile(null); }}
+          className="shrink-0 flex items-center gap-1 text-[14px] font-semibold transition-colors"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          <Plus className="w-4 h-4" /> Upload paper
+        </motion.button>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* Content */}
       {loading ? (
@@ -216,7 +212,7 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
         <div className="space-y-6">
           {Array.from(grouped.entries()).map(([subject, list]) => (
             <div key={subject}>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">{subject}</p>
+              <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>{subject}</p>
               <div className="space-y-2.5">
                 {list.map((p, i) => (
                   <motion.div
@@ -225,16 +221,6 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                     transition={{ delay: i * 0.03 }}
                     className="paper-card rounded px-5 py-4 flex items-center gap-4"
                   >
-                    {/* Icon with memo dot */}
-                    <div className="relative w-9 h-9 shrink-0">
-                      <div className="w-9 h-9 rounded bg-stone-100 flex items-center justify-center">
-                        <FileText className="w-4 h-4 text-stone-600" />
-                      </div>
-                      {p.memo_url && (
-                        <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white" />
-                      )}
-                    </div>
-
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-brand-dark">{p.title}</p>
                       <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -459,17 +445,18 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
 
-              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex gap-2">
+              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex items-center gap-6">
                 <button
                   onClick={closeModal}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="text-[14px] font-semibold text-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCreate}
                   disabled={saving}
-                  className="flex-1 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+                  style={{ color: 'var(--color-navy)' }}
                 >
                   {saving ? 'Uploading…' : 'Upload'}
                 </button>
@@ -501,17 +488,17 @@ export default function PastPapersPage({ session }: PastPapersPageProps) {
                   <span className="block mt-1 text-stone-500">The attached memo will also be deleted.</span>
                 )}
               </p>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-6">
                 <button
                   onClick={() => setDeleteTarget(null)}
-                  className="flex-1 py-2.5 rounded border border-brand-border text-sm font-black text-stone-600 hover:bg-stone-50 transition-colors"
+                  className="text-[14px] font-semibold text-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDelete}
                   disabled={deleting}
-                  className="flex-1 py-2.5 rounded bg-red-600 text-white text-sm font-black hover:bg-red-700 transition-colors disabled:opacity-50"
+                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50"
                 >
                   {deleting ? 'Deleting…' : 'Delete'}
                 </button>

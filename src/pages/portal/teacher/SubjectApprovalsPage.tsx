@@ -91,31 +91,25 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">
-              {loading ? 'Homeroom' : cohort ? `Homeroom · ${cohort.name}` : 'Homeroom'}
-            </p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
               Subject Selection Approvals
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              {loading ? ' ' : submittedCount > 0 ? `${submittedCount} awaiting your review` : 'Review Grade 10 subject choices before they go to admin.'}
-            </p>
-          </motion.div>
-        </div>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">
+          {loading ? ' ' : submittedCount > 0 ? `${submittedCount} awaiting your review` : 'Review Grade 9 subject choices before they go to admin.'}
+        </p>
       </div>
 
-      {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      {/* ═══ Body ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {loading ? (
         <div className="flex items-center justify-center py-24">
@@ -146,10 +140,10 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
               <table className="w-full text-sm">
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Choices</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500"></th>
+                    <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Student</th>
+                    <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Choices</th>
+                    <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Status</th>
+                    <th className="text-left px-5 py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -201,14 +195,14 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
               <textarea value={rejectComment} onChange={(e) => setRejectComment(e.target.value)}
                 rows={3} placeholder="e.g. Please reconsider your elective combination"
                 className="w-full rounded border border-brand-border px-3 py-2 text-sm mb-4" />
-              <div className="flex gap-3">
+              <div className="flex items-center gap-6">
                 <button onClick={() => setRejectingId(null)}
-                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
+                  className="text-[14px] font-semibold text-muted transition-colors">
                   Cancel
                 </button>
                 <button onClick={handleReject}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all flex items-center justify-center gap-2">
-                  <Send className="w-3.5 h-3.5" /> Send Back
+                  className="flex items-center gap-1.5 text-[14px] font-semibold text-red-600 transition-colors">
+                  <Send className="w-3.5 h-3.5" /> Send back
                 </button>
               </div>
             </div>

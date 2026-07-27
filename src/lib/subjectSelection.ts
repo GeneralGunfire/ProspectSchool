@@ -219,6 +219,7 @@ export async function fetchHomeroomSelections(
     .from('students')
     .select('id, name, surname, student_code, cohorts(name)')
     .eq('cohort_id', cohort_id)
+    .eq('grade', 9)
     .order('surname');
 
   if (error || !students) return [];

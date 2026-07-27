@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, BookOpen, X, Lightbulb, AlertTriangle, Target } from 'lucide-react';
+import { ClipboardList, TrendingUp, TrendingDown, Minus, ChevronDown, ChevronRight, BookOpen, X, Lightbulb, AlertTriangle, Target } from 'lucide-react';
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
   ReferenceLine, Cell,
@@ -331,7 +331,14 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
-              My Marks
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  My Marks
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
             <p className="text-[14px] text-muted mt-1">How you're tracking across your subjects.</p>
           </div>
@@ -433,15 +440,16 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                         </div>
                       ))}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-4">
                       <button onClick={() => onNavigate('pastpapers')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded bg-brand-dark text-white text-[11px] font-black hover:bg-stone-700 transition-colors">
-                        Practice Papers
+                        className="flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                        style={{ color: 'var(--color-navy)' }}>
+                        Practice papers <ChevronRight className="w-3 h-3" />
                       </button>
                       <button onClick={() => onNavigate('library')}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded border border-brand-border text-stone-700 text-[11px] font-black hover:bg-brand-border transition-colors"
-                        style={{ background: 'var(--color-paper-raise)' }}>
-                        Open Library
+                        className="flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                        style={{ color: 'var(--color-navy)' }}>
+                        Open library <ChevronRight className="w-3 h-3" />
                       </button>
                     </div>
                   </div>
@@ -574,18 +582,15 @@ export default function StudentMarksPage({ session, onNavigate }: StudentMarksPa
                       )}
                       <p className="text-sm text-stone-500 leading-relaxed">{item.body}</p>
                     </div>
-                    <div className="px-5 py-3 flex flex-wrap gap-2">
+                    <div className="px-5 py-3 flex flex-wrap gap-4">
                       {item.actions.map((action, j) => (
                         <button
                           key={j}
                           onClick={() => onNavigate(action.page)}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded text-xs font-black transition-colors ${
-                            j === 0
-                              ? 'bg-brand-dark text-white hover:bg-stone-700'
-                              : 'bg-stone-100 text-stone-700 hover:bg-stone-200 border border-brand-border'
-                          }`}
+                          className="flex items-center gap-1 text-[12px] font-semibold transition-colors"
+                          style={{ color: 'var(--color-navy)' }}
                         >
-                          {action.label}
+                          {action.label} <ChevronRight className="w-3 h-3" />
                         </button>
                       ))}
                     </div>

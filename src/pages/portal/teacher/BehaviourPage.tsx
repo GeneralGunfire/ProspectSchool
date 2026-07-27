@@ -55,36 +55,32 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Behaviour</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Merits & Demerits
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              Award behaviour points and view each student's timeline.
-            </p>
-          </motion.div>
-          <button
-            onClick={() => setShowAllEntries(true)}
-            className="shrink-0 flex items-center gap-2 text-xs font-black text-white border border-white/15 bg-white/[0.05] px-4 py-2.5 rounded hover:bg-white/[0.1] transition-colors"
-          >
-            <ListTree className="w-3.5 h-3.5" /> View All Entries
-          </button>
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Merits & Demerits
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[14px] text-muted mt-1">Award behaviour points and view each student's timeline.</p>
         </div>
+        <button
+          onClick={() => setShowAllEntries(true)}
+          className="shrink-0 flex items-center gap-1 text-[14px] font-semibold transition-colors"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          <ListTree className="w-3.5 h-3.5" /> View all entries
+        </button>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-6 sm:pt-8">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         <div className="relative">
           <Search className="w-4 h-4 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -126,10 +122,10 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--color-brand-border)' }}>
-                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Class</th>
-                  <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Net Points</th>
-                  <th className="text-right px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Action</th>
+                  <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Student</th>
+                  <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Class</th>
+                  <th className="text-left px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Net points</th>
+                  <th className="text-right px-5 py-3 text-[12px] text-muted-2" style={{ fontWeight: 600 }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,9 +150,10 @@ export default function BehaviourPage({ session }: BehaviourPageProps) {
                       </td>
                       <td className="px-5 py-3.5 text-right">
                         <motion.button
-                          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                          whileTap={{ scale: 0.97 }}
                           onClick={() => setAwardTarget(s)}
-                          className="text-xs font-black text-white bg-accent px-4 py-2 rounded hover:bg-[var(--color-accent-soft)] transition-colors"
+                          className="text-[13px] font-semibold transition-colors"
+                          style={{ color: 'var(--color-navy)' }}
                         >
                           Award
                         </motion.button>
@@ -354,15 +351,16 @@ function AwardModal({
             </div>
           )}
 
-          <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
+          <div className="flex items-center gap-6">
+            <button onClick={onClose} className="text-[14px] font-semibold text-muted transition-colors">
               Cancel
             </button>
             <button
               onClick={handleSubmit} disabled={saving}
-              className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-[var(--color-accent-soft)] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
+              style={{ color: 'var(--color-navy)' }}
             >
-              {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Award'}
+              {saving ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : 'Award'}
             </button>
           </div>
         </div>
@@ -717,15 +715,16 @@ function EditEntryRow({
         </div>
       )}
 
-      <div className="flex gap-2">
-        <button onClick={onCancel} className="flex-1 py-2 text-xs font-bold text-stone-600 border border-brand-border rounded-lg hover:bg-stone-50 transition-all">
+      <div className="flex items-center gap-5">
+        <button onClick={onCancel} className="text-[12.5px] font-semibold text-muted transition-colors">
           Cancel
         </button>
         <button
           onClick={handleSave} disabled={saving}
-          className="flex-1 py-2 text-xs font-black text-white bg-accent rounded-lg hover:bg-[var(--color-accent-soft)] transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
+          className="flex items-center gap-1 text-[12.5px] font-semibold transition-colors disabled:opacity-50"
+          style={{ color: 'var(--color-navy)' }}
         >
-          {saving ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Check className="w-3.5 h-3.5" /> Save</>}
+          {saving ? <div className="w-3 h-3 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : <><Check className="w-3.5 h-3.5" /> Save</>}
         </button>
       </div>
     </div>

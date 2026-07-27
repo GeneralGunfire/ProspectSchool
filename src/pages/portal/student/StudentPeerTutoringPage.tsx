@@ -29,9 +29,11 @@ function PrimaryButton({ onClick, disabled, className = '', children }: {
     <motion.button
       whileHover={disabled ? undefined : { y: -1 }} whileTap={disabled ? undefined : { scale: 0.97 }}
       onClick={onClick} disabled={disabled}
-      className={`rounded bg-accent text-white font-bold transition-colors hover:bg-accent-light disabled:opacity-40 ${className}`}
+      className={`flex items-center justify-center gap-1 font-semibold transition-colors disabled:opacity-40 ${className}`}
+      style={{ color: 'var(--color-navy)' }}
     >
       {children}
+      <ChevronRight className="w-3.5 h-3.5" />
     </motion.button>
   );
 }
@@ -89,39 +91,38 @@ export default function StudentPeerTutoringPage({ session }: Props) {
 
   return (
     <div className="student-peer-tutoring student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden border-b border-brand-border">
-        <div className="relative max-w-[1300px] mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0">
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">Peer Tutoring</p>
-          </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Learn together, teach each other
-          </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease, delay: 0.08 }}
-            className="text-[13px] text-[rgba(31,36,33,0.55)] mt-2.5 font-medium max-w-lg">
-            Get help from a classmate who's already mastered a topic, or strengthen your own understanding by tutoring someone else.
-          </motion.p>
-        </div>
+
+      {/* ═══ Header — same compact scale as Home/Announcements ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Peer Tutoring
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1">Get help from a classmate who's mastered a topic, or teach one yourself.</p>
       </div>
 
-      <div className="max-w-[1300px] mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      {/* ═══ Body ═════════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         <div className="flex gap-1.5 flex-wrap">
           {([
-            { id: 'overview', label: 'Overview', icon: Users },
-            { id: 'find', label: 'Find a tutor', icon: HandHeart },
-            { id: 'tutor', label: 'Become a tutor', icon: GraduationCap },
+            { id: 'overview', label: 'Overview' },
+            { id: 'find', label: 'Find a tutor' },
+            { id: 'tutor', label: 'Become a tutor' },
             ...(tutorProfile?.orientationCompletedAt && tutorProfile?.conductAcknowledgedAt
-              ? [{ id: 'requests' as Tab, label: 'Students who need help', icon: Search }] : []),
-            { id: 'mine', label: 'My relationships', icon: ListChecks },
-          ] as { id: Tab; label: string; icon: typeof Users }[]).map(({ id, label, icon: Icon }) => (
+              ? [{ id: 'requests' as Tab, label: 'Students who need help' }] : []),
+            { id: 'mine', label: 'My relationships' },
+          ] as { id: Tab; label: string }[]).map(({ id, label }) => (
             <button key={id} onClick={() => setTab(id)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[12.5px] font-bold border transition-all ${
-                tab === id ? 'bg-brand-dark text-white border-brand-dark' : 'bg-white text-stone-500 border-brand-border hover:border-stone-400'
-              }`}>
-              <Icon className="w-3.5 h-3.5" />
+              className="px-3.5 py-2 rounded-lg text-[12.5px] font-bold border transition-all"
+              style={tab === id
+                ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)', color: '#fff', borderColor: 'transparent' }
+                : { background: '#fff', color: 'var(--color-muted)', borderColor: 'var(--color-brand-border)' }}>
               {label}
             </button>
           ))}
@@ -160,12 +161,22 @@ function OverviewTab({ tutorProfile, badges, relationships, onGoTo }: {
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }} className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <button onClick={() => onGoTo('find')} className="paper-card rounded p-5 text-left hover:border-accent transition-colors">
-          <HandHeart className="w-6 h-6 text-accent mb-2" />
+          <span className="relative inline-block mb-2">
+            <span className="text-[12px] text-muted-2">Need help</span>
+            <svg aria-hidden="true" viewBox="0 0 100 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+              <path d="M1 5C22 2 60 1 99 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
           <p className="text-[14px] font-bold text-brand-dark">Need help with a topic?</p>
           <p className="text-[12px] text-stone-500 mt-1">Find a tutor who's already mastered it</p>
         </button>
         <button onClick={() => onGoTo('tutor')} className="paper-card rounded p-5 text-left hover:border-accent transition-colors">
-          <GraduationCap className="w-6 h-6 text-accent mb-2" />
+          <span className="relative inline-block mb-2">
+            <span className="text-[12px] text-muted-2">Know a topic</span>
+            <svg aria-hidden="true" viewBox="0 0 100 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+              <path d="M1 5C22 2 60 1 99 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
           <p className="text-[14px] font-bold text-brand-dark">Know a topic well?</p>
           <p className="text-[12px] text-stone-500 mt-1">Become a tutor and help a classmate</p>
         </button>
@@ -175,7 +186,7 @@ function OverviewTab({ tutorProfile, badges, relationships, onGoTo }: {
         <div className="paper-card rounded p-5">
           <p className="text-[13px] font-bold text-brand-dark mb-1">Your tutoring relationships</p>
           <p className="text-[12.5px] text-stone-500">{activeCount} active</p>
-          <button onClick={() => onGoTo('mine')} className="mt-3 text-[12.5px] font-bold text-accent flex items-center gap-1">
+          <button onClick={() => onGoTo('mine')} className="mt-3 text-[12.5px] font-semibold flex items-center gap-1" style={{ color: 'var(--color-accent-soft)' }}>
             View all <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -183,7 +194,12 @@ function OverviewTab({ tutorProfile, badges, relationships, onGoTo }: {
 
       {tutorProfile && badges.length > 0 && (
         <div className="paper-card rounded p-5">
-          <p className="text-[13px] font-bold text-brand-dark mb-3 flex items-center gap-1.5"><Award className="w-4 h-4 text-accent" /> Your badges</p>
+          <span className="relative inline-block mb-2.5">
+            <span className="text-[12px] text-muted-2">Your badges</span>
+            <svg aria-hidden="true" viewBox="0 0 100 8" className="absolute left-0 -bottom-1 w-full h-2 text-sky-400/60" preserveAspectRatio="none">
+              <path d="M1 5C22 2 60 1 99 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
           <div className="flex gap-2">
             {badges.map((b) => (
               <div key={b.tier} className={`px-3 py-1.5 rounded-lg text-[11.5px] font-black uppercase tracking-wide ${
@@ -357,7 +373,7 @@ function RequestsToFulfillTab({ session, topics, onFulfilled }: {
         <CheckCircle2 className="w-10 h-10 text-green-600 mb-3" />
         <h2 className="text-[17px] font-semibold text-brand-dark mb-1">Match created</h2>
         <p className="text-[13.5px] text-stone-500 max-w-sm">{fulfilledMessage}</p>
-        <button onClick={() => setFulfilledMessage(null)} className="mt-4 text-[12.5px] font-bold text-accent">
+        <button onClick={() => setFulfilledMessage(null)} className="mt-4 text-[12.5px] font-semibold" style={{ color: 'var(--color-accent-soft)' }}>
           Back to requests
         </button>
       </motion.div>

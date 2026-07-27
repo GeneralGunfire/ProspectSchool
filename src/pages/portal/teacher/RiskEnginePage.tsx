@@ -207,33 +207,33 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Early Warning</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
               At-Risk Students
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-md">
-              Live risk scoring from attendance, behaviour, and course performance. Expand a student to see exactly why they're flagged.
-            </p>
-            <button
-              onClick={() => setShowHow(v => !v)}
-              className="mt-2.5 flex items-center gap-1.5 text-[11px] font-black text-stone-500 hover:text-accent transition-colors"
-            >
-              <Info className="w-3.5 h-3.5" />
-              {showHow ? 'Hide how this works' : 'How does this work?'}
-            </button>
-          </motion.div>
-        </div>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[14px] text-muted mt-1 max-w-md">
+          Live risk scoring from attendance, behaviour, and course performance. Expand a student to see exactly why they're flagged.
+        </p>
+        <button
+          onClick={() => setShowHow(v => !v)}
+          className="mt-2.5 flex items-center gap-1.5 text-[13px] font-semibold transition-colors"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          <Info className="w-3.5 h-3.5" />
+          {showHow ? 'Hide how this works' : 'How does this work?'}
+        </button>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       <AnimatePresence>
         {showHow && (
@@ -245,7 +245,7 @@ export default function RiskEnginePage({ session }: RiskEnginePageProps) {
             className="overflow-hidden mb-6"
           >
             <div className="paper-card rounded p-5">
-              <p className="text-[11px] font-black uppercase tracking-[0.2em] text-stone-500 mb-3">The Pipeline</p>
+              <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>The pipeline</p>
 
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-1 items-stretch mb-4">
                 {[
@@ -453,7 +453,7 @@ function RiskRow({
                 <div>
                   <div className="flex items-center gap-1.5 mb-2 mt-3">
                     <Gauge className="w-3 h-3 text-stone-500" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Attendance · Behaviour · Course</p>
+                    <p className="text-[12.5px] font-semibold text-brand-dark">Attendance · Behaviour · Course</p>
                   </div>
                   <div className="grid grid-cols-3 gap-2 mb-2">
                     {([
@@ -487,7 +487,7 @@ function RiskRow({
                 <div>
                   <div className="flex items-center gap-1.5 mb-2 mt-3">
                     <Gauge className="w-3 h-3 text-stone-500" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Why Flagged</p>
+                    <p className="text-[12.5px] font-semibold text-brand-dark">Why flagged</p>
                   </div>
                   <p className="text-[11px] text-stone-500 mb-2 -mt-1">
                     Risk level per subject, from marks + trend + exam timing. See "How does this work?" above for the exact rules.
@@ -532,7 +532,7 @@ function RiskRow({
                 <div>
                   <div className="flex items-center gap-1.5 mb-2">
                     <TrendingDown className="w-3 h-3 text-stone-500" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Revision Priority</p>
+                    <p className="text-[12.5px] font-semibold text-brand-dark">Revision priority</p>
                   </div>
                   <p className="text-[11px] text-stone-500 mb-2 -mt-1">
                     A separate "what to study first" ranking — weighted toward exam closeness, so it can include subjects not listed above.
@@ -561,15 +561,16 @@ function RiskRow({
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
                     <Activity className="w-3 h-3 text-stone-500" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">Interventions</p>
+                    <p className="text-[12.5px] font-semibold text-brand-dark">Interventions</p>
                   </div>
                   <button
                     onClick={onSync}
                     disabled={row.syncing}
-                    className="flex items-center gap-1.5 text-[10px] font-black text-blue-600 hover:text-blue-800 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1.5 text-[11.5px] font-semibold transition-colors disabled:opacity-50"
+                    style={{ color: 'var(--color-navy)' }}
                   >
                     <RefreshCw className={`w-3 h-3 ${row.syncing ? 'animate-spin' : ''}`} />
-                    {row.syncing ? 'Syncing…' : 'Re-sync Interventions'}
+                    {row.syncing ? 'Syncing…' : 'Re-sync interventions'}
                   </button>
                 </div>
 

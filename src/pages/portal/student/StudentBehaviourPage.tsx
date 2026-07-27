@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Plus, Minus, Award } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import { CountUp } from '../../../shared/components/CountUp';
 import type { StudentSession } from '../../../lib/auth';
 import { fetchStudentBehaviour, type BehaviourEntry } from '../../../lib/behaviour';
 
@@ -38,7 +39,14 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
-              Merits &amp; Demerits
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  Merits & Demerits
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
             <p className="text-[14px] text-muted mt-1">Your conduct record, as logged by your teachers.</p>
           </div>
@@ -130,46 +138,66 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
           </>
         ) : (
           <>
-            {/* Stat cards */}
-            <div className="grid grid-cols-3 gap-3">
-              <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease, delay: 0.06 }}
-                className="paper-card rounded p-4 sm:p-5"
-              >
-                <div className="w-8 h-8 rounded flex items-center justify-center mb-3 bg-emerald-50 text-emerald-600">
-                  <Plus className="w-4 h-4" />
+            {/* Conduct balance — a custom scale visualisation instead of
+                three icon-badge tiles: merits push a bar right (green),
+                demerits push it left (red), meeting at a centre marker.
+                Net score reads directly off which side the bar leans. */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease }}
+              className="paper-card rounded p-5 sm:p-6"
+            >
+              <div className="flex items-end justify-between gap-4 mb-4">
+                <div>
+                  <span className="relative inline-block mb-1">
+                    <span className="text-[12px] text-muted-2">Conduct balance</span>
+                    <svg aria-hidden="true" viewBox="0 0 120 8" className="absolute left-0 -bottom-1 w-full h-2 text-emerald-400/50" preserveAspectRatio="none">
+                      <path d="M1 5C25 2 70 1 119 4" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    </svg>
+                  </span>
+                  <p className={`text-[28px] leading-none ${netPoints >= 0 ? 'text-success' : 'text-red-600'}`} style={{ fontWeight: 700 }}>
+                    {netPoints > 0 ? '+' : ''}<CountUp value={netPoints} />
+                  </p>
                 </div>
-                <p className="text-[26px] sm:text-[28px] font-black text-emerald-700 leading-none">{meritPoints}</p>
-                <p className="text-[12px] text-muted-2 mt-2">Merits</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease, delay: 0.1 }}
-                className="paper-card rounded p-4 sm:p-5"
-              >
-                <div className={`w-8 h-8 rounded flex items-center justify-center mb-3 ${demeritPoints > 0 ? 'bg-red-50 text-red-600' : 'bg-[var(--color-paper-raise)] text-stone-300'}`}>
-                  <Minus className="w-4 h-4" />
+                <div className="flex items-center gap-4 text-right">
+                  <div>
+                    <p className="text-[20px] leading-none text-emerald-600" style={{ fontWeight: 700 }}><CountUp value={meritPoints} /></p>
+                    <p className="text-[11px] text-muted-2 mt-1">merits</p>
+                  </div>
+                  <div>
+                    <p className={`text-[20px] leading-none ${demeritPoints > 0 ? 'text-red-600' : 'text-stone-300'}`} style={{ fontWeight: 700 }}>
+                      <CountUp value={demeritPoints} />
+                    </p>
+                    <p className="text-[11px] text-muted-2 mt-1">demerits</p>
+                  </div>
                 </div>
-                <p className={`text-[26px] sm:text-[28px] font-black leading-none ${demeritPoints > 0 ? 'text-red-700' : 'text-stone-300'}`}>{demeritPoints}</p>
-                <p className="text-[12px] text-muted-2 mt-2">Demerits</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, ease, delay: 0.14 }}
-                className="paper-card rounded p-4 sm:p-5 relative overflow-hidden"
-              >
-                <div className="absolute -bottom-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-20 pointer-events-none"
-                  style={{ background: netPoints >= 0 ? '#34d399' : '#f87171' }} />
-                <div className={`relative w-8 h-8 rounded flex items-center justify-center mb-3 ${netPoints >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
-                  <Award className="w-4 h-4" />
-                </div>
-                <p className={`relative text-[26px] sm:text-[28px] font-black leading-none ${netPoints >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
-                  {netPoints > 0 ? '+' : ''}{netPoints}
-                </p>
-                <p className="relative text-[12px] text-muted-2 mt-2">Net Score</p>
-              </motion.div>
-            </div>
+              </div>
+
+              {/* The scale itself: a centre-anchored bar, green fill growing
+                  right for merits, red fill growing left for demerits. */}
+              {(() => {
+                const total = meritPoints + demeritPoints;
+                const meritPct = total > 0 ? (meritPoints / total) * 50 : 0;
+                const demeritPct = total > 0 ? (demeritPoints / total) * 50 : 0;
+                return (
+                  <div className="relative h-2.5 rounded-full overflow-hidden" style={{ background: 'var(--color-paper-raise)' }}>
+                    <div className="absolute inset-y-0 left-1/2 w-px" style={{ background: 'var(--color-brand-border)' }} />
+                    <motion.div
+                      initial={{ width: 0 }} animate={{ width: `${demeritPct}%` }}
+                      transition={{ duration: 0.7, ease }}
+                      className="absolute inset-y-0 bg-red-400 rounded-l-full"
+                      style={{ right: '50%' }}
+                    />
+                    <motion.div
+                      initial={{ width: 0 }} animate={{ width: `${meritPct}%` }}
+                      transition={{ duration: 0.7, ease, delay: 0.1 }}
+                      className="absolute inset-y-0 bg-emerald-400 rounded-r-full"
+                      style={{ left: '50%' }}
+                    />
+                  </div>
+                );
+              })()}
+            </motion.div>
 
             {/* Timeline */}
             <motion.div
@@ -187,13 +215,16 @@ export default function StudentBehaviourPage({ session }: StudentBehaviourPagePr
                     <motion.div key={e.id}
                       initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.2) }}
-                      className="flex items-start gap-3 px-5 sm:px-6 py-4"
+                      className="flex items-start gap-3.5 px-5 sm:px-6 py-4"
                       style={i === entries.length - 1 ? undefined : { borderBottom: '1px solid var(--color-paper-raise)' }}
                     >
-                      <div className={`w-9 h-9 rounded flex items-center justify-center shrink-0 ${
-                        e.type === 'merit' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'
-                      }`}>
-                        {e.type === 'merit' ? <Plus className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
+                      {/* Timeline connector — a coloured dot on a vertical
+                          rule, not an icon badge; reads as an actual timeline. */}
+                      <div className="relative flex flex-col items-center self-stretch shrink-0 w-2 pt-1.5">
+                        <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${e.type === 'merit' ? 'bg-emerald-500' : 'bg-red-500'}`} />
+                        {i !== entries.length - 1 && (
+                          <span className="w-px flex-1 mt-1" style={{ background: 'var(--color-brand-border)' }} />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">

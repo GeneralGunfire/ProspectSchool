@@ -362,36 +362,24 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero — sits inside the page, not stacked on top of it ═════
-          Same recipe as the student dashboard home page: quiet eyebrow
-          line, large Instrument Sans greeting, no crest image or blur
-          band — the page's own photo background (set on the dashboard's
-          scroll container) shows through instead. */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex items-center gap-2 min-w-0"
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium truncate">
-              {session.school_name} · {heroDate}
-            </p>
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease, delay: 0.06 }}
-            className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2 min-w-0"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-          >
-            {greeting}, {session.name}.
-          </motion.h1>
-        </div>
+      {/* ═══ Header — same compact scale as the student Home page ═══ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight" style={{ fontWeight: 600 }}>
+          {greeting},{' '}
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              {session.name}.
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
+        <p className="text-[12px] text-muted-2 mt-1">{session.school_name} · {heroDate}</p>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -415,7 +403,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.04 }}
           className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Next Event</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Next Event</p>
           {nextEvent ? (
             <>
               <span className={`self-start mt-1 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${EVENT_TYPE_COLORS[nextEvent.event_type]?.pill ?? 'bg-stone-100 text-stone-500'}`}>
@@ -437,10 +425,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.08 }}
           className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">My Students</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>My Students</p>
           <p className="font-black text-4xl text-brand-dark"><Counter value={studentCount} /></p>
           <button onClick={() => onNavigate('classes')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            className="self-start text-[11px] font-black transition-colors flex items-center gap-0.5 mt-1 group" style={{ color: 'var(--color-navy)' }}>
             View Classes <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
@@ -451,12 +439,12 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.12 }}
           className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Mark Sheets</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Mark Sheets</p>
           <p className="font-black text-4xl text-brand-dark">
             <Counter value={recentSheets.reduce((acc, g) => acc + g.sheets.length, 0)} />
           </p>
           <button onClick={() => onNavigate('marks')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            className="self-start text-[11px] font-black transition-colors flex items-center gap-0.5 mt-1 group" style={{ color: 'var(--color-navy)' }}>
             Enter Marks <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
@@ -467,10 +455,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           transition={{ duration: 0.4, ease, delay: 0.16 }}
           className="paper-card rounded p-5 flex flex-col justify-between min-h-30"
         >
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Upcoming Events</p>
           <p className="font-black text-4xl text-brand-dark"><Counter value={upcomingEvents.length} /></p>
           <button onClick={() => onNavigate('calendar')}
-            className="self-start text-[11px] font-black text-stone-500 hover:text-accent transition-colors flex items-center gap-0.5 mt-1 group">
+            className="self-start text-[11px] font-black transition-colors flex items-center gap-0.5 mt-1 group" style={{ color: 'var(--color-navy)' }}>
             View Calendar <ArrowUpRight className="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </motion.div>
@@ -487,10 +475,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               className="paper-card rounded p-5"
             >
               <div className="flex items-center gap-2.5 mb-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Attendance Today</p>
+                <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Attendance Today</p>
                 <span className="flex-1 h-px bg-brand-border" />
                 <button onClick={() => onNavigate('homeroom')}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+                  className="inline-flex items-center gap-1 text-[11px] font-bold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
                   Homeroom <ArrowUpRight className="w-3 h-3" />
                 </button>
               </div>
@@ -531,10 +519,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
               className="paper-card rounded p-5"
             >
               <div className="flex items-center gap-2.5 mb-4">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">My Classes</p>
+                <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>My Classes</p>
                 <span className="flex-1 h-px bg-brand-border" />
                 <button onClick={() => onNavigate('classes')}
-                  className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+                  className="inline-flex items-center gap-1 text-[11px] font-bold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
                   All classes <ArrowUpRight className="w-3 h-3" />
                 </button>
               </div>
@@ -547,9 +535,6 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                     className={`w-full flex items-center gap-3 py-2 text-left ${i > 0 ? 'border-t' : ''}`}
                     style={{ borderColor: 'var(--color-brand-border)' }}
                   >
-                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center shrink-0">
-                      <School className="w-4 h-4 text-blue-600" />
-                    </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] font-bold text-brand-dark truncate">{g.cohortName}</p>
                       <p className="text-[11px] text-stone-500">{g.studentCount} student{g.studentCount !== 1 ? 's' : ''}</p>
@@ -571,10 +556,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Mark Sheets</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Recent Mark Sheets</p>
             <span className="flex-1 h-px bg-brand-border" />
             <button onClick={() => onNavigate('marks')}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+              className="inline-flex items-center gap-1 text-[11px] font-bold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
               All marks <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
@@ -586,9 +571,6 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                 className={`flex items-center gap-3 py-2.5 ${i > 0 ? 'border-t' : ''}`}
                 style={{ borderColor: 'var(--color-brand-border)' }}
               >
-                <div className="w-8 h-8 rounded bg-amber-50 flex items-center justify-center shrink-0">
-                  <ClipboardList className="w-4 h-4 text-amber-600" />
-                </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-bold text-brand-dark truncate">
                     {group.subject_label}
@@ -614,7 +596,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         >
           <div className="mb-4">
             <div className="flex items-center gap-2.5">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Student Alerts</p>
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Student Alerts</p>
               <span className="flex-1 h-px bg-brand-border" />
               <span className="text-[11px] font-black text-stone-500 shrink-0">
                 {atRisk.filter(s => !dismissed.has(riskKey(s.studentId, s.subject))).length} student{atRisk.length !== 1 ? 's' : ''}
@@ -669,8 +651,9 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
                             ? 'bg-stone-100 text-stone-400 cursor-default'
                             : isAssigning
                             ? 'bg-stone-100 text-stone-500 cursor-default'
-                            : 'bg-accent text-white hover:bg-accent-soft active:scale-95'
+                            : ''
                         }`}
+                        style={!isDone && rec && !isAssigning ? { color: 'var(--color-navy)' } : undefined}
                       >
                         {isDone ? (
                           <><CheckCircle2 className="w-3 h-3" /> Assigned</>
@@ -736,7 +719,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         >
           <div className="mb-4">
             <div className="flex items-center gap-2.5">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Follow-Up Queue</p>
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Follow-Up Queue</p>
               <span className="flex-1 h-px bg-brand-border" />
               <span className="text-[11px] font-black text-amber-600 shrink-0">
                 {stale.filter(inv => !dismissed.has(inv.interventionId)).length}
@@ -797,7 +780,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         >
           <div className="mb-4">
             <div className="flex items-center gap-2.5">
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">No Recent Assessments</p>
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>No Recent Assessments</p>
               <span className="flex-1 h-px bg-brand-border" />
               <span className="text-[11px] font-black text-orange-600 shrink-0">
                 {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).length}
@@ -808,9 +791,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           <div className="space-y-2">
             {gaps.filter(g => !dismissed.has(gapKey(g.subjectId, g.grade))).slice(0, 5).map((gap, i) => (
               <div key={i} className="flex items-center gap-3 rounded px-3 py-2.5 bg-orange-50 border border-orange-100">
-                <div className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
-                  <ClipboardList className="w-3.5 h-3.5 text-white" />
-                </div>
+                <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-black text-brand-dark">{gap.subject} · Gr {gap.grade}</p>
                   <p className="text-[10px] text-stone-500">
@@ -844,7 +825,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Academic Impact</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Academic Impact</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="grid grid-cols-3 gap-3 mb-3">
@@ -894,7 +875,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">What Works Best</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>What Works Best</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="space-y-2.5">
@@ -938,7 +919,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-6">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Class Health</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Class Health</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
 
@@ -1025,7 +1006,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Deadlines</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Upcoming Deadlines</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="space-y-1">
@@ -1061,7 +1042,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Homework Completion</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Homework Completion</p>
             <span className="flex-1 h-px bg-brand-border" />
           </div>
           <div className="space-y-3">
@@ -1094,7 +1075,7 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
         className="paper-card rounded p-5"
       >
         <div className="flex items-center gap-2.5 mb-4">
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Quick Actions</p>
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Quick Actions</p>
           <span className="flex-1 h-px bg-brand-border" />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -1127,10 +1108,10 @@ export default function TeacherHomePage({ session, onNavigate }: TeacherHomePage
           className="paper-card rounded p-5"
         >
           <div className="flex items-center gap-2.5 mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Upcoming Events</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Upcoming Events</p>
             <span className="flex-1 h-px bg-brand-border" />
             <button onClick={() => onNavigate('calendar')}
-              className="inline-flex items-center gap-1 text-[11px] font-bold text-stone-500 hover:text-accent transition-colors shrink-0">
+              className="inline-flex items-center gap-1 text-[11px] font-bold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
               Calendar <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
