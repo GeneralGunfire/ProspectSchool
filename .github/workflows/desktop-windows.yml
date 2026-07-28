@@ -27,11 +27,35 @@ jobs:
       - name: Generate app icons
         run: npx @tauri-apps/cli icon src-tauri/icons/icon-master.png
 
+      # Vite bakes empty strings into the bundle if a VITE_* secret is
+      # unset rather than failing the build — a past run silently shipped
+      # 3 broken installers this way (Supabase client threw at runtime
+      # instead of at build time). Fail loudly here instead.
+      - name: Verify required secrets are set
+        shell: bash
+        env:
+          VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
+        run: |
+          missing=""
+          [ -z "$VITE_SITE_URL" ] && missing="$missing VITE_SITE_URL"
+          [ -z "$VITE_SUPABASE_URL" ] && missing="$missing VITE_SUPABASE_URL"
+          [ -z "$VITE_SUPABASE_ANON_KEY" ] && missing="$missing VITE_SUPABASE_ANON_KEY"
+          [ -z "$VITE_GROQ_API_KEY" ] && missing="$missing VITE_GROQ_API_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repo secrets:$missing — add them under Settings > Secrets and variables > Actions before building."
+            exit 1
+          fi
+          echo "All required secrets are set."
+
       - name: Build Windows installer
         env:
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
         run: npm run desktop:build
 
       - name: Upload installer artifact
