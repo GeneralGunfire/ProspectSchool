@@ -37,12 +37,14 @@ jobs:
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY }}
           VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
         run: |
           missing=""
           [ -z "$VITE_SITE_URL" ] && missing="$missing VITE_SITE_URL"
           [ -z "$VITE_SUPABASE_URL" ] && missing="$missing VITE_SUPABASE_URL"
           [ -z "$VITE_SUPABASE_ANON_KEY" ] && missing="$missing VITE_SUPABASE_ANON_KEY"
+          [ -z "$VITE_SUPABASE_SERVICE_ROLE_KEY" ] && missing="$missing VITE_SUPABASE_SERVICE_ROLE_KEY"
           [ -z "$VITE_GROQ_API_KEY" ] && missing="$missing VITE_GROQ_API_KEY"
           if [ -n "$missing" ]; then
             echo "::error::Missing repo secrets:$missing — add them under Settings > Secrets and variables > Actions before building."
@@ -55,6 +57,7 @@ jobs:
           VITE_SITE_URL: ${{ secrets.VITE_SITE_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY }}
           VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
         run: npm run desktop:build
 
