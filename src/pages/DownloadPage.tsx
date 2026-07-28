@@ -3,7 +3,6 @@ import { Monitor, Apple, Smartphone, Download, Zap, WifiOff, RefreshCw, ShieldCh
 import { Navbar } from '../features/landing/new/Navbar';
 import { Footer } from '../features/landing/new/Footer';
 import { FadeIn, useSpotlight, SpotlightGlow } from '../features/landing/new/Animations';
-import { BorderBeam } from '../features/downloads/components/BorderBeam';
 import { MagicCard } from '../features/downloads/components/MagicCard';
 
 type Page = string;
@@ -129,8 +128,6 @@ const PlatformCard = ({ platform, index }: { platform: Platform; index: number }
         className="card-premium-dark paper-card-dark overflow-hidden rounded-2xl p-6 sm:p-8 flex flex-col h-full"
         gradientColor={available ? '#38bdf8' : '#64748b'}
       >
-        {available && <BorderBeam duration={7} colorFrom="#38bdf8" colorTo="#2563eb" />}
-
         <div className="flex items-start justify-between">
           <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
             <Icon className="w-5.5 h-5.5 text-white" />
