@@ -8,6 +8,7 @@ import {
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import type { StudentSession } from '../../../lib/auth';
 import { getActiveInterventions, startIntervention, completeIntervention } from '../../../lib/interventions';
+import { openExternal } from '../../../lib/openExternal';
 
 const GRADES = [8, 9, 10, 11, 12];
 const TERMS  = [1, 2, 3, 4];
@@ -154,7 +155,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     setDownloading(p.id);
     const url = await getPastPaperDownloadUrl(p.file_url);
     setDownloading(null);
-    if (url) window.open(url, '_blank');
+    if (url) openExternal(url);
   }
 
   async function handleShowMemo(p: PastPaper) {
@@ -162,7 +163,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
     setMemoLoading(p.id);
     const url = await getPastPaperDownloadUrl(p.memo_url);
     setMemoLoading(null);
-    if (url) window.open(url, '_blank');
+    if (url) openExternal(url);
   }
 
   // Helper functions
@@ -183,7 +184,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
       memoOpened: false,
     });
     getPastPaperDownloadUrl(paper.file_url).then(url => {
-      if (url) window.open(url, '_blank');
+      if (url) openExternal(url);
     });
   }
 
@@ -372,7 +373,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
               <div className="space-y-3">
                 <button
-                  onClick={() => getPastPaperDownloadUrl(paper.file_url).then(url => url && window.open(url, '_blank'))}
+                  onClick={() => getPastPaperDownloadUrl(paper.file_url).then(url => url && openExternal(url))}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded bg-stone-100 text-stone-700 text-sm font-black hover:bg-stone-200 transition-colors"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -382,7 +383,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                 {paper.memo_url && !memoOpened && (
                   <button
                     onClick={() => {
-                      getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'));
+                      getPastPaperDownloadUrl(paper.memo_url!).then(url => url && openExternal(url));
                       setPractice(prev => prev ? { ...prev, memoOpened: true } : null);
                     }}
                     className="w-full flex items-center justify-center gap-2 py-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-black hover:bg-emerald-100 transition-colors"
@@ -452,7 +453,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
 
                     {paper.memo_url && (
                       <button
-                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'))}
+                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && openExternal(url))}
                         className="flex items-center gap-1.5 text-[11px] font-black text-emerald-600 hover:text-emerald-800 transition-colors"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5" />
@@ -517,7 +518,7 @@ export default function StudentPastPapersPage({ session }: StudentPastPapersPage
                   <div className="space-y-2">
                     {paper.memo_url && (
                       <button
-                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && window.open(url, '_blank'))}
+                        onClick={() => getPastPaperDownloadUrl(paper.memo_url!).then(url => url && openExternal(url))}
                         className="w-full flex items-center justify-center gap-2 py-3 rounded bg-emerald-50 border border-emerald-200 text-emerald-700 font-black text-sm hover:bg-emerald-100 transition-colors"
                       >
                         <CheckCircle2 className="w-4 h-4" />

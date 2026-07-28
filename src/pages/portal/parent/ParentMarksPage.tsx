@@ -8,6 +8,25 @@ import { Shimmer } from '../../../shared/components/Shimmer';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
+function Ring({ pct, size = 44, stroke = 4, trackColor = 'rgba(31,36,33,0.08)' }: { pct: number; size?: number; stroke?: number; trackColor?: string }) {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <svg width={size} height={size} className="-rotate-90 shrink-0">
+      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={trackColor} strokeWidth={stroke} />
+      <motion.circle
+        cx={size / 2} cy={size / 2} r={r} fill="none"
+        stroke="var(--color-accent)" strokeWidth={stroke} strokeLinecap="round"
+        strokeDasharray={c}
+        initial={{ strokeDashoffset: c }}
+        animate={{ strokeDashoffset: c * (1 - clamped / 100) }}
+        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+      />
+    </svg>
+  );
+}
+
 interface ParentMarksPageProps {
   session: ParentSession;
   child: ParentChild;
@@ -70,23 +89,42 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}
+          className="flex items-end justify-between gap-4 flex-wrap">
+          <div>
             <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{child.name} {child.surname}</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Marks
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  Marks
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
             </h1>
-          </motion.div>
-        </div>
+          </div>
+          {overallAvg !== null && (
+            <div className="shrink-0 flex items-center gap-3 border border-brand-border bg-white/70 rounded px-4 py-2.5">
+              <div className="relative shrink-0">
+                <Ring pct={Math.round(overallAvg)} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[11px] font-bold text-brand-dark leading-none">{Math.round(overallAvg)}%</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-[12px] text-muted-2">Overall</p>
+                <p className="text-[13px] font-semibold text-brand-dark whitespace-nowrap">{markedResults.length} tracked</p>
+              </div>
+            </div>
+          )}
+        </motion.div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {loading ? (
         <div className="space-y-5">
@@ -114,29 +152,16 @@ export default function ParentMarksPage({ session, child }: ParentMarksPageProps
         </div>
       ) : (
         <>
-          {overallAvg !== null && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
-              className="rounded p-6"
-              style={{
-                background: 'var(--color-brand-dark)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.25), 0 10px 24px -8px rgba(0,0,0,0.35), 0 28px 48px -20px rgba(0,0,0,0.4)',
-              }}>
-              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-stone-400 mb-1">Overall Average</p>
-              <p className="text-3xl font-black text-white">{Math.round(overallAvg)}%</p>
-              <p className="text-xs text-stone-400 mt-1">{markedResults.length} result{markedResults.length !== 1 ? 's' : ''} recorded</p>
-            </motion.div>
-          )}
-
           {showStrengthBanner && (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.04 }}
               className="grid grid-cols-2 gap-3">
               <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #10b981' }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-emerald-600 mb-1">Strongest</p>
+                <p className="text-[12px] text-muted-2 mb-1">Strongest</p>
                 <p className="font-black text-brand-dark text-sm leading-tight truncate">{bestSubject!.subject}</p>
                 <p className="text-emerald-600 font-black text-2xl mt-1">{bestSubject!.avg.toFixed(0)}%</p>
               </div>
               <div className="paper-card rounded p-4" style={{ borderLeft: '3px solid #f59e0b' }}>
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-amber-600 mb-1">Needs Attention</p>
+                <p className="text-[12px] text-muted-2 mb-1">Needs attention</p>
                 <p className="font-black text-brand-dark text-sm leading-tight truncate">{worstSubject!.subject}</p>
                 <p className="text-amber-600 font-black text-2xl mt-1">{worstSubject!.avg.toFixed(0)}%</p>
               </div>

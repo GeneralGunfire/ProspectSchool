@@ -1,0 +1,134 @@
+PROSPECT
+Nizamye Primary and High School
+Computer Science / Software Engineering
+
+Prepared by: Rajen Chetty, Njabulo Huzayfa Mkandla
+Document issued: 12 July 2026
+
+
+RESEARCH REPORT
+
+A Unified Digital Platform for School Information Access and Early Academic Intervention
+
+Development period covered: 27 April 2026 - 11 July 2026 (10 weeks)
+
+
+1. INTRODUCTION
+
+South Africa's school system isn't resourced evenly. Well-funded schools can afford commercial school-management software, but a lot of schools - especially in townships, rural areas, and lower-fee schools - run on paper registers, spreadsheets, and WhatsApp groups. This creates three problems we wanted to look into:
+
+1. Information is scattered - marks, attendance, behaviour, and homework live in different places (or nowhere), so nobody has the full picture of a student.
+2. Help comes too late - a student can be quietly failing for weeks before a teacher notices, because noticing means manually going through every mark sheet.
+3. Guidance isn't equal - students without a tutor or career counsellor have no easy way to know if their marks are on track for the degree they want.
+
+The question guiding this project: can one affordable, role-based web platform actually close these gaps?
+
+2. BACKGROUND RESEARCH
+
+Before writing any code, we spent about 1.5 weeks researching four areas (more detail in the Research Plan, Section 1.1).
+
+2.1 How South African schools are structured
+We looked into how a school admin, subject teachers, and homeroom teachers relate to each other, and how classes are organised by grade. This directly shaped our data model: schools contain cohorts/classes, which contain students, with teachers and subjects linked through join tables.
+
+2.2 The NSC/APS system
+South African universities calculate admission scores from a learner's best six subjects, with specific rules around Life Orientation and Home Language vs First Additional Language. Because these rules and cut-offs change every year and differ by institution, we used real, published 2026 admission pages as our source of truth for the APS calculator rather than relying on summaries (see validation results in Section 4.5).
+
+2.3 Existing commercial school platforms
+We looked at systems like D6 Communicator at a high level to see what a "normal" feature set looks like - announcements, marks, attendance - and where they fall short for under-resourced schools: cost, needing dedicated IT support, and almost never doing anything proactive about at-risk students. They're built to report data, not act on it. That gap became a key part of what we tried to do differently.
+
+2.4 Early-warning research in education
+General research on early-warning systems points to three reliable signals: a declining trend, volatility between assessments, and being close to an exam while already struggling. It also consistently found that people trust and use these systems more when the reasoning is visible, not hidden behind a score. This is what pushed us toward a rule-based (not machine-learned) At-Risk Engine - one a teacher can actually inspect and trust.
+
+2.5 Talking to teachers
+We had informal conversations with two practising teachers, and three things kept coming up: struggling students are usually noticed too late to help effectively; there's no easy way to know if extra help actually worked; and parents usually only hear from the school once something has already gone wrong. This wasn't a formal study - just conversations that shaped what we prioritised.
+
+This research led to two decisions that shaped the whole project: every "smart" feature had to show its reasoning, not just a score, and intervention tracking had to be a closed loop (assign help, then actually check later if it worked) instead of a one-way list.
+
+3. DESIGN AND DEVELOPMENT
+
+3.1 Why we built it this way
+
+- React 19 + Tailwind + Vite for the frontend - fast to iterate on, and Tailwind let two people keep four different portals visually consistent without building a whole design system from scratch.
+- Supabase (Postgres) for the backend - it's free at small scale, needs no server management, and Row Level Security means data stays isolated between schools at the database level, not just trusted to the app code. Important for a project aimed at schools with no IT budget.
+- PIN-based login (school code + role code + a 10-digit PIN, hashed) instead of email/password - a deliberate trade-off, since a lot of students and parents in this context don't have a reliable personal email, but everyone can be handed a printed code. The security trade-offs here (no rate limiting, no lockout) are a real limitation for a production system, discussed in Section 6.
+- No third-party AI - every "smart" feature is a plain function running in the browser on real data already on the page, so any number shown to a teacher or student can be explained in plain language if they ask.
+
+3.2 How the build actually went
+
+Development happened across six overlapping phases (full week-by-week detail is in the Journal). The Intelligence Layer and Full Role Coverage phases both ran longer than planned as the scope grew.
+
+Phase 1 - Core system: login, the four dashboards, basic announcements/resources/homework tracking, and marks entry. This set up the core data model.
+
+Phase 2 - The intelligence layer: this is where the actual research question got tested. We built a correlation layer connecting resource downloads and announcement views to outcomes like homework completion; an At-Risk Engine that flags students High or Medium risk using a documented rule set (e.g. average under 50% and an exam within 14 days, or three or more risk reasons at once) and always shows the reasons; and an intervention pipeline where teachers can assign coaching help from three different places (a one-click Assign button, a bulk campaign from a mark sheet, or the At-Risk Engine itself), all scored the same way afterward.
+
+Phase 3 - Full role coverage: admin tools (managing classes, teachers, students), a drag-and-drop Timetable Builder with clash detection, a strictly read-only parent portal (deliberately read-only, to avoid disputes over changed records), and behaviour/homeroom attendance tracking.
+
+Phase 4 - Student planning tools: "My Future" - an APS calculator built against real published requirements, a career-interest quiz, and degree matching. This directly targets the guidance gap, since this kind of tool is normally only available through a paid counsellor.
+
+Phase 5 - Extra modules: Topic Tests (CAPS-aligned, with sub-skill and misconception-level feedback, not just a percentage), a Marketplace for secondhand school supplies, and the Grade 9-to-10 Subject Selection workflow.
+
+Phase 6 - Polish: a full visual redesign across all four portals so they felt like one product, with extra attention to mobile, since a lot of households access the internet mainly through a phone.
+
+4. FINDINGS
+
+4.1 Manual review vs the At-Risk Engine
+
+We ran both conditions from the Research Plan against the same 32-student, 96-record dataset (14 students built to be genuinely at-risk: 6 consistently weak, 4 declining, 4 volatile).
+
+                                    Manual review    At-Risk Engine
+Time to complete                   ~27 minutes      ~3 minutes
+At-risk students found (recall)    10/14 (71%)      14/14 (100%)
+Stable students wrongly flagged    1/18             1/18
+Volatile students missed           4/4 missed       0/4 missed
+
+The manual review missed every single volatile-profile student - the ones whose marks swing around but whose average still looks okay. That matches what the research literature said: volatility is a risk signal humans tend to miss when they're just scanning for low averages. The engine caught these because volatility is one of its actual rule conditions, not something a person has to notice on their own.
+
+4.2 Explaining the reasoning changed how much people trusted it
+
+Early versions just showed a risk percentage. During internal testing, people were noticeably more hesitant to act on a bare number than on the later version, which lists the actual reason - e.g. "average dropped from 68% to 51% over the last 3 results, exam in 9 days." This backs up our decision to build something explainable rather than a more "accurate" black box.
+
+4.3 Tracking outcomes showed something new
+
+Once we tracked whether interventions actually worked and fed that into a ranking, it became possible - for the first time in the project - to see which type of intervention actually helps which kind of struggling student. None of the manual processes we researched were doing this at all.
+
+4.4 One shared data model helps everyone at once
+
+Because every role reads from the same tables, a mark entered once by a teacher shows up immediately (properly scoped) for the student and their parent, and feeds both the At-Risk Engine and the APS tracker - with no extra data entry needed anywhere.
+
+4.5 Checking the APS/career tool
+
+We checked the APS calculator and degree-matching against real published 2026 requirements for 10 programmes across 4 universities. All 10 matched correctly. The clear lesson here: this tool is only as good as its underlying data, and needed real published figures, not estimates, to actually be trustworthy.
+
+5. DISCUSSION
+
+The findings support the idea that one well-designed, role-based platform can meaningfully close both the information gap and the "help comes too late" problem, without needing paid AI or dedicated IT staff. Explainability turned out to matter more than we expected going in - it wasn't just a nice-to-have, it directly affected whether people trusted and used the recommendations.
+
+A smaller but interesting finding: the platform's value comes from all four roles sharing one system, not from any single feature. Marks entry alone, or the risk engine alone, or the parent portal alone - none of them fully answer the research question by themselves. It's the fact that they're connected that lets the whole loop close: a teacher notices something, assigns help, a parent can see it happened, the outcome gets measured, and the next recommendation is better informed.
+
+5.1 Where this could be wrong
+
+- We built the test dataset ourselves, which risks the rule set being unconsciously tuned to pass its own test. We tried to reduce this by basing the thresholds on outside research rather than tweaking them to fit the data.
+- 32 students is much smaller than a real school, so this can't capture the scale or messiness of hundreds of real students and multiple teachers with different habits.
+- "Time to identify at-risk students" is a reasonable stand-in for real-world usefulness, but we didn't test whether an actual teacher, under actual time pressure, would check the dashboard in the first place.
+
+6. LIMITATIONS
+
+- All testing used made-up data, not a real school - real classroom messiness (inconsistent entry, partial adoption, teachers who don't use it) wasn't tested.
+- The At-Risk Engine's thresholds came from general research and a couple of conversations with teachers, not from a real school's actual data - a real pilot would need this tuned properly.
+- PIN-based login, while good for accessibility, isn't secure enough for real personal data without more work (rate limiting, lockouts, audit logs) - this is flagged as future work, not something we missed.
+- Ten weeks isn't much time for a system this broad, so in a few newer areas (Marketplace, Subject Selection) feature coverage was prioritised over exhaustive testing.
+- The comparison in Section 4.1 was done by one reviewer on one dataset - a bigger, blinded study with multiple reviewers would be needed to say these exact numbers hold up everywhere.
+
+7. CONCLUSION
+
+Within this ten-week project, the evidence supports the idea that one unified, explainable, role-based school platform can genuinely improve access to accurate information and help teachers step in earlier - and that this is possible without expensive infrastructure or a dedicated IT team, as long as trade-offs like PIN-based login are made deliberately and documented honestly. The obvious next step, beyond what we could do here, is a real pilot in an actual school with a bigger, more varied group of students.
+
+8. REFERENCES
+
+[Replace the placeholders below with the actual sources, teacher details, and specific admission pages used, according to your expo's citation rules.]
+
+- Department of Higher Education and Training (South Africa) - National Senior Certificate and Admission Point Score guidelines. [Insert specific URL/publication and access date.]
+- Individual South African university admission requirement pages (2026 intake), used for the 10-programme APS check in Section 4.5. [Insert institution names, faculties, and URLs.]
+- General early-warning-indicator education research. [Insert specific paper(s), author(s), year(s).]
+- Protection of Personal Information Act (POPIA), Republic of South Africa. [Insert Act number/citation.]
+- Informal conversations with two practising teachers about record-keeping and intervention practices - not a formal study, used only to inform the problem definition. [Insert anonymised role/context if your expo's ethics rules require it.]

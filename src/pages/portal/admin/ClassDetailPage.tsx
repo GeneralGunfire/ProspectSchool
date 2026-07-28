@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Plus, X, Search, ChevronRight, Users } from 'lucide-react';
+import { motion } from 'motion/react';
+import { ArrowLeft, Plus, Search, ChevronRight, UserMinus } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
-import { fetchSchoolCohorts, type CohortWithHomeroom } from '../../../lib/homeroom';
+import { fetchSchoolCohorts, fetchAttendanceSummary, type CohortWithHomeroom } from '../../../lib/homeroom';
 import {
-  fetchStudentsOutsideCohort, moveStudentToCohort, fetchSchoolStudentDirectory,
+  fetchStudentsOutsideCohort, moveStudentToCohort, removeStudentFromCohort, fetchSchoolStudentDirectory,
   type DirectoryStudent,
 } from '../../../lib/students';
 import StudentDetailModal from './StudentDetailModal';
+import Modal from '../../../shared/components/Modal';
 
 interface ClassDetailPageProps {
   session: AdminSession;
@@ -26,6 +27,9 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
   const [search, setSearch] = useState('');
   const [addingId, setAddingId] = useState<number | null>(null);
   const [viewingStudentId, setViewingStudentId] = useState<number | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<DirectoryStudent | null>(null);
+  const [removing, setRemoving] = useState(false);
+  const [attendanceByStudent, setAttendanceByStudent] = useState<Map<number, number>>(new Map());
 
   const load = async () => {
     setLoading(true);
@@ -34,7 +38,20 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
       setCohort(cohorts.find((c) => c.id === cohort_id) ?? null);
 
       const all = await fetchSchoolStudentDirectory(session.school_id);
-      setRoster(all.filter((s) => s.cohort_id === cohort_id));
+      const rosterStudents = all.filter((s) => s.cohort_id === cohort_id);
+      setRoster(rosterStudents);
+
+      if (rosterStudents.length > 0) {
+        const to = new Date().toISOString().slice(0, 10);
+        const from = new Date(Date.now() - 90 * 86400000).toISOString().slice(0, 10);
+        const summary = await fetchAttendanceSummary(rosterStudents.map(s => s.id), from, to);
+        const rates = new Map<number, number>();
+        for (const s of summary) {
+          const total = s.present + s.late + s.absent + s.excused;
+          rates.set(s.student_id, total > 0 ? Math.round((s.present / total) * 100) : 100);
+        }
+        setAttendanceByStudent(rates);
+      }
     }
     setLoading(false);
   };
@@ -63,43 +80,77 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
     `${s.name} ${s.surname} ${s.student_code}`.toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleRemove = async () => {
+    if (!removeTarget || !session.school_id) return;
+    setRemoving(true);
+    await removeStudentFromCohort(removeTarget.id, session.school_id);
+    setRemoveTarget(null);
+    await load();
+    setRemoving(false);
+  };
+
+  const avgAttendance = roster.length > 0
+    ? Math.round(roster.reduce((sum, s) => sum + (attendanceByStudent.get(s.id) ?? 100), 0) / roster.length)
+    : null;
+
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <button onClick={onBack} className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-stone-500 hover:text-brand-dark transition-colors mb-3">
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Classes
-          </button>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-            className="flex flex-wrap items-end justify-between gap-4"
-          >
-            <div>
-              <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Grade {cohort?.grade}</p>
-              <h1
-                className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-                style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-              >
-                {cohort?.name ?? 'Class'}
-              </h1>
-              <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-                {roster.length} student{roster.length === 1 ? '' : 's'}
-                {cohort?.homeroom_teacher_name && ` · Homeroom: ${cohort.homeroom_teacher_name} ${cohort.homeroom_teacher_surname}`}
-              </p>
-            </div>
-            <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-              className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
-              <Plus className="w-4 h-4" /> Add Student
-            </motion.button>
-          </motion.div>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <button onClick={onBack} className="flex items-center gap-1 text-[13px] font-semibold transition-colors mb-3" style={{ color: 'var(--color-navy)' }}>
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to classes
+        </button>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease }}
+          className="flex flex-wrap items-end justify-between gap-4"
+        >
+          <div>
+            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Grade {cohort?.grade}</p>
+            <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                  {cohort?.name ?? 'Class'}
+                </span>
+                <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                  <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
+              {roster.length} student{roster.length === 1 ? '' : 's'}
+              {cohort?.homeroom_teacher_name && ` · Homeroom: ${cohort.homeroom_teacher_name} ${cohort.homeroom_teacher_surname}`}
+            </p>
+          </div>
+          <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
+            <Plus className="w-3.5 h-3.5" /> Add student
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
+
+      {!loading && roster.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="paper-card rounded p-5">
+            <p className="text-[12px] text-muted-2 mb-2">Class attendance rate</p>
+            <p className={`font-black text-4xl ${avgAttendance !== null && avgAttendance < 85 ? 'text-amber-600' : 'text-brand-dark'}`}>
+              {avgAttendance !== null ? `${avgAttendance}%` : '—'}
+            </p>
+            <p className="text-sm text-stone-500 mt-1">last 90 days</p>
+          </div>
+          <div className="paper-card rounded p-5">
+            <p className="text-[12px] text-muted-2 mb-2">Students below 85% attendance</p>
+            <p className="font-black text-brand-dark text-4xl">
+              {roster.filter(s => (attendanceByStudent.get(s.id) ?? 100) < 85).length}
+            </p>
+            <p className="text-sm text-stone-500 mt-1">of {roster.length} in this class</p>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="paper-card rounded p-5 space-y-3">
@@ -107,14 +158,11 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
         </div>
       ) : roster.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <Users className="w-5 h-5 text-stone-500" />
-          </div>
           <p className="font-bold text-brand-dark mb-1">No students in this class yet</p>
           <p className="text-sm text-stone-500 mb-6">Add students from the school's directory.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
-            Add Student <Plus className="w-4 h-4" />
+            className="inline-flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+            Add student <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
@@ -123,23 +171,33 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Student</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Student</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Code</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Attendance</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
             <tbody>
-              {roster.map((s, i) => (
+              {roster.map((s, i) => {
+                const rate = attendanceByStudent.get(s.id);
+                return (
                 <tr key={s.id}
-                  onClick={() => setViewingStudentId(s.id)}
-                  className={`border-b border-stone-50 hover:bg-stone-50 cursor-pointer transition-colors ${i === roster.length - 1 ? 'border-0' : ''}`}>
-                  <td className="px-5 py-3.5 font-bold text-brand-dark">{s.surname}, {s.name}</td>
-                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest">{s.student_code}</td>
+                  className={`border-b border-stone-50 hover:bg-stone-50 transition-colors ${i === roster.length - 1 ? 'border-0' : ''}`}>
+                  <td className="px-5 py-3.5 font-bold text-brand-dark cursor-pointer" onClick={() => setViewingStudentId(s.id)}>{s.surname}, {s.name}</td>
+                  <td className="px-5 py-3.5 font-mono text-stone-500 text-xs tracking-widest cursor-pointer" onClick={() => setViewingStudentId(s.id)}>{s.student_code}</td>
+                  <td className={`px-5 py-3.5 cursor-pointer ${rate !== undefined && rate < 85 ? 'text-amber-600 font-semibold' : 'text-stone-600'}`} onClick={() => setViewingStudentId(s.id)}>
+                    {rate !== undefined ? `${rate}%` : '—'}
+                  </td>
                   <td className="px-5 py-3.5 text-right">
-                    <ChevronRight className="w-4 h-4 text-stone-400 inline-block" />
+                    <div className="flex items-center justify-end gap-3">
+                      <button onClick={() => setRemoveTarget(s)} className="text-red-500 hover:text-red-600 transition-colors" title="Remove from class">
+                        <UserMinus className="w-4 h-4" />
+                      </button>
+                      <ChevronRight className="w-4 h-4 text-stone-400 cursor-pointer" onClick={() => setViewingStudentId(s.id)} />
+                    </div>
                   </td>
                 </tr>
-              ))}
+              );})}
             </tbody>
           </table>
           </div>
@@ -148,71 +206,64 @@ export default function ClassDetailPage({ session, cohort_id, onBack }: ClassDet
       </div>
 
       {/* Add student modal */}
-      <AnimatePresence>
-        {showAdd && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setShowAdd(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[80vh]">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-                  <h2 className="text-lg font-black text-brand-dark">Add Student to {cohort?.name}</h2>
-                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+      <Modal open={showAdd} onClose={() => setShowAdd(false)} title={`Add student to ${cohort?.name}`}
+        footer={
+          <button onClick={() => setShowAdd(false)}
+            className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
+            Done
+          </button>
+        }
+      >
+        <div className="relative mb-3">
+          <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name or code..."
+            className="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+          />
+        </div>
 
-                <div className="px-6 pt-4 pb-2 shrink-0">
-                  <div className="relative">
-                    <Search className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    <input
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      placeholder="Search by name or code..."
-                      className="w-full pl-9 pr-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                    />
-                  </div>
+        <div className="space-y-1.5">
+          {filteredCandidates.length === 0 ? (
+            <p className="text-sm text-stone-500 text-center py-8">No matching students found.</p>
+          ) : (
+            filteredCandidates.map((s) => (
+              <div key={s.id} className="flex items-center justify-between px-3 py-2.5 bg-stone-50 rounded border border-brand-border">
+                <div>
+                  <p className="text-sm font-bold text-brand-dark">{s.surname}, {s.name}</p>
+                  <p className="text-xs text-stone-500">{s.cohort_name ? `Currently in ${s.cohort_name}` : 'Unassigned'} · Gr {s.grade}</p>
                 </div>
-
-                <div className="px-6 py-3 overflow-y-auto space-y-1.5">
-                  {filteredCandidates.length === 0 ? (
-                    <p className="text-sm text-stone-500 text-center py-8">No matching students found.</p>
-                  ) : (
-                    filteredCandidates.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between px-3 py-2.5 bg-stone-50 rounded border border-brand-border">
-                        <div>
-                          <p className="text-sm font-bold text-brand-dark">{s.surname}, {s.name}</p>
-                          <p className="text-xs text-stone-500">{s.cohort_name ? `Currently in ${s.cohort_name}` : 'Unassigned'} · Gr {s.grade}</p>
-                        </div>
-                        <button onClick={() => handleAdd(s)} disabled={addingId === s.id}
-                          className="px-3 py-1.5 text-xs font-black text-white bg-accent rounded-lg hover:bg-accent-soft transition-all disabled:opacity-50">
-                          {addingId === s.id ? '...' : 'Add'}
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <div className="px-6 py-4 border-t border-brand-border/60 shrink-0">
-                  <button onClick={() => setShowAdd(false)}
-                    className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Done
-                  </button>
-                </div>
+                <button onClick={() => handleAdd(s)} disabled={addingId === s.id}
+                  className="text-[13px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}>
+                  {addingId === s.id ? '...' : 'Add'}
+                </button>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            ))
+          )}
+        </div>
+      </Modal>
 
       {viewingStudentId && session.school_id && (
         <StudentDetailModal student_id={viewingStudentId} school_id={session.school_id} onClose={() => setViewingStudentId(null)} onSaved={load} />
       )}
+
+      {/* Remove-from-class confirm */}
+      <Modal open={!!removeTarget} onClose={() => setRemoveTarget(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setRemoveTarget(null)} className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleRemove} disabled={removing} className="text-[14px] font-semibold text-red-600 hover:text-red-700 transition-colors disabled:opacity-50">
+            {removing ? 'Removing...' : 'Remove'}
+          </button>
+        </>}
+      >
+        <p className="font-black text-brand-dark mb-1">Remove from class?</p>
+        <p className="text-sm text-stone-500">
+          {removeTarget?.surname}, {removeTarget?.name} will be unassigned from {cohort?.name} and become available to add to another class.
+        </p>
+      </Modal>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherStudents } from '../../../lib/students';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 import {
   awardBehaviour, fetchBehaviourSummary, fetchStudentBehaviour, deleteBehaviourEntry,
   fetchAllBehaviourEntries, updateBehaviourEntry,
@@ -257,23 +258,24 @@ function AwardModal({
   };
 
   return (
-    <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-black text-brand-dark">Award {student.name} {student.surname}</h2>
-            <button onClick={onClose} className="p-1 text-stone-400 hover:text-stone-600">
-              <XIcon className="w-4 h-4" />
-            </button>
-          </div>
-
+    <Modal
+      open
+      onClose={onClose}
+      maxWidth="max-w-md"
+      title={`Award ${student.name} ${student.surname}`}
+      footer={<>
+        <button onClick={onClose} className="text-[14px] font-semibold text-muted transition-colors">
+          Cancel
+        </button>
+        <button
+          onClick={handleSubmit} disabled={saving}
+          className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          {saving ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : 'Award'}
+        </button>
+      </>}
+    >
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTypeChange('merit')}
@@ -350,22 +352,7 @@ function AwardModal({
               <p className="text-xs font-bold text-red-700">{error}</p>
             </div>
           )}
-
-          <div className="flex items-center gap-6">
-            <button onClick={onClose} className="text-[14px] font-semibold text-muted transition-colors">
-              Cancel
-            </button>
-            <button
-              onClick={handleSubmit} disabled={saving}
-              className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
-              style={{ color: 'var(--color-navy)' }}
-            >
-              {saving ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : 'Award'}
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </>
+    </Modal>
   );
 }
 
@@ -405,24 +392,7 @@ function TimelineModal({
     new Date(d).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] flex flex-col">
-          <div className="flex items-center justify-between p-6 pb-4 border-b border-brand-border/60">
-            <h2 className="text-base font-black text-brand-dark">{student.name} {student.surname} — Timeline</h2>
-            <button onClick={onClose} className="p-1 text-stone-400 hover:text-stone-600">
-              <XIcon className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="overflow-y-auto p-6 pt-4">
+    <Modal open onClose={onClose} maxWidth="max-w-lg" title={`${student.name} ${student.surname} — Timeline`}>
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
@@ -480,10 +450,7 @@ function TimelineModal({
                 ))}
               </div>
             )}
-          </div>
-        </div>
-      </motion.div>
-    </>
+    </Modal>
   );
 }
 
@@ -543,27 +510,14 @@ function AllEntriesModal({
     new Date(d).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
-    <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col">
-          <div className="flex items-center justify-between p-6 pb-4 border-b border-brand-border/60">
-            <div>
-              <h2 className="text-base font-black text-brand-dark">All Behaviour Entries</h2>
-              <p className="text-xs text-stone-500 mt-0.5">Every merit/demerit given to your students, by any teacher.</p>
-            </div>
-            <button onClick={onClose} className="p-1 text-stone-400 hover:text-stone-600">
-              <XIcon className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="px-6 pt-4">
+    <Modal open onClose={onClose} maxWidth="max-w-2xl"
+      title={
+        <span>
+          All behaviour entries
+          <span className="block text-xs font-medium text-stone-500 mt-0.5">Every merit/demerit given to your students, by any teacher.</span>
+        </span>
+      }
+    >
             <div className="relative mb-3">
               <Search className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -573,9 +527,6 @@ function AllEntriesModal({
                 className="w-full pl-10 pr-4 py-2.5 rounded border border-brand-border bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-dark/10"
               />
             </div>
-          </div>
-
-          <div className="overflow-y-auto px-6 pb-6 flex-1">
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
@@ -647,10 +598,7 @@ function AllEntriesModal({
                 ))}
               </div>
             )}
-          </div>
-        </div>
-      </motion.div>
-    </>
+    </Modal>
   );
 }
 

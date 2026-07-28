@@ -67,23 +67,25 @@ export default function ParentAnnouncementsPage({ session, child }: ParentAnnoun
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{child.name} {child.surname}</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Announcements
-            </h1>
-          </motion.div>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{child.name} {child.surname}</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Announcements
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+        </motion.div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {loading ? (
           <div className="space-y-2">
@@ -106,8 +108,8 @@ export default function ParentAnnouncementsPage({ session, child }: ParentAnnoun
             {pinned.length > 0 && (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <Pin className="w-3.5 h-3.5 text-amber-500" />
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)]">Pinned</p>
+                  <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Pinned</p>
+                  <span className="flex-1 h-px bg-brand-border" />
                 </div>
                 <div className="space-y-2.5">
                   {pinned.map((a) => <Card key={a.id} a={a} />)}
@@ -117,7 +119,10 @@ export default function ParentAnnouncementsPage({ session, child }: ParentAnnoun
             {unpinned.length > 0 && (
               <div>
                 {pinned.length > 0 && (
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-3">Recent</p>
+                  <div className="flex items-center gap-2 mb-3">
+                    <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Recent</p>
+                    <span className="flex-1 h-px bg-brand-border" />
+                  </div>
                 )}
                 <div className="space-y-2.5">
                   {unpinned.map((a) => <Card key={a.id} a={a} />)}

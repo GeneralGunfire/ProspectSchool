@@ -104,9 +104,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             <button
               onClick={() => setPage('home')}
               className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
-                activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                activePage === 'home' ? 'text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
               }`}
-              style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+              style={activePage === 'home' ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
             >
               <Home className={`w-4.5 h-4.5 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
               <span>Home</span>
@@ -119,7 +119,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                   <div key={group.key}>
                     <button
                       onClick={() => toggleGroup(group.key)}
-                      className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[10px] text-[11px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
+                      className="w-full flex items-center justify-between gap-2 px-4 py-2.5 rounded-[10px] text-[13px] font-semibold text-stone-500 hover:text-brand-dark transition-colors"
                     >
                       {group.label}
                       <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -142,10 +142,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                                   onClick={() => setPage(id)}
                                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
                                     active
-                                      ? 'bg-brand-dark text-white'
+                                      ? 'text-white'
                                       : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                                   }`}
-                                  style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                  style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                                 >
                                   <Icon className={`w-4.5 h-4.5 shrink-0 ${active ? 'text-white' : ''}`} />
                                   <span className="flex-1 text-left">{label}</span>
@@ -165,8 +165,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           {/* Profile + logout */}
           <div className="p-3 shrink-0 border-t border-brand-border rounded-b-[14px]">
             <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+                <span className="text-white font-black text-[12px]">{initials}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
@@ -201,8 +201,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+              <span className="text-white font-black text-[10px]">{initials}</span>
             </div>
             <button onClick={() => { adminLogout(); onNavigate('portal'); }}
               className="text-[11px] font-black text-stone-500 hover:text-red-500 transition-colors px-1">
@@ -250,9 +250,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                     <button
                       onClick={() => setPage('home')}
                       className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
-                        activePage === 'home' ? 'bg-brand-dark text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
+                        activePage === 'home' ? 'text-white' : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                       }`}
-                      style={activePage === 'home' ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                      style={activePage === 'home' ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                     >
                       <Home className={`w-4 h-4 shrink-0 ${activePage === 'home' ? 'text-white' : ''}`} />
                       <span>Home</span>
@@ -265,7 +265,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                           <div key={group.key}>
                             <button
                               onClick={() => toggleGroup(group.key)}
-                              className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-[10px] text-[10px] font-black uppercase tracking-[0.12em] text-stone-400 hover:text-stone-600 transition-colors"
+                              className="w-full flex items-center justify-between gap-2 px-3.5 py-2 rounded-[10px] text-[12px] font-semibold text-stone-500 hover:text-brand-dark transition-colors"
                             >
                               {group.label}
                               <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
@@ -288,10 +288,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                                           onClick={() => setPage(id)}
                                           className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
                                             active
-                                              ? 'bg-accent text-white'
+                                              ? 'text-white'
                                               : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                                           }`}
-                                          style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                                          style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                                         >
                                           <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                                           <span className="flex-1 text-left">{label}</span>
@@ -311,8 +311,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                   <div className="p-3 shrink-0 border-t border-brand-border"
                     style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
                     <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-                      <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                        <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+                        <span className="text-white font-black text-[12px]">{initials}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[14px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>

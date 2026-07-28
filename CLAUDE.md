@@ -88,6 +88,7 @@ supabase db push
 - **Database:** Supabase (PostgreSQL + Auth + Storage)
 - **Deployment:** Vercel (on GitHub push, when ready)
 - **Testing:** Playwright (run with `npm test`)
+- **Desktop:** Tauri (Windows only) — see `DESKTOP.md`
 
 ## Key Files
 - `.planning/PROJECT.md` — Full requirements & 9-phase build order
@@ -95,3 +96,4 @@ supabase db push
 - `.planning/docs/PROSPECT_SCHOOL_PLATFORM.html` — Design doc (open in browser)
 - `src/lib/supabase.ts` — Supabase client initialization
 - `src/providers/AuthProvider.tsx` — Auth context & guards
+- `DESKTOP.md` — Windows desktop app (Tauri) setup, local dev, and CI build instructions

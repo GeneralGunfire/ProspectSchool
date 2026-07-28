@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Users, Plus, X, AlertCircle, ChevronRight } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Plus, AlertCircle, ChevronRight } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
 import { fetchSchoolCohorts, createCohort, setHomeroomTeacher, type CohortWithHomeroom } from '../../../lib/homeroom';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 import ClassDetailPage from './ClassDetailPage';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -81,34 +82,54 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
     );
   }
 
+  const totalStudents = cohorts.reduce((sum, c) => sum + c.student_count, 0);
+  const withoutHomeroom = cohorts.filter(c => !c.homeroom_teacher_id).length;
+  const gradeGroups = Array.from(new Set(cohorts.map(c => c.grade))).sort((a, b) => a - b);
+
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Classes
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Manage classes and assign homeroom teachers.</p>
-          </motion.div>
-          <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
-            <Plus className="w-4 h-4" /> Add Class
-          </motion.button>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Classes
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Manage classes and assign homeroom teachers.</p>
+        </motion.div>
+        <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-1 text-[14px] font-semibold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
+          <Plus className="w-3.5 h-3.5" /> Add class
+        </motion.button>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
+
+      {!loading && cohorts.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="paper-card rounded p-5">
+            <p className="text-[12px] text-muted-2 mb-2">Total classes</p>
+            <p className="font-black text-brand-dark text-4xl">{cohorts.length}</p>
+          </div>
+          <div className="paper-card rounded p-5">
+            <p className="text-[12px] text-muted-2 mb-2">Total students</p>
+            <p className="font-black text-brand-dark text-4xl">{totalStudents}</p>
+          </div>
+          <div className="paper-card rounded p-5">
+            <p className="text-[12px] text-muted-2 mb-2">Without a homeroom teacher</p>
+            <p className={`font-black text-4xl ${withoutHomeroom > 0 ? 'text-amber-600' : 'text-brand-dark'}`}>{withoutHomeroom}</p>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -121,122 +142,112 @@ export default function ClassesAdminPage({ session }: ClassesAdminPageProps) {
         </div>
       ) : cohorts.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <Users className="w-5 h-5 text-stone-500" />
-          </div>
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500 mb-6">Create your first class to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
-            Add Class <Plus className="w-4 h-4" />
+            className="inline-flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+            Add class <Plus className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {cohorts.map((c) => (
-            <motion.div key={c.id} whileHover={{ y: -2 }}
-              className="paper-card rounded p-5 cursor-pointer"
-              onClick={() => setSelectedCohortId(c.id)}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1">Grade {c.grade}</p>
-                  <p className="text-lg font-black text-brand-dark">{c.name}</p>
+        <div className="space-y-6">
+          {gradeGroups.map(grade => {
+            const gradeClasses = cohorts.filter(c => c.grade === grade);
+            const gradeStudents = gradeClasses.reduce((sum, c) => sum + c.student_count, 0);
+            return (
+              <div key={grade}>
+                <div className="flex items-center gap-2 mb-2.5">
+                  <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Grade {grade}</p>
+                  <span className="flex-1 h-px bg-brand-border" />
+                  <p className="text-[12px] text-muted-2">{gradeClasses.length} class{gradeClasses.length === 1 ? '' : 'es'} · {gradeStudents} student{gradeStudents === 1 ? '' : 's'}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 mt-1" />
-              </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {gradeClasses.map((c) => (
+                    <motion.div key={c.id} whileHover={{ y: -2 }}
+                      className="paper-card rounded p-5 cursor-pointer"
+                      onClick={() => setSelectedCohortId(c.id)}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <p className="text-lg font-black text-brand-dark">{c.name}</p>
+                        <ChevronRight className="w-4 h-4 text-stone-400 mt-1" />
+                      </div>
 
-              <p className="text-sm text-stone-500 mb-4">{c.student_count} student{c.student_count === 1 ? '' : 's'}</p>
+                      <p className="text-sm text-stone-500 mb-4">{c.student_count} student{c.student_count === 1 ? '' : 's'}</p>
 
-              <div onClick={(e) => e.stopPropagation()}>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1.5">Homeroom Teacher</label>
-                <div className="flex items-center gap-2">
-                  <Dropdown
-                    value={c.homeroom_teacher_id ? String(c.homeroom_teacher_id) : 'none'}
-                    onChange={(v) => handleAssign(c, v === 'none' ? '' : v)}
-                    disabled={savingId === c.id}
-                    className="flex-1"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
-                    options={[
-                      { value: 'none', label: '— None —' },
-                      ...teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` })),
-                    ]}
-                  />
-                  {savingId === c.id && (
-                    <div className="w-3.5 h-3.5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin shrink-0" />
-                  )}
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <label className="block text-[12px] text-muted-2 mb-1.5">Homeroom teacher</label>
+                        <div className="flex items-center gap-2">
+                          <Dropdown
+                            value={c.homeroom_teacher_id ? String(c.homeroom_teacher_id) : 'none'}
+                            onChange={(v) => handleAssign(c, v === 'none' ? '' : v)}
+                            disabled={savingId === c.id}
+                            className="flex-1"
+                            buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all disabled:opacity-50"
+                            options={[
+                              { value: 'none', label: '— None —' },
+                              ...teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name}` })),
+                            ]}
+                          />
+                          {savingId === c.id && (
+                            <div className="w-3.5 h-3.5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin shrink-0" />
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       )}
       </div>
 
       {/* Add Class modal */}
-      <AnimatePresence>
-        {showAdd && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setShowAdd(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
-                  <h2 className="text-lg font-black text-brand-dark">Add Class</h2>
-                  <button onClick={() => setShowAdd(false)} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
+      <Modal
+        open={showAdd}
+        onClose={() => setShowAdd(false)}
+        title="Add class"
+        footer={<>
+          <button type="button" onClick={() => setShowAdd(false)}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" form="class-form" disabled={creating}
+            className="text-[14px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2" style={{ color: 'var(--color-navy)' }}>
+            {creating
+              ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+              : 'Create class'
+            }
+          </button>
+        </>}
+      >
+        <form id="class-form" onSubmit={handleCreate} className="space-y-4">
+          {createError && (
+            <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-red-700 text-sm">{createError}</p>
+            </div>
+          )}
 
-                <form id="class-form" onSubmit={handleCreate} className="px-6 py-4 space-y-4">
-                  {createError && (
-                    <div className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
-                      <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                      <p className="text-red-700 text-sm">{createError}</p>
-                    </div>
-                  )}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">Class name</label>
+            <input required type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
+              className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+              placeholder="e.g. 10A" />
+          </div>
 
-                  <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Class Name</label>
-                    <input required type="text" value={newName} onChange={(e) => setNewName(e.target.value)}
-                      className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                      placeholder="e.g. 10A" />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Grade</label>
-                    <Dropdown
-                      value={String(newGrade)}
-                      onChange={(v) => setNewGrade(Number(v))}
-                      buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                      options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
-                    />
-                  </div>
-                </form>
-
-                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60">
-                  <button type="button" onClick={() => setShowAdd(false)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Cancel
-                  </button>
-                  <button type="submit" form="class-form" disabled={creating}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {creating
-                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      : 'Create Class'
-                    }
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">Grade</label>
+            <Dropdown
+              value={String(newGrade)}
+              onChange={(v) => setNewGrade(Number(v))}
+              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+              options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
+            />
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

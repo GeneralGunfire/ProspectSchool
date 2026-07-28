@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospect — Abstract</title>
+<style>
+:root{
+  --paper:#ffffff; --paper-2:#f6f6f4; --paper-3:#eeeee9;
+  --line:#dfded7; --line-2:#c9c7bc;
+  --ink:#1e211c; --ink-2:#454d44; --ink-3:#6d7466; --ink-4:#95998a;
+  --accent:#2f5aa8; --accent-ink:#fff; --accent-soft:#e5ebf6;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+}
+
+@font-face{
+  font-family:"Source Serif";
+  src: local("Source Serif 4"), local("Source Serif Pro"), local("Georgia");
+  font-weight: 400 800;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);}
+body{
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:16px; line-height:1.68; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:"Source Serif", Georgia, serif; text-wrap:balance; margin:0; color:var(--ink);}
+p{margin:0;}
+::selection{background:var(--accent); color:var(--accent-ink);}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px;}
+
+.page{max-width:700px; margin:0 auto; padding:0 28px 100px;}
+
+/* ===== masthead ===== */
+.masthead{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:24px;
+  padding:46px 0 22px; border-bottom:2px solid var(--ink);
+  flex-wrap:wrap;
+}
+.mast-id{display:flex; align-items:center; gap:11px;}
+.mast-mark{
+  width:30px; height:30px; border-radius:8px; background:var(--accent);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.mast-mark span{color:var(--accent-ink); font-family:"Source Serif",serif; font-weight:800; font-size:14px;}
+.mast-name{font-family:"Source Serif",serif; font-weight:800; font-size:15.5px; letter-spacing:-0.01em; line-height:1.2;}
+.mast-school{font-size:11px; color:var(--ink-3); margin-top:2px;}
+.mast-cat{
+  text-align:right; font-size:10.5px; color:var(--ink-3); text-transform:uppercase;
+  letter-spacing:.1em; line-height:1.6;
+}
+.mast-cat b{display:block; color:var(--ink); font-size:11.5px; text-transform:none; letter-spacing:0; font-weight:700;}
+
+/* ===== title block ===== */
+.titleblock{padding:40px 0 30px; border-bottom:1px solid var(--line);}
+.eyebrow{
+  font-size:11px; text-transform:uppercase; letter-spacing:.2em; color:var(--accent); font-weight:700;
+  margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.eyebrow::after{content:""; flex:1; height:1px; background:var(--line);}
+h1{font-size:clamp(26px,4.2vw,34px); font-weight:700; letter-spacing:-0.018em; line-height:1.14; margin-bottom:12px;}
+.subtitle{
+  font-family:"Source Serif",Georgia,serif; font-style:italic; font-weight:400;
+  font-size:16.5px; color:var(--ink-2); max-width:56ch; line-height:1.55;
+}
+
+/* ===== meta table ===== */
+.meta{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+  margin-top:28px; border:1px solid var(--line); border-radius:10px; overflow:hidden;
+  background:var(--paper-2);
+}
+.meta-cell{padding:14px 18px; border-right:1px solid var(--line);}
+.meta-cell:last-child{border-right:none;}
+.meta-k{
+  font-size:9.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-4);
+  font-weight:700; margin-bottom:5px;
+}
+.meta-v{font-size:13px; color:var(--ink); font-weight:600; line-height:1.45;}
+.meta-v .sub{display:block; font-weight:400; color:var(--ink-3); font-size:12px; margin-top:1px;}
+
+/* ===== sections ===== */
+.section{padding:34px 0; border-bottom:1px solid var(--line);}
+.section:last-of-type{border-bottom:none;}
+.sec-label{
+  font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.14em;
+  color:var(--accent); margin-bottom:14px; display:flex; align-items:baseline; gap:9px;
+}
+.sec-label .rule{width:16px; height:2px; background:var(--accent); flex-shrink:0;}
+.sec-body{font-size:15px; color:var(--ink-2); line-height:1.72;}
+.sec-body p + p{margin-top:14px;}
+.sec-body b{color:var(--ink); font-weight:650;}
+.sec-body q{font-family:var(--mono); font-size:13.5px; background:var(--paper-2); border:1px solid var(--line);
+  padding:1px 6px; border-radius:5px; font-style:normal; quotes:none; color:var(--ink);}
+
+/* research question — pulled out as a callout */
+.rq{
+  background:var(--paper-2); border-left:3px solid var(--accent); border-radius:0 12px 12px 0;
+  padding:20px 24px; margin-top:2px;
+}
+.rq-body{
+  font-family:"Source Serif",Georgia,serif; font-size:17px; font-weight:600; color:var(--ink);
+  line-height:1.5;
+}
+
+/* key findings list */
+.findings{list-style:none; margin:0; padding:0; counter-reset:f;}
+.findings li{
+  counter-increment:f; position:relative; padding:16px 0 16px 40px; border-top:1px solid var(--line);
+}
+.findings li:first-child{border-top:none; padding-top:2px;}
+.findings li::before{
+  content:counter(f); position:absolute; left:0; top:18px;
+  font-family:"Source Serif",serif; font-weight:700; font-size:13px; color:var(--accent);
+  width:24px; height:24px; border:1.5px solid var(--accent); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+.findings li:first-child::before{top:0;}
+.findings .ftext{font-size:14.5px; color:var(--ink-2); line-height:1.68;}
+
+.stat-inline{
+  font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:12.5px;
+  background:var(--accent-soft); color:var(--accent); border-radius:5px; padding:1.5px 7px;
+  font-weight:700;
+}
+
+/* keywords */
+.kw-wrap{display:flex; flex-wrap:wrap; gap:8px;}
+.kw{
+  font-size:12px; color:var(--ink-2); background:var(--paper-2); border:1px solid var(--line);
+  padding:5px 12px; border-radius:99px; font-weight:600;
+}
+
+/* conclusion gets slight emphasis */
+.conclusion{
+  font-size:15.5px; color:var(--ink-2); line-height:1.75;
+}
+.conclusion .pull{
+  font-family:"Source Serif",Georgia,serif; font-style:italic; color:var(--ink); font-size:16.5px;
+  display:block; margin:16px 0; padding-left:16px; border-left:2px solid var(--accent);
+}
+
+/* footer */
+.doc-footer{
+  margin-top:44px; padding-top:20px; border-top:2px solid var(--ink);
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  font-size:10.5px; color:var(--ink-4); text-transform:uppercase; letter-spacing:.08em;
+}
+
+@media print{
+  .page{max-width:none; padding:0 6mm;}
+  .masthead{padding-top:0;}
+  .section{break-inside:avoid;}
+}
+
+@media (max-width:640px){
+  .meta{grid-template-columns:1fr;}
+  .meta-cell{border-right:none; border-bottom:1px solid var(--line);}
+  .meta-cell:last-child{border-bottom:none;}
+  .masthead{flex-direction:column; gap:14px;}
+  .mast-cat{text-align:left;}
+}
+</style>
+</head>
+<body>
+
+<article class="page">
+
+  <div class="masthead">
+    <div class="mast-id">
+      <div class="mast-mark"><span>P</span></div>
+      <div>
+        <div class="mast-name">PROSPECT</div>
+        <div class="mast-school">Nizamye Primary and High School</div>
+      </div>
+    </div>
+    <div class="mast-cat">
+      Category
+      <b>Computer Science / Software Engineering</b>
+    </div>
+  </div>
+
+  <div class="titleblock">
+    <div class="eyebrow">Abstract</div>
+    <h1>A Unified Digital Platform for School Information Access and Early Academic Intervention</h1>
+    <p class="subtitle">A design-science research and engineering project investigating equitable access to academic information in South African schools.</p>
+
+    <div class="meta">
+      <div class="meta-cell">
+        <div class="meta-k">Prepared by</div>
+        <div class="meta-v">Rajen Chetty<span class="sub">Njabulo Huzayfa Mkandla</span></div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-k">Document issued</div>
+        <div class="meta-v">12 July 2026</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-k">School</div>
+        <div class="meta-v">Nizamye Primary and High School</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Problem Statement</div>
+    <div class="sec-body">
+      <p>South African schools are unevenly resourced. Well-funded schools can license commercial school-information systems, but many under-resourced schools — particularly in townships, rural areas, and lower fee-paying quintiles — still coordinate academic records, parent communication, and career guidance through paper mark sheets, WhatsApp groups, and physical notice boards.</p>
+      <p>This fragmentation creates three compounding problems: teachers cannot easily see which students are quietly falling behind until a report card is already poor; parents have no visibility into day-to-day progress between formal reporting periods; and students without access to a private tutor or career counsellor have no reliable way to know whether their current marks are on track for the degree or career they want.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Research Question</div>
+    <div class="rq">
+      <p class="rq-body">Can a single, low-cost, role-based web platform meaningfully improve access to accurate academic information and enable earlier, evidence-based intervention for at-risk students in a South African school context — without requiring specialist IT infrastructure or paid third-party services?</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Approach</div>
+    <div class="sec-body">
+      <p>To investigate this question, we designed and built <b>Prospect</b>, a role-based web application serving four user types — Teacher, Student, Parent, and School Admin — from a single shared database. Development ran over approximately ten weeks and combined background research into South African school administration, the National Senior Certificate (NSC) and Admission Point Score (APS) university admission system, and general early-warning-indicator research from the education literature, with an iterative build–test–refine engineering process.</p>
+      <p>The resulting system includes: digital mark sheets with live class analytics; a transparent, rule-based <b>At-Risk Engine</b> that shows teachers the specific reasons behind a flag rather than an opaque score; a closed-loop intervention pipeline that records whether a coaching action measurably improved a student's mark; attendance, behaviour, and timetable management; a strictly read-only parent dashboard; and a student-facing <b>"My Future"</b> module that matches a learner's current marks against real, published South African degree entry requirements.</p>
+      <p>The platform was built using React, Tailwind CSS, and Supabase (PostgreSQL), deliberately avoiding paid authentication or infrastructure services to keep the solution affordable for schools with constrained budgets. All "intelligent" features — risk scoring, intervention effectiveness, and career matching — are computed transparently as pure functions from real school data rather than through opaque third-party AI services, so that every recommendation shown to a teacher, student, or parent can be explained and audited in plain language.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Method</div>
+    <div class="sec-body">
+      <p>Because no live school deployment was possible within the research window, the system was evaluated against a constructed, realistic synthetic dataset: four classes across two subjects, two terms of assessment data (12 assessment events per class), and a deliberately engineered mix of student performance profiles — consistently weak, gradually declining, and high-volatility learners — designed to stress-test whether the At-Risk Engine could surface genuinely at-risk students that a manual review would miss.</p>
+      <p>Both a simulated "manual mark-sheet review" process and the At-Risk Engine dashboard were timed and compared against this identical dataset <em>(see Research Plan and Research Report for full methodology and results)</em>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Key Findings</div>
+    <ol class="findings">
+      <li>
+        <div class="ftext">Across the constructed dataset (<span class="stat-inline">n = 96</span> student-subject records), the At-Risk Engine identified <b>all 14</b> students with a genuine risk profile in <b>under one minute</b> of dashboard review — a simulated manual review of the same data missed 4 of the 14 (all volatile-but-not-uniformly-low profiles) and took approximately <b>9× longer</b> to complete.</div>
+      </li>
+      <li>
+        <div class="ftext">Displaying the specific reasons behind a flag — e.g. <q>average dropped from 68% to 51% over the last 3 assessments; exam in 9 days</q> — rather than a bare risk score measurably increased tester confidence in, and willingness to act on, the recommendation during internal usability testing.</div>
+      </li>
+      <li>
+        <div class="ftext">Closing the intervention feedback loop (assign → measure outcome) made it possible, for the first time in the system's development, to rank which intervention types were actually effective for which students — a capability absent from every manual process reviewed during background research.</div>
+      </li>
+      <li>
+        <div class="ftext">Because all four roles read from one shared data model, a mark entered once by a teacher is immediately and correctly visible to the relevant student and parent, and simultaneously feeds both the At-Risk Engine and the APS/career-planning tool, without any manual re-entry step.</div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Conclusion</div>
+    <div class="conclusion">
+      <p>Within the scope of a ten-week research and development project, the evidence gathered supports the conclusion that a unified, explainable, role-based school information platform can plausibly improve access to accurate academic information and enable earlier, evidence-based intervention in a South African school context — and that this is achievable without expensive infrastructure, paid third-party AI, or specialist IT staff.</p>
+      <span class="pull">The most significant and least anticipated finding was that explainability itself, not raw predictive accuracy, was the binding constraint on whether teachers trusted and acted on the system's output.</span>
+      <p>The logical next step beyond the scope of this project is a real, consented pilot in a single school to validate these findings against genuine day-to-day usage rather than constructed test data.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-label"><span class="rule"></span>Keywords</div>
+    <div class="kw-wrap">
+      <span class="kw">EdTech</span>
+      <span class="kw">South Africa</span>
+      <span class="kw">academic early-warning system</span>
+      <span class="kw">explainable AI</span>
+      <span class="kw">accessibility</span>
+      <span class="kw">information systems</span>
+      <span class="kw">Supabase</span>
+      <span class="kw">React</span>
+      <span class="kw">school administration</span>
+      <span class="kw">APS/NSC career planning</span>
+    </div>
+  </section>
+
+  <div class="doc-footer">
+    <span>Prospect — Abstract</span>
+    <span>Nizamye Primary and High School · 2026</span>
+  </div>
+
+</article>
+</body>
+</html>

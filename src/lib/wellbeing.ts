@@ -13,6 +13,7 @@
 // check ownership at all) because this is minors' health-adjacent data.
 
 import { supabaseAdmin } from './supabase';
+import { createNotification } from './notifications';
 import type { TeacherGuidanceTopicId } from './wellbeingTeacherGuidance';
 
 // ── Tunable constants (research section 1 & 3) ────────────────────────────
@@ -212,6 +213,10 @@ export async function submitCheckin(
       safety_response: answers.safetyResponse,
       homeroom_teacher_id: homeroomTeacherId,
     });
+
+    if (homeroomTeacherId) {
+      createNotification(schoolId, 'teacher', homeroomTeacherId, 'Wellbeing safety flag needs your attention', 'A student in your homeroom flagged a safety concern in their check-in. Please review and acknowledge it today.');
+    }
   } else {
     // Routine alert detection only runs on non-crisis check-ins — a safety
     // flag already guarantees teacher attention, so stacking a routine alert
@@ -244,6 +249,13 @@ export async function submitCheckin(
           reasons: alert.reasons,
           triggering_checkin_ids: alert.triggeringCheckinIds,
         });
+
+        if (homeroomTeacherId) {
+          const alertLabel = alert.alertType === 'new_high_distress' ? 'a sudden high-distress reading'
+            : alert.alertType === 'marked_decline' ? 'a marked decline in mood'
+            : 'a sustained pattern of elevated stress';
+          createNotification(schoolId, 'teacher', homeroomTeacherId, 'Wellbeing pattern alert', `A student in your homeroom's check-ins show ${alertLabel}. Open Wellbeing to review.`);
+        }
       }
     }
   }

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vanta — Full Product Dossier</title>
+<style>
+  :root{
+    --blue:#1E5AA8;
+    --blue-dark:#153F78;
+    --blue-light:#E8F0FA;
+    --ink:#1C1C1C;
+    --muted:#5A5A5A;
+    --line:#D9DDE3;
+    --paper:#FFFFFF;
+    --soft:#F7F9FC;
+  }
+
+  *{box-sizing:border-box;}
+
+  @page{
+    size:A4;
+    margin:18mm 16mm 18mm 16mm;
+  }
+
+  html{
+    font-size:16px;
+    scroll-behavior:smooth;
+  }
+
+  body{
+    margin:0;
+    background:#fff;
+    font-family:Arial, Helvetica, sans-serif;
+    color:var(--ink);
+    line-height:1.65;
+    font-size:15px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .page{
+    max-width:900px;
+    margin:0 auto;
+    background:var(--paper);
+  }
+
+  .mono, .stat-num{
+    font-family:"Courier New", monospace;
+  }
+
+  /* COVER */
+  .cover{
+    min-height:100vh;
+    padding:150px 70px 120px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    text-align:left;
+    background:#fff;
+    color:var(--ink);
+    border-bottom:5px solid var(--blue);
+  }
+
+  .cover .kicker{
+    display:inline-block;
+    width:max-content;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    font-size:12px;
+    font-weight:700;
+    color:var(--blue);
+    margin-bottom:26px;
+    padding-bottom:10px;
+    border-bottom:2px solid var(--blue-light);
+  }
+
+  .cover h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:72px;
+    line-height:1.05;
+    margin:0 0 22px;
+    font-weight:700;
+    letter-spacing:-1px;
+    color:var(--blue-dark);
+  }
+
+  .cover .subtitle{
+    font-size:23px;
+    line-height:1.45;
+    max-width:650px;
+    margin:0 0 38px;
+    color:#333;
+  }
+
+  .cover .tag{
+    display:inline-block;
+    width:max-content;
+    border:1px solid var(--line);
+    padding:10px 16px;
+    font-size:12px;
+    letter-spacing:.4px;
+    color:var(--muted);
+  }
+
+  /* TOC */
+  .toc{
+    padding:58px 70px 62px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .toc h2{
+    margin-top:0;
+  }
+
+  .toc ol{
+    columns:2;
+    column-gap:56px;
+    padding-left:22px;
+    font-size:14.5px;
+  }
+
+  .toc li{
+    margin-bottom:12px;
+    break-inside:avoid;
+  }
+
+  .toc a{
+    color:var(--ink);
+    text-decoration:none;
+  }
+
+  .toc a:hover{
+    color:var(--blue);
+  }
+
+  .toc .num{
+    color:var(--blue);
+    font-weight:700;
+    margin-right:7px;
+  }
+
+  /* SECTIONS */
+  section{
+    padding:62px 70px 68px;
+    border-bottom:1px solid var(--line);
+  }
+
+  section:last-of-type{
+    border-bottom:none;
+  }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:2.2px;
+    text-transform:uppercase;
+    color:var(--blue);
+    font-weight:700;
+    margin-bottom:12px;
+  }
+
+  h2{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:31px;
+    line-height:1.2;
+    color:var(--blue-dark);
+    margin:0 0 30px;
+    padding-bottom:15px;
+    border-bottom:2px solid var(--blue-light);
+  }
+
+  h3{
+    font-size:18px;
+    line-height:1.35;
+    color:var(--blue-dark);
+    margin:38px 0 13px;
+    font-weight:700;
+  }
+
+  h3:first-of-type{
+    margin-top:0;
+  }
+
+  p{
+    margin:0 0 17px;
+    font-size:15px;
+    line-height:1.72;
+  }
+
+  .lede{
+    font-size:17px;
+    line-height:1.65;
+    color:var(--muted);
+    max-width:720px;
+    margin-bottom:22px;
+  }
+
+  ul.feature-list{
+    margin:0 0 10px;
+    padding-left:0;
+    list-style:none;
+  }
+
+  ul.feature-list li{
+    position:relative;
+    padding-left:23px;
+    margin-bottom:11px;
+    font-size:14.8px;
+    line-height:1.65;
+  }
+
+  ul.feature-list li::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:10px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--blue);
+  }
+
+  ul.feature-list li b{
+    color:var(--ink);
+  }
+
+  .gap-note{
+    background:var(--soft);
+    border-left:4px solid var(--blue);
+    padding:16px 20px;
+    font-size:14px;
+    line-height:1.65;
+    color:var(--blue-dark);
+    margin:20px 0 32px;
+    border-radius:0;
+  }
+
+  .gap-note i{
+    font-style:normal;
+    font-weight:700;
+  }
+
+  /* STAT GRID */
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin:24px 0 32px;
+  }
+
+  .stat-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-top:4px solid var(--blue);
+    padding:19px 20px 18px;
+  }
+
+  .stat-card .stat-num{
+    font-size:22px;
+    line-height:1.2;
+    color:var(--blue-dark);
+    font-weight:700;
+    display:block;
+    margin-bottom:7px;
+  }
+
+  .stat-card .stat-label{
+    font-size:13px;
+    line-height:1.5;
+    color:var(--muted);
+  }
+
+  .source-note{
+    font-size:12.5px;
+    line-height:1.6;
+    color:var(--muted);
+    font-style:italic;
+    border-top:1px solid var(--line);
+    padding-top:15px;
+    margin-top:12px;
+  }
+
+  /* TABLE */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:20px 0 32px;
+    font-size:13.5px;
+    line-height:1.55;
+  }
+
+  thead{
+    display:table-header-group;
+  }
+
+  thead th{
+    background:var(--blue-dark);
+    color:#fff;
+    text-align:left;
+    padding:12px 14px;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:.2px;
+  }
+
+  tbody td{
+    padding:12px 14px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+
+  tbody tr:nth-child(even){
+    background:#FAFBFC;
+  }
+
+  tbody td:first-child{
+    font-weight:700;
+    color:var(--blue-dark);
+  }
+
+  /* CARDS */
+  .card-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin:22px 0 12px;
+  }
+
+  .card{
+    border:1px solid var(--line);
+    padding:20px 22px;
+    background:#fff;
+  }
+
+  .card h4{
+    margin:0 0 9px;
+    font-size:15.5px;
+    line-height:1.35;
+    color:var(--blue);
+  }
+
+  .card p{
+    font-size:14px;
+    line-height:1.6;
+    margin:0;
+    color:var(--ink);
+  }
+
+  .pill{
+    display:inline-block;
+    font-size:10px;
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:2px;
+    margin-bottom:14px;
+  }
+
+  .pill.now{
+    background:#E6F1FB;
+    color:var(--blue-dark);
+  }
+
+  .pill.future{
+    background:#F1EFE8;
+    color:#5F5E5A;
+  }
+
+  .pill.cut{
+    background:#FCEBEB;
+    color:#791F1F;
+  }
+
+  .divider{
+    text-align:center;
+    color:var(--blue);
+    letter-spacing:6px;
+    font-size:12px;
+    margin:8px 0 0;
+  }
+
+  footer{
+    padding:44px 70px 70px;
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    border-top:1px solid var(--line);
+  }
+
+  /* PRINT */
+  @media print{
+    body{
+      background:#fff;
+      font-size:14px;
+      widows:4;
+      orphans:4;
+    }
+
+    .page{
+      max-width:none;
+    }
+
+    .cover{
+      min-height:250mm;
+      page-break-after:always;
+      break-after:page;
+    }
+
+    .toc{
+      page-break-after:always;
+      break-after:page;
+    }
+
+    /*
+      Do not force every section onto its own page.
+      Sections now flow naturally so the final sentence or paragraph
+      is not stranded in a tiny area at the top of the next page.
+    */
+    section{
+      page-break-after:auto;
+      break-after:auto;
+      page-break-inside:auto;
+      break-inside:auto;
+    }
+
+    h2, h3{
+      break-after:avoid;
+      page-break-after:avoid;
+      break-before:auto;
+      page-break-before:auto;
+    }
+
+    h2 + p,
+    h2 + .lede,
+    h3 + p,
+    h3 + ul,
+    h3 + table,
+    h3 + .gap-note,
+    h3 + .card-grid{
+      break-before:avoid;
+      page-break-before:avoid;
+    }
+
+    p{
+      widows:4;
+      orphans:4;
+    }
+
+    .feature-list li{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .card, .stat-card, tr{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    table{
+      page-break-inside:auto;
+      break-inside:auto;
+    }
+
+    thead{
+      display:table-header-group;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+  }
+
+  @media (max-width:700px){
+    .cover{
+      min-height:80vh;
+      padding:90px 28px 80px;
+    }
+
+    .cover h1{
+      font-size:52px;
+    }
+
+    .cover .subtitle{
+      font-size:19px;
+    }
+
+    .toc,
+    section{
+      padding-left:28px;
+      padding-right:28px;
+    }
+
+    .toc ol{
+      columns:1;
+    }
+
+    .stat-grid,
+    .card-grid{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="cover">
+    <div class="kicker">Full Product Dossier</div>
+    <h1>Vanta</h1>
+    <div class="subtitle">Financial memory and decision assistant for informal South African businesses</div>
+    <div class="tag">Market context · Competitors · Features · Partnerships · Long-term vision</div>
+  </div>
+
+  <div class="toc">
+    <h2 style="border:none;padding:0;margin-bottom:20px;">Contents</h2>
+    <ol>
+      <li><span class="num">01</span><a href="#summary">Executive summary</a></li>
+      <li><span class="num">02</span><a href="#matters">Why this software matters</a></li>
+      <li><span class="num">03</span><a href="#market">Market context and verified statistics</a></li>
+      <li><span class="num">04</span><a href="#competitors">Competitive landscape</a></li>
+      <li><span class="num">05</span><a href="#different">Why Vanta is different</a></li>
+      <li><span class="num">06</span><a href="#journey">Product overview and user journey</a></li>
+      <li><span class="num">07</span><a href="#features">Full feature list and capabilities</a></li>
+      <li><span class="num">08</span><a href="#excluded">Features excluded or deferred</a></li>
+      <li><span class="num">09</span><a href="#partnerships">Partnership opportunities</a></li>
+      <li><span class="num">10</span><a href="#longterm">Long-term vision and full rollout</a></li>
+      <li><span class="num">11</span><a href="#model">Business model</a></li>
+      <li><span class="num">12</span><a href="#risks">Honest open risks</a></li>
+      <li><span class="num">13</span><a href="#closing">Closing statement</a></li>
+    </ol>
+  </div>
+
+  <section id="summary">
+    <div class="eyebrow">01 · Overview</div>
+    <h2>Executive summary</h2>
+    <p class="lede">Vanta is a financial memory and decision assistant for South African businesses that have never had a proper financial record.</p>
+    <p>A business owner describes a transaction in plain language, or uploads existing informal records, and Vanta turns that into a structured, trustworthy financial history. From that history, Vanta helps answer the questions that actually matter day to day: can I afford this, who owes me money, am I actually okay right now — not only what happened last month.</p>
+    <p>The platform is web-based first. WhatsApp is planned as a future channel that new business owners can choose if they prefer it, not a replacement for the web platform, which remains the primary, fully-featured product.</p>
+    <p>This document is the complete reference on Vanta: the real-world problem it responds to, the honest competitive landscape, every feature and capability established so far including the accounting layer underneath the product, how a user actually moves through the app, what partnerships could realistically be built around it, and what the software could become at full scale over the long term.</p>
+  </section>
+
+  <section id="matters">
+    <div class="eyebrow">02 · The case</div>
+    <h2>Why this software matters</h2>
+    <p>Vanta is not solving a convenience problem. It responds to a structural gap that keeps a very large part of the South African economy invisible to the institutions that could support it.</p>
+    <p>South Africa's informal sector is largely undocumented. Independent research from the World Economic Forum and the United Nations Development Programme identifies the specific barrier informal businesses face in accessing credit, insurance, or formal commerce as a <b>lack of auditable financial history</b> — not a lack of profitability or a lack of viable business activity. South African academic research on the informal sector separately cites poor bookkeeping skills and difficulty maintaining financial records as a direct obstacle preventing informal businesses from graduating into the formal economy.</p>
+    <p>In practical terms: a hair salon owner, a home baker, or a spaza shop operator running a genuinely viable business has no way to prove it. They cannot show a bank a track record, an insurer a stable operating history, SARS a clean record, or a supplier consistent purchasing behaviour. Every one of these doors stays closed not because the business is failing, but because the business has never been written down anywhere that counts.</p>
+    <p>Vanta matters because it starts from the one habit this population is actually willing to build: describing what happened in their own business, in their own words. Everything else — the ledger, the decision support, the eventual verified record — exists to turn that single habit into something that finally counts to the outside world.</p>
+    <p>Across Africa, an estimated 95% of consumer payments are still made in cash. Cash-based, undocumented economic activity is difficult to include in productivity statistics, oversight, or taxation — and difficult for the people running it to build on. A tool that turns that cash activity into a real, structured, ownable record is a small piece of infrastructure for an economy that currently has very little of it at this level.</p>
+  </section>
+
+  <section id="market">
+    <div class="eyebrow">03 · Evidence</div>
+    <h2>Market context and verified statistics</h2>
+    <p class="lede">Figures below are drawn from external research. Where a figure has not been independently re-verified against a primary source, it is noted as reported rather than confirmed.</p>
+    <div class="stat-grid">
+      <div class="stat-card"><span class="stat-num">150,000+</span><span class="stat-label">Spaza shops estimated to operate in South Africa</span></div>
+      <div class="stat-card"><span class="stat-num">R120bn</span><span class="stat-label">Estimated annual contribution of spaza shops to the local economy</span></div>
+      <div class="stat-card"><span class="stat-num">~95%</span><span class="stat-label">Of consumer payments across Africa still made in cash (WEF)</span></div>
+      <div class="stat-card"><span class="stat-num">R1m</span><span class="stat-label">SARS turnover tax ceiling per SARS's own leaflet — some sources report a revised, higher figure; confirm before external use</span></div>
+    </div>
+    <ul class="feature-list">
+      <li>The UNDP and World Economic Forum name lack of auditable financial history, not lack of profitability, as the specific barrier informal businesses face in accessing credit.</li>
+      <li>South African academic research on the informal sector cites poor bookkeeping skills and record-keeping difficulty as direct obstacles to formalisation and growth.</li>
+      <li>South Africa's turnover tax is a simplified system for qualifying small businesses, based on gross turnover rather than profit.</li>
+      <li>SARS is reported to be pursuing informal-sector tax compliance directly, including figures around unregistered taxpayers above the VAT threshold and funds collected from informal-sector initiatives.</li>
+    </ul>
+    <div class="source-note">Any claim that SARS is building its own free record-keeping tools for this segment, or the exact revised turnover tax threshold, should be independently verified against current SARS guidance before being treated as settled fact in external materials.</div>
+  </section>
+
+  <section id="competitors">
+    <div class="eyebrow">04 · Landscape</div>
+    <h2>Competitive landscape</h2>
+    <p class="lede">The honest position is that this is not an empty market. Vanta sits in a specific, real gap between two extremes, with existing players on both sides.</p>
+
+    <h3>Formal accounting software already active in South Africa</h3>
+    <table>
+      <thead><tr><th>Platform</th><th>Positioning and gap for this market</th></tr></thead>
+      <tbody>
+        <tr><td>Sage Business Cloud</td><td>Markets itself on familiarity with South African tax regulation; assumes a bookkeeping-literate user.</td></tr>
+        <tr><td>Xero</td><td>800+ integrations, 4.9M+ users worldwide; built for sole traders comfortable with cloud software.</td></tr>
+        <tr><td>QuickBooks Online</td><td>Robust accounting for small and growing businesses; dashboard-first.</td></tr>
+        <tr><td>Zoho Books</td><td>Affordable alternative, integrates with Yoco and PayGate; still assumes formal bookkeeping habits.</td></tr>
+        <tr><td>Wave</td><td>Free core accounting, positioned as beginner-accessible; still a dashboard and form-based tool.</td></tr>
+      </tbody>
+    </table>
+    <div class="gap-note"><i>Gap:</i> all of these assume a user willing to adopt formal accounting software, understand basic categorisation, and work from a dashboard — a real barrier for an owner with no laptop-first workflow.</div>
+
+    <h3>Direct regional analogs — proven models, different geography</h3>
+    <table>
+      <thead><tr><th>Platform</th><th>What they do</th></tr></thead>
+      <tbody>
+        <tr><td>Kippa (Nigeria)</td><td>Recorded sales/expenses, invoicing, debt tracking with WhatsApp/SMS reminders, multi-shop support. Close functional analog. Later pivoted into capital-intensive agency banking and ran into difficulty — a cautionary lesson on staying out of direct lending.</td></tr>
+        <tr><td>Ava Books (Nigeria)</td><td>Operates natively inside WhatsApp; also offers business registration, trademark filing, and an AI analytics layer. Reported 1,000+ businesses onboarded within three months of launch.</td></tr>
+        <tr><td>Tyms AI</td><td>AI-powered WhatsApp bookkeeping for US businesses; auto-generates invoices/receipts, tracks stock restocks.</td></tr>
+      </tbody>
+    </table>
+    <div class="gap-note"><i>Gap:</i> neither Kippa nor Ava Books is built for South Africa specifically — no local tax logic, no SARS-facing features, no local regulatory integration.</div>
+
+    <h3>South Africa–specific adjacent players</h3>
+    <table>
+      <thead><tr><th>Platform</th><th>What they do</th></tr></thead>
+      <tbody>
+        <tr><td>A2Pay</td><td>Pairs POS hardware with digital credit, training, and coaching for SA spaza shops; POS terminals log real transaction history.</td></tr>
+        <tr><td>Govchain Books</td><td>Accounting integrated directly with CIPC, SARS, COID, and B-BBEE, via forms and human support — delivers concrete outcomes like tax clearance PINs.</td></tr>
+      </tbody>
+    </table>
+    <div class="gap-note"><i>Gap:</i> A2Pay has real, hardware-verified transaction data and an existing credit relationship — a stronger starting position than any self-reported ledger. Govchain already owns the compliance-integration outcome Vanta's compliance corner only estimates. Both are serious, direct competitive threats.</div>
+
+    <h3>General AI assistants (e.g. ChatGPT)</h3>
+    <div class="gap-note"><i>Gap:</i> can parse a sentence about a sale, but produces no persistent, structured, exportable financial record. A chat transcript is not something a bank or SARS will accept as proof of income, and has no reliable, hardcoded knowledge of South African tax rules.</div>
+  </section>
+
+  <section id="different">
+    <div class="eyebrow">05 · Positioning</div>
+    <h2>Why Vanta is different</h2>
+    <p>This is a proven model — Kippa and Ava Books both demonstrate it works — applied to an underserved geography, sitting in a real gap between formal accounting software that assumes too much bookkeeping literacy, and generic AI that produces no structure or compliance logic an institution will accept.</p>
+    <p>The differentiation is deliberately <b>not</b> the AI parsing itself — free-form input is replicable by any competitor within weeks. The actual differentiation:</p>
+    <ul class="feature-list">
+      <li><b>South African-specific compliance logic</b> built into the product, not guessed at by a general assistant.</li>
+      <li><b>A decision-support layer, not just record-keeping</b> — built to answer "can I afford this" and "who owes me," not only "what did I make last month."</li>
+      <li><b>A verification-first approach to trust</b> — every number traceable to source entries, with a transparent record-quality view instead of an opaque "credibility score."</li>
+      <li><b>Software-only, no hardware requirement</b> — cheaper entry than A2Pay's POS model, aimed at home-based and micro businesses.</li>
+      <li><b>Web-first, WhatsApp as a choice</b> — new owners can start entirely on WhatsApp once that channel exists, while web remains the core product.</li>
+    </ul>
+  </section>
+
+  <section id="journey">
+    <div class="eyebrow">06 · Experience</div>
+    <h2>Product overview and user journey</h2>
+
+    <h3>Signing up</h3>
+    <p>Email and password only, no phone verification at this stage. Onboarding takes under a minute: business name, business type, a short two-question turnover-tax eligibility check, and a language choice — English, isiZulu, or Afrikaans.</p>
+
+    <h3>The daily loop</h3>
+    <p>Every return visit lands on the same chat screen. The owner types or speaks what happened and watches it logged in real time, with a plain confirmation of how it was categorised. Anything ambiguous is flagged for quick review. A live snapshot — gross income, net profit, cash on hand, amounts owed to and by the business — stays visible throughout. The owner can ask directly: "can I afford R2,000 of stock today?", "who still owes me money?", "what changed since last month?" — answered in a sentence, with drill-through to the entries behind it.</p>
+
+    <h3>The weekly loop</h3>
+    <p>The owner checks the ledger — a full, filterable, editable, exportable table of every transaction, with complete correction history.</p>
+
+    <h3>The monthly loop</h3>
+    <p>A short "what changed" summary and a plain-language business-health check: is cash tighter, is anyone significantly overdue, did a cost category jump. No charts, no dashboards — a few sentences, with drill-through to the entries behind them.</p>
+
+    <h3>Strengthening the record</h3>
+    <p>Occasionally the owner attaches a receipt photo or imports a bank statement. Vanta finds gaps automatically, framed always as a benefit to the owner, not as data collection for someone else.</p>
+
+    <h3>When the business is ready to grow</h3>
+    <p>The owner generates a record pack and chooses exactly who to share it with — a lender, insurer, landlord, or accountant — and for how long. Nothing leaves the app without that explicit, revocable choice.</p>
+
+    <h3>Future: the WhatsApp option</h3>
+    <p>New business owners will be able to choose WhatsApp as an alternative way to use Vanta entirely through messages. Additive to the web platform, not a replacement.</p>
+  </section>
+
+  <section id="features">
+    <div class="eyebrow">07 · Capabilities</div>
+    <h2>Full feature list and capabilities</h2>
+
+    <h3>Capture — getting business activity into the system effortlessly</h3>
+    <ul class="feature-list">
+      <li><b>Free-text transaction entry</b>, parsed by AI into structured ledger records.</li>
+      <li><b>Voice note capture</b>, for owners who'd rather speak than type.</li>
+      <li><b>Excel/CSV upload</b> parsing for existing informal records.</li>
+      <li><b>Photo/receipt attachment</b> per transaction, so entries are evidence-backed.</li>
+      <li><b>Bank statement import and reconciliation</b>, cross-checking self-reported entries against real transaction data.</li>
+      <li><b>Quick-add templates</b> and smart defaults for repeat transactions.</li>
+      <li><b>Offline-first capture queue</b>, so poor connectivity never costs a lost entry.</li>
+      <li><b>Confidence scoring</b> on every entry, with a needs-review flag.</li>
+      <li><b>One-sentence corrections</b> that update the ledger cleanly, preserving history.</li>
+      <li><b>Missing-transaction detection</b> against bank statements or receipts.</li>
+    </ul>
+
+    <h3>Memory — understanding and recalling the business's own history</h3>
+    <ul class="feature-list">
+      <li><b>Natural-language recall</b> of past purchases, sales, and suppliers.</li>
+      <li><b>A business timeline</b> that tells the story of the business, not just its transactions.</li>
+      <li><b>Explicit separation</b> of money owed to the business and money the business owes.</li>
+      <li><b>Owner drawings</b> tracked separately from business expenses.</li>
+      <li><b>Opening balance support</b>, so a business doesn't need a clean slate to start.</li>
+    </ul>
+
+    <h3>Decide — turning the memory into today's answer</h3>
+    <ul class="feature-list">
+      <li><b>Cash decision engine</b> — "can I afford this?" answered against real recorded cash, expenses, and receivables.</li>
+      <li><b>Cash-flow survival warnings</b> in plain language.</li>
+      <li><b>Stock affordability answers</b> without a full inventory system.</li>
+      <li><b>A private what-if simulator</b> for hiring, price changes, or equipment purchases.</li>
+      <li><b>Break-even guidance</b> in plain language.</li>
+      <li><b>Monthly business-health message</b> with one suggested next action.</li>
+      <li><b>Debt collection assistant</b> that drafts and follows up on reminders.</li>
+      <li><b>Business-type-aware patterns</b> for salons, spaza shops, taxis, and home bakers.</li>
+    </ul>
+
+    <h3>Understand — the accounting layer, in language the owner already uses</h3>
+    <ul class="feature-list">
+      <li><b>Gross income and net profit</b> tracked and explained as separate concepts.</li>
+      <li><b>Cash on hand kept distinct from profit.</b></li>
+      <li><b>Simple, human expense categories</b> — stock, transport, rent, staff, repairs, airtime, packaging.</li>
+      <li><b>High-value asset tracking</b> — equipment, vehicles, tools.</li>
+      <li><b>Daily, weekly, monthly, and custom-period summaries.</b></li>
+      <li><b>One-off vs recurring cost distinction.</b></li>
+      <li><b>Stock bought vs stock sold distinction</b>, preventing false profit assumptions.</li>
+      <li><b>Core accounting concepts throughout</b>: revenue, expenses, gross profit, net profit, cash balance, debt owed, debt due, assets, withdrawals.</li>
+    </ul>
+
+    <h3>Trust — making every number verifiable, not just plausible</h3>
+    <ul class="feature-list">
+      <li><b>Traceable figures</b> — every AI-generated number links back to its source entries.</li>
+      <li><b>Transparent record-quality view</b> instead of an opaque score.</li>
+      <li><b>Verification framed as a benefit</b> to the owner, never as data collection for a partner.</li>
+    </ul>
+
+    <h3>Share — turning the record into something useful outside the app</h3>
+    <ul class="feature-list">
+      <li><b>Business record pack</b> built for a lender, insurer, landlord, or accountant to actually read.</li>
+      <li><b>Permissioned sharing links</b> for a specific period or document bundle.</li>
+      <li><b>Full owner control</b> over who a record is shared with, for how long, revocable at any time.</li>
+    </ul>
+
+    <h3>Compliance — help understanding obligations, without overstepping</h3>
+    <ul class="feature-list">
+      <li><b>Turnover-tax estimate</b> based on logged income, with a plain-language explanation.</li>
+      <li><b>Every estimate labelled as guidance only</b> — never a filing or formal tax advice.</li>
+      <li><b>No filing or registration action</b> taken on the owner's behalf.</li>
+    </ul>
+
+    <h3>Operate — supporting how a real, growing business works</h3>
+    <ul class="feature-list">
+      <li><b>Multi-business support</b> for owners running more than one operation.</li>
+      <li><b>Role-based staff access</b> for shops with helpers or cashiers.</li>
+      <li><b>Full isiZulu and Afrikaans support</b> for input and output, including natural code-switching.</li>
+    </ul>
+  </section>
+
+  <section id="excluded">
+    <div class="eyebrow">08 · Scope discipline</div>
+    <h2>Features deliberately excluded or deferred</h2>
+    <div class="card-grid">
+      <div class="card"><span class="pill cut">Cut</span><h4>Full inventory management</h4><p>Would balloon into a separate product and pull focus from the core financial-record layer.</p></div>
+      <div class="card"><span class="pill cut">Cut</span><h4>Full compliance filing</h4><p>Even a "concierge" version becomes a legal and operational burden unless a qualified partner owns the outcome.</p></div>
+      <div class="card"><span class="pill cut">Cut</span><h4>Generic AI chatbot behaviour</h4><p>The more Vanta behaves like a general assistant, the less trustworthy and differentiated it becomes.</p></div>
+      <div class="card"><span class="pill cut">Cut</span><h4>Heavy dashboards and charts</h4><p>A hard constraint from a prior project's failure. Compromise: plain-language summaries with tappable evidence.</p></div>
+      <div class="card"><span class="pill cut">Cut</span><h4>"Credibility score" language</h4><p>Tends to trigger judgment and distrust; replaced with transparent record-quality reporting.</p></div>
+      <div class="card"><span class="pill cut">Cut</span><h4>Stokvel / group savings tracker</h4><p>Changes the customer from individual owner to group; risks unwelcome digitisation of an intentionally informal institution.</p></div>
+    </div>
+  </section>
+
+  <section id="partnerships">
+    <div class="eyebrow">09 · Ecosystem</div>
+    <h2>Partnership opportunities</h2>
+    <p class="lede">Vanta's long-term value is built through partnerships, not by trying to replace the institutions around it.</p>
+
+    <h3>Banks</h3>
+    <p>A bank could accept a Vanta record pack as one input signal — alongside its own checks — when assessing a small business for a savings product, account upgrade, or eventually a micro-loan. Realistically this starts with a single pilot bank stating, in writing, what they'd need to see before treating a Vanta export as useful context. Vanta should not present itself as a lending decision-maker — the bank keeps that role; Vanta supplies better information than the bank currently has for this segment.</p>
+
+    <h3>Insurers</h3>
+    <p>Micro-insurance for stock, equipment, or business interruption is hard to price for a business with no documented history. A Vanta record showing consistent operation and revenue patterns could help price a policy for a business otherwise invisible to an insurer — a longer-horizon partnership than banking.</p>
+
+    <h3>Suppliers and wholesalers</h3>
+    <p>Wholesalers already selling stock to spaza shops, bakeries, and salons have a direct incentive to see purchase and payment consistency. A supplier could offer better credit terms to a business with a strong Vanta record, and could distribute Vanta directly to their own customer base. One of the more realistic near-term partnership categories, since it requires no lending risk from the supplier.</p>
+
+    <h3>Government and SARS</h3>
+    <p>If SARS is genuinely investing in informal-sector compliance tools, Vanta's most realistic role is as a feeder or complementary tool — helping a business get compliance-ready before reaching a SARS official — rather than competing with an official channel. Any such conversation needs Vanta's tax guidance reviewed by a qualified tax practitioner first, given the reputational and legal exposure of getting this wrong.</p>
+
+    <h3>Accountants and bookkeepers</h3>
+    <p>Independent accountants — including your own accounting teacher's professional network — are a natural distribution and validation channel, recommending Vanta to informal clients who currently keep no records at all, and giving Vanta credible, ongoing feedback on the accounting layer.</p>
+
+    <h3>NGOs, business associations, and municipal programmes</h3>
+    <p>Organisations already working on small-business support or informal trader development have existing trust with this population — likely a more effective distribution channel than direct-to-consumer marketing.</p>
+
+    <h3>Telecom and WhatsApp Business infrastructure providers</h3>
+    <p>Once the WhatsApp channel is built, a relationship with a WhatsApp Business Solution Provider or mobile network operator could help subsidise messaging costs, given the WhatsApp Business API's per-conversation pricing model.</p>
+
+    <h3>POS and payment platforms</h3>
+    <p>Rather than treating A2Pay and similar players purely as competitors, a longer-term integration could let Vanta ingest verified transaction data from a POS or payment provider as an evidence source, strengthening the record without Vanta building or distributing hardware itself.</p>
+  </section>
+
+  <section id="longterm">
+    <div class="eyebrow">10 · Horizon</div>
+    <h2>Long-term vision and full rollout</h2>
+    <p class="lede">What Vanta could become if the daily-use product succeeds and the verification and partnership work is built out over time. None of this exists yet — it is the direction the current, buildable product is designed to grow into.</p>
+
+    <h3>From a bookkeeping tool to a business identity layer</h3>
+    <p>At full maturity, Vanta stops being just a place a business logs transactions and becomes the place a business's financial identity lives — a verified, owner-controlled, portable record a business owner could carry between lenders, insurers, suppliers, and even a change of accountant, rather than starting from zero with every new relationship.</p>
+
+    <h3>A verification network, not just a ledger</h3>
+    <p>Over time, connections to bank statements, payment providers, POS systems, supplier invoices, and mobile money platforms could let every entry carry a confidence level — self-reported, partially supported, or fully verified. This is the piece that actually makes a Vanta record valuable to an outside institution, and the hardest, slowest part to build — which is why it sits on the long-term horizon.</p>
+
+    <h3>A recognised data standard</h3>
+    <p>The most ambitious version: a standardised "Vanta Business Record" format — identity, operating history, revenue, expenses, assets, liabilities, verification sources, supporting evidence — that banks, insurers, suppliers, and government systems can all read directly. If adopted widely enough, Vanta shifts from an app that stores data to a standard other systems are built to understand.</p>
+
+    <h3>National and regional scale</h3>
+    <p>If proven in South Africa, the same model could extend to other Southern African Development Community markets with similarly large informal economies. A genuine future possibility, not a near-term claim — entirely dependent on first proving the model works in one market with real retention and real partner acceptance.</p>
+
+    <h3>A more inclusive formal economy</h3>
+    <p>The broadest long-term outcome: businesses that have operated invisibly for years gain a real, evidence-backed way to demonstrate that they exist, that they are viable, and that they deserve to be taken seriously by the institutions around them — a legitimate, defensible reason for this software to exist, separate from and larger than any single monetisation mechanism.</p>
+  </section>
+
+  <section id="model">
+    <div class="eyebrow">11 · Revenue</div>
+    <h2>Business model</h2>
+    <p>Vanta is free at the point of daily use, since the target user has limited ability to pay directly. Monetisation is designed around opt-in referrals — credit, insurance, and supplier partnerships — activated only once a business's record is strong enough to be genuinely useful to those partners, and only with the owner's explicit, revocable consent each time a specific referral happens. A SARS-adjacent compliance tier sits alongside this as a second, more direct path, delivered through a qualified partner rather than Vanta itself.</p>
+  </section>
+
+  <section id="risks">
+    <div class="eyebrow">12 · Candour</div>
+    <h2>Honest open risks</h2>
+    <ul class="feature-list">
+      <li>Daily retention has to be earned through decision-support features before any partner conversation is credible — users will not log consistently without immediate value.</li>
+      <li>Self-reported data has no underwriting value on its own; the business record concept depends on the verification work actually getting built, not just described.</li>
+      <li>Unit economics: if the most active users are also the most expensive to serve through AI parsing costs, referral revenue needs to arrive faster than currently assumed.</li>
+      <li>The moat is not AI, WhatsApp, or "South African" individually — it's the combination of daily decision utility, verified history, and the network of institutions that accept that history, and none of that exists yet. It has to be built and earned in that order.</li>
+    </ul>
+  </section>
+
+  <section id="closing">
+    <div class="eyebrow">13 · Close</div>
+    <h2>Closing statement</h2>
+    <p>The daily-use product — capture, memory, decision support, plain-language understanding — has to work first, and work well enough that a business keeps using it with no promise of future credit or compliance benefit attached. The verified record, the partner network, and the monetisation and long-term vision built on top of it are real, carefully considered opportunities, not yet proven ones.</p>
+    <p><b>Vanta earns the right to pursue them by first being the tool a business actually opens every day: a financial memory and decision assistant for businesses that have never had one before.</b></p>
+  </section>
+
+  <footer>
+    Vanta — Full Product Dossier · Prepared for internal review and external stakeholder input
+  </footer>
+
+</div>
+</body>
+</html>

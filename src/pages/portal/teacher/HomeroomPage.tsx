@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Check, Clock, X as XIcon, Thermometer, ChevronLeft, ChevronRight, CalendarDays, CalendarOff, AlertCircle, Users } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
+import Modal from '../../../shared/components/Modal';
 import {
   fetchTeacherHomerooms, fetchCohortRoster, fetchAttendanceForDate, markAttendance, markAttendanceBulk,
   markNonSchoolDay, fetchAttendanceSummary,
@@ -443,41 +444,27 @@ export default function HomeroomPage({ session }: HomeroomPageProps) {
       </div>
 
       {/* Confirm "Not a School Day" — overwrites the whole class's attendance for the date */}
-      <AnimatePresence>
-        {confirmHoliday && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setConfirmHoliday(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <h2 className="text-base font-black text-brand-dark mb-1">Mark {displayDate} as not a school day?</h2>
-                <p className="text-sm text-stone-500 mb-6">
-                  This replaces any attendance already marked for the whole class on this date, for example a public holiday or school closure. It won't count toward anyone's attendance percentage.
-                </p>
-                <div className="flex items-center gap-6">
-                  <button onClick={() => setConfirmHoliday(false)}
-                    className="text-[14px] font-semibold text-muted transition-colors">
-                    Cancel
-                  </button>
-                  <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
-                    className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                    style={{ color: 'var(--color-navy)' }}>
-                    {markingHoliday
-                      ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
-                      : 'Confirm'
-                    }
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal open={confirmHoliday} onClose={() => setConfirmHoliday(false)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setConfirmHoliday(false)}
+            className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleMarkNonSchoolDay} disabled={markingHoliday}
+            className="flex items-center gap-1.5 text-[14px] font-semibold transition-colors disabled:opacity-50"
+            style={{ color: 'var(--color-navy)' }}>
+            {markingHoliday
+              ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+              : 'Confirm'
+            }
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Mark {displayDate} as not a school day?</h2>
+        <p className="text-sm text-stone-500">
+          This replaces any attendance already marked for the whole class on this date, for example a public holiday or school closure. It won't count toward anyone's attendance percentage.
+        </p>
+      </Modal>
     </div>
   );
 }

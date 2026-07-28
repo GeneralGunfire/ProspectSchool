@@ -54,17 +54,21 @@ export default function ParentWellbeingSummaryPage({ session, child }: ParentWel
 
   return (
     <div className="student-home min-h-full pb-16 relative">
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{child.name} {child.surname}</p>
-          <h1 className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-            style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}>
-            Wellbeing
-          </h1>
-        </div>
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">{child.name} {child.surname}</p>
+        <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+          <span className="relative inline-block">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+              Wellbeing
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+              <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+            </svg>
+          </span>
+        </h1>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
         {showConsent ? (
           <>
             <button onClick={() => setShowConsent(false)} className="text-[13px] font-bold text-stone-500 hover:text-brand-dark">
@@ -98,7 +102,7 @@ function ConsentNeededCard({ onManageConsent }: { onManageConsent: () => void })
       <p className="text-[13.5px] text-stone-500 max-w-sm mb-4">
         Grant consent for the wellbeing check-in to see a summary here.
       </p>
-      <button onClick={onManageConsent} className="px-4 py-2 rounded-xl bg-accent text-white text-[13px] font-bold hover:opacity-90">
+      <button onClick={onManageConsent} className="px-4 py-2 rounded-xl text-white text-[13px] font-bold hover:opacity-90 transition-opacity" style={{ background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' }}>
         Manage consent
       </button>
     </motion.div>
@@ -158,10 +162,8 @@ function SummaryContent({
       <>
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease }}
           className="paper-card rounded p-6 sm:p-8 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             <h2 className="text-[16px] font-semibold text-brand-dark">Things look generally okay</h2>
           </div>
           <p className="text-[13.5px] text-stone-600">Recent check-ins suggest things are generally okay for {childName}.</p>
@@ -188,7 +190,7 @@ function SummaryContent({
         <div className="rounded-lg bg-white border border-amber-200 p-3.5">
           <p className="text-[12px] font-bold uppercase tracking-wide text-amber-700 mb-1">What the school is doing</p>
           <p className="text-[13px] text-stone-600">
-            {childName}'s homeroom teacher has been alerted and will check in with them. Our school support team
+            {childName}'s homeroom teacher has been notified and will follow up with them. Our school support team
             (SBST/LSA) is available if needed.
           </p>
         </div>
@@ -215,7 +217,7 @@ function SummaryContent({
 function ParentResourcesBox() {
   return (
     <div className="rounded-xl bg-stone-50 border border-brand-border p-4 space-y-1.5">
-      <p className="text-[12px] font-bold uppercase tracking-wide text-stone-500 flex items-center gap-1.5">
+      <p className="text-[12px] font-semibold text-muted-2 flex items-center gap-1.5">
         <Info className="w-3.5 h-3.5" /> Resources for parents
       </p>
       <p className="text-[13px] text-stone-600">How to talk to your teen about stress and mood, and when to consider extra support.</p>

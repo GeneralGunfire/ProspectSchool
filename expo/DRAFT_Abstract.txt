@@ -1,0 +1,45 @@
+PROSPECT
+Nizamye Primary and High School
+Computer Science / Software Engineering
+
+Prepared by: Rajen Chetty, Njabulo Huzayfa Mkandla
+Document issued: 12 July 2026
+
+
+ABSTRACT
+
+A Unified Digital Platform for School Information Access and Early Academic Intervention
+
+Development period: 27 April 2026 - 11 July 2026 (10 weeks)
+
+
+PROBLEM STATEMENT
+
+South African schools don't all have the same resources. Well-funded schools can afford commercial school-management software, but a lot of under-resourced schools - especially in townships, rural areas, and lower-fee schools - still run on paper mark sheets, WhatsApp groups, and notice boards. This causes a few real problems: teachers often don't notice a student is struggling until it shows up on a report card, parents only hear from the school when something has already gone wrong, and students who don't have access to a tutor or career counsellor have no easy way to know if their marks are actually good enough for the degree they want.
+
+RESEARCH QUESTION
+
+Can a single, low-cost, role-based web platform actually improve access to accurate school information and help teachers step in earlier for at-risk students - without needing expensive IT infrastructure or paid software?
+
+APPROACH
+
+To test this, we built Prospect - a web app with four separate portals (Teacher, Student, Parent, School Admin) all pulling from one shared database. We spent the first part of the project researching how South African schools are actually run, how the NSC/APS university admission system works, and what existing school platforms get wrong. Then we built the system iteratively over about ten weeks.
+
+What we ended up with: digital mark sheets with live class stats, an At-Risk Engine that tells a teacher exactly why a student is flagged (not just a score), a coaching system that tracks whether an intervention actually worked, attendance and behaviour tracking, a timetable builder, a read-only parent dashboard, and a "My Future" tool that checks a student's marks against real South African university entry requirements.
+
+We built it with React, Tailwind, and Supabase, and deliberately avoided any paid services - the goal was something a school with no IT budget could actually use. Every "smart" feature is a plain function that runs in the browser using real data already on the page, not a black-box AI model, so a teacher can always see why the system said what it said.
+
+KEY FINDINGS
+
+Testing against a constructed dataset (32 students, 96 records, 14 built to look genuinely at-risk), the At-Risk Engine found all 14 in under a minute of looking at the dashboard. A manual review of the same data - just reading mark sheets - missed 4 of them and took about 9 times longer.
+
+Showing teachers the actual reason behind a flag (not just a risk percentage) made them noticeably more willing to trust and act on it during testing.
+
+Once we tracked whether interventions actually worked, it became possible for the first time to see which type of help actually helped which kind of student - something no manual process we looked at was doing.
+
+CONCLUSION
+
+Within a ten-week project, the evidence supports the idea that one well-built, role-based platform can meaningfully close the information gap in an under-resourced school, without needing expensive tech or a dedicated IT person. The biggest surprise was that explaining the reasoning mattered more than we expected - teachers trusted a simple, explained answer more than an accurate but unexplained one. The obvious next step is a real pilot in an actual school.
+
+KEYWORDS
+EdTech, South Africa, early-warning system, explainable AI, accessibility, Supabase, React, school administration, APS/NSC career planning

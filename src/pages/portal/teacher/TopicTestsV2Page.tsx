@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle2, ChevronRight, ArrowLeft, Trash2, CircleDashed, X, Plus, Check, Sparkles, Eye } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
 import type { TeacherSession } from '../../../lib/auth';
 import {
   fetchAllTopicTests, fetchTeacherSubjectGrades, assignTopicTest, fetchTeacherAssignments,
@@ -786,9 +787,12 @@ function BuildTestPage({
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">Purpose</span>
-              <select value={purpose} onChange={(e) => setPurpose(e.target.value as AttemptPurpose)} className="mt-1 w-full px-3 py-2 rounded-lg border-2 border-brand-border text-sm font-bold bg-white">
-                {PURPOSE_OPTIONS.map((p) => <option key={p} value={p}>{p.replace('_', ' ')}</option>)}
-              </select>
+              <Dropdown
+                value={purpose}
+                onChange={(v) => setPurpose(v as AttemptPurpose)}
+                buttonClassName="mt-1 w-full px-3 py-2 rounded-lg border-2 border-brand-border text-sm font-bold bg-white flex items-center justify-between gap-2"
+                options={PURPOSE_OPTIONS.map((p) => ({ value: p, label: p.replace('_', ' ') }))}
+              />
             </label>
             <label className="block">
               <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">Time limit (min)</span>
@@ -979,14 +983,14 @@ function AuthorQuestionModal({
                     className="flex-1 px-3 py-1.5 rounded-lg border-2 border-brand-border text-sm"
                   />
                   {correctKey !== o.key && o.text.trim() && (
-                    <select
-                      value={distractorMisconceptionByKey[o.key] ?? ''}
-                      onChange={(e) => setDistractorMisconceptionByKey((m) => ({ ...m, [o.key]: e.target.value ? Number(e.target.value) : '' }))}
-                      className="shrink-0 w-40 px-2 py-1.5 rounded-lg border-2 border-brand-border text-[11px] bg-white"
-                    >
-                      <option value="">No misconception tag</option>
-                      {misconceptions.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
-                    </select>
+                    <Dropdown
+                      value={distractorMisconceptionByKey[o.key] ? String(distractorMisconceptionByKey[o.key]) : null}
+                      onChange={(v) => setDistractorMisconceptionByKey((m) => ({ ...m, [o.key]: v ? Number(v) : '' }))}
+                      placeholder="No misconception tag"
+                      className="shrink-0 w-40"
+                      buttonClassName="w-full px-2 py-1.5 rounded-lg border-2 border-brand-border text-[11px] bg-white flex items-center justify-between gap-2"
+                      options={misconceptions.map((m) => ({ value: String(m.id), label: m.label }))}
+                    />
                   )}
                 </div>
               ))}

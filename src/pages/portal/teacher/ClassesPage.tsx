@@ -4,6 +4,7 @@ import { Plus, X, ArrowRight, Check, AlertCircle, BookOpen, Pencil, Trash2, Sear
 import type { TeacherSession } from '../../../lib/auth';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 import {
   fetchSubjects, createStudent, updateStudent,
   removeStudentFromTeacher, fetchTeacherStudents,
@@ -568,29 +569,22 @@ export default function ClassesPage({ session }: ClassesPageProps) {
       </div>
 
       {/* Add / Edit Modal */}
-
-      <AnimatePresence>
-        {showForm && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeForm} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
-                  <h2 className="text-lg font-black text-brand-dark">
-                    {modalMode === 'add' ? 'Add Student' : 'Edit Student'}
-                  </h2>
-                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="overflow-y-auto flex-1 px-6 py-4">
+      <Modal open={showForm} onClose={closeForm} title={modalMode === 'add' ? 'Add student' : 'Edit student'} maxWidth="max-w-lg"
+        footer={<>
+          <button type="button" onClick={closeForm}
+            className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button type="submit" form="student-form" disabled={submitting}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+            style={{ color: 'var(--color-navy)' }}>
+            {submitting
+              ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Saving...</>
+              : <>{modalMode === 'add' ? 'Add student' : 'Save changes'} <ArrowRight className="w-4 h-4" /></>
+            }
+          </button>
+        </>}
+      >
                   <form id="student-form" onSubmit={handleSubmit} className="space-y-4">
                     {formError && (
                       <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
@@ -683,52 +677,42 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       </div>
                     </div>
                   </form>
-                </div>
-
-                <div className="flex items-center gap-6 px-6 py-4 border-t border-brand-border/60">
-                  <button type="button" onClick={closeForm}
-                    className="text-[14px] font-semibold text-muted transition-colors">
-                    Cancel
-                  </button>
-                  <button type="submit" form="student-form" disabled={submitting}
-                    className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                    style={{ color: 'var(--color-navy)' }}>
-                    {submitting
-                      ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Saving...</>
-                      : <>{modalMode === 'add' ? 'Add student' : 'Save changes'} <ArrowRight className="w-4 h-4" /></>
-                    }
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ── Assign Student Modal ──────────────────────────────── */}
-      <AnimatePresence>
-        {showAssign && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeAssign} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60">
-                  <div>
-                    <h2 className="text-lg font-black text-brand-dark">Assign Student</h2>
-                    <p className="text-xs text-stone-500 mt-0.5">Link a student already in this school to your subjects</p>
-                  </div>
-                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="overflow-y-auto flex-1 px-6 py-4">
+      <Modal open={showAssign} onClose={closeAssign} maxWidth="max-w-lg"
+        title={
+          <span>
+            Assign student
+            <span className="block text-xs font-medium text-stone-500 mt-0.5">Link a student already in this school to your subjects</span>
+          </span>
+        }
+        footer={<>
+          <button type="button" onClick={assignStep === 'confirm' ? () => setAssignStep('code') : closeAssign}
+            className="text-[14px] font-semibold text-muted transition-colors">
+            {assignStep === 'confirm' ? 'Back' : 'Cancel'}
+          </button>
+          {assignStep === 'code' ? (
+            <button type="submit" form="assign-code-form" disabled={assignLookingUp}
+              className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+              style={{ color: 'var(--color-navy)' }}>
+              {assignLookingUp
+                ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Looking up...</>
+                : <>Find student <ArrowRight className="w-4 h-4" /></>
+              }
+            </button>
+          ) : (
+            <button type="submit" form="assign-subjects-form" disabled={assignSubmitting}
+              className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
+              style={{ color: 'var(--color-navy)' }}>
+              {assignSubmitting
+                ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Assigning...</>
+                : <>Assign student <ArrowRight className="w-4 h-4" /></>
+              }
+            </button>
+          )}
+        </>}
+      >
                   {assignError && (
                     <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
                       className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded mb-4">
@@ -786,65 +770,19 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                       </div>
                     </form>
                   )}
-                </div>
-
-                <div className="flex items-center gap-6 px-6 py-4 border-t border-brand-border/60">
-                  <button type="button" onClick={assignStep === 'confirm' ? () => setAssignStep('code') : closeAssign}
-                    className="text-[14px] font-semibold text-muted transition-colors">
-                    {assignStep === 'confirm' ? 'Back' : 'Cancel'}
-                  </button>
-                  {assignStep === 'code' ? (
-                    <button type="submit" form="assign-code-form" disabled={assignLookingUp}
-                      className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                      style={{ color: 'var(--color-navy)' }}>
-                      {assignLookingUp
-                        ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Looking up...</>
-                        : <>Find student <ArrowRight className="w-4 h-4" /></>
-                      }
-                    </button>
-                  ) : (
-                    <button type="submit" form="assign-subjects-form" disabled={assignSubmitting}
-                      className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                      style={{ color: 'var(--color-navy)' }}>
-                      {assignSubmitting
-                        ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Assigning...</>
-                        : <>Assign student <ArrowRight className="w-4 h-4" /></>
-                      }
-                    </button>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ── Parent Contact Log Modal ──────────────────────────── */}
-      <AnimatePresence>
-        {contactModal && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeContactModal} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-                  <div>
-                    <h2 className="text-base font-black text-brand-dark">Parent Contact Log</h2>
-                    <p className="text-xs text-stone-500 mt-0.5">{contactModal.surname}, {contactModal.name}</p>
-                  </div>
-                  <button onClick={closeContactModal} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
+      <Modal open={!!contactModal} onClose={closeContactModal} maxWidth="max-w-md"
+        title={
+          <span>
+            Parent contact log
+            {contactModal && <span className="block text-xs font-medium text-stone-500 mt-0.5">{contactModal.surname}, {contactModal.name}</span>}
+          </span>
+        }
+      >
                 {/* Log new contact form */}
-                <div className="px-6 py-4 border-b border-brand-border/60 shrink-0">
+                <div className="pb-4 border-b border-brand-border/60">
                   <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>Log new contact</p>
 
                   {/* Method selector */}
@@ -884,7 +822,7 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                 </div>
 
                 {/* History */}
-                <div className="flex-1 overflow-y-auto px-6 py-4">
+                <div className="pt-4">
                   <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>History</p>
                   {contactHistoryLoading ? (
                     <div className="flex justify-center py-8">
@@ -919,44 +857,26 @@ export default function ClassesPage({ session }: ClassesPageProps) {
                     </div>
                   )}
                 </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      </Modal>
 
       {/* Delete confirm */}
-      <AnimatePresence>
-        {confirmDelete && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setConfirmDelete(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <h2 className="text-base font-black text-brand-dark mb-1">Remove student?</h2>
-                <p className="text-sm text-stone-500 mb-6">
-                  This will remove <span className="font-bold text-brand-dark">{confirmDelete.name} {confirmDelete.surname}</span> from your classes. If no other teacher teaches them, their account will be deleted.
-                </p>
-                <div className="flex items-center gap-6">
-                  <button onClick={() => setConfirmDelete(null)}
-                    className="text-[14px] font-semibold text-muted transition-colors">
-                    Cancel
-                  </button>
-                  <button onClick={handleDelete} disabled={deleting}
-                    className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
-                    {deleting ? 'Removing…' : 'Remove'}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setConfirmDelete(null)}
+            className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+            {deleting ? 'Removing…' : 'Remove'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Remove student?</h2>
+        <p className="text-sm text-stone-500">
+          This will remove <span className="font-bold text-brand-dark">{confirmDelete?.name} {confirmDelete?.surname}</span> from your classes. If no other teacher teaches them, their account will be deleted.
+        </p>
+      </Modal>
     </div>
   );
 }

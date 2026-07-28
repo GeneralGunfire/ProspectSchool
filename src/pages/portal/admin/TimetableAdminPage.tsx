@@ -9,6 +9,7 @@ import { fetchSchoolCohorts, type CohortWithHomeroom } from '../../../lib/homero
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 import {
   DAYS, fetchSchoolPeriods, setSchoolPeriods, fetchCohortTimetable,
   addTimetableEntry, addBreakEntry, deleteTimetableEntry, fetchTeacherClash,
@@ -344,65 +345,64 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex items-end justify-between gap-4 flex-wrap">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Timetable
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-md">
-              {editMode
-                ? <><span className="sm:hidden">Tap a card to edit it. Nothing is saved until you tap Save.</span><span className="hidden sm:inline">Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</span></>
-                : 'Tap Edit Timetable to make changes.'}
-            </p>
-          </motion.div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex items-end justify-between gap-4 flex-wrap">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Timetable
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-md">
+            {editMode
+              ? <><span className="sm:hidden">Tap a card to edit it. Nothing is saved until you tap Save.</span><span className="hidden sm:inline">Click a card to edit it. Drag the <GripVertical className="inline w-3 h-3 -mt-0.5" /> handle to move it, or use <Copy className="inline w-3 h-3 -mt-0.5" /> to duplicate it elsewhere. Nothing is saved until you click Save.</span></>
+              : 'Tap Edit Timetable to make changes.'}
+          </p>
+        </motion.div>
 
-          {selectedCohort && !loading && (
-            <div className="flex items-center gap-2 shrink-0">
-              {editMode && (
-                <SaveStatusPill dirty={dirty} saving={saving} />
-              )}
-              {!editMode ? (
-                <motion.button
-                  onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft"
+        {selectedCohort && !loading && (
+          <div className="flex items-center gap-3 shrink-0">
+            {editMode && (
+              <SaveStatusPill dirty={dirty} saving={saving} />
+            )}
+            {!editMode ? (
+              <motion.button
+                onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}
+              >
+                <PencilLine className="w-3.5 h-3.5" /> Edit timetable
+              </motion.button>
+            ) : (
+              <>
+                <button
+                  onClick={cancelEditing}
+                  disabled={saving}
+                  className="flex items-center gap-1 text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-50"
                 >
-                  <PencilLine className="w-4 h-4" /> Edit Timetable
-                </motion.button>
-              ) : (
-                <>
-                  <button
-                    onClick={cancelEditing}
-                    disabled={saving}
-                    className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded hover:bg-stone-50 transition-colors disabled:opacity-50"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" /> Cancel
-                  </button>
-                  <button
-                    onClick={saveChanges}
-                    disabled={saving || !dirty}
-                    className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm"
-                  >
-                    {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
-                    {saving ? 'Saving…' : 'Save Changes'}
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+                  <RotateCcw className="w-3.5 h-3.5" /> Cancel
+                </button>
+                <button
+                  onClick={saveChanges}
+                  disabled={saving || !dirty}
+                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}
+                >
+                  {saving ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  {saving ? 'Saving…' : 'Save changes'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {saveError && (
         <div className="flex items-center gap-2.5 mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded">
@@ -430,9 +430,6 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
         </div>
       ) : cohorts.length === 0 ? (
         <div className="paper-card rounded p-12 flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mb-4">
-            <CalendarDays className="w-5 h-5 text-stone-500" />
-          </div>
           <p className="font-bold text-brand-dark mb-1">No classes yet</p>
           <p className="text-sm text-stone-500">Create classes on the Classes page first.</p>
         </div>
@@ -445,9 +442,10 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                 key={c.id}
                 onClick={() => { if (!editMode) setSelectedCohortId(c.id); }}
                 disabled={editMode}
-                className={`shrink-0 px-4 py-2 rounded text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed ${
-                  selectedCohortId === c.id ? 'bg-accent text-white shadow-sm' : 'text-stone-600 hover:bg-white/70'
+                className={`shrink-0 px-4 py-2 rounded text-sm font-black transition-colors whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed border ${
+                  selectedCohortId === c.id ? 'bg-sky-50 border-sky-200' : 'border-transparent text-stone-600 hover:bg-white/70'
                 }`}
+                style={selectedCohortId === c.id ? { color: 'var(--color-navy)' } : undefined}
               >
                 {c.name} <span className="opacity-60 font-bold">Gr {c.grade}</span>
               </button>
@@ -566,9 +564,10 @@ export default function TimetableAdminPage({ session }: TimetableAdminPageProps)
                         <button
                           key={d.value}
                           onClick={() => setMobileDay(d.value)}
-                          className={`py-2 rounded text-[11px] font-black transition-colors ${
-                            mobileDay === d.value ? 'bg-accent text-white shadow-sm' : 'text-stone-500 hover:bg-white/70'
+                          className={`py-2 rounded text-[11px] font-black transition-colors border ${
+                            mobileDay === d.value ? 'bg-sky-50 border-sky-200' : 'border-transparent text-stone-500 hover:bg-white/70'
                           }`}
+                          style={mobileDay === d.value ? { color: 'var(--color-navy)' } : undefined}
                         >
                           {d.label.slice(0, 3)}
                         </button>
@@ -659,16 +658,13 @@ function EmptyTimetableState({ onStartEditing }: { onStartEditing: () => void })
       transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
       className="paper-card rounded p-12 text-center"
     >
-      <div className="w-12 h-12 rounded-2xl bg-brand-bg flex items-center justify-center mx-auto mb-4">
-        <CalendarDays className="w-5 h-5 text-stone-400" />
-      </div>
       <p className="font-black text-brand-dark mb-1">No timetable yet for this class</p>
       <p className="text-sm text-stone-500 mb-5">Enter edit mode to start adding subjects and breaks.</p>
       <button
         onClick={onStartEditing}
-        className="inline-flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded hover:bg-accent-soft transition-colors"
+        className="inline-flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}
       >
-        <Sparkles className="w-4 h-4" /> Start Building
+        <Sparkles className="w-3.5 h-3.5" /> Start building
       </button>
     </motion.div>
   );
@@ -901,29 +897,15 @@ function SlotModal({
   };
 
   return (
-    <>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="glass-panel rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col">
-          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-stone-200/70 shrink-0">
-            <div>
-              <h2 className="text-base font-black text-brand-dark">{dayLabel}, Period {period}</h2>
-              <p className="text-xs text-stone-500 mt-0.5">
-                {typeof editingId === 'number' ? 'Editing a subject group in this slot.' : 'Add each subject group running in this slot.'}
-              </p>
-            </div>
-            <button onClick={onClose} aria-label="Close" className="p-1 text-stone-400 hover:text-stone-600 shrink-0">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="px-6 py-4 overflow-y-auto space-y-3">
+    <Modal
+      open
+      onClose={onClose}
+      title={`${dayLabel}, Period ${period}`}
+    >
+      <p className="text-xs text-stone-500 -mt-2 mb-3">
+        {typeof editingId === 'number' ? 'Editing a subject group in this slot.' : 'Add each subject group running in this slot.'}
+      </p>
+      <div className="space-y-3">
             {rows.map((r) => (
               typeof editingId === 'number' && editingId === r.id ? null : (
                 <div key={r.id} className={`flex items-center justify-between gap-3 px-4 py-3 rounded border ${
@@ -1020,10 +1002,8 @@ function SlotModal({
             {hasBreak && (
               <p className="text-xs text-stone-400 text-center pt-1">This cell is a break — remove it to add subject groups here.</p>
             )}
-          </div>
-        </div>
-      </motion.div>
-    </>
+      </div>
+    </Modal>
   );
 }
 

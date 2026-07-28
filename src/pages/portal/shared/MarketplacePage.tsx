@@ -14,6 +14,7 @@ import {
 } from '../../../lib/marketplace';
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 
 const GRADES = [8, 9, 10, 11, 12];
 const CATEGORIES: { id: ListingCategory; label: string }[] = [
@@ -437,7 +438,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
               <Dropdown
@@ -552,7 +553,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
               <Dropdown
@@ -1014,27 +1015,7 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
       </AnimatePresence>
 
       {/* ── Interested Users Modal ────────────────────────────── */}
-      <AnimatePresence>
-        {interestModal && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setInterestModal(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[80vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-brand-dark">Interested Buyers</h2>
-                <button onClick={() => setInterestModal(null)} className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
-                  <X className="w-4 h-4 text-stone-500" />
-                </button>
-              </div>
-              <div className="p-6">
+      <Modal open={!!interestModal} onClose={() => setInterestModal(null)} title="Interested buyers" maxWidth="max-w-sm">
                 {interestLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
@@ -1054,84 +1035,38 @@ export default function MarketplacePage({ sellerType, sellerId, schoolId, studen
                   </div>
                 )}
                 <p className="text-xs text-stone-400 mt-4 text-center">Contact them at school to arrange the sale.</p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ── Delete Confirm ────────────────────────────────────── */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setDeleteTarget(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
-              onClick={e => e.stopPropagation()}
-            >
-              <h2 className="text-base font-black text-brand-dark mb-1">Delete listing?</h2>
-              <p className="text-sm text-stone-500 mb-5"><strong>{deleteTarget.title}</strong> will be permanently removed.</p>
-              <div className="flex items-center gap-6">
-                <button
-                  onClick={() => setDeleteTarget(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={deleting}
-                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50"
-                >
-                  {deleting ? 'Deleting…' : 'Delete'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setDeleteTarget(null)} className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete listing?</h2>
+        <p className="text-sm text-stone-500"><strong>{deleteTarget?.title}</strong> will be permanently removed.</p>
+      </Modal>
 
       {/* ── Delete Wanted Confirm ──────────────────────────────── */}
-      <AnimatePresence>
-        {deleteWantedTarget && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setDeleteWantedTarget(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
-              onClick={e => e.stopPropagation()}
-            >
-              <h2 className="text-base font-black text-brand-dark mb-1">Delete request?</h2>
-              <p className="text-sm text-stone-500 mb-5"><strong>{deleteWantedTarget.title}</strong> will be permanently removed.</p>
-              <div className="flex items-center gap-6">
-                <button
-                  onClick={() => setDeleteWantedTarget(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeleteWanted}
-                  className="text-[14px] font-semibold text-red-600 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteWantedTarget} onClose={() => setDeleteWantedTarget(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setDeleteWantedTarget(null)} className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDeleteWanted} className="text-[14px] font-semibold text-red-600 transition-colors">
+            Delete
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete request?</h2>
+        <p className="text-sm text-stone-500"><strong>{deleteWantedTarget?.title}</strong> will be permanently removed.</p>
+      </Modal>
     </div>
   );
 }

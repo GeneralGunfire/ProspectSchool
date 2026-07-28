@@ -1,0 +1,150 @@
+PROJECT TITLE: Prospect: A Unified, Explainable Digital Platform for Academic Management and Early Intervention in South African Schools
+
+First Name(s): [Your Name]
+Surname: [Your Surname]
+Category: Computer Science / Engineering
+Sub-category: [Fill in per expo category list]
+Province and Region: [Fill in]
+School: [Your School]
+Grade: [Your Grade]
+
+[Cover page must include all of the above.]
+
+
+TABLE OF CONTENTS
+Introduction
+Literature Review
+Problem Statement
+Aim
+Engineering Goals or Design Goals
+Method
+   Materials
+   Procedure
+      Developing
+      Testing
+Results
+Discussion
+Limitations and Errors
+Recommendations for Future Research
+Conclusion
+Acknowledgments
+References
+Appendix
+
+
+INTRODUCTION
+
+South Africa's school system carries some of the most unequal resourcing of any country that competes at this level of academic assessment. A small number of well-funded schools can afford commercial school-management software, dedicated IT staff, and private academic counsellors. The much larger number of under-resourced schools run on paper registers, spreadsheets, and word of mouth. In that environment, two things are easy to lose track of: exactly which topic a student has not understood yet, and exactly which student is starting to fall behind before their marks make it obvious to everyone.
+
+This project set out to build a single platform, Prospect, that gives every role in a school — administrators, teachers, students, and parents — a shared, accurate picture of a student's academic life, and to test whether two specific features inside that platform could meaningfully close the two gaps described above: a diagnostic Topic Test system that measures real understanding rather than a raw score, and a teacher-facing At-Risk Intervention system that flags struggling students early, with reasons a teacher can act on. The platform also includes a wider set of features supporting the rest of a school's day-to-day academic administration — digital mark sheets, a timetable system, a resource and past-paper library, a career and university-planning tool built around the Admission Point Score (APS) system, and a Grade 9 subject-selection workflow — all of which share the same underlying data, so that the At-Risk and Topic Test engines are working from real, already-captured school information rather than a separate data-entry step.
+
+The central question this report addresses is whether a single, affordably built, explainable software platform can genuinely improve how early a struggling student is noticed, and how accurately a topic gap is diagnosed, compared with the manual methods South African teachers currently rely on.
+
+
+LITERATURE REVIEW
+
+Two bodies of research anchor this project, and both come from contexts quite different from the one this platform was built for.
+
+The first is the research on formative and diagnostic assessment. Black and Wiliam's work (1998, 2009) established the now widely accepted distinction between summative assessment, which measures what has already been learned, and formative assessment, which is used during learning to change what happens next. A test only functions formatively if its results actually inform the next teaching or learning decision — otherwise it is simply a smaller exam. Bloom's mastery learning model (1968) extended this into a concrete rule: a learner should not be considered to have mastered a topic until they can demonstrate consistent, high-accuracy performance on it, not a single correct answer. Modern adaptive learning platforms operationalise this with models such as Bayesian Knowledge Tracing (Corbett & Anderson, 1994), which updates a probability estimate of whether a student has actually learned a skill after every question they answer, explicitly accounting for the chance that a correct answer was a guess or an incorrect answer was a careless slip. Platforms such as Eedi have taken this further by designing wrong-answer options (distractors) that map to specific, documented misconceptions, so that a student's incorrect answer reveals not just that they are wrong, but why.
+
+The second is the research on early-warning systems (EWS) for identifying at-risk students. The "ABC model" — Attendance, Behaviour, and Course performance — is the dominant framework in this literature (Balfanz, Herzog & Mac Iver, 2007), based on the observation that these three signals, tracked together, are more predictive of a student falling behind than any one of them alone. The Chicago Consortium on School Research's "On-Track Indicator" (Allensworth & Easton, 2005, 2007) is the most cited real-world validation of this approach: a simple measure of course credits earned and course failures by the end of Grade 9 predicted eventual high school graduation with around 80% accuracy, more reliably than standardised test scores. A consistent theme across this literature is a preference for transparent, rule-based indicators over opaque statistical or machine-learning scores, because teachers need to understand and trust a flag before they will act on it — an unexplained score risks being ignored.
+
+What both bodies of research have in common, for the purposes of this project, is that they were developed and validated almost entirely in well-resourced, mostly American school systems. Neither the mastery-based diagnostic model nor the ABC-style early-warning model appears to have been adapted and tested specifically for the South African CAPS/NSC curriculum, in a context of significantly larger class sizes, more constrained teacher time, and far less commercial school-software infrastructure. That gap — a locally relevant, affordable, explainable implementation of both frameworks — is what this project set out to fill.
+
+
+PROBLEM STATEMENT
+
+South African teachers, particularly in large classes and under-resourced schools, lack an affordable, systematic way to diagnose precisely which part of a topic a student has not understood, and to notice early that a student is starting to fall behind before a term's results make it undeniable. Existing solutions to either problem are either manual (a teacher reading through mark sheets by memory and instinct, which does not scale) or drawn from research and commercial platforms built for a different schooling context entirely.
+
+
+AIM
+
+This project aimed to design, build, and evaluate two integrated features within a broader school platform — a diagnostic Topic Test system and a teacher-facing At-Risk Intervention system — and to assess whether they meaningfully improved on the manual methods currently used in South African schools to detect learning gaps and struggling students.
+
+
+ENGINEERING GOALS OR DESIGN GOALS
+
+1. The At-Risk engine had to flag a student using multiple, documented ABC-model indicators (attendance, behaviour, course performance), not a single grade snapshot. — [state whether achieved]
+2. Every risk flag had to show its underlying reasoning in plain language, not just a score. — [state whether achieved]
+3. The Topic Test engine had to distinguish a student who answered correctly by guessing from one who had demonstrated real, consistent mastery. — [state whether achieved]
+4. Every intervention assigned to a student had to have its outcome measured afterwards, not just logged as completed. — [state whether achieved]
+5. The system had to run affordably, without per-seat licensing or paid third-party AI services. — [state whether achieved]
+
+
+METHOD
+
+Materials
+
+The platform was built using React (frontend), Tailwind CSS (styling), Supabase/PostgreSQL (database and backend), and Vite (build tooling). Automated testing used Playwright, alongside manual testing against constructed sample data. The system was deployed via Vercel. No paid third-party AI or machine-learning services were used at any point — all diagnostic and risk-scoring logic was built as explainable, inspectable rules and calculations.
+
+Procedure
+
+Developing
+
+The platform's data model was structured around schools, cohorts/classes, students, teachers, and subjects, all linked through join tables so that a single mark, once entered by a teacher, is immediately visible — appropriately scoped — to that student, their parent, the At-Risk engine, and the relevant topic-mastery record.
+
+The At-Risk Intervention engine was implemented as a rule-based classifier, adapted from the ABC model, that evaluates a student against documented indicators drawn from attendance records, behaviour/merit-demerit logs, and course performance (average mark, trend over recent assessments, and proximity to upcoming high-stakes assessments). A student is flagged when a defined combination of these indicators is met, and — critically — every flag is displayed to the teacher alongside the specific reasons behind it (for example, "average dropped from 68% to 51% over the last three assessments, with an exam in 9 days"), rather than a single opaque score. Teachers can assign an intervention to a flagged student from several points in the platform, and every intervention is later scored against a measurable outcome (improved, declined, or unchanged), closing the loop between action and result.
+
+The Topic Test diagnostic engine was implemented using a mastery-scoring approach adapted from Bayesian Knowledge Tracing and mastery-learning principles: rather than reporting a single raw percentage, the engine requires a minimum level of consistent, correct performance across multiple items on a topic before declaring mastery, explicitly reducing the chance that a lucky guess is mistaken for real understanding. Where feasible, incorrect answers were mapped to specific, documented misconceptions, so a student's result shows not just what they got wrong, but the likely reason why.
+
+An earlier version of the At-Risk engine displayed only a single percentage-based risk score with no accompanying explanation. [Describe the earlier design and why it was changed — full detail belongs in the Appendix.] The final design, described above, replaced this with an explainable, reasoned flag after testing showed the score-only version was harder to trust and act on.
+
+Testing
+
+Each component was tested at every stage of development against constructed synthetic data rather than real student records. [Describe specific test cases and what parameters/thresholds were adjusted, and how those adjustments changed the outcome — this belongs here, with full detail in the Appendix if extensive.]
+
+
+RESULTS
+
+[Insert actual results here once testing against your synthetic dataset is complete. Suggested structure:]
+
+- A table or graph comparing the students flagged as at-risk by the At-Risk engine against the students a human reviewer identified as at-risk by manually reading the same synthetic mark/attendance/behaviour data — how many matched, how many were missed by manual review, how many (if any) were false positives.
+- A table comparing the Topic Test engine's mastery calls (mastered / not yet mastered) against the known, constructed "ground truth" of the synthetic test-taker responses (e.g. a simulated random-guessing student vs. a simulated consistent-understanding student).
+- Timing or effort comparison, if measured: how long manual review took vs. how the engine's results were surfaced automatically.
+
+Present this factually — no interpretation yet, that belongs in Discussion.
+
+
+DISCUSSION
+
+[Once Results are filled in, interpret them here and connect back to the literature reviewed above. For example: if the explainable, reasoned At-Risk flag was more trusted/actionable during testing than the earlier score-only version, this supports the emphasis in the US Department of Education's early-warning-systems research on the importance of transparency for teacher adoption. If the Topic Test mastery rule correctly distinguished guessing from genuine understanding in the constructed test cases, this supports the underlying logic of Bayesian Knowledge Tracing being applicable outside the platforms (Khan Academy, ALEKS) it was originally built for. Also discuss where results differed from what the literature would predict, and why that might be.]
+
+
+LIMITATIONS AND ERRORS
+
+Development and testing used synthetic, constructed data rather than a real school deployment, so real classroom conditions — inconsistent data entry, partial adoption by staff, absent or overloaded teachers — were not tested. The At-Risk engine's thresholds were adapted from ABC-model research developed in a US schooling context and have not yet been calibrated against real South African pass/fail distributions, which a genuine pilot would require. The project's development window limited how exhaustively the newest modules could be tested compared with the core At-Risk and Topic Test engines.
+
+
+RECOMMENDATIONS FOR FUTURE RESEARCH
+
+A real, consented pilot in a South African school would allow the At-Risk engine's thresholds to be calibrated against actual local attendance, behaviour, and grade distributions, rather than assumptions carried over from US-context research. The same explainable, rule-based approach used here could also be extended to validate the platform's career/APS planning tool against real degree admission outcomes, and to formally review the Grade 9 subject-selection workflow against student outcomes in subsequent grades.
+
+
+CONCLUSION
+
+[Once findings are in, state plainly whether the engineering/design goals were met and why this matters. The core point to land: this project shows that established, internationally validated frameworks for diagnostic assessment and early-warning detection can be adapted into an affordable, explainable system that fits the resourcing realities of South African schools — a context where, as the literature review found, no equivalent locally-tested tool currently exists.]
+
+
+ACKNOWLEDGMENTS
+
+[Name your teacher/mentor and anyone else who contributed directly.]
+
+
+REFERENCES
+
+Allensworth, E.M. & Easton, J.Q., 2007. What Matters for Staying On-Track and Graduating in Chicago Public High Schools. Chicago: Consortium on Chicago School Research.
+
+Balfanz, R., Herzog, L. & Mac Iver, D.J., 2007. Preventing student disengagement and keeping students on the graduation path in urban middle-grades schools: Early identification and effective interventions. Educational Psychologist, 42(4), pp.223-235.
+
+Black, P. & Wiliam, D., 1998. Inside the black box: Raising standards through classroom assessment. Phi Delta Kappan, 80(2), pp.139-148.
+
+Black, P. & Wiliam, D., 2009. Developing the theory of formative assessment. Educational Assessment, Evaluation and Accountability, 21(1), pp.5-31.
+
+Bloom, B.S., 1968. Learning for mastery. Evaluation Comment, 1(2). Los Angeles: UCLA Center for the Study of Evaluation of Instructional Programs.
+
+Corbett, A.T. & Anderson, J.R., 1994. Knowledge tracing: Modeling the acquisition of procedural knowledge. User Modeling and User-Adapted Interaction, 4(4), pp.253-278.
+
+
+APPENDIX
+
+[Full code samples, full detail of earlier/rejected design iterations, extended data tables from testing.]

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { CalendarRange, CheckCircle2, Inbox, Save, Trash2, AlertTriangle } from 'lucide-react';
+import Checkbox from '../../../shared/components/Checkbox';
+import Modal from '../../../shared/components/Modal';
 import type { AdminSession } from '../../../lib/auth';
 import {
   fetchActiveWindow, setWindow, isWindowCurrentlyOpen,
@@ -97,33 +99,35 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Subject Selection
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              Open the Grade 9 subject selection window for {year} intake, and review teacher-approved submissions.
-            </p>
-          </motion.div>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Subject selection
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
+            Open the Grade 9 subject selection window for {year} intake, and review teacher-approved submissions.
+          </p>
+        </motion.div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* Window control */}
       <div className="paper-card rounded p-6">
         <div className="flex items-center gap-2 mb-4">
-          <CalendarRange className="w-4 h-4 text-stone-500" />
-          <h2 className="text-sm font-black text-brand-dark">Selection Window — {year} Intake</h2>
-          <span className={`ml-auto text-[11px] font-black px-2.5 py-1 rounded-full ${currentlyOpen ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
+          <CalendarRange className="w-4 h-4" style={{ color: 'var(--color-navy)' }} />
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Selection window — {year} intake</p>
+          <span className={`ml-auto text-[12px] font-semibold px-2.5 py-1 rounded-full ${currentlyOpen ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'}`}>
             {currentlyOpen ? 'Open now' : 'Closed'}
           </span>
         </div>
@@ -132,23 +136,21 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
         ) : (
           <form onSubmit={handleSaveWindow} className="grid sm:grid-cols-3 gap-4 items-end">
             <label className="block">
-              <span className="text-[11px] font-black text-stone-500 uppercase tracking-wide">Opens</span>
+              <span className="text-[12px] text-muted-2">Opens</span>
               <input type="date" value={opensAt} onChange={(e) => setOpensAt(e.target.value)}
                 className="mt-1 w-full rounded border border-brand-border px-3 py-2 text-sm" required />
             </label>
             <label className="block">
-              <span className="text-[11px] font-black text-stone-500 uppercase tracking-wide">Closes</span>
+              <span className="text-[12px] text-muted-2">Closes</span>
               <input type="date" value={closesAt} onChange={(e) => setClosesAt(e.target.value)}
                 className="mt-1 w-full rounded border border-brand-border px-3 py-2 text-sm" required />
             </label>
             <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2 text-sm font-bold text-brand-dark cursor-pointer">
-                <input type="checkbox" checked={isOpen} onChange={(e) => setIsOpen(e.target.checked)} className="w-4 h-4" />
-                Enabled
-              </label>
+              <Checkbox checked={isOpen} onChange={setIsOpen} label="Enabled" />
+
               <motion.button type="submit" disabled={saving} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 bg-accent text-white text-sm font-black px-4 py-2 rounded hover:bg-accent-soft transition-colors disabled:opacity-60">
-                <Save className="w-4 h-4" /> {saved ? 'Saved' : 'Save'}
+                className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-60" style={{ color: 'var(--color-navy)' }}>
+                <Save className="w-3.5 h-3.5" /> {saved ? 'Saved' : 'Save'}
               </motion.button>
             </div>
           </form>
@@ -161,8 +163,8 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
       {/* Approved submissions */}
       <div className="paper-card rounded overflow-hidden">
         <div className="flex items-center gap-2 px-6 pt-6 pb-4">
-          <Inbox className="w-4 h-4 text-stone-500" />
-          <h2 className="text-sm font-black text-brand-dark">Teacher-Approved Submissions</h2>
+          <Inbox className="w-4 h-4" style={{ color: 'var(--color-navy)' }} />
+          <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Teacher-approved submissions</p>
         </div>
         {loading ? null : rows.length === 0 ? (
           <div className="px-6 pb-8 flex flex-col items-center text-center">
@@ -174,7 +176,7 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-t border-brand-border text-left text-[11px] font-black text-stone-500 uppercase tracking-wide">
+                <tr className="border-t border-brand-border text-left text-[12px] font-semibold text-muted-2">
                   <th className="px-6 py-3">Student</th>
                   <th className="px-3 py-3">Class</th>
                   <th className="px-3 py-3">Choices</th>
@@ -189,7 +191,7 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
                     <td className="px-3 py-3 text-stone-500">{r.cohort_name ?? '—'}</td>
                     <td className="px-3 py-3 text-stone-600">{formatChoices(r.choices)}</td>
                     <td className="px-3 py-3">
-                      <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${
+                      <span className={`text-[12px] font-semibold px-2.5 py-1 rounded-full ${
                         r.status === 'admin_received' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
                       }`}>
                         {r.status === 'admin_received' ? 'Stored' : 'Awaiting storage'}
@@ -199,8 +201,8 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
                       <div className="flex items-center gap-3 justify-end">
                         {r.status !== 'admin_received' ? (
                           <button onClick={() => handleReceive(r.id)}
-                            className="flex items-center gap-1.5 text-xs font-black text-brand-dark hover:text-green-700 transition-colors">
-                            <CheckCircle2 className="w-3.5 h-3.5" /> Mark Stored
+                            className="flex items-center gap-1 text-[13px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Mark stored
                           </button>
                         ) : (
                           <button onClick={() => setConfirmDelete(r)}
@@ -219,37 +221,25 @@ export default function SubjectSelectionAdminPage({ session }: SubjectSelectionA
       </div>
       </div>
 
-      {confirmDelete && (
-        <>
-          <div onClick={() => setConfirmDelete(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-              <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
-                <AlertTriangle className="w-5 h-5 text-red-500" />
-              </div>
-              <h2 className="text-base font-black text-brand-dark mb-1">
-                Delete {confirmDelete.name} {confirmDelete.surname}'s submission?
-              </h2>
-              <p className="text-sm text-stone-500 mb-6">
-                This permanently removes the stored subject selection. The student will need to fill it out again if the window is reopened. This cannot be undone.
-              </p>
-              <div className="flex gap-3">
-                <button onClick={() => setConfirmDelete(null)}
-                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                  Cancel
-                </button>
-                <button onClick={handleDelete} disabled={deleting}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                  {deleting
-                    ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : 'Delete'
-                  }
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setConfirmDelete(null)}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 hover:text-red-700 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">
+          Delete {confirmDelete?.name} {confirmDelete?.surname}'s submission?
+        </h2>
+        <p className="text-sm text-stone-500">
+          This permanently removes the stored subject selection. The student will need to fill it out again if the window is reopened. This cannot be undone.
+        </p>
+      </Modal>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 import { Users, GraduationCap, HandHeart, ListChecks, Award, ShieldAlert, CheckCircle2, Clock, ChevronRight, X, Search } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Dropdown from '../../../shared/components/Dropdown';
+import Checkbox from '../../../shared/components/Checkbox';
 import type { StudentSession } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
 import {
@@ -10,7 +12,7 @@ import {
   offerTutorTopic, fetchTutorTopics, createTutoringRequest, findTutorMatches, createRelationshipFromMatch,
   fetchRelationshipsForStudent, fetchSessionsForRelationship, scheduleSession, startSession,
   completeSessionStep, endSession, confirmSession, fetchBadgesForStudent, reportConcern,
-  fetchOpenRequestsForTutor, fulfillRequest,
+  fetchOpenRequestsForTutor, fulfillRequest, fetchRelationshipById, endRelationshipEarly,
   SESSION_TEMPLATE_STEPS, BADGE_THRESHOLDS, countVerifiedSessionsForTutor,
   type TutorProfile, type TutorTopic, type MatchResult, type TutoringRelationship, type TutoringSession,
   type TutorBadge, type ConcernCategory, type TutoringRequest,
@@ -294,20 +296,25 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
 
       <div>
         <label className="text-[12px] font-bold text-stone-500 mb-1.5 block">Subject</label>
-        <select value={subjectId ?? ''} onChange={(e) => { setSubjectId(Number(e.target.value) || null); setTopicId(null); }}
-          className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white">
-          <option value="">Select a subject…</option>
-          {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>
+        <Dropdown
+          value={subjectId ? String(subjectId) : null}
+          onChange={(v) => { setSubjectId(Number(v) || null); setTopicId(null); }}
+          placeholder="Select a subject…"
+          buttonClassName="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white flex items-center justify-between gap-2"
+          options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
+        />
       </div>
 
       <div>
         <label className="text-[12px] font-bold text-stone-500 mb-1.5 block">Topic</label>
-        <select value={topicId ?? ''} onChange={(e) => setTopicId(Number(e.target.value) || null)} disabled={!subjectId}
-          className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white disabled:opacity-50">
-          <option value="">Select a topic…</option>
-          {filteredTopics.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-        </select>
+        <Dropdown
+          value={topicId ? String(topicId) : null}
+          onChange={(v) => setTopicId(Number(v) || null)}
+          disabled={!subjectId}
+          placeholder="Select a topic…"
+          buttonClassName="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white flex items-center justify-between gap-2 disabled:opacity-50"
+          options={filteredTopics.map((t) => ({ value: String(t.id), label: t.label }))}
+        />
       </div>
 
       <div>
@@ -322,10 +329,13 @@ function FindTutorTab({ session, subjects, topics, onMatched }: {
         </div>
       </div>
 
-      <label className="flex items-start gap-2.5 pt-2 border-t border-brand-border">
-        <input type="checkbox" checked={conductAcked} onChange={(e) => setConductAcked(e.target.checked)} className="mt-0.5" />
-        <span className="text-[12.5px] text-stone-600">I agree to be respectful, stay on topic, and never share personal contact details with my tutor.</span>
-      </label>
+      <div className="pt-2 border-t border-brand-border">
+        <Checkbox
+          checked={conductAcked}
+          onChange={setConductAcked}
+          label="I agree to be respectful, stay on topic, and never share personal contact details with my tutor."
+        />
+      </div>
 
       {searchError && <p className="text-[13px] text-red-600 font-medium">{searchError}</p>}
 
@@ -539,19 +549,24 @@ function OfferTopicForm({ tutorProfile, subjects, topics, onOffered }: {
       <p className="text-[12.5px] text-stone-500">Enter your most recent topic-test score to show you've mastered it — this is checked against the ability-gap rule when you're matched.</p>
       <div>
         <label className="text-[12px] font-bold text-stone-500 mb-1.5 block">Subject</label>
-        <select value={subjectId ?? ''} onChange={(e) => { setSubjectId(Number(e.target.value) || null); setTopicId(null); }}
-          className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white">
-          <option value="">Select a subject…</option>
-          {subjects.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>
+        <Dropdown
+          value={subjectId ? String(subjectId) : null}
+          onChange={(v) => { setSubjectId(Number(v) || null); setTopicId(null); }}
+          placeholder="Select a subject…"
+          buttonClassName="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white flex items-center justify-between gap-2"
+          options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
+        />
       </div>
       <div>
         <label className="text-[12px] font-bold text-stone-500 mb-1.5 block">Topic</label>
-        <select value={topicId ?? ''} onChange={(e) => setTopicId(Number(e.target.value) || null)} disabled={!subjectId}
-          className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white disabled:opacity-50">
-          <option value="">Select a topic…</option>
-          {filteredTopics.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
-        </select>
+        <Dropdown
+          value={topicId ? String(topicId) : null}
+          onChange={(v) => setTopicId(Number(v) || null)}
+          disabled={!subjectId}
+          placeholder="Select a topic…"
+          buttonClassName="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white flex items-center justify-between gap-2 disabled:opacity-50"
+          options={filteredTopics.map((t) => ({ value: String(t.id), label: t.label }))}
+        />
       </div>
       <div>
         <label className="text-[12px] font-bold text-stone-500 mb-1.5 block">Your most recent score on this topic (%)</label>
@@ -597,6 +612,8 @@ function RelationshipCard({ session, rel, onStartSession, onChanged }: {
 }) {
   const [sessions, setSessions] = useState<TutoringSession[]>([]);
   const [showReport, setShowReport] = useState(false);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const isTutor = rel.tutorStudentId === session.student_id;
   const role = isTutor ? 'You are tutoring' : 'You are being tutored by';
 
@@ -616,20 +633,27 @@ function RelationshipCard({ session, rel, onStartSession, onChanged }: {
     onStartSession({ relationshipId: rel.id, sessionId: s.id });
   }
 
+  async function handleLeave() {
+    setLeaving(true);
+    await endRelationshipEarly(rel.id, session.student_id);
+    setLeaving(false);
+    setConfirmLeave(false);
+    onChanged();
+  }
+
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="paper-card rounded p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[12px] text-stone-500">{role}</p>
           <p className="text-[14px] font-bold text-brand-dark mt-0.5">
-            {rel.status === 'pending_approval' && 'Awaiting approval (legacy)'}
             {rel.status === 'active' && 'Active tutoring relationship'}
             {rel.status === 'completed' && 'Completed'}
             {(rel.status === 'ended_early' || rel.status === 'declined') && 'Ended'}
           </p>
         </div>
         <span className={`px-2.5 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wide shrink-0 ${
-          rel.status === 'active' ? 'bg-green-100 text-green-700' : rel.status === 'pending_approval' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500'
+          rel.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'
         }`}>{rel.status.replace(/_/g, ' ')}</span>
       </div>
 
@@ -645,6 +669,21 @@ function RelationshipCard({ session, rel, onStartSession, onChanged }: {
           <button onClick={() => setShowReport(true)} className="px-4 py-2 rounded border border-brand-border text-[12.5px] font-bold text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1.5" style={{ background: 'var(--color-paper-raise)' }}>
             <ShieldAlert className="w-3.5 h-3.5" /> Report a concern
           </button>
+          {confirmLeave ? (
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded border border-brand-border" style={{ background: 'var(--color-paper-raise)' }}>
+              <span className="text-[12px] text-stone-600">End this match?</span>
+              <button onClick={handleLeave} disabled={leaving} className="text-[12.5px] font-bold text-red-500 hover:text-red-600 transition-colors disabled:opacity-50">
+                {leaving ? 'Ending...' : 'Yes, end it'}
+              </button>
+              <button onClick={() => setConfirmLeave(false)} className="text-[12.5px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setConfirmLeave(true)} className="px-4 py-2 rounded text-[12.5px] font-bold text-stone-500 hover:text-stone-700 transition-colors">
+              Leave this match
+            </button>
+          )}
         </div>
       )}
 
@@ -713,14 +752,18 @@ function ReportConcernModal({ session, relationshipId, onClose }: { session: Stu
         ) : (
           <>
             <p className="text-[12.5px] text-stone-500">This goes directly to your homeroom teacher, not the other student.</p>
-            <select value={category} onChange={(e) => setCategory(e.target.value as ConcernCategory)}
-              className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white">
-              <option value="uncomfortable_behaviour">Made me feel uncomfortable</option>
-              <option value="pressured_or_harassed">Felt pressured or harassed</option>
-              <option value="inappropriate_content">Inappropriate content or messages</option>
-              <option value="not_following_rules">Not following the session rules</option>
-              <option value="other">Something else</option>
-            </select>
+            <Dropdown
+              value={category}
+              onChange={(v) => setCategory(v as ConcernCategory)}
+              buttonClassName="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white flex items-center justify-between gap-2"
+              options={[
+                { value: 'uncomfortable_behaviour', label: 'Made me feel uncomfortable' },
+                { value: 'pressured_or_harassed', label: 'Felt pressured or harassed' },
+                { value: 'inappropriate_content', label: 'Inappropriate content or messages' },
+                { value: 'not_following_rules', label: 'Not following the session rules' },
+                { value: 'other', label: 'Something else' },
+              ]}
+            />
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4}
               placeholder="Tell us what happened…" className="w-full px-3 py-2.5 rounded-lg border border-brand-border text-[13.5px] bg-white resize-none" />
             <PrimaryButton onClick={handleSubmit} disabled={!description.trim() || submitting}
@@ -765,8 +808,8 @@ function SessionFlow({ session, relationshipId, sessionId, onExit }: {
   async function finish() {
     await endSession(sessionId, confidenceAfter ?? undefined);
     setEnded(true);
-    const count = await countVerifiedSessionsForTutor(relationshipId); // best-effort display, exact tutor id not needed for the badge-progress hint
-    setVerifiedCount(count);
+    const rel = await fetchRelationshipById(relationshipId);
+    if (rel) setVerifiedCount(await countVerifiedSessionsForTutor(rel.tutorStudentId));
   }
 
   if (ended) {

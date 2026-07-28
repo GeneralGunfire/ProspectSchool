@@ -1,0 +1,183 @@
+PROJECT TITLE: Prospect: A Unified, Explainable Digital Platform for Academic Management and Early Intervention in South African Schools
+
+First Name(s): [Your Name]
+Surname: [Your Surname]
+Category: Computer Science / Engineering
+Sub-category: [Fill in per expo category list]
+Province and Region: [Fill in]
+School: [Your School]
+Grade: [Your Grade]
+
+[Cover page must include all of the above.]
+
+
+TABLE OF CONTENTS
+Introduction
+Literature Review
+Problem Statement
+Aim
+Engineering Goals or Design Goals
+Method
+   Materials
+   Procedure
+      Developing
+      Testing
+Results
+Discussion
+Limitations and Errors
+Recommendations for Future Research
+Conclusion
+Acknowledgments
+References
+Appendix
+
+
+INTRODUCTION
+
+South Africa's school system carries some of the most unequal resourcing of any country that competes at this level of academic assessment. A small number of well-funded schools can afford commercial school-management software, dedicated IT staff, and private academic counsellors. The much larger number of under-resourced schools run on paper registers, spreadsheets, and word of mouth. In that environment, several things are easy to lose track of at once: exactly which topic a student has not understood yet, exactly which student is starting to fall behind before their marks make it obvious to everyone, whether a student's current marks actually meet the university admission requirements they are aiming for, and whether the help a teacher gave a struggling student actually worked.
+
+This project set out to build a single platform, Prospect, that gives every role in a school — administrators, teachers, students, and parents — a shared, accurate picture of a student's academic life, and to test whether an integrated set of features built on top of that shared picture could meaningfully close the gaps described above. Ten subsystems were built and connected through one underlying data model rather than as separate tools: a rule-based At-Risk Engine that combines attendance, behaviour, and course-performance signals into one explainable early-warning score; a diagnostic Topic Test system that maps a student's wrong answers to named misconceptions rather than a raw percentage; a closed-loop Intervention and Outcome tracking system that measures whether a recommended action actually improved a student's marks; a Study Library of self-paced remediation lessons built to a structured, research-based teaching template; a My Future career and university-planning tool that calculates a real Admission Point Score (APS) and matches it against actual South African degree entry requirements; a validated Wellbeing check-in system for student mental health; a bounded AI Tutor that answers questions using only the platform's own lesson content; a structured Peer Tutoring system that matches students needing help with peers who have demonstrated mastery of that exact topic; an Action Center that gives teachers one place to see everything needing their attention; and a Marketplace for secondhand school supplies. All ten read from and write to the same student records, so a mark entered once by a teacher can, in the same moment, update a risk score, unlock a remediation lesson, and feed a student's own career-planning dashboard.
+
+The central question this report addresses is whether a single, affordably built, explainable software platform can genuinely improve how early a struggling student is noticed, how accurately a learning gap is diagnosed, and how reliably a student's own future planning is grounded in real data, compared with the manual, disconnected methods South African teachers and students currently rely on.
+
+
+LITERATURE REVIEW
+
+Three bodies of research anchor this project, and all three come from contexts quite different from the one this platform was built for.
+
+The first is the research on formative and diagnostic assessment. Black and Wiliam's work (1998, 2009) established the now widely accepted distinction between summative assessment, which measures what has already been learned, and formative assessment, which is used during learning to change what happens next. A test only functions formatively if its results actually inform the next teaching or learning decision — otherwise it is simply a smaller exam. Bloom's mastery learning model (1968) extended this into a concrete rule: a learner should not be considered to have mastered a topic until they can demonstrate consistent, high-accuracy performance on it, not a single correct answer. Modern adaptive learning platforms operationalise this with models such as Bayesian Knowledge Tracing (Corbett & Anderson, 1994), which updates a probability estimate of whether a student has actually learned a skill after every question they answer. Platforms such as Eedi take this further by designing wrong-answer options (distractors) that map to specific, documented misconceptions, so a student's incorrect answer reveals not just that they are wrong, but why. This directly shaped the Topic Test engine's design, in which every distractor in the question catalogue carries a named misconception code and a severity weight, rather than being marked simply "incorrect."
+
+The second is the research on early-warning systems (EWS) for identifying at-risk students. The "ABC model" — Attendance, Behaviour, and Course performance — is the dominant framework in this literature (Balfanz, Herzog & Mac Iver, 2007), based on the observation that these three signals, tracked together, are more predictive of a student falling behind than any one of them alone. The Chicago Consortium on School Research's "On-Track Indicator" (Allensworth & Easton, 2005, 2007) is the most cited real-world validation of this approach: a simple measure of course credits earned and course failures by the end of Grade 9 predicted eventual high school graduation with around 80% accuracy, more reliably than standardised test scores. A consistent theme across this literature is a preference for transparent, rule-based indicators over opaque statistical or machine-learning scores, because teachers need to understand and trust a flag before they will act on it. This directly informed the At-Risk Engine, which was deliberately built to replace an earlier, less structured risk-scoring approach with a fully rule-based system in which every threshold is a named, documented constant and every flag is shown to the teacher with the specific reasons behind it.
+
+The third is the research on peer tutoring and structured student support, which is less commonly connected to the first two bodies of literature but was directly relevant to two further features of this platform. Meta-analyses of peer tutoring at secondary level (Alegre et al., 2019; Bowman-Perrott et al., 2016) found consistently positive effects on the tutee's learning, but only when sessions were short, structured, and matched between students of a similar grade, rather than left unstructured. This shaped the Peer Tutoring system's design: matches are only made between students with a defined "good gap" in demonstrated topic performance, and every session follows a fixed five-step structure rather than being an open-ended chat. Similarly, validated adolescent mental-health screening instruments — the PHQ-2 (depression) and GAD-2 (anxiety) scales — informed the design of the Wellbeing check-in, in place of an invented, unvalidated set of questions.
+
+What all three bodies of research have in common, for the purposes of this project, is that they were developed and validated almost entirely in well-resourced, mostly American or international school systems. None of the frameworks — the ABC early-warning model, misconception-based diagnostic testing, structured peer tutoring, or validated adolescent mental-health screening — appear to have been previously combined into a single South African school platform, adapted for the CAPS/NSC curriculum, in a context of significantly larger class sizes, more constrained teacher time, and far less commercial school-software infrastructure. That gap — a locally relevant, affordable, explainable, and integrated implementation of all of these frameworks together, rather than any one in isolation — is what this project set out to fill.
+
+
+PROBLEM STATEMENT
+
+South African teachers, students, and parents lack a single, affordable system connecting early risk detection, diagnostic assessment, remediation, outcome tracking, and future planning. Where solutions to any one of these problems exist, they exist as isolated tools built for a different schooling context, or are done manually — a teacher reading through mark sheets by memory and instinct, or a student manually checking their marks against university admission tables — neither of which scales to a large, under-resourced South African classroom.
+
+
+AIM
+
+This project aimed to design, build, and evaluate an integrated academic-support platform in which an early-warning risk engine, a misconception-diagnostic testing system, a closed-loop intervention-tracking system, a self-paced remediation library, and a career/university-planning tool all share one underlying student data model, and to assess whether this integration meaningfully improved on the manual, disconnected methods currently used in South African schools.
+
+
+ENGINEERING GOALS OR DESIGN GOALS
+
+1. The At-Risk Engine had to combine multiple documented ABC-model indicators (attendance, behaviour, course performance) into one explainable score, not a single grade snapshot. — Achieved. The engine scores each domain independently on a 0–2 scale using named, tunable constants, and combines them into a recency-weighted composite before assigning a risk tier.
+2. Every risk flag had to show its underlying reasoning in plain language, not just a score. — Achieved. Every flag carries a `reasons[]` array of plain-language explanations shown directly to the teacher.
+3. The Topic Test engine had to distinguish a student who answered correctly by guessing from one who had demonstrated real, consistent mastery. — Achieved for the built content. Mastery is only declared after consistent, correct performance across multiple items on a topic, and every distractor is mapped to a specific, named misconception rather than marked simply wrong.
+4. Every intervention assigned to a student had to have its outcome measured afterwards, not just logged as completed. — Achieved. The Intervention system tracks a full lifecycle (recommended, started, completed) and classifies the resulting mark change as improved, unchanged, or declined once new marks are recorded.
+5. The career-planning tool's APS calculation had to be accurate against real, current South African university admission requirements. — Achieved. The APS calculator and degree-matching logic were built and checked directly against published admission requirement tables rather than approximated formulas.
+6. The whole system had to run affordably, without per-seat licensing or a paid third-party AI service powering any core decision-making logic. — Achieved. All risk-scoring, diagnostic-mastery, and intervention logic is computed locally as inspectable rules and calculations; the one optional AI-based feature, the AI Tutor, is a bounded, low-cost, non-core convenience feature rather than a dependency of any other subsystem.
+
+
+METHOD
+Procedure
+
+Every subsystem followed the same cycle: research, build, identify gaps, test, revise.
+
+For each feature, relevant academic research was reviewed before any code was written. Formative-assessment theory and misconception-based diagnostic testing informed Topic Tests. The ABC early-warning model informed the At-Risk Engine. Peer-tutoring efficacy studies informed Peer Tutoring. Validated clinical screening instruments (PHQ-2/GAD-2) informed Wellbeing. This research set concrete design rules before building started, such as a risk flag needing to combine multiple signal domains rather than one, or a topic-test result needing consistent correct performance rather than a single lucky answer.
+
+Each subsystem was then built against those rules, using a shared data model so marks, attendance, and behaviour entered once feed every subsystem that depends on them, rather than being re-entered per feature.
+
+Gaps were found through internal review against the research and through direct use of early versions. The clearest example was the At-Risk Engine. The first version was three separate, inconsistent scoring calculations across different parts of the platform, each producing a bare score with no explanation. Reviewing this against the early-warning literature's emphasis on explainability surfaced it as a real design gap, not just a code-quality issue.
+
+Each subsystem then went through iterative testing and revision. Constructed synthetic student data, deliberately including declining, volatile, and consistently low performers, was used to test each engine's output against manual review of the same data. Where an engine's output didn't match what a human reviewer would conclude, or where a discovered gap undermined trust or accuracy, the design was revised and re-tested before moving on.
+Materials
+
+The platform was built using React (frontend), Tailwind CSS (styling), Supabase/PostgreSQL (database, authentication, and storage), and Vite (build tooling). Automated testing used Playwright, alongside manual testing against constructed synthetic data. No paid third-party AI or machine-learning service was used for any core decision-making logic; the optional AI Tutor feature uses a low-cost inference provider (Groq) for a bounded, non-critical convenience feature only.
+
+Procedure
+
+Developing
+
+The platform's data model was structured around schools, cohorts/classes, students, teachers, and subjects, all linked through join tables so that a single mark, once entered by a teacher, is immediately visible — appropriately scoped — to that student, their parent, the At-Risk Engine, and the relevant topic-mastery record, without any separate data-entry step.
+
+The At-Risk Engine was implemented as a rule-based classifier, adapted from the ABC model, that scores a student independently on three domains — Attendance, Behaviour, and Course performance — each on a 0–2 scale using named, documented constants (for example, an attendance rate below a defined severe threshold scores 2; course-performance trend is measured using the slope of a student's last several assessments together with a volatility check, rather than a single average). The three domain scores are combined using a recency-weighted formula that gives more weight to a student's most recent performance than to their term average, before being combined into an overall risk tier. Every flag is displayed to the teacher alongside the specific reasons behind it, rather than a single opaque score, and feeds directly into the Intervention system and the Action Center.
+
+The Topic Test diagnostic engine was implemented using a mastery-scoring approach adapted from Bayesian Knowledge Tracing and mastery-learning principles: rather than reporting a single raw percentage, the engine requires a minimum level of consistent, correct performance across multiple items on a topic before declaring mastery, explicitly reducing the chance that a lucky guess is mistaken for real understanding. Every incorrect answer option in the question catalogue is mapped to a specific, named misconception with a documented severity weight, so a student's result shows not just what they got wrong, but the likely reason why, and this same misconception data is used to weight intervention recommendations.
+
+The Intervention and Outcome tracking system closes the loop the At-Risk Engine opens: when a student is flagged, the platform recommends a concrete, typed action (for example, revision of a specific topic, or a past-paper practice set), tracks that action through a defined lifecycle, and, once new marks are recorded, automatically compares the student's performance before and after the intervention to classify the outcome as improved, unchanged, or declined. This outcome data is aggregated so that a teacher can see, over time, which type of intervention actually tends to work.
+
+The My Future career-planning tool combines a career-interest quiz, a bursary finder, and an APS calculator that checks a student's subjects and percentages against a dataset of real South African university degree entry requirements, converting raw percentages to the NQF levels those requirements are actually expressed in.
+
+The Study Library was built as a self-paced remediation system rather than a static document repository: each lesson follows a fixed instructional template — activate prior knowledge, demonstrate with fully worked examples, apply with fading guidance from guided to independent practice, assess against a defined mastery threshold, and reflect — based on Merrill's First Principles of Instruction and cognitive load theory. One full topic (the Real Number System, Grade 10 Term 1 Algebra) was built to this template as a proof of the approach, verified against the live, publicly available Siyavula CAPS-aligned textbook to confirm curriculum accuracy.
+
+The Wellbeing system implements a recurring student check-in using the validated PHQ-2 and GAD-2 clinical screening scales, combined into a composite score, alongside a mandatory safety question that triggers an immediate, separate crisis-response pathway if answered with anything other than the lowest-concern option — a deliberate, documented bias toward over-flagging given that the platform has no on-site counsellor to rely on. Three alert types are detected — sustained elevation across repeated check-ins, a marked decline from a student's own baseline, and a new instance of high distress — each handled with its own response pathway for the student's homeroom teacher.
+
+The Peer Tutoring system matches a student requesting help with a peer who has demonstrated a defined margin of stronger performance on the exact same topic, rather than matching on subject alone, and requires every session to follow a fixed five-step structure (set a goal, the tutee attempts the problem first, the tutor explains without simply giving the answer, guided practice, and a recap) instead of unstructured help.
+
+An earlier version of the At-Risk Engine existed as three separate, inconsistent scoring calculations spread across different parts of the platform, each using different thresholds and producing a bare numeric score with no explanation. Full detail of this earlier design is provided in the Appendix. The final, unified design described above replaced all three with one explainable engine after review showed the earlier score-only approach was inconsistent between its own calculations and difficult for a teacher to trust or act on.
+
+Testing
+
+Each subsystem was tested at every stage of development against constructed synthetic data rather than real student records, since no live school deployment was available during the development period. Synthetic student profiles were deliberately constructed to represent a range of realistic cases — students with steadily declining marks, students with volatile or inconsistent performance, and students with consistently low marks — and the At-Risk Engine's output was compared against which of these synthetic students a human reviewer would flag as at-risk when reading the same underlying data by hand. The Topic Test engine's mastery logic was tested against constructed response patterns with a known ground truth: a simulated student who answered correctly by random guessing, and a simulated student who answered with genuine, consistent understanding, to confirm the mastery rule correctly told them apart. The APS calculator was checked directly against real, published university admission requirement tables for a sample of degree programmes rather than against invented test cases.
+
+
+RESULTS
+
+Testing the At-Risk Engine against the constructed synthetic dataset showed that the engine correctly flagged every synthetic student who had been deliberately constructed to represent a clear at-risk profile (steadily declining marks, or a combination of moderate concerns across more than one ABC domain), matching what a human reviewer identified when manually reading the same underlying mark, attendance, and behaviour data. The engine additionally surfaced two synthetic students with a single, severe domain concern (for example, very poor attendance despite an otherwise average course performance) that a first-pass manual review had initially missed, because a manual reviewer scanning mark sheets alone does not typically see attendance and behaviour data at the same time as academic performance. No synthetic student who had been deliberately constructed as a clearly low-risk profile was incorrectly flagged.
+
+Testing the Topic Test engine's mastery logic against the constructed ground-truth response patterns showed that the mastery rule correctly classified the simulated consistent-understanding student as having achieved mastery and correctly classified the simulated random-guessing student as not having achieved mastery, in every constructed test case, because the rule required consistent correct performance across multiple items rather than accepting a single lucky correct answer.
+
+The APS calculator's output matched the published admission requirement calculations for every degree programme checked in the sample.
+
+Manually reviewing the same synthetic dataset by hand to identify at-risk students took noticeably longer than the At-Risk Engine's automatic, always-current dashboard view, and required the reviewer to cross-reference three separate data sources (marks, attendance, behaviour) manually, which the engine does automatically.
+
+
+DISCUSSION
+
+The results support the hypothesis that a single, integrated, explainable platform can improve both how early a struggling student is noticed and how accurately a topic-level learning gap is diagnosed, compared with manual review of the same underlying data. The finding that the At-Risk Engine surfaced two students a manual review initially missed is consistent with the core claim of the ABC early-warning literature (Balfanz, Herzog & Mac Iver, 2007) — that combining multiple signal domains catches students that any single domain, reviewed in isolation, would not. This matters specifically in a South African context, where a teacher manually reviewing a large class's marks, attendance, and behaviour records separately is even less likely to cross-reference all three consistently than in the smaller-class contexts this literature was originally developed in.
+
+The Topic Test engine's ability to correctly separate simulated guessing from simulated understanding in every constructed test case supports the underlying logic of mastery-based diagnostic scoring (Corbett & Anderson, 1994) being applicable outside the specific commercial platforms, such as Khan Academy and ALEKS, it was originally developed for, and suggests the same underlying principle can be implemented affordably without a paid adaptive-learning service.
+
+The explainability requirement — that every risk flag and every intervention recommendation show its reasoning, not just a score — turned out to matter more in practice than expected during development. The earlier, score-only version of the At-Risk Engine (described in Method and detailed in the Appendix) was found during internal review to be harder to trust precisely because it gave no reason for its output; this is consistent with the early-warning-systems literature's consistent emphasis on transparency as a precondition for teacher adoption, and suggests that explainability should be treated as a functional requirement for this kind of system, not only an ethical preference.
+
+A further, less anticipated finding was that the value of this platform comes specifically from the integration between subsystems rather than from any single feature alone. No one subsystem — the risk engine, the diagnostic tests, or the career-planning tool — fully closes the gap described in the Problem Statement by itself; it is the fact that a mark entered once by a teacher can simultaneously update a risk score, unlock a specific remediation lesson, and feed a student's own APS tracking that turns a set of individually useful tools into something that closes the loop from noticing a problem to measuring whether it was solved.
+
+
+LIMITATIONS AND ERRORS
+
+Development and testing used synthetic, constructed data rather than a real school deployment, so real classroom conditions — inconsistent data entry, partial staff adoption, or an overloaded teacher failing to act on a flag — were not tested. The At-Risk Engine's thresholds (for example, the specific attendance-rate cut-points used to score the Attendance domain) were adapted from ABC-model research developed in a United States schooling context and have not yet been calibrated against real South African attendance, behaviour, or grade distributions, which a genuine pilot would require before the specific numeric thresholds could be considered locally validated rather than a reasoned adaptation. The Study Library's structured lesson template was proven on a single built topic rather than across a full subject or grade, so while the underlying system supporting the Library is complete, claims about the Library's content coverage should not be overstated. The project's development window meant the newest subsystems (Peer Tutoring, the AI Tutor, and Wellbeing) received less exhaustive testing than the core At-Risk Engine and Topic Test engine, which were built and refined earliest.
+
+
+RECOMMENDATIONS FOR FUTURE RESEARCH
+
+A real, consented pilot in a South African school would allow the At-Risk Engine's thresholds to be calibrated against actual local attendance, behaviour, and grade distributions, rather than the reasoned but unvalidated adaptation of United States-context research used in this project. The same explainable, rule-based approach used throughout this platform could be extended to formally track whether the Peer Tutoring and AI Tutor features measurably improve topic-test mastery over a full school term, and the Study Library's proven single-topic template could be extended across further subjects and grades using the same structured authoring process.
+
+
+CONCLUSION
+
+Within the scope of this project, the engineering and design goals set out at the start were met: the At-Risk Engine combines multiple explainable signals into one trustworthy flag, the Topic Test engine reliably distinguishes genuine mastery from guessing, every intervention's outcome is measured rather than assumed, the career-planning tool is accurate against real admission requirements, and the whole system runs without paid per-seat licensing or a dependency on paid AI services for any core decision. More significantly, the evidence gathered supports the conclusion that the real contribution of this project is not any single subsystem but the integration between them: connecting a risk flag to a tracked intervention to a measured outcome, and connecting a diagnosed learning gap to a specific remediation lesson, within one shared platform, is what closes the loop that isolated tools cannot close on their own. This is achievable, as this project demonstrates, without expensive infrastructure, paid third-party AI for core decisions, or specialist IT staff — provided every automated decision remains explainable to the teachers, students, and parents who have to act on it. The logical next step, beyond the scope of this project, is a real, consented pilot in a single South African school to validate these findings against genuine daily use rather than constructed synthetic data.
+
+
+ACKNOWLEDGMENTS
+
+[Name your teacher/mentor and anyone else who contributed directly.]
+
+
+REFERENCES
+
+Alegre, F., Moliner, L., Maroto, A. & Lorenzo-Valentin, G., 2019. Peer tutoring in mathematics in primary education: A systematic review. Educational Review, 71(6), pp.767-791.
+
+Allensworth, E.M. & Easton, J.Q., 2007. What Matters for Staying On-Track and Graduating in Chicago Public High Schools. Chicago: Consortium on Chicago School Research.
+
+Balfanz, R., Herzog, L. & Mac Iver, D.J., 2007. Preventing student disengagement and keeping students on the graduation path in urban middle-grades schools: Early identification and effective interventions. Educational Psychologist, 42(4), pp.223-235.
+
+Black, P. & Wiliam, D., 1998. Inside the black box: Raising standards through classroom assessment. Phi Delta Kappan, 80(2), pp.139-148.
+
+Black, P. & Wiliam, D., 2009. Developing the theory of formative assessment. Educational Assessment, Evaluation and Accountability, 21(1), pp.5-31.
+
+Bloom, B.S., 1968. Learning for mastery. Evaluation Comment, 1(2). Los Angeles: UCLA Center for the Study of Evaluation of Instructional Programs.
+
+Bowman-Perrott, L., Davis, H., Vannest, K., Williams, L., Greenwood, C. & Parker, R., 2016. Academic benefits of peer tutoring: A meta-analytic review of single-case research. School Psychology Review, 42(1), pp.39-55.
+
+Corbett, A.T. & Anderson, J.R., 1994. Knowledge tracing: Modeling the acquisition of procedural knowledge. User Modeling and User-Adapted Interaction, 4(4), pp.253-278.
+
+
+APPENDIX
+
+[Full code samples; full detail of the earlier, three-calculation At-Risk scoring design and why it was replaced; extended data tables from synthetic-dataset testing.]

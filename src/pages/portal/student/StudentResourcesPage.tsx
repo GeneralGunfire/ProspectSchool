@@ -9,6 +9,7 @@ import {
 } from '../../../lib/resources';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { StudentSession } from '../../../lib/auth';
+import { openExternal } from '../../../lib/openExternal';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -71,12 +72,12 @@ export default function StudentResourcesPage({ session, onNavigate }: StudentRes
     trackResourceDownload(r.id, session.student_id, session.school_id);
 
     if (r.resource_type === 'link' && r.link_url) {
-      window.open(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`, '_blank');
+      openExternal(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`);
     } else if (r.resource_type === 'file' && r.file_url) {
       setDownloading(r.id);
       const url = await getResourceDownloadUrl(r.file_url);
       setDownloading(null);
-      if (url) window.open(url, '_blank');
+      if (url) openExternal(url);
     }
   }
 

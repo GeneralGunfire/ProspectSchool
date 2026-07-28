@@ -1,4 +1,4 @@
-import { useState, useEffect, type ReactNode, lazy, Suspense } from 'react';
+import { useState, useEffect, useTransition, type ReactNode, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import { Spinner } from './shared/components/Spinner';
@@ -26,6 +26,7 @@ const ParentDashboard = lazy(() => import('./pages/portal/ParentDashboard'));
 const PortalEntry = lazy(() => import('./pages/portal/PortalEntry'));
 const PlatformLogin = lazy(() => import('./pages/auth/PlatformLogin'));
 const PlatformAdminDashboard = lazy(() => import('./pages/portal/PlatformAdminDashboard'));
+const DownloadPage = lazy(() => import('./pages/DownloadPage'));
 
 
 type Page =
@@ -37,7 +38,8 @@ type Page =
   // Portal pages
   | 'portal' | 'teacher-login' | 'student-login' | 'admin-login' | 'parent-login'
   | 'teacher-dashboard' | 'student-dashboard' | 'admin-dashboard' | 'parent-dashboard'
-  | 'platform-login' | 'platform-dashboard';
+  | 'platform-login' | 'platform-dashboard'
+  | 'download';
 
 // ── Free Tools Nav — shown on career/tvet pages ───────────────────────────────
 
@@ -78,13 +80,15 @@ const FreeToolsNav = ({ onNavigate, activePage }: { onNavigate: (page: Page) => 
 
 // ── Main App ──────────────────────────────────────────────────────────────────
 
+const PAGE_TRANSITION_EASE = [0.22, 1, 0.36, 1] as const;
+
 const PageTransition = ({ children, pageKey }: { children: ReactNode; pageKey: string }) => (
   <motion.div
     key={pageKey}
-    initial={{ opacity: 0, y: 8 }}
-    animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.15, ease: 'easeOut' }}
+    initial={{ opacity: 0, y: 18, scale: 0.99 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, y: -10, scale: 0.99 }}
+    transition={{ duration: 0.32, ease: PAGE_TRANSITION_EASE }}
   >
     {children}
   </motion.div>
@@ -132,11 +136,20 @@ export default function App() {
     // 2. Hash in URL (e.g. user refreshed or followed a shared link)
     const fromHash = pageFromHash(window.location.hash);
     if (fromHash) return fromHash;
-    // 3. Default
+    // 3. Desktop app (Tauri) with no session/hash → skip the marketing
+    // landing page and go straight to account selection, since there's no
+    // "browsing the website" use case inside a native window.
+    if (typeof window !== 'undefined' && window.isTauri) return 'portal';
+    // 4. Default (web)
     return 'home';
   });
   // TEMP: Skip loading screen for development
   const [isAssetsLoaded, setIsAssetsLoaded] = useState(true);
+  // startTransition keeps the current page mounted (and thus animatable by
+  // AnimatePresence) while the next page's lazy chunk loads, instead of
+  // Suspense yanking straight to the fallback spinner mid-navigation — that
+  // abrupt swap was the main cause of navigation feeling un-smooth.
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     const images = ['/images/engineer.webp', '/images/nurse.webp', '/images/teacher.webp', '/images/electrician.webp', '/images/students.webp'];
@@ -147,8 +160,8 @@ export default function App() {
   useEffect(() => {
     const onPopState = (e: PopStateEvent) => {
       const target: Page = (e.state as { page?: Page })?.page ?? pageFromHash(window.location.hash) ?? 'home';
-      setPage(target);
-      window.scrollTo(0, 0);
+      startTransition(() => setPage(target));
+      setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 120);
     };
     window.addEventListener('popstate', onPopState);
     // Stamp the initial entry so going "back" to it works correctly
@@ -165,8 +178,11 @@ export default function App() {
     } else {
       window.history.pushState({ page: p }, '', p === 'home' ? '/' : '#' + p);
     }
-    setPage(p);
-    window.scrollTo(0, 0);
+    startTransition(() => setPage(p));
+    // Scroll after the exit animation has had a moment to start, so the
+    // viewport doesn't snap to the top mid-fade — was firing instantly
+    // before, which made the jump read as a hard cut rather than a transition.
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'instant' }), 120);
   };
   const pp = pageProps(navigate);
 
@@ -190,6 +206,7 @@ export default function App() {
       case 'parent-dashboard':  return <PageTransition pageKey="parent-dashboard"><ParentDashboard onNavigate={navigate} /></PageTransition>;
       case 'platform-login':    return <PageTransition pageKey="platform-login"><PlatformLogin onNavigate={navigate} /></PageTransition>;
       case 'platform-dashboard': return <PageTransition pageKey="platform-dashboard"><PlatformAdminDashboard onNavigate={navigate} /></PageTransition>;
+      case 'download':          return <PageTransition pageKey="download"><DownloadPage onNavigate={navigate} /></PageTransition>;
 
       default:
       case 'home':

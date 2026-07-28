@@ -7,12 +7,14 @@ import {
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 import {
   fetchTeacherResources, createResource, deleteResource, getResourceDownloadUrl,
   RESOURCE_TYPE_META, RESOURCE_CATEGORY_META,
   type Resource, type ResourceType, type TargetType, type ResourceCategory,
 } from '../../../lib/resources';
 import { fetchSubjects, type Subject } from '../../../lib/students';
+import { openExternal } from '../../../lib/openExternal';
 import { supabaseAdmin } from '../../../lib/supabase';
 import type { TeacherSession } from '../../../lib/auth';
 import {
@@ -154,12 +156,12 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
 
   async function handleOpen(r: Resource) {
     if (r.resource_type === 'link' && r.link_url) {
-      window.open(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`, '_blank');
+      openExternal(r.link_url.startsWith('http') ? r.link_url : `https://${r.link_url}`);
     } else if (r.resource_type === 'file' && r.file_url) {
       setDownloading(r.id);
       const url = await getResourceDownloadUrl(r.file_url);
       setDownloading(null);
-      if (url) window.open(url, '_blank');
+      if (url) openExternal(url);
     }
   }
 
@@ -350,26 +352,16 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
       </div>
 
       {/* ── Create Modal ──────────────────────────────────────── */}
-      <AnimatePresence>
-        {createModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setCreateModal(false)}>
-            <motion.div initial={{ scale: 0.95, y: 12, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, y: 8, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}>
-
-              <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-brand-dark">Add Resource</h2>
-                <button onClick={() => setCreateModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
-                  <X className="w-4 h-4 text-stone-500" />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-5">
+      <Modal open={createModal} onClose={() => setCreateModal(false)} title="Add resource" maxWidth="max-w-lg"
+        footer={<>
+          <button onClick={() => setCreateModal(false)} className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
+          <button onClick={handleCreate} disabled={saving}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}>
+            {saving ? 'Saving…' : 'Add resource'}
+          </button>
+        </>}
+      >
+              <div className="space-y-5">
                 {/* Type */}
                 <div>
                   <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Type</label>
@@ -561,47 +553,21 @@ export default function ResourcesPage({ session }: ResourcesPageProps) {
 
                 {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
               </div>
-
-              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex items-center gap-6">
-                <button onClick={() => setCreateModal(false)}
-                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
-                <button onClick={handleCreate} disabled={saving}
-                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                  style={{ color: 'var(--color-navy)' }}>
-                  {saving ? 'Saving…' : 'Add resource'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ── Delete Confirm ────────────────────────────────────── */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setDeleteTarget(null)}>
-            <motion.div initial={{ scale: 0.95, y: 12, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }} exit={{ scale: 0.95, y: 8, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
-              onClick={e => e.stopPropagation()}>
-              <h2 className="text-base font-black text-brand-dark mb-1">Delete resource?</h2>
-              <p className="text-sm text-stone-500 mb-5"><strong>{deleteTarget.title}</strong> will be permanently removed.</p>
-              <div className="flex items-center gap-6">
-                <button onClick={() => setDeleteTarget(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
-                <button onClick={handleDelete} disabled={deleting}
-                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
-                  {deleting ? 'Deleting…' : 'Delete'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setDeleteTarget(null)} className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete resource?</h2>
+        <p className="text-sm text-stone-500"><strong>{deleteTarget?.title}</strong> will be permanently removed.</p>
+      </Modal>
     </div>
   );
 }

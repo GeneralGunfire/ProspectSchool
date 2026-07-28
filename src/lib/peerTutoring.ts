@@ -122,10 +122,7 @@ export interface TutoringRelationship {
   subjectTeacherId: number | null;
   preScorePct: number;
   preScoreAttemptId: number | null;
-  // 'pending_approval' remains in the type only to represent legacy rows
-  // created before teacher approval was removed from this feature — new
-  // relationships never use it (see createRelationshipFromMatch below).
-  status: 'pending_approval' | 'active' | 'completed' | 'ended_early' | 'declined';
+  status: 'active' | 'completed' | 'ended_early' | 'declined';
   startedAt: string | null;
   endedAt: string | null;
   createdAt: string;
@@ -454,22 +451,51 @@ async function computeTimetableOverlapMap(
   return map;
 }
 
-/** Bug 1 dedup guard: true if this exact (tutor, tutee, topic) pairing
- * already has an open relationship (active, or a legacy pending_approval
- * row). Checked before every insert as defense-in-depth alongside the DB's
- * partial unique index (uq_peer_tutoring_relationships_open_pairing,
- * .planning/sql/2026-07-20_peer_tutoring_fixes.sql) — the DB constraint is
- * the real guarantee (app-code-only checks are exactly how this bug
- * happened originally), this is just a clean pre-check so callers get a
- * clear message instead of a raw constraint-violation error. */
+/** Dedup guard: true if this exact (tutor, tutee, topic) pairing already has
+ * an open (active) relationship. Checked before every insert as
+ * defense-in-depth alongside the DB's partial unique index
+ * (uq_peer_tutoring_relationships_open_pairing) — the DB constraint is the
+ * real guarantee, this is just a clean pre-check so callers get a clear
+ * message instead of a raw constraint-violation error. */
 export async function hasOpenRelationship(tutorStudentId: number, tuteeStudentId: number, topicId: number): Promise<boolean> {
   const { data } = await supabaseAdmin
     .from('peer_tutoring_relationships')
     .select('id')
     .eq('tutor_student_id', tutorStudentId).eq('tutee_student_id', tuteeStudentId).eq('topic_id', topicId)
-    .in('status', ['active', 'pending_approval'])
+    .eq('status', 'active')
     .maybeSingle();
   return !!data;
+}
+
+/** Lets either party leave a relationship that isn't working out (bad match,
+ * scheduling never worked out, etc). Either the tutor or tutee may end it —
+ * there is no approval step to route this through. Marks the relationship
+ * 'ended_early' so it drops out of the open-pairing unique index and the
+ * student can be rematched if they submit a new request. */
+export async function endRelationshipEarly(
+  relationshipId: number, studentId: number,
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { data: rel } = await supabaseAdmin
+    .from('peer_tutoring_relationships')
+    .select('id, tutor_student_id, tutee_student_id, status')
+    .eq('id', relationshipId).maybeSingle();
+  if (!rel) return { success: false, error: 'Relationship not found.' };
+  if (rel.tutor_student_id !== studentId && rel.tutee_student_id !== studentId) {
+    return { success: false, error: 'You are not part of this tutoring relationship.' };
+  }
+  if (rel.status !== 'active') return { success: false, error: 'This relationship has already ended.' };
+
+  await supabaseAdmin
+    .from('peer_tutoring_relationships')
+    .update({ status: 'ended_early', ended_at: new Date().toISOString() })
+    .eq('id', relationshipId);
+
+  const otherPartyId = rel.tutor_student_id === studentId ? rel.tutee_student_id : rel.tutor_student_id;
+  const { data: schoolRow } = await supabaseAdmin.from('peer_tutoring_relationships').select('school_id').eq('id', relationshipId).maybeSingle();
+  if (schoolRow) {
+    createNotification(schoolRow.school_id, 'student', otherPartyId, 'Tutoring match ended', 'Your tutoring partner ended this match. You can request or offer help again any time.');
+  }
+  return { success: true };
 }
 
 /**
@@ -538,6 +564,11 @@ export async function createRelationshipFromMatch(
   const rel = rowToRelationship(data);
   createNotification(rel.schoolId, 'student', rel.tutorStudentId, 'New tutoring match', 'You\'ve been matched with a student who needs help — check "My relationships" to get started.');
   return { success: true, relationship: rel };
+}
+
+export async function fetchRelationshipById(relationshipId: number): Promise<TutoringRelationship | null> {
+  const { data } = await supabaseAdmin.from('peer_tutoring_relationships').select('*').eq('id', relationshipId).maybeSingle();
+  return data ? rowToRelationship(data) : null;
 }
 
 export async function fetchRelationshipsForStudent(studentId: number): Promise<TutoringRelationship[]> {

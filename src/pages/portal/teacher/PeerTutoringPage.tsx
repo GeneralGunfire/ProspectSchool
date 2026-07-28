@@ -154,7 +154,7 @@ function RelationshipRow({ rel, names, sessions, outcome }: { rel: TutoringRelat
         )}
       </div>
       <span className={`px-2.5 py-1 rounded-full text-[10.5px] font-black uppercase tracking-wide shrink-0 ${
-        rel.status === 'active' ? 'bg-green-100 text-green-700' : rel.status === 'pending_approval' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500'
+        rel.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-stone-100 text-stone-500'
       }`}>{rel.status.replace(/_/g, ' ')}</span>
     </div>
   );

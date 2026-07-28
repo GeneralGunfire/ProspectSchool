@@ -127,55 +127,54 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex items-end justify-between gap-4 flex-wrap">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Subjects by Grade
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-lg">
-              {editMode
-                ? 'Check subjects to offer them, tap Elective/Compulsory to flip it. Nothing is saved until you click Save.'
-                : 'Choose which subjects your school offers at each grade. Click Edit to make changes.'}
-            </p>
-          </motion.div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex items-end justify-between gap-4 flex-wrap">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Subjects by grade
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium max-w-lg">
+            {editMode
+              ? 'Check subjects to offer them, tap Elective/Compulsory to flip it. Nothing is saved until you click Save.'
+              : 'Choose which subjects your school offers at each grade. Click Edit to make changes.'}
+          </p>
+        </motion.div>
 
-          {!loading && (
-            <div className="flex items-center gap-2 shrink-0">
-              {editMode && <SaveStatusPill dirty={dirty} saving={saving} />}
-              {!editMode ? (
-                <motion.button onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
-                  <PencilLine className="w-4 h-4" /> Edit Subjects
-                </motion.button>
-              ) : (
-                <>
-                  <button onClick={cancelEditing} disabled={saving}
-                    className="flex items-center gap-2 bg-white border border-brand-border text-stone-600 text-sm font-black px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors disabled:opacity-50">
-                    <RotateCcw className="w-3.5 h-3.5" /> Cancel
-                  </button>
-                  <button onClick={saveChanges} disabled={saving || !dirty}
-                    className="flex items-center gap-2 bg-emerald-600 text-white text-sm font-black px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 shadow-sm">
-                    {saving ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Check className="w-4 h-4" />}
-                    {saving ? 'Saving…' : 'Save Changes'}
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
+        {!loading && (
+          <div className="flex items-center gap-3 shrink-0">
+            {editMode && <SaveStatusPill dirty={dirty} saving={saving} />}
+            {!editMode ? (
+              <motion.button onClick={startEditing} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+                <PencilLine className="w-3.5 h-3.5" /> Edit subjects
+              </motion.button>
+            ) : (
+              <>
+                <button onClick={cancelEditing} disabled={saving}
+                  className="flex items-center gap-1 text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-50">
+                  <RotateCcw className="w-3.5 h-3.5" /> Cancel
+                </button>
+                <button onClick={saveChanges} disabled={saving || !dirty}
+                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}>
+                  {saving ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  {saving ? 'Saving…' : 'Save changes'}
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {saveError && (
           <div className="flex items-center gap-2.5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl">
@@ -186,7 +185,7 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
 
         {/* Grade selector */}
         <div className="flex items-center gap-3">
-          <span className="text-xs font-black uppercase tracking-widest text-stone-500">Grade</span>
+          <span className="text-[13px] font-semibold text-stone-500">Grade</span>
           <Dropdown
             value={String(grade)}
             onChange={(v) => changeGrade(Number(v))}
@@ -199,16 +198,16 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
 
         {/* Custom subject */}
         <div className="paper-card rounded p-4 sm:p-5">
-          <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
-            Add a Custom Subject
+          <label className="block text-[12px] text-muted-2 mb-2">
+            Add a custom subject
           </label>
-          <form onSubmit={handleAddCustom} className="flex items-center gap-2">
+          <form onSubmit={handleAddCustom} className="flex items-center gap-3">
             <input type="text" value={customName} onChange={(e) => setCustomName(e.target.value)}
               placeholder="e.g. Robotics"
               className="flex-1 min-w-0 px-3 py-2.5 bg-stone-50 border border-brand-border rounded-xl text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all" />
             <button type="submit" disabled={addingCustom || !customName.trim()}
-              className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 bg-accent text-white text-sm font-black rounded-xl hover:bg-accent-soft transition-all disabled:opacity-40">
-              <Plus className="w-4 h-4" /> Add
+              className="shrink-0 inline-flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-40" style={{ color: 'var(--color-navy)' }}>
+              <Plus className="w-3.5 h-3.5" /> Add
             </button>
           </form>
           {customError && (
@@ -231,10 +230,10 @@ export default function SchoolSubjectsAdminPage({ session }: SchoolSubjectsAdmin
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-brand-border/60">
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Subject</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Offered at Grade {grade}</th>
-                    <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Compulsory</th>
+                    <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Subject</th>
+                    <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Code</th>
+                    <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Offered at Grade {grade}</th>
+                    <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Compulsory</th>
                   </tr>
                 </thead>
                 <tbody>

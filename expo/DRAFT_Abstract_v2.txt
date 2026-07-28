@@ -1,0 +1,24 @@
+Learner Name(s): [Your Name]
+Grade(s): [Your Grade]
+School Name: [Your School]
+Region: [Your Region]
+Project Title: Prospect: A Unified, Explainable Digital Platform for Academic Management and Early Intervention in South African Schools
+
+
+ABSTRACT
+
+Purpose
+
+South African schools, particularly those with large classes and limited resources, often have no systematic way to identify precisely which part of a topic a student had not understood, or to notice a student falling behind before end-of-term results made it obvious. This project investigated whether an affordable, explainable software platform could close both gaps by adapting two established but locally untested approaches: mastery-based diagnostic testing and rule-based early-warning detection of at-risk students.
+
+Method
+
+A web-based school platform, Prospect, was designed and built for four user roles — administrators, teachers, students, and parents — sharing a single underlying database of marks, attendance, and behaviour records. Two features were developed as the focus of this investigation: a Topic Test engine that measured whether a student had genuinely mastered a topic, rather than guessed correctly, using a consistency-based scoring approach; and an At-Risk Intervention engine that flagged struggling students using multiple attendance, behaviour, and course-performance indicators, always displaying the specific reasoning behind each flag. Both engines were tested against constructed sample datasets representing a term's worth of student activity across multiple classes and subjects, deliberately including students with declining, inconsistent, and consistently low performance.
+
+Results
+
+[Insert once testing is complete — summarise how accurately the At-Risk engine identified the correct students compared with manual review, and how reliably the Topic Test engine distinguished genuine mastery from guessing, in one or two sentences.]
+
+Conclusion
+
+[Insert once findings are in — state plainly whether the system met its design goals and what this suggests about adapting internationally established assessment and early-warning frameworks for a South African schooling context, and note that a real, consented school pilot is the logical next step.]

@@ -13,6 +13,7 @@ import {
   type SchoolEvent, type EventType, type TargetType, type HomeworkStudentRow,
 } from '../../../lib/events';
 import { fetchSubjects, type Subject } from '../../../lib/students';
+import { openExternal } from '../../../lib/openExternal';
 import type { TeacherSession } from '../../../lib/auth';
 import { Shimmer } from '../../../shared/components/Shimmer';
 
@@ -333,7 +334,7 @@ export default function CalendarPage({ session }: CalendarPageProps) {
   async function handleDownload(ev: SchoolEvent) {
     if (!ev.attachment_url) return;
     const url = await getAttachmentDownloadUrl(ev.attachment_url);
-    if (url) window.open(url, '_blank');
+    if (url) openExternal(url);
   }
 
   // ── Toggle helpers ────────────────────────────────────────

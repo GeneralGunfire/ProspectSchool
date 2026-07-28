@@ -16,6 +16,7 @@ import {
   type AnnouncementEngagement, type AnnouncementImpact,
 } from '../../../lib/teacherAnalytics';
 import { Shimmer } from '../../../shared/components/Shimmer';
+import Modal from '../../../shared/components/Modal';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -251,101 +252,67 @@ export default function AnnouncementsPage({ session }: AnnouncementsPageProps) {
       </div>
 
       {/* ── Create Modal ──────────────────────────────────────── */}
-      <AnimatePresence>
-        {modal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setModal(false)}>
-            <motion.div initial={{ scale: 0.95, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-              onClick={e => e.stopPropagation()}>
+      <Modal open={modal} onClose={() => setModal(false)} title="Post announcement" maxWidth="max-w-lg"
+        footer={<>
+          <button onClick={() => setModal(false)} className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
+          <button onClick={handleCreate} disabled={saving}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}>
+            {saving ? 'Posting…' : 'Post'} <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </>}
+      >
+        <div className="space-y-4">
+          {/* Title */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Title *</label>
+            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              placeholder="e.g. School closes early on Friday"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
+          </div>
 
-              <div className="sticky top-0 bg-white border-b border-brand-border/60 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
-                <h2 className="text-base font-black text-brand-dark">Post Announcement</h2>
-                <button onClick={() => setModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
-                  <X className="w-4 h-4 text-stone-500" />
-                </button>
-              </div>
+          {/* Body */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">
+              Message <span className="font-medium text-stone-400">(optional)</span>
+            </label>
+            <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+              rows={3} placeholder="Additional details…"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
+          </div>
 
-              <div className="p-6 space-y-4">
-                {/* Title */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
-                  <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                    placeholder="e.g. School closes early on Friday"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark" />
-                </div>
+          {/* Audience */}
+          <AudienceSelector
+            form={form} setForm={setForm}
+            subjects={subjects} cohorts={cohorts} allStudents={allStudents}
+            toggle={toggle}
+          />
 
-                {/* Body */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
-                    Message <span className="normal-case font-bold text-stone-400">(optional)</span>
-                  </label>
-                  <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
-                    rows={3} placeholder="Additional details…"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm text-stone-700 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark resize-none" />
-                </div>
+          {/* Pin */}
+          <button onClick={() => setForm(f => ({ ...f, pinned: !f.pinned }))}
+            className={`flex items-center gap-2.5 px-4 py-2.5 rounded border text-sm font-black transition-all ${
+              form.pinned ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-stone-50 border-brand-border text-stone-500 hover:bg-stone-100'
+            }`}>
+            <Pin className="w-4 h-4" />
+            {form.pinned ? 'Pinned — stays at top' : 'Pin this announcement'}
+          </button>
 
-                {/* Audience */}
-                <AudienceSelector
-                  form={form} setForm={setForm}
-                  subjects={subjects} cohorts={cohorts} allStudents={allStudents}
-                  toggle={toggle}
-                />
-
-                {/* Pin */}
-                <button onClick={() => setForm(f => ({ ...f, pinned: !f.pinned }))}
-                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded border text-sm font-black transition-all ${
-                    form.pinned ? 'bg-amber-50 border-amber-200 text-amber-700' : 'bg-stone-50 border-brand-border text-stone-500 hover:bg-stone-100'
-                  }`}>
-                  <Pin className="w-4 h-4" />
-                  {form.pinned ? 'Pinned — stays at top' : 'Pin this announcement'}
-                </button>
-
-                {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
-              </div>
-
-              <div className="sticky bottom-0 bg-white border-t border-brand-border/60 px-6 py-4 rounded-b-2xl flex items-center gap-6">
-                <button onClick={() => setModal(false)}
-                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
-                <button onClick={handleCreate} disabled={saving}
-                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                  style={{ color: 'var(--color-navy)' }}>
-                  {saving ? 'Posting…' : 'Post'} <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
+        </div>
+      </Modal>
 
       {/* ── Delete Confirm ────────────────────────────────────── */}
-      <AnimatePresence>
-        {deleteTarget && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setDeleteTarget(null)}>
-            <motion.div initial={{ scale: 0.95, y: 12, opacity: 0 }} animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }} transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
-              onClick={e => e.stopPropagation()}>
-              <h2 className="text-base font-black text-brand-dark mb-1">Delete announcement?</h2>
-              <p className="text-sm text-stone-500 mb-5"><strong>"{deleteTarget.title}"</strong> will be permanently removed.</p>
-              <div className="flex items-center gap-6">
-                <button onClick={() => setDeleteTarget(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
-                <button onClick={handleDelete} disabled={deleting}
-                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
-                  {deleting ? 'Deleting…' : 'Delete'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setDeleteTarget(null)} className="text-[14px] font-semibold text-muted transition-colors">Cancel</button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete announcement?</h2>
+        <p className="text-sm text-stone-500"><strong>"{deleteTarget?.title}"</strong> will be permanently removed.</p>
+      </Modal>
     </div>
   );
 }

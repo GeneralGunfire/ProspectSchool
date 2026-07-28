@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Pin, Megaphone, Search, X } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import { CountUp } from '../../../shared/components/CountUp';
+import Dropdown from '../../../shared/components/Dropdown';
 import { fetchStudentAnnouncements, trackAnnouncementViews, type Announcement } from '../../../lib/announcements';
 import { fetchStudentEvents, type SchoolEvent } from '../../../lib/events';
 import { supabaseAdmin } from '../../../lib/supabase';
@@ -258,16 +259,13 @@ export default function StudentAnnouncementsPage({ session, onNavigate }: Studen
             </div>
 
             {availableCategories.length > 2 && (
-              <select
+              <Dropdown
                 value={filterCategory}
-                onChange={e => setFilterCategory(e.target.value)}
-                className="px-3 py-2 rounded-md border text-[13.5px] text-brand-dark focus:outline-none shrink-0"
-                style={{ borderColor: 'var(--color-brand-border)', background: 'var(--color-paper-raise)' }}
-              >
-                {availableCategories.map(cat => (
-                  <option key={cat} value={cat}>{cat === 'all' ? 'All categories' : cat}</option>
-                ))}
-              </select>
+                onChange={(v) => setFilterCategory(String(v))}
+                className="shrink-0"
+                buttonClassName="px-3 py-2 rounded-md border text-[13.5px] text-brand-dark focus:outline-none flex items-center justify-between gap-2"
+                options={availableCategories.map(cat => ({ value: cat, label: cat === 'all' ? 'All categories' : cat }))}
+              />
             )}
           </div>
         </div>

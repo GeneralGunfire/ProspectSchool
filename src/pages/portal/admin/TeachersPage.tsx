@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
-  Plus, X, ArrowRight, Check, AlertCircle,
+  Plus, ArrowRight, Check, AlertCircle,
   Pencil, ToggleLeft, ToggleRight, ShieldCheck, Trash2
 } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
@@ -13,6 +13,7 @@ import {
 import { fetchSubjects, type Subject } from '../../../lib/students';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -180,30 +181,29 @@ export default function TeachersPage({ session }: TeachersPageProps) {
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Teachers
-            </h1>
-          </motion.div>
-          <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
-            <Plus className="w-4 h-4" /> Add Teacher
-          </motion.button>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Teachers
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+        </motion.div>
+        <motion.button onClick={openAdd} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-1 text-[14px] font-semibold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
+          <Plus className="w-3.5 h-3.5" /> Add teacher
+        </motion.button>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* List */}
       {loading ? (
@@ -212,14 +212,11 @@ export default function TeachersPage({ session }: TeachersPageProps) {
         </div>
       ) : teachers.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <Plus className="w-5 h-5 text-stone-500" />
-          </div>
           <p className="font-bold text-brand-dark mb-1">No teachers yet</p>
           <p className="text-sm text-stone-500 mb-6">Add your first teacher to get started.</p>
           <button onClick={openAdd}
-            className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-brand-dark border border-brand-border hover:border-stone-300 px-5 py-2.5 rounded transition-all">
-            Add Teacher <ArrowRight className="w-4 h-4" />
+            className="inline-flex items-center gap-1 text-[14px] font-semibold transition-colors" style={{ color: 'var(--color-navy)' }}>
+            Add teacher <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       ) : (
@@ -228,11 +225,11 @@ export default function TeachersPage({ session }: TeachersPageProps) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-brand-border/60">
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Teacher</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Code</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Role</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Last Login</th>
-                <th className="text-left px-5 py-3 text-xs font-black uppercase tracking-widest text-stone-500">Status</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Teacher</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Code</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Role</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Last login</th>
+                <th className="text-left px-5 py-3 text-[12px] font-semibold text-muted-2">Status</th>
                 <th className="px-5 py-3" />
               </tr>
             </thead>
@@ -289,199 +286,154 @@ export default function TeachersPage({ session }: TeachersPageProps) {
       </div>
 
       {/* Delete confirm */}
-      <AnimatePresence>
-        {confirmDelete && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setConfirmDelete(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
-                  <Trash2 className="w-5 h-5 text-red-500" />
-                </div>
-                <h2 className="text-base font-black text-brand-dark mb-1">Delete teacher?</h2>
-                <p className="text-sm text-stone-500 mb-4">
-                  This will permanently delete <span className="font-bold text-brand-dark">{confirmDelete.name} {confirmDelete.surname}</span>'s account. This cannot be undone.
-                </p>
-                {deleteError && (
-                  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded mb-4">
-                    <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                    <p className="text-red-700 text-sm">{deleteError}</p>
-                  </motion.div>
-                )}
-                <div className="flex gap-3">
-                  <button onClick={() => setConfirmDelete(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Cancel
-                  </button>
-                  <button onClick={handleDelete} disabled={deleting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {deleting
-                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      : 'Delete'
-                    }
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
+      <Modal open={!!confirmDelete} onClose={() => setConfirmDelete(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setConfirmDelete(null)}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 hover:text-red-700 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete teacher?</h2>
+        <p className="text-sm text-stone-500">
+          This will permanently delete <span className="font-bold text-brand-dark">{confirmDelete?.name} {confirmDelete?.surname}</span>'s account. This cannot be undone.
+        </p>
+        {deleteError && (
+          <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            className="flex gap-3 p-3 bg-red-50 border border-red-200 rounded mt-4">
+            <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-red-700 text-sm">{deleteError}</p>
+          </motion.div>
         )}
-      </AnimatePresence>
+      </Modal>
 
       {/* Add / Edit Modal */}
-      <AnimatePresence>
-        {showForm && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeForm} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-                  <h2 className="text-lg font-black text-brand-dark">
-                    {modalMode === 'add' ? 'Add Teacher' : 'Edit Teacher'}
-                  </h2>
-                  <button onClick={closeForm} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="px-6 py-4 overflow-y-auto">
-                  <form id="teacher-form" onSubmit={handleSubmit} className="space-y-4">
-                    {formError && (
-                      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
-                        <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                        <p className="text-red-700 text-sm">{formError}</p>
-                      </motion.div>
-                    )}
-
-                    {/* Name + Surname */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Name</label>
-                        <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                          placeholder="Jane" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Surname</label>
-                        <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
-                          className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                          placeholder="Smith" />
-                      </div>
-                    </div>
-
-                    {/* Teacher Code — locked in edit */}
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher Code</label>
-                      <input required type="text" value={form.teacher_code}
-                        onChange={(e) => modalMode === 'add' && set('teacher_code', e.target.value.toUpperCase())}
-                        readOnly={modalMode === 'edit'}
-                        className={`w-full px-3 py-2.5 border rounded text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
-                          modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
-                        }`}
-                        placeholder="e.g. TCH-0002" autoCapitalize="characters" />
-                    </div>
-
-                    {/* PIN */}
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">
-                        PIN {modalMode === 'edit' && <span className="normal-case font-medium text-stone-400">(leave blank to keep current)</span>}
-                      </label>
-                      <input type="password" inputMode="numeric" maxLength={10}
-                        required={modalMode === 'add'}
-                        value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
-                        className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
-                        placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
-                    </div>
-
-                    {/* Role */}
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Role</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {(['teacher', 'school_admin'] as const).map((r) => (
-                          <button key={r} type="button" onClick={() => set('role', r)}
-                            className={`flex items-center gap-2 px-3 py-2.5 rounded text-xs font-bold border transition-all ${
-                              form.role === r ? 'bg-accent text-white border-accent' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
-                            }`}>
-                            <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${form.role === r ? 'bg-white/20' : 'border border-stone-300'}`}>
-                              {form.role === r && <Check className="w-2.5 h-2.5" />}
-                            </div>
-                            {r === 'teacher' ? 'Teacher' : 'School Admin'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Subjects & Grades — teachers only, not school admins */}
-                    {form.role === 'teacher' && (
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subjects Taught</label>
-                      <div className="space-y-2">
-                        {subjectRows.map((row, i) => (
-                          <div key={i} className="flex items-center gap-2">
-                            <Dropdown
-                              value={row.subject_id ? String(row.subject_id) : null}
-                              onChange={(v) => setSubjectRow(i, 'subject_id', Number(v))}
-                              placeholder="Select subject"
-                              className="flex-1 min-w-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                              options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
-                            />
-                            <Dropdown
-                              value={String(row.grade)}
-                              onChange={(v) => setSubjectRow(i, 'grade', Number(v))}
-                              className="w-32 shrink-0"
-                              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                              options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
-                            />
-                            {subjectRows.length > 1 && (
-                              <button type="button" onClick={() => removeSubjectRow(i)}
-                                className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <button type="button" onClick={addSubjectRow}
-                        className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-brand-dark transition-colors">
-                        <Plus className="w-3.5 h-3.5" /> Add another subject
-                      </button>
-                    </div>
-                    )}
-                  </form>
-                </div>
-
-                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
-                  <button type="button" onClick={closeForm}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Cancel
-                  </button>
-                  <button type="submit" form="teacher-form" disabled={submitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {submitting
-                      ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-                      : <>{modalMode === 'add' ? 'Add Teacher' : 'Save Changes'} <ArrowRight className="w-4 h-4" /></>
-                    }
-                  </button>
-                </div>
-              </div>
+      <Modal open={showForm} onClose={closeForm} title={modalMode === 'add' ? 'Add teacher' : 'Edit teacher'}
+        footer={<>
+          <button type="button" onClick={closeForm}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" form="teacher-form" disabled={submitting}
+            className="text-[14px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2" style={{ color: 'var(--color-navy)' }}>
+            {submitting
+              ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Saving...</>
+              : <>{modalMode === 'add' ? 'Add teacher' : 'Save changes'} <ArrowRight className="w-3.5 h-3.5" /></>
+            }
+          </button>
+        </>}
+      >
+        <form id="teacher-form" onSubmit={handleSubmit} className="space-y-4">
+          {formError && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-red-700 text-sm">{formError}</p>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+
+          {/* Name + Surname */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[12px] text-muted-2 mb-1.5">Name</label>
+              <input required type="text" value={form.name} onChange={(e) => set('name', e.target.value)}
+                className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                placeholder="Jane" />
+            </div>
+            <div>
+              <label className="block text-[12px] text-muted-2 mb-1.5">Surname</label>
+              <input required type="text" value={form.surname} onChange={(e) => set('surname', e.target.value)}
+                className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                placeholder="Smith" />
+            </div>
+          </div>
+
+          {/* Teacher Code — locked in edit */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">Teacher code</label>
+            <input required type="text" value={form.teacher_code}
+              onChange={(e) => modalMode === 'add' && set('teacher_code', e.target.value.toUpperCase())}
+              readOnly={modalMode === 'edit'}
+              className={`w-full px-3 py-2.5 border rounded text-sm font-medium tracking-widest transition-all focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 ${
+                modalMode === 'edit' ? 'bg-stone-100 border-brand-border text-stone-500 cursor-not-allowed' : 'bg-stone-50 border-brand-border text-brand-dark'
+              }`}
+              placeholder="e.g. TCH-0002" autoCapitalize="characters" />
+          </div>
+
+          {/* PIN */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">
+              PIN {modalMode === 'edit' && <span className="font-medium text-stone-400">(leave blank to keep current)</span>}
+            </label>
+            <input type="password" inputMode="numeric" maxLength={10}
+              required={modalMode === 'add'}
+              value={form.pin} onChange={(e) => set('pin', e.target.value.replace(/\D/g, ''))}
+              className="w-full px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all tracking-widest"
+              placeholder={modalMode === 'edit' ? '••••••••••' : '10-digit PIN'} />
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Role</label>
+            <div className="grid grid-cols-2 gap-2">
+              {(['teacher', 'school_admin'] as const).map((r) => (
+                <button key={r} type="button" onClick={() => set('role', r)}
+                  className={`flex items-center gap-2 px-3 py-2.5 rounded text-xs font-bold border transition-all ${
+                    form.role === r ? 'bg-sky-50 border-sky-200' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300'
+                  }`}
+                  style={form.role === r ? { color: 'var(--color-navy)' } : undefined}>
+                  <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${form.role === r ? 'border-sky-300' : 'border-stone-300'}`}>
+                    {form.role === r && <Check className="w-2.5 h-2.5" style={{ color: 'var(--color-navy)' }} />}
+                  </div>
+                  {r === 'teacher' ? 'Teacher' : 'School admin'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Subjects & Grades — teachers only, not school admins */}
+          {form.role === 'teacher' && (
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Subjects taught</label>
+            <div className="space-y-2">
+              {subjectRows.map((row, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <Dropdown
+                    value={row.subject_id ? String(row.subject_id) : null}
+                    onChange={(v) => setSubjectRow(i, 'subject_id', Number(v))}
+                    placeholder="Select subject"
+                    className="flex-1 min-w-0"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                    options={subjects.map((s) => ({ value: String(s.id), label: s.label }))}
+                  />
+                  <Dropdown
+                    value={String(row.grade)}
+                    onChange={(v) => setSubjectRow(i, 'grade', Number(v))}
+                    className="w-32 shrink-0"
+                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+                    options={[8, 9, 10, 11, 12].map((g) => ({ value: String(g), label: `Grade ${g}` }))}
+                  />
+                  {subjectRows.length > 1 && (
+                    <button type="button" onClick={() => removeSubjectRow(i)}
+                      className="p-2 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-600 transition-colors shrink-0">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={addSubjectRow}
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-brand-dark transition-colors">
+              <Plus className="w-3.5 h-3.5" /> Add another subject
+            </button>
+          </div>
+          )}
+        </form>
+      </Modal>
     </div>
   );
 }

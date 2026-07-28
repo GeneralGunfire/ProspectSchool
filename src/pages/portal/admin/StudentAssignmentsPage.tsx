@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, Check, AlertCircle, Trash2, Search, UserPlus, BookOpen, ChevronDown } from 'lucide-react';
+import { ArrowRight, Check, AlertCircle, Trash2, Search, UserPlus, BookOpen, ChevronDown } from 'lucide-react';
 import type { AdminSession } from '../../../lib/auth';
 import {
   fetchSchoolAssignments, adminAssignTeacherToStudent, adminRemoveAssignment,
@@ -8,6 +8,7 @@ import {
 } from '../../../lib/students';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
@@ -127,31 +128,30 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full flex flex-wrap items-end justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease }}
-          >
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[40px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              Student Assignments
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Manage which teachers teach which students, and for which subjects.</p>
-          </motion.div>
-          <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 bg-accent text-white text-sm font-black px-5 py-2.5 rounded shrink-0 transition-colors duration-200 hover:bg-accent-soft">
-            <UserPlus className="w-4 h-4" /> Assign Teacher
-          </motion.button>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5 flex flex-wrap items-end justify-between gap-4">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Admin</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                Student assignments
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">Manage which teachers teach which students, and for which subjects.</p>
+        </motion.div>
+        <motion.button onClick={openAssign} whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }}
+          className="flex items-center gap-1 text-[14px] font-semibold transition-colors shrink-0" style={{ color: 'var(--color-navy)' }}>
+          <UserPlus className="w-3.5 h-3.5" /> Assign teacher
+        </motion.button>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
       {/* Search */}
       {!loading && rows.length > 0 && (
@@ -178,9 +178,6 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
         </div>
       ) : rows.length === 0 ? (
         <div className="paper-card rounded p-12 text-center">
-          <div className="w-12 h-12 rounded bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <UserPlus className="w-5 h-5 text-stone-500" />
-          </div>
           <p className="font-bold text-brand-dark mb-1">No assignments yet</p>
           <p className="text-sm text-stone-500">Links appear once teachers add or assign students.</p>
         </div>
@@ -272,142 +269,99 @@ export default function StudentAssignmentsPage({ session }: StudentAssignmentsPa
       </div>
 
       {/* Assign modal */}
-      <AnimatePresence>
-        {showAssign && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={closeAssign} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
-                <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-                  <h2 className="text-lg font-black text-brand-dark">Assign Teacher to Student</h2>
-                  <button onClick={closeAssign} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="px-6 py-4 overflow-y-auto">
-                  <form id="admin-assign-form" onSubmit={handleAssignSubmit} className="space-y-4">
-                    {assignError && (
-                      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                        className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
-                        <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                        <p className="text-red-700 text-sm">{assignError}</p>
-                      </motion.div>
-                    )}
-
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Student</label>
-                      <Dropdown
-                        value={assignStudentId ? String(assignStudentId) : null}
-                        onChange={(v) => setAssignStudentId(Number(v) || null)}
-                        placeholder="Select student"
-                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                        options={knownStudents.map((s) => ({ value: String(s.id), label: `${s.surname}, ${s.name} (${s.code})` }))}
-                      />
-                      <p className="text-xs text-stone-500 mt-1.5">
-                        Only students already in the school (added by a teacher) appear here.
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-1.5">Teacher</label>
-                      <Dropdown
-                        value={assignTeacherId ? String(assignTeacherId) : null}
-                        onChange={(v) => setAssignTeacherId(Number(v) || null)}
-                        placeholder="Select teacher"
-                        buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
-                        options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name} (${t.teacher_code})` }))}
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject</label>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {subjects.map((s) => {
-                          const selected = assignSubjectId === s.id;
-                          return (
-                            <button key={s.id} type="button" onClick={() => setAssignSubjectId(s.id)}
-                              className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all ${
-                                selected ? 'bg-accent text-white' : 'bg-stone-50 border border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
-                              }`}>
-                              <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 ${selected ? 'bg-white/20' : 'border border-stone-300'}`}>
-                                {selected && <Check className="w-2.5 h-2.5" />}
-                              </div>
-                              {s.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </form>
-                </div>
-
-                <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
-                  <button type="button" onClick={closeAssign}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Cancel
-                  </button>
-                  <button type="submit" form="admin-assign-form" disabled={assignSubmitting}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {assignSubmitting
-                      ? <><div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving...</>
-                      : <>Assign <ArrowRight className="w-4 h-4" /></>
-                    }
-                  </button>
-                </div>
-              </div>
+      <Modal open={showAssign} onClose={closeAssign} title="Assign teacher to student"
+        footer={<>
+          <button type="button" onClick={closeAssign}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" form="admin-assign-form" disabled={assignSubmitting}
+            className="text-[14px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2" style={{ color: 'var(--color-navy)' }}>
+            {assignSubmitting
+              ? <><div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Saving...</>
+              : <>Assign <ArrowRight className="w-3.5 h-3.5" /></>
+            }
+          </button>
+        </>}
+      >
+        <form id="admin-assign-form" onSubmit={handleAssignSubmit} className="space-y-4">
+          {assignError && (
+            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              className="flex gap-3 p-4 bg-red-50 border border-red-200 rounded">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-red-700 text-sm">{assignError}</p>
             </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+          )}
+
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">Student</label>
+            <Dropdown
+              value={assignStudentId ? String(assignStudentId) : null}
+              onChange={(v) => setAssignStudentId(Number(v) || null)}
+              placeholder="Select student"
+              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+              options={knownStudents.map((s) => ({ value: String(s.id), label: `${s.surname}, ${s.name} (${s.code})` }))}
+            />
+            <p className="text-xs text-stone-500 mt-1.5">
+              Only students already in the school (added by a teacher) appear here.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-1.5">Teacher</label>
+            <Dropdown
+              value={assignTeacherId ? String(assignTeacherId) : null}
+              onChange={(v) => setAssignTeacherId(Number(v) || null)}
+              placeholder="Select teacher"
+              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 bg-stone-50 border border-brand-border rounded text-sm font-medium text-brand-dark focus:outline-none focus:border-brand-dark focus:ring-2 focus:ring-brand-dark/10 transition-all"
+              options={teachers.map((t) => ({ value: String(t.id), label: `${t.surname}, ${t.name} (${t.teacher_code})` }))}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Subject</label>
+            <div className="grid grid-cols-2 gap-1.5">
+              {subjects.map((s) => {
+                const selected = assignSubjectId === s.id;
+                return (
+                  <button key={s.id} type="button" onClick={() => setAssignSubjectId(s.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded text-xs font-bold text-left transition-all border ${
+                      selected ? 'bg-sky-50 border-sky-200' : 'bg-stone-50 border-brand-border text-stone-600 hover:border-stone-300 hover:text-brand-dark'
+                    }`}
+                    style={selected ? { color: 'var(--color-navy)' } : undefined}>
+                    <div className={`w-3.5 h-3.5 rounded flex items-center justify-center shrink-0 border ${selected ? 'border-sky-300' : 'border-stone-300'}`}>
+                      {selected && <Check className="w-2.5 h-2.5" style={{ color: 'var(--color-navy)' }} />}
+                    </div>
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </form>
+      </Modal>
 
       {/* Remove confirm */}
-      <AnimatePresence>
-        {confirmRemove && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setConfirmRemove(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 16 }}
-              transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            >
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-                <div className="w-10 h-10 rounded bg-red-50 flex items-center justify-center mb-4">
-                  <Trash2 className="w-5 h-5 text-red-500" />
-                </div>
-                <h2 className="text-base font-black text-brand-dark mb-1">Remove this link?</h2>
-                <p className="text-sm text-stone-500 mb-6">
-                  <span className="font-bold text-brand-dark">{confirmRemove.teacher_surname}, {confirmRemove.teacher_name}</span> will
-                  no longer teach <span className="font-bold text-brand-dark">{confirmRemove.subject_label}</span> to{' '}
-                  <span className="font-bold text-brand-dark">{confirmRemove.student_surname}, {confirmRemove.student_name}</span>.
-                  The student's account and other links are unaffected.
-                </p>
-                <div className="flex gap-3">
-                  <button onClick={() => setConfirmRemove(null)}
-                    className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                    Cancel
-                  </button>
-                  <button onClick={handleRemove} disabled={removing}
-                    className="flex-1 py-2.5 text-sm font-black text-white bg-red-600 rounded hover:bg-red-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                    {removing
-                      ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      : 'Remove'
-                    }
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal open={!!confirmRemove} onClose={() => setConfirmRemove(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setConfirmRemove(null)}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleRemove} disabled={removing}
+            className="text-[14px] font-semibold text-red-600 hover:text-red-700 transition-colors disabled:opacity-50">
+            {removing ? 'Removing...' : 'Remove'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Remove this link?</h2>
+        <p className="text-sm text-stone-500">
+          <span className="font-bold text-brand-dark">{confirmRemove?.teacher_surname}, {confirmRemove?.teacher_name}</span> will
+          no longer teach <span className="font-bold text-brand-dark">{confirmRemove?.subject_label}</span> to{' '}
+          <span className="font-bold text-brand-dark">{confirmRemove?.student_surname}, {confirmRemove?.student_name}</span>.
+          The student's account and other links are unaffected.
+        </p>
+      </Modal>
     </div>
   );
 }

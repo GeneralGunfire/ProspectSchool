@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, GraduationCap, BookOpen, Pencil, Plus, Trash2, AlertCircle, ArrowRight } from 'lucide-react';
+import { motion } from 'motion/react';
+import { GraduationCap, BookOpen, Pencil, Plus, Trash2, AlertCircle, ArrowRight } from 'lucide-react';
 import {
   fetchStudentDetail, adminUpdateStudent, replaceStudentAssignments, fetchSubjects,
   type StudentDetail, type Subject, type SubjectTeacherPair,
 } from '../../../lib/students';
 import { fetchSchoolTeachers, type Teacher } from '../../../lib/teachers';
+import { fetchStudentRisk, type StudentRiskProfile } from '../../../lib/riskEngine';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
+
+const TIER_STYLE: Record<StudentRiskProfile['tier'], { label: string; className: string }> = {
+  high: { label: 'High risk', className: 'bg-red-50 text-red-600 border-red-200' },
+  moderate: { label: 'Moderate risk', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  none: { label: 'On track', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+};
 
 interface StudentDetailModalProps {
   student_id: number;
@@ -40,6 +48,7 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
   const [rows, setRows] = useState<AssignmentRow[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [risk, setRisk] = useState<StudentRiskProfile | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -47,6 +56,8 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
       if (result.success) setDetail(result.detail);
       setLoading(false);
     });
+    const todayStr = new Date().toISOString().split('T')[0];
+    fetchStudentRisk(student_id, school_id, todayStr).then(setRisk).catch(() => setRisk(null));
   };
 
   useEffect(() => { load(); }, [student_id, school_id]);
@@ -117,31 +128,37 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
   };
 
   return (
-    <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[88vh]">
-          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-            <h2 className="text-lg font-black text-brand-dark">{editing ? 'Edit Student' : 'Student Details'}</h2>
-            <div className="flex items-center gap-1">
-              {!editing && detail && (
-                <button onClick={openEdit} aria-label="Edit student" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                  <Pencil className="w-4 h-4" />
-                </button>
-              )}
-              <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          <div className="px-6 py-5 overflow-y-auto">
+    <Modal
+      open
+      onClose={onClose}
+      title={editing ? 'Edit student' : 'Student details'}
+      maxWidth="max-w-lg"
+      titleExtra={!editing && detail ? (
+        <button onClick={openEdit} aria-label="Edit student" className="p-2 rounded hover:bg-stone-100 text-stone-500 hover:text-stone-700 transition-colors">
+          <Pencil className="w-4 h-4" />
+        </button>
+      ) : undefined}
+      footer={editing ? (
+        <>
+          <button type="button" onClick={() => setEditing(false)}
+            className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" form="student-edit-form" disabled={submitting}
+            className="text-[14px] font-semibold transition-colors disabled:opacity-50 flex items-center gap-2" style={{ color: 'var(--color-navy)' }}>
+            {submitting
+              ? <div className="w-3.5 h-3.5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+              : <>Save changes <ArrowRight className="w-3.5 h-3.5" /></>
+            }
+          </button>
+        </>
+      ) : (
+        <button onClick={onClose}
+          className="text-[14px] font-semibold text-stone-500 hover:text-stone-700 transition-colors">
+          Close
+        </button>
+      )}
+    >
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="w-5 h-5 border-2 border-brand-border border-t-stone-700 rounded-full animate-spin" />
@@ -245,25 +262,62 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
               </form>
             ) : (
               <div className="space-y-5">
-                <div>
-                  <p className="text-xl font-black text-brand-dark">{detail.name} {detail.surname}</p>
-                  <p className="text-sm font-mono text-stone-500 tracking-widest mt-0.5">{detail.student_code}</p>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xl font-black text-brand-dark">{detail.name} {detail.surname}</p>
+                    <p className="text-sm font-mono text-stone-500 tracking-widest mt-0.5">{detail.student_code}</p>
+                  </div>
+                  {risk && (
+                    <span className={`px-2.5 py-1 rounded text-[12px] font-semibold border shrink-0 ${TIER_STYLE[risk.tier].className}`}>
+                      {TIER_STYLE[risk.tier].label}
+                    </span>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-stone-50 rounded border border-brand-border">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1">Grade</p>
+                    <p className="text-[12px] text-muted-2 mb-1">Grade</p>
                     <p className="text-sm font-bold text-brand-dark">Grade {detail.grade}</p>
                   </div>
                   <div className="p-3 bg-stone-50 rounded border border-brand-border">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-1">Class</p>
+                    <p className="text-[12px] text-muted-2 mb-1">Class</p>
                     <p className="text-sm font-bold text-brand-dark">{detail.cohort_name ?? 'Unassigned'}</p>
                   </div>
                 </div>
 
+                {risk && (
+                  <div>
+                    <p className="text-[15px] text-brand-dark mb-2" style={{ fontWeight: 600 }}>Oversight snapshot</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 bg-stone-50 rounded border border-brand-border">
+                        <p className="text-[12px] text-muted-2 mb-1">Attendance (recent)</p>
+                        <p className="text-sm font-bold text-brand-dark">
+                          {risk.raw.attendanceRateRecent !== null ? `${risk.raw.attendanceRateRecent}%` : '—'}
+                        </p>
+                      </div>
+                      <div className="p-3 bg-stone-50 rounded border border-brand-border">
+                        <p className="text-[12px] text-muted-2 mb-1">Serious behaviour (term)</p>
+                        <p className="text-sm font-bold text-brand-dark">{risk.raw.behaviourSeriousTerm}</p>
+                      </div>
+                    </div>
+                    {risk.worstSubject && (
+                      <p className="text-xs text-stone-500 mt-2">
+                        Weakest subject: <span className="font-semibold text-brand-dark capitalize">{risk.worstSubject.subject}</span>
+                      </p>
+                    )}
+                    {risk.reasons.length > 0 && (
+                      <ul className="mt-2 space-y-1">
+                        {risk.reasons.map((r, i) => (
+                          <li key={i} className="text-xs text-stone-500">· {r}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
+
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-stone-500 mb-2 flex items-center gap-1.5">
-                    <BookOpen className="w-3 h-3" /> Subjects & Teachers
+                  <p className="text-[15px] text-brand-dark mb-2 flex items-center gap-1.5" style={{ fontWeight: 600 }}>
+                    <BookOpen className="w-3.5 h-3.5" style={{ color: 'var(--color-navy)' }} /> Subjects & teachers
                   </p>
                   {detail.teacherLinks.length === 0 ? (
                     <p className="text-sm text-stone-500">No subject links yet.</p>
@@ -282,32 +336,6 @@ export default function StudentDetailModal({ student_id, school_id, onClose, onS
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="flex gap-3 px-6 py-4 border-t border-brand-border/60 shrink-0">
-            {editing ? (
-              <>
-                <button type="button" onClick={() => setEditing(false)}
-                  className="flex-1 py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                  Cancel
-                </button>
-                <button type="submit" form="student-edit-form" disabled={submitting}
-                  className="flex-1 py-2.5 text-sm font-black text-white bg-accent rounded hover:bg-accent-soft transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                  {submitting
-                    ? <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    : <>Save Changes <ArrowRight className="w-4 h-4" /></>
-                  }
-                </button>
-              </>
-            ) : (
-              <button onClick={onClose}
-                className="w-full py-2.5 text-sm font-bold text-stone-600 border border-brand-border rounded hover:bg-stone-50 transition-all">
-                Close
-              </button>
-            )}
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    </Modal>
   );
 }

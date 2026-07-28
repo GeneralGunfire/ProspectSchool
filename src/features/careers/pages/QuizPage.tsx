@@ -433,7 +433,8 @@ function ResultsPhase({
     const encoded = btoa(
       JSON.stringify({ topCodes: results.topCodes, percentages: results.percentages }),
     );
-    const url = `${window.location.origin}?quiz-results=${encoded}`;
+    const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+    const url = `${siteUrl}?quiz-results=${encoded}`;
     try {
       await navigator.clipboard.writeText(url);
       toast?.success('Share link copied to clipboard.');

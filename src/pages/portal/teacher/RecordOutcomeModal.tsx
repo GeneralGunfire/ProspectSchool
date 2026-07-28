@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import { recordOutcome, type InterventionType, type Outcome, type OutcomeResult } from '../../../lib/interventions';
 import { resolveActionsForIntervention } from '../../../lib/actionCenter';
+import Modal from '../../../shared/components/Modal';
 
 export interface OutcomeTarget {
   interventionId: string;
@@ -112,33 +112,27 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
   const canSubmit = preview !== null && !saving;
 
   return (
-    <AnimatePresence>
-      <motion.div
-        key="overlay"
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
-      />
-      <motion.div
-        key="panel"
-        initial={{ opacity: 0, scale: 0.96, y: 16 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 16 }}
-        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      >
-        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm max-h-[90vh] flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-brand-border/60 shrink-0">
-            <div>
-              <h2 className="text-base font-black text-brand-dark">Record outcome</h2>
-              <p className="text-xs text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</p>
-            </div>
-            <button onClick={onClose} aria-label="Close" className="p-2 rounded hover:bg-stone-100 text-stone-500 transition-colors">
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="px-6 py-4 overflow-y-auto">
+    <Modal
+      open
+      onClose={onClose}
+      maxWidth="max-w-sm"
+      title={
+        <span>
+          Record outcome
+          <span className="block text-xs font-medium text-stone-500 mt-0.5">{target.studentLabel} · {target.subject}</span>
+        </span>
+      }
+      footer={
+        <button
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          className="text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ color: 'var(--color-navy)' }}
+        >
+          {saving ? 'Saving…' : 'Record outcome'}
+        </button>
+      }
+    >
             {loading ? (
               <div className="flex justify-center py-8">
                 <div className="w-4 h-4 border-2 border-brand-border border-t-stone-600 rounded-full animate-spin" />
@@ -195,20 +189,6 @@ export default function RecordOutcomeModal({ session, target, onClose, onRecorde
                 })()}
               </>
             )}
-          </div>
-
-          <div className="px-6 pb-6 pt-2 shrink-0">
-            <button
-              onClick={handleSubmit}
-              disabled={!canSubmit}
-              className="text-[14px] font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ color: 'var(--color-navy)' }}
-            >
-              {saving ? 'Saving…' : 'Record outcome'}
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    </Modal>
   );
 }

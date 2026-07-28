@@ -121,6 +121,8 @@ const PortalIntroPanel = () => (
   </div>
 );
 
+const isDesktopApp = typeof window !== 'undefined' && window.isTauri;
+
 export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
     <div className="auth-bg relative min-h-screen flex flex-col overflow-hidden">
@@ -129,26 +131,30 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
       {/* Top nav — same floating glass pill as the landing page navbar, but
           with only the logo and a back button, since Students/Teachers/
           Pricing links and "Portal Login" don't apply on the portal
-          entry page itself. */}
-      <div className="fixed top-4 left-0 right-0 z-50 px-4">
-        <nav className="max-w-3xl mx-auto bg-white/40 backdrop-blur-xl backdrop-saturate-150 border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
-          <div className="h-13 flex items-center justify-between px-2.5">
-            <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer">
-              <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
-              <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
-            </button>
-            <button
-              onClick={() => onNavigate('home')}
-              className="flex items-center gap-1.5 rounded-full px-4 py-2 mr-1 text-[12px] font-bold text-brand-eyebrow hover:text-brand-dark hover:bg-brand-dark/5 transition-colors cursor-pointer"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" /> Back
-            </button>
-          </div>
-        </nav>
-      </div>
+          entry page itself. Hidden in the desktop app: there's no marketing
+          site to "go back" to inside a native window, and the desktop app
+          opens straight to this screen (see App.tsx's initial page logic). */}
+      {!isDesktopApp && (
+        <div className="fixed top-4 left-0 right-0 z-50 px-4">
+          <nav className="max-w-3xl mx-auto bg-white/40 backdrop-blur-xl backdrop-saturate-150 border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
+            <div className="h-13 flex items-center justify-between px-2.5">
+              <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer">
+                <img src="/logo3.png" alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0" />
+                <span className="font-serif-accent text-lg text-brand-dark leading-none">Prospect</span>
+              </button>
+              <button
+                onClick={() => onNavigate('home')}
+                className="flex items-center gap-1.5 rounded-full px-4 py-2 mr-1 text-[12px] font-bold text-brand-eyebrow hover:text-brand-dark hover:bg-brand-dark/5 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" /> Back
+              </button>
+            </div>
+          </nav>
+        </div>
+      )}
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 lg:px-10 pt-24 sm:pt-28 pb-10 sm:pb-12">
+      <div className={`relative z-10 flex-1 flex items-center justify-center px-4 lg:px-10 pb-10 sm:pb-12 ${isDesktopApp ? 'pt-10 sm:pt-12' : 'pt-24 sm:pt-28'}`}>
         <div className="w-full max-w-md lg:max-w-5xl flex items-center justify-center lg:justify-between gap-16 xl:gap-24">
           <PortalIntroPanel />
           <motion.div

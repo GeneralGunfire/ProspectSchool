@@ -1,0 +1,114 @@
+PROSPECT
+Nizamye Primary and High School
+Computer Science / Software Engineering
+
+Prepared by: Rajen Chetty, Njabulo Huzayfa Mkandla
+Document issued: 12 July 2026
+
+
+DEVELOPMENT & RESEARCH JOURNAL
+
+A Unified Digital Platform for School Information Access and Early Academic Intervention
+
+Development period: Week 1 (~27 April 2026) - Week 10 (~11 July 2026)
+
+Note: the early weeks (research, planning, data modelling) happened before our first commit, so they're reconstructed from notes and memory rather than git history. Later weeks are cross-checked against actual commits where we could.
+
+
+WEEK 1 - Problem definition & background research (27 Apr - 3 May)
+
+- Decided on the project topic: information access and academic support in South African schools.
+- Talked informally with two teachers about what actually frustrates them day to day with tracking students and communicating with parents. The recurring theme: problems only get noticed once a report card is already bad.
+- Looked into existing commercial school-management systems to see what a normal feature set looks like and where they fall short for under-resourced schools.
+- Started reading up on the NSC and APS system, since career/subject guidance kept coming up as a gap.
+- Wrote a rough problem statement and a first draft of the research question.
+
+WEEK 2 - Data modelling & architecture decisions (4 - 10 May)
+
+- Sketched the core relationships on paper: schools contain classes, classes contain students, teachers are linked to subjects and classes, parents are linked to students.
+- Decided against building our own backend server - went with Supabase (managed Postgres + Row Level Security) so the project stays realistically deployable for a school with no IT budget.
+- Decided against normal email/password login. Landed on school code + role code + PIN as the more accessible option for students and parents without a reliable personal email.
+- Picked the frontend stack: React + Tailwind + Vite.
+- Set up the repo and initial project structure.
+
+WEEK 3 - Early build environment & scaffolding (11 - 17 May)
+
+This week isn't fully reflected in the first real commit, since a lot of it was scaffolding and false starts that got reset before anything solid landed.
+
+- Iterated on the database schema before writing any real migrations - mostly whiteboard work on how marks, mark sheets, and term weighting should relate to each other.
+- Built the very first skeleton: dashboard shells for each role, a placeholder login screen.
+- Ran into early friction keeping four different portals visually consistent without duplicating CSS everywhere - decided on a shared Tailwind token approach instead of four separate stylesheets.
+
+WEEK 4 - First real functionality (18 - 24 May)
+
+- 28 May - Initial commit.
+- 29 May - Added resources, announcements, a homework tracker, a marks chart, and the first real home dashboards for each role. First time the app actually felt like a product.
+- 29 May - Fixed the first deployment issues getting the app live on Vercel (wrong repo linked, missing SPA rewrite rule so routes 404'd on refresh).
+- 29 May - Fixed a couple of build-breaking bugs around the careers/map feature - an early sign that the career/APS planning side was going to be more data-heavy than expected.
+- 29 May - Fixed blank portal pages by switching to a proper switch/renderPage pattern so page transitions always had something to animate.
+- Tested logging in as each of the four roles end-to-end for the first time.
+
+WEEK 5 - Learning content, landing page, and early portal redesign (25 - 31 May)
+
+- 1 Jun - Finished "Phase 2": redesigned the learning page and filled out content across all 35 topics - this became the content backbone that Topic Tests later built on.
+- 1 Jun - Built a new landing page, redesigned the portal entry page and all three login pages that existed at the time, and unified the site's colour palette.
+- 1 Jun - Shipped the first version of the APS Goal Planner, the Bursary match tracker, and Past Papers smart filters with self-marking - directly out of the Week 1 research on APS/NSC and the "no counsellor" problem.
+- 1 Jun - Did a UI pass to tighten spacing and fix mobile nav, motivated by the research finding that a lot of households are mobile-first for internet access.
+- 1 Jun - Fixed several crashes found during this push (broken My Future routes, an APS calculator crash from a library migration, a Quiz page crash from an undefined prop).
+- Reflected at the end of the week that the student-facing planning tools were coming together faster than expected, but the teacher-facing "intelligence" side - the actual core of the research question - hadn't been started yet.
+
+WEEK 6 - The intelligence layer, intensive push (1 - 2 Jun)
+
+This was by far the most research-driven and technically dense stretch of the whole project - nearly all of the explainable at-risk and intervention pipeline work landed in these two days, and it's where the "explainability matters more than expected" finding first became obvious through testing.
+
+- Built the dashboard upgrade, an overhauled calendar, and marks action-centre upgrades - the goal was making the dashboard proactive instead of just a stats page.
+- Overhauled Resources, Past Papers, and Announcements, adding engagement tracking as a first step toward correlating engagement with outcomes.
+- Shipped the Student Intelligence Engine - the function that turns raw marks/homework/events into exam risk, revision suggestions, and (later) the Academic Journey status score.
+- Wired that engine across all student pages, then built the Intervention & Outcome Tracking system - the direct implementation of the "close the loop" idea from the Week 1 teacher conversations.
+- Built outcome recording, impact analytics, and a growth timeline so an improvement could be traced back to whatever intervention plausibly caused it.
+- Refactored the engines to be pure functions (interventions passed in as parameters instead of fetched internally) after realising the original setup made testing the logic in isolation unnecessarily hard.
+- Migrated interventions and outcomes from localStorage to Supabase - an important fix, since local-only storage meant a parent on a different device would never see the same data.
+- Did a full visual redesign of the teacher portal to match the student one, added teacher-side analytics, and cleaned up the schema.
+- Built the correlation layer: Intervention ROI, Resource Effectiveness, Announcement Impact - each with a sample size shown, after noticing early versions were misleading with very small numbers.
+- Added a rationale field directly onto interventions, and reworked the recommendation logic to be evidence-based instead of arbitrary.
+
+WEEK 7 - Consolidation, lower-visibility period (3 Jun - 4 Jul)
+
+- 3 Jun - Shipped the intervention assign flow, a follow-up queue, an assessment gap detector, bulk campaigns, and performance-tier grouping for rosters - this is the point where the At-Risk Engine and intervention pipeline were feature-complete in their first form.
+- The gap in commits between 3 Jun and 5 Jul reflects real work, just not commits - this is when we built the synthetic test dataset (32 students, 96 records, 14 designed at-risk profiles) and ran the timed manual-vs-engine comparison later reported in the Research Report.
+- Also spent this time reading real South African university admission pages in detail to check the APS calculator and degree-matching against actual 2026 requirements.
+- Smaller UI issues found during this testing period were noted but not fixed immediately, so as not to interrupt the evaluation.
+
+WEEK 8 - Full role coverage & remaining core features (5 - 8 Jul)
+
+- 5 Jul - Added proper back-button navigation, and migrated parent contact logs into the database.
+- 6 Jul - Big redesign push: a new landing page, a notifications system, a full visual redesign of the student/teacher/admin portals, and several rounds of login/portal redesign.
+- 6 Jul - Gave the At-Risk Students view its own dedicated page rather than just dashboard cards, after testing suggested teachers wanted to see everyone at risk at once, not just the top few.
+- 7 Jul - Added the Assign Student flow (linking a student already on one teacher's roster onto another teacher's roster without duplicating them), weighted final marks, the Topic Tests system, and Library polish.
+- 7 Jul - Added teacher deletion (admin-side) and expanded the Grade 10 Topic Tests catalog.
+- 7 Jul - Built the Homeroom system, expanded admin tools for managing classes/students/teachers, and shipped the first version of the Platform Admin dashboard.
+- 7 Jul - Added the Behaviour (merits/demerits) system and Parent Accounts - this is what unlocked a real parent portal, since parents can't be linked to anything until there's actually attendance/marks/behaviour to show them.
+- 7 Jul - Added the Timetable feature (per-cell breaks, drag-and-drop, copy) - the most structurally complex admin feature, since it needed real-time teacher clash detection.
+- 7 Jul - Another landing page pass, plus fixes to mobile menu bugs and PIN autofill issues.
+
+WEEK 9 - Timetable maturity & new modules (8 - 9 Jul)
+
+- 8 Jul - Added per-school stats drill-down and unified navigation for Platform Admin.
+- 8 Jul - Cleaned up the student portal and merged APS + university matching into a single "My Future" page, based on testers being confused about where career tools lived.
+- 8 Jul - Fixed a cluster of timetable drag/drop and copy bugs found during testing, added a batch-edit mode and a dedicated mobile day view.
+- 8 Jul - Made Student Assignments cards expandable in the admin view, and overhauled Topic Tests plus the Grade 9-to-10 Subject Selection workflow - the feature that lets homeroom teachers approve or reject a student's proposed subject choices, closing another gap from the Week 1 research.
+- 9 Jul - Added the Marketplace module (listings, wanted requests, a school supply guide) - this came out of realising "access to information" also covers affordable school supplies and textbooks, which is its own real barrier for lower-income households.
+
+WEEK 10 - Final consistency pass & evaluation (10 - 12 Jul)
+
+- 10 Jul - Redesigned the student portal with a unified visual system.
+- 11 Jul - Rolled the same design system out to teacher, admin, and parent portals, and matched up the sidebar and profile card across every dashboard - the goal was making all four portals feel like one product after ten weeks of feature-driven redesign work.
+- Ran the full At-Risk Engine vs manual review comparison from the Research Plan, using the constructed dataset, and recorded the numbers now in the Research Report.
+- Cross-checked the APS calculator and degree matching against real published admission pages for 10 programmes.
+- Wrote up the Research Report, Research Plan, Abstract, and this Journal.
+- Noted the real limitations honestly instead of hiding them: no real-school pilot yet, At-Risk Engine thresholds aren't calibrated against a real school's actual data, and PIN-based login needs hardening before it could handle real personal information.
+
+
+REFLECTIONS ON THE PROCESS
+
+Looking back, the project ended up matching the research question more through constant course-correction than through sticking to a rigid plan - a few of these "weeks" (especially Week 6 and Week 8) were really short, intense pushes rather than steady work, and the quiet stretch around Week 7 was genuine research and evaluation time that just doesn't show up in commit history. The biggest thing we didn't expect: we assumed the hard part would be getting the risk-detection logic right. What we actually found was that a correct but unexplained flag is a lot less useful to a teacher than a simpler one they can actually understand.

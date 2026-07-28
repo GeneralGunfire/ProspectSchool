@@ -824,6 +824,20 @@ export async function moveStudentToCohort(
   return { success: true };
 }
 
+export async function removeStudentFromCohort(
+  student_id: number,
+  school_id: number
+): Promise<MoveStudentResult> {
+  const { error } = await supabaseAdmin
+    .from('students')
+    .update({ cohort_id: null })
+    .eq('id', student_id)
+    .eq('school_id', school_id);
+
+  if (error) return { success: false, error: 'Failed to remove student from class.' };
+  return { success: true };
+}
+
 // ── Fetch students for a teacher ──────────────────────────────
 // Returns all students this teacher has at least one subject relationship with
 

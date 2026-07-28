@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Check, X as XIcon, Send, AlertCircle, Users } from 'lucide-react';
 import type { TeacherSession } from '../../../lib/auth';
 import { fetchTeacherHomerooms, type CohortWithHomeroom } from '../../../lib/homeroom';
+import Modal from '../../../shared/components/Modal';
 import {
   fetchHomeroomSelections, teacherApproveSelection, teacherRejectSelection,
   type StudentSelectionRow, type SubjectChoices,
@@ -185,30 +186,24 @@ export default function SubjectApprovalsPage({ session }: SubjectApprovalsPagePr
       )}
       </div>
 
-      {rejectingId !== null && (
-        <>
-          <div onClick={() => setRejectingId(null)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" />
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-              <h2 className="text-base font-black text-brand-dark mb-1">Send back for changes</h2>
-              <p className="text-sm text-stone-500 mb-4">Add a short note explaining what needs to change.</p>
-              <textarea value={rejectComment} onChange={(e) => setRejectComment(e.target.value)}
-                rows={3} placeholder="e.g. Please reconsider your elective combination"
-                className="w-full rounded border border-brand-border px-3 py-2 text-sm mb-4" />
-              <div className="flex items-center gap-6">
-                <button onClick={() => setRejectingId(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors">
-                  Cancel
-                </button>
-                <button onClick={handleReject}
-                  className="flex items-center gap-1.5 text-[14px] font-semibold text-red-600 transition-colors">
-                  <Send className="w-3.5 h-3.5" /> Send back
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+      <Modal open={rejectingId !== null} onClose={() => setRejectingId(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setRejectingId(null)}
+            className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleReject}
+            className="flex items-center gap-1.5 text-[14px] font-semibold text-red-600 transition-colors">
+            <Send className="w-3.5 h-3.5" /> Send back
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Send back for changes</h2>
+        <p className="text-sm text-stone-500 mb-4">Add a short note explaining what needs to change.</p>
+        <textarea value={rejectComment} onChange={(e) => setRejectComment(e.target.value)}
+          rows={3} placeholder="e.g. Please reconsider your elective combination"
+          className="w-full rounded border border-brand-border px-3 py-2 text-sm" />
+      </Modal>
     </div>
   );
 }

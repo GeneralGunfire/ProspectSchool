@@ -85,8 +85,9 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
                 key={c.student_id}
                 onClick={() => { setActiveChild(c); setChildPickerOpen(false); }}
                 className={`w-full text-left px-3.5 py-2.5 text-[13px] font-bold transition-colors ${
-                  activeChild?.student_id === c.student_id ? 'bg-accent text-white' : 'text-stone-600 hover:bg-brand-bg'
+                  activeChild?.student_id === c.student_id ? 'bg-sky-50' : 'text-stone-600 hover:bg-brand-bg'
                 }`}
+                style={activeChild?.student_id === c.student_id ? { color: 'var(--color-navy)' } : undefined}
               >
                 {c.name} {c.surname}
                 <span className="block text-[10px] font-medium opacity-70">
@@ -136,10 +137,10 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
                   onClick={() => setPage(id)}
                   className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[13.5px] font-bold transition-all duration-150 ${
                     active
-                      ? 'bg-brand-dark text-white'
+                      ? 'text-white'
                       : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                   }`}
-                  style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                  style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                 >
                   <Icon className={`w-4.5 h-4.5 shrink-0 ${active ? 'text-white' : ''}`} />
                   <span>{label}</span>
@@ -151,8 +152,8 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
           {/* Profile + logout */}
           <div className="p-3 shrink-0 border-t border-brand-border rounded-b-[14px]">
             <div className="flex items-center gap-3 px-2 pb-3 mb-1.5 border-b border-brand-border">
-              <div className="w-10 h-10 rounded-full bg-accent flex items-center justify-center shrink-0">
-                <span className="text-accent-foreground font-black text-[12px]">{initials}</span>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+                <span className="text-white font-black text-[12px]">{initials}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[14px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>
@@ -189,8 +190,8 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-accent flex items-center justify-center">
-              <span className="text-accent-foreground font-black text-[10px]">{initials}</span>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+              <span className="text-white font-black text-[10px]">{initials}</span>
             </div>
             <button
               onClick={() => { parentLogout(); onNavigate('portal'); }}
@@ -256,10 +257,10 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
                           onClick={() => setPage(id)}
                           className={`w-full flex items-center gap-2.5 px-3.5 py-2 rounded-[10px] text-[13px] font-bold transition-all duration-150 ${
                             active
-                              ? 'bg-accent text-white'
+                              ? 'text-white'
                               : 'text-stone-500 hover:bg-brand-bg hover:text-brand-dark'
                           }`}
-                          style={active ? { boxShadow: '0 4px 10px -2px rgba(21,23,28,0.35)' } : undefined}
+                          style={active ? { background: 'linear-gradient(90deg, #0ea5e9, #2563eb)' } : undefined}
                         >
                           <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : ''}`} />
                           <span>{label}</span>
@@ -272,8 +273,8 @@ export default function ParentDashboard({ onNavigate }: ParentDashboardProps) {
                   <div className="p-2.5 shrink-0 border-t border-brand-border"
                     style={{ paddingBottom: 'max(0.625rem, env(safe-area-inset-bottom))' }}>
                     <div className="flex items-center gap-2.5 px-1 pb-2.5 mb-1 border-b border-brand-border">
-                      <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center shrink-0">
-                        <span className="text-accent-foreground font-black text-[11px]">{initials}</span>
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(135deg, #0ea5e9, #2563eb)' }}>
+                        <span className="text-white font-black text-[11px]">{initials}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-[13px] font-black text-brand-dark truncate">{session.name} {session.surname}</p>

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Shimmer } from '../../../shared/components/Shimmer';
 import Dropdown from '../../../shared/components/Dropdown';
+import Modal from '../../../shared/components/Modal';
 import { computeSheetAnalytics } from '../../../lib/teacherAnalytics';
 import { fetchBestInterventionType } from '../../../lib/teacherAnalytics';
 import {
@@ -735,191 +736,141 @@ export default function MarksPage({ session }: MarksPageProps) {
       </div>
 
       {/* ── Create sheet modal ────────────────────────────────── */}
-      <AnimatePresence>
-        {createModal && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setCreateModal(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-brand-border/60">
-                <h2 className="text-base font-black text-brand-dark">New Mark Sheet</h2>
-                <button onClick={() => setCreateModal(false)} aria-label="Close" className="p-1.5 rounded-lg hover:bg-stone-100 transition-colors">
-                  <X className="w-4 h-4 text-stone-500" />
-                </button>
-              </div>
+      <Modal open={createModal} onClose={() => setCreateModal(false)} title="New mark sheet"
+        footer={<>
+          <button onClick={() => setCreateModal(false)} className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleCreate} disabled={saving}
+            className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50" style={{ color: 'var(--color-navy)' }}>
+            {saving ? 'Creating…' : 'Create & open'} <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </>}
+      >
+        <div className="space-y-4">
+          {/* Title */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Title *</label>
+            <input
+              value={form.title}
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+              placeholder="e.g. Chapter 3 Test"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+            />
+          </div>
 
-              <div className="p-6 space-y-4">
-                {/* Title */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Title *</label>
-                  <input
-                    value={form.title}
-                    onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-                    placeholder="e.g. Chapter 3 Test"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                  />
-                </div>
+          {/* Subject */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Subject *</label>
+            <Dropdown
+              value={form.subject_id || null}
+              onChange={v => setForm(f => ({ ...f, subject_id: v }))}
+              placeholder="Select subject…"
+              buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
+              options={subjects.map(s => ({ value: String(s.id), label: s.label }))}
+            />
+          </div>
 
-                {/* Subject */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Subject *</label>
-                  <Dropdown
-                    value={form.subject_id || null}
-                    onChange={v => setForm(f => ({ ...f, subject_id: v }))}
-                    placeholder="Select subject…"
-                    buttonClassName="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-dark bg-white"
-                    options={subjects.map(s => ({ value: String(s.id), label: s.label }))}
-                  />
-                </div>
-
-                {/* Grade */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Grade *</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {GRADES.map(g => (
-                      <button
-                        key={g}
-                        onClick={() => setForm(f => ({ ...f, grade: String(g) }))}
-                        className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.grade === String(g) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                        }`}
-                      >
-                        Grade {g}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Scope */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Scope <span className="normal-case font-bold text-stone-400">(optional)</span></label>
-                  <input
-                    value={form.scope}
-                    onChange={e => setForm(f => ({ ...f, scope: e.target.value }))}
-                    placeholder="e.g. Term 1, Chapters 1–4"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                  />
-                </div>
-
-                {/* Total */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Total marks *</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.total}
-                    onChange={e => setForm(f => ({ ...f, total: e.target.value }))}
-                    placeholder="e.g. 100"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                  />
-                </div>
-
-                {/* Term */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">Term *</label>
-                  <div className="flex gap-1.5 flex-wrap">
-                    {[1, 2, 3, 4].map(t => (
-                      <button
-                        key={t}
-                        onClick={() => setForm(f => ({ ...f, term: String(t) }))}
-                        className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
-                          form.term === String(t) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
-                        }`}
-                      >
-                        Term {t}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Weight */}
-                <div>
-                  <label className="block text-xs font-black uppercase tracking-widest text-stone-500 mb-2">
-                    Weight toward final mark <span className="normal-case font-bold text-stone-400">(% — 0 if just for record)</span>
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    value={form.weight}
-                    onChange={e => setForm(f => ({ ...f, weight: e.target.value }))}
-                    placeholder="e.g. 20"
-                    className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
-                  />
-                  <p className="text-xs text-stone-400 mt-1.5">
-                    Weights for this subject, grade and term add up to the final mark once they reach 100%.
-                  </p>
-                </div>
-
-                {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
-              </div>
-
-              <div className="flex items-center gap-6 px-6 pb-6">
+          {/* Grade */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Grade *</label>
+            <div className="flex gap-1.5 flex-wrap">
+              {GRADES.map(g => (
                 <button
-                  onClick={() => setCreateModal(false)}
-                  className="text-[14px] font-semibold text-muted transition-colors"
+                  key={g}
+                  onClick={() => setForm(f => ({ ...f, grade: String(g) }))}
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
+                    form.grade === String(g) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
                 >
-                  Cancel
+                  Grade {g}
                 </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Scope */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Scope <span className="font-medium text-stone-400">(optional)</span></label>
+            <input
+              value={form.scope}
+              onChange={e => setForm(f => ({ ...f, scope: e.target.value }))}
+              placeholder="e.g. Term 1, Chapters 1–4"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+            />
+          </div>
+
+          {/* Total */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Total marks *</label>
+            <input
+              type="number"
+              min={1}
+              value={form.total}
+              onChange={e => setForm(f => ({ ...f, total: e.target.value }))}
+              placeholder="e.g. 100"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+            />
+          </div>
+
+          {/* Term */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">Term *</label>
+            <div className="flex gap-1.5 flex-wrap">
+              {[1, 2, 3, 4].map(t => (
                 <button
-                  onClick={handleCreate}
-                  disabled={saving}
-                  className="flex items-center gap-1 text-[14px] font-semibold transition-colors disabled:opacity-50"
-                  style={{ color: 'var(--color-navy)' }}
+                  key={t}
+                  onClick={() => setForm(f => ({ ...f, term: String(t) }))}
+                  className={`px-3 py-1.5 rounded text-xs font-black transition-all ${
+                    form.term === String(t) ? 'bg-sky-50 text-sky-700' : 'bg-stone-100 text-stone-500 hover:bg-stone-200'
+                  }`}
                 >
-                  {saving ? 'Creating…' : 'Create & open'} <ChevronRight className="w-3.5 h-3.5" />
+                  Term {t}
                 </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              ))}
+            </div>
+          </div>
+
+          {/* Weight */}
+          <div>
+            <label className="block text-[12px] text-muted-2 mb-2">
+              Weight toward final mark <span className="font-medium text-stone-400">(% — 0 if just for record)</span>
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={form.weight}
+              onChange={e => setForm(f => ({ ...f, weight: e.target.value }))}
+              placeholder="e.g. 20"
+              className="w-full px-3 py-2.5 rounded border border-brand-border text-sm font-bold text-brand-dark placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-dark"
+            />
+            <p className="text-xs text-stone-400 mt-1.5">
+              Weights for this subject, grade and term add up to the final mark once they reach 100%.
+            </p>
+          </div>
+
+          {formError && <p className="text-sm font-bold text-red-500">{formError}</p>}
+        </div>
+      </Modal>
 
       {/* ── Delete confirm modal ──────────────────────────────── */}
-      <AnimatePresence>
-        {deleteSheet && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
-            onClick={() => setDeleteSheet(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, y: 12, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.95, y: 8, opacity: 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6"
-              onClick={e => e.stopPropagation()}
-            >
-              <h2 className="text-base font-black text-brand-dark mb-1">Delete mark sheet?</h2>
-              <p className="text-sm text-stone-500 mb-5">
-                <strong>{deleteSheet.title}</strong> and all student marks will be permanently deleted.
-              </p>
-              <div className="flex items-center gap-6">
-                <button onClick={() => setDeleteSheet(null)}
-                  className="text-[14px] font-semibold text-muted transition-colors">
-                  Cancel
-                </button>
-                <button onClick={handleDelete} disabled={deleting}
-                  className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
-                  {deleting ? 'Deleting…' : 'Delete'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Modal open={!!deleteSheet} onClose={() => setDeleteSheet(null)} maxWidth="max-w-sm"
+        footer={<>
+          <button onClick={() => setDeleteSheet(null)} className="text-[14px] font-semibold text-muted transition-colors">
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting}
+            className="text-[14px] font-semibold text-red-600 transition-colors disabled:opacity-50">
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </>}
+      >
+        <h2 className="text-base font-black text-brand-dark mb-1">Delete mark sheet?</h2>
+        <p className="text-sm text-stone-500">
+          <strong>{deleteSheet?.title}</strong> and all student marks will be permanently deleted.
+        </p>
+      </Modal>
     </div>
   );
 }

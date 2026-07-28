@@ -1,0 +1,141 @@
+PROVISIONAL PROJECT TOPIC: Prospect: A Unified, Explainable Digital Platform for Academic Management and Early Intervention in South African Schools
+
+PROVISIONAL EXPO CATEGORY: Computer Science / Engineering
+
+[Delete the Scientific Investigations, Social Sciences, and Mathematics/Theoretical templates from your final document — only Engineering Type/Computer Science Projects applies here.]
+
+====================================================
+ENGINEERING TYPE / COMPUTER SCIENCE PROJECTS
+====================================================
+
+NAME: [Your Name]
+PROVISIONAL PROJECT TOPIC: Prospect: A Unified, Explainable Digital Platform for Academic Management and Early Intervention in South African Schools
+PROVISIONAL EXPO CATEGORY: Computer Science / Engineering
+
+
+INTRODUCTION
+
+Literature Review
+
+South African schools operate with some of the highest teacher-to-student ratios in the world, and in many under-resourced schools, academic record-keeping still happens on paper or across disconnected spreadsheets. Two problems sit at the centre of this project's research: how to tell, early and reliably, whether a student actually understands a topic, and how to tell, early and reliably, whether a student is starting to fall behind before it becomes a crisis.
+
+Neither problem is new to education research, but very little of the existing work has been tested in a South African context. On the first problem, the learning sciences literature draws a firm line between summative assessment (a test that grades what a student has already learned) and formative assessment (a test used during learning to guide what happens next). Black and Wiliam's foundational work on formative assessment (1998, 2009) argues that assessment is only genuinely formative when its results actually change what a teacher or student does next — otherwise it is just a smaller exam. Bloom's mastery learning model (1968) takes this further: a student should not move on to new material until they have demonstrated mastery of the current one, typically defined as a high, consistent accuracy rate rather than a single lucky pass. Adaptive platforms such as Khan Academy and ALEKS operationalise this using models like Bayesian Knowledge Tracing (Corbett & Anderson, 1994), which estimates, after every question a student answers, the probability that they have actually learned the underlying skill — distinguishing a real understanding from a correct guess. None of this technology or methodology, as far as this review could establish, has been built specifically for the South African CAPS/NSC curriculum.
+
+On the second problem, the early-warning-systems literature in US education research is well developed. The "ABC model" — Attendance, Behaviour, and Course performance — is the most widely used framework for identifying students at risk of falling behind or dropping out (Balfanz, Herzog & Mac Iver, 2007). The Chicago Consortium on School Research's "On-Track Indicator" (Allensworth & Easton, 2005, 2007) showed that a small number of measurable signals — course credits earned and number of course failures by the end of Grade 9 — predicted eventual graduation with around 80% accuracy, outperforming standardised test scores. What is common across this research is a preference for transparent, explainable indicators over opaque statistical models, because teachers are far more likely to trust and act on a flag when they can see the reasoning behind it. Again, this body of research is almost entirely drawn from US school systems; no widely published, CAPS-specific early-warning framework for South African high schools could be found during this review.
+
+This project is not proposing new learning theory. It is proposing to adapt two well-established but locally untested frameworks — mastery-based diagnostic assessment and ABC-style early-warning detection — into a working system designed specifically for the resourcing realities and curriculum structure of South African high schools, and to test whether doing so meaningfully improves on the manual methods schools currently rely on.
+
+Need or Problem Defined
+
+South African teachers, particularly in large classes and under-resourced schools, currently have no affordable, systematic way to know exactly which part of a topic a student has not understood, or to notice that a student is quietly slipping before a term's results make it obvious. Both problems are currently solved, where they are solved at all, by a teacher manually reading through mark sheets and relying on memory and instinct — a method that does not scale to a class of forty or more students across several subjects.
+
+The target users are teachers and students at South African high schools, Grades 8 to 12, particularly at schools without the budget for commercial school-management software or a dedicated academic counsellor. Solving this matters because the cost of a missed at-risk student, or an undiagnosed topic gap that compounds over a school year, falls hardest on students who already have the least additional support outside the classroom.
+
+Research Question(s)
+
+Can a rule-based, explainable early-warning system, built on established ABC-model indicators (attendance, behaviour, and course performance), reliably and transparently identify at-risk students earlier than manual mark review?
+
+Can a mastery-based diagnostic testing model, adapted from Bayesian Knowledge Tracing and mastery-learning principles, reliably distinguish genuine topic mastery from a lucky guess, within a South African CAPS-aligned assessment context?
+
+Aim
+
+The aim of this project is to design, build, and evaluate two integrated features — a diagnostic Topic Test system and a teacher-facing At-Risk Intervention system — inside a broader school management platform, and to assess whether they meaningfully improve on the manual, paper-based methods currently used in South African schools to detect learning gaps and struggling students.
+
+Engineering Goals or Design Goals
+
+1. The At-Risk engine must flag a student using multiple, documented indicators drawn from the ABC model (attendance, behaviour, course performance) rather than a single grade snapshot.
+2. Every risk flag produced by the system must show its underlying reasoning in plain language, not just a score, so a teacher can evaluate and trust it.
+3. The Topic Test engine must be able to distinguish a student who answered correctly by guessing from one who has demonstrated real, consistent mastery of a topic.
+4. Every intervention a teacher assigns to a student must have its outcome measured afterwards (improved, declined, or unchanged), not simply logged as a completed action.
+5. The whole system must run affordably, without requiring the school to pay for per-seat licences, dedicated IT staff, or paid third-party AI services.
+
+Hypothesis
+
+If a single, unified school platform captures a student's academic life in one shared system — marks and gradebooks, attendance and behaviour records, homework and timetable data, topic-level diagnostic testing, career and university/APS planning, and school-wide administrative functions such as subject and timetable management — instead of leaving that information fragmented across paper registers, spreadsheets, and disconnected tools, then it will be able to identify struggling students and genuine topic-level learning gaps more accurately and earlier than the manual, fragmented methods currently used in South African schools, because the At-Risk Intervention engine and the Topic Test mastery engine can draw on multiple real, already-captured signals from across the whole platform simultaneously, rather than a teacher having to manually cross-reference separate, disconnected records one at a time.
+
+Variables
+
+Independent variable: the assessment/detection method used — manual review of a single mark sheet or attendance record at one point in time, versus the platform's rule-based engine evaluating multiple combined indicators continuously.
+
+Dependent variables: (1) the accuracy of at-risk identification, measured as the number of correctly flagged at-risk students compared against a human reviewer working from the same synthetic data; (2) the accuracy of topic-mastery diagnosis, measured as how often the system's mastery/not-yet-mastered call matches the known, constructed ground truth of a simulated student's understanding; (3) the time taken to identify the same at-risk students by each method.
+
+Controlled/fixed variables: the underlying dataset used for testing (identical synthetic mark sheets, attendance records, and behaviour logs used for both the manual-review comparison and the engine's output); the number of students, classes, and subjects in the test set; the thresholds and rules used by the engine, held constant across all test runs within a single evaluation.
+
+
+METHOD
+
+Materials
+
+The platform will be built using React (frontend), Tailwind CSS (styling), Supabase/PostgreSQL (database and backend), and Vite (build tooling). Automated testing will use Playwright, alongside manual testing against constructed sample data. Deployment will be via Vercel. No paid third-party AI or machine-learning services will be used — all diagnostic and risk-scoring logic will be built as explainable, inspectable rules and calculations rather than a black-box model.
+
+Procedure (Design Criteria)
+
+The system will be designed against the following constraints: it must be affordable to run at scale for a school with no dedicated IT budget; it must work acceptably on low-end or older mobile devices, since household internet access in much of South Africa is mobile-first rather than desktop-first; every automated recommendation (a risk flag, a mastery result) must be explainable to a non-technical teacher in plain language; and the system must integrate directly with the marks, attendance, and behaviour data the platform already collects, rather than requiring separate, duplicate data entry.
+
+Data Analysis
+
+To test the system prior to any real-world pilot, a realistic synthetic dataset will be constructed: several classes, multiple subjects, and a term's worth of marks, deliberately including students with steadily declining marks, volatile/inconsistent marks, and consistently low marks. The At-Risk engine's output will be checked against which of these synthetic students a human reviewer would flag as at-risk by manually reading the same data. The Topic Test engine's mastery logic will be tested against constructed response patterns with a known "ground truth" (e.g. a simulated student who guesses randomly vs. one who answers with genuine, consistent understanding) to check whether the mastery rule correctly tells them apart.
+
+Preliminary Designs
+
+[Insert here: a simple system architecture diagram showing how the four user roles — Admin, Teacher, Student, Parent — connect to the shared database, and how data flows into the At-Risk engine and Topic Test engine. Also insert an early wireframe/mockup of the Topic Test results screen, showing how a misconception-level result would be displayed to a student, rather than just a percentage. Note the tool used to produce these diagrams, e.g. Figma or draw.io.]
+
+
+ETHICS
+
+Complete the Learner Ethics Checklist and submit it alongside this Research Plan if any potential ethical issues are identified. No real student, teacher, or school data will be used at any stage of development or testing — all data used to build and test the system is synthetic and invented for this project.
+
+
+SAFETY
+
+Not applicable. This is a software development project involving no hazardous materials, chemicals, or equipment.
+
+
+TIME FRAMES
+
+[Fill in actual dates once confirmed with your teacher/mentor — suggested structure below, written as broad phases rather than fixed weeks, since a platform this size does not progress in a straight line and some phases will run in parallel or overlap.]
+
+Phase 1 — Background research and problem definition (Month 1)
+Literature review covering formative and diagnostic assessment theory, mastery learning, Bayesian Knowledge Tracing, the ABC early-warning model, and the Chicago On-Track Indicator. Review of how South African schools currently manage academic records and identify struggling students. Definition of the overall data model (schools, cohorts, students, teachers, subjects) that the rest of the platform depends on.
+
+Phase 2 — Core platform foundation (Month 1–2)
+Design and build of the shared foundation every other feature depends on: authentication and role-based access for Admin, Teacher, Student, and Parent; the underlying database; digital mark sheets and gradebooks; basic school administration (classes, teachers, timetable).
+
+Phase 3 — At-Risk Intervention engine (Month 2–3)
+Design and build of the early-warning system: attendance, behaviour, and course-performance indicators; the rule-based flagging logic; teacher-facing explanations for every flag; the intervention-assignment and outcome-tracking pipeline. This phase is expected to go through at least two design iterations, refined based on internal testing.
+
+Phase 4 — Topic Test diagnostic engine (Month 3–4)
+Design and build of the diagnostic testing system: question and distractor design, the mastery-scoring logic adapted from Bayesian Knowledge Tracing, and misconception-level result reporting for students and teachers.
+
+Phase 5 — Supporting platform features (Month 4–5, running partly in parallel with Phase 3–4)
+Development of the wider set of features the platform relies on to give the At-Risk and Topic Test engines real, integrated data to work from, and to support the rest of a school's day-to-day academic administration — the career and university/APS planning tool, the resource and past-paper library, the Grade 9 subject-selection workflow, and admin tooling for managing which subjects a school offers per grade.
+
+Phase 6 — Evaluation and testing (Month 5–6)
+Construction of realistic synthetic test datasets covering multiple classes, subjects, and a full term of activity. Evaluation of the At-Risk engine's flagging accuracy against manual review of the same data, and evaluation of the Topic Test engine's mastery calls against known, constructed ground-truth response patterns. Consistency and usability testing across all four user roles, including on mobile devices.
+
+Phase 7 — Write-up and presentation preparation (Month 6)
+Writing of the Research Report and Abstract, preparation of the Journal/Data Book for submission, and preparation of the expo poster and presentation.
+
+Periodic check-ins with a teacher/mentor should take place at the end of each phase, with any adjustments to scope or timing documented in the Journal/Data Book as they happen — a project of this size should expect its schedule to shift as real build and testing challenges come up, rather than following the plan exactly as written.
+
+
+REFERENCES
+
+Allensworth, E.M. & Easton, J.Q., 2007. What Matters for Staying On-Track and Graduating in Chicago Public High Schools. Chicago: Consortium on Chicago School Research.
+
+Balfanz, R., Herzog, L. & Mac Iver, D.J., 2007. Preventing student disengagement and keeping students on the graduation path in urban middle-grades schools: Early identification and effective interventions. Educational Psychologist, 42(4), pp.223-235.
+
+Black, P. & Wiliam, D., 1998. Inside the black box: Raising standards through classroom assessment. Phi Delta Kappan, 80(2), pp.139-148.
+
+Black, P. & Wiliam, D., 2009. Developing the theory of formative assessment. Educational Assessment, Evaluation and Accountability, 21(1), pp.5-31.
+
+Bloom, B.S., 1968. Learning for mastery. Evaluation Comment, 1(2). Los Angeles: UCLA Center for the Study of Evaluation of Instructional Programs.
+
+Corbett, A.T. & Anderson, J.R., 1994. Knowledge tracing: Modeling the acquisition of procedural knowledge. User Modeling and User-Adapted Interaction, 4(4), pp.253-278.
+
+[Remember to sign the Plagiarism Form and keep a Journal/Data Book throughout the project.]
+
+Teacher's/Mentor's comments and suggestions:
+
+
+Teacher's/Mentor's name, signature and date:

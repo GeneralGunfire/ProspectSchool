@@ -16,6 +16,7 @@ import { fetchStudentResults, type StudentResult } from '../../../lib/marks';
 import type { StudentSession } from '../../../lib/auth';
 import { getStudentGoals } from '../../../lib/studentGoals';
 import { computeStudentInsights } from '../../../lib/studentInsights';
+import { openExternal } from '../../../lib/openExternal';
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -159,7 +160,7 @@ export default function StudentCalendarPage({ session, onNavigate }: StudentCale
     setDownloading(true);
     const url = await getAttachmentDownloadUrl(ev.attachment_url);
     setDownloading(false);
-    if (url) window.open(url, '_blank');
+    if (url) openExternal(url);
   }
 
   async function handleToggleDone(ev: SchoolEvent, e: React.MouseEvent) {

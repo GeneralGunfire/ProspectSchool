@@ -76,26 +76,28 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Overview</p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              {child.name} {child.surname}
-            </h1>
-            <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
-              Grade {child.grade}{child.cohort_name ? ` · ${child.cohort_name}` : ''}
-            </p>
-          </motion.div>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">Overview</p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                {child.name} {child.surname}
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+          <p className="text-[13px] text-[rgba(31,36,33,0.5)] mt-2 font-medium">
+            Grade {child.grade}{child.cohort_name ? ` · ${child.cohort_name}` : ''}
+          </p>
+        </motion.div>
       </div>
 
       {/* ═══ Body ═════════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -110,8 +112,8 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
         ) : (
           <>
             <div className="flex items-center gap-2 mb-1">
-              <Activity className="w-3.5 h-3.5 text-stone-500" />
-              <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">This Month</p>
+              <Activity className="w-3.5 h-3.5" style={{ color: 'var(--color-navy)' }} />
+              <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>This month</p>
             </div>
 
             {pct === null && !behaviour ? (
@@ -126,7 +128,7 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
                 className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Attendance */}
                 <div className="paper-card rounded p-5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-1">Attendance (Month)</p>
+                  <p className="text-[12px] text-muted-2 mb-1">Attendance (month)</p>
                   {pct === null ? (
                     <p className="text-sm font-semibold text-stone-500 mt-2">No days recorded yet</p>
                   ) : (
@@ -143,7 +145,7 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
 
                 {/* Behaviour */}
                 <div className="paper-card rounded p-5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-[rgba(31,36,33,0.45)] mb-1">Behaviour (Net)</p>
+                  <p className="text-[12px] text-muted-2 mb-1">Behaviour (net)</p>
                   {!behaviour || (behaviour.merit_points === 0 && behaviour.demerit_points === 0) ? (
                     <p className="text-sm font-semibold text-stone-500 mt-2">No records yet</p>
                   ) : (
@@ -172,8 +174,8 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
 
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-3.5 h-3.5 text-stone-500" />
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Quick Links</p>
+            <Zap className="w-3.5 h-3.5" style={{ color: 'var(--color-navy)' }} />
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Quick links</p>
           </div>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease, delay: 0.1 }}
             className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -183,9 +185,7 @@ export default function ParentHomePage({ child, onNavigate }: ParentHomePageProp
                 onClick={() => onNavigate(id)}
                 className="paper-card rounded p-4 flex flex-col items-center gap-2 hover:bg-[var(--color-paper-raise)] transition-colors"
               >
-                <div className="w-9 h-9 rounded flex items-center justify-center" style={{ background: 'var(--color-paper-raise)' }}>
-                  <Icon className="w-4 h-4 text-brand-dark" />
-                </div>
+                <Icon className="w-4.5 h-4.5" style={{ color: 'var(--color-navy)' }} />
                 <span className="text-xs font-bold text-brand-dark">{label}</span>
               </button>
             ))}

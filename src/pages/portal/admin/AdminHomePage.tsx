@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import {
-  Users, GraduationCap, Megaphone, ChevronRight, Settings,
+  Users, GraduationCap, Megaphone, ChevronRight, ListChecks, ShieldAlert, ArrowRight,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { fetchSchoolTeachers } from '../../../lib/teachers';
 import { fetchAnnouncements } from '../../../lib/announcements';
+import { fetchAdminSelections } from '../../../lib/subjectSelection';
 import type { AdminSession } from '../../../lib/auth';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { Shimmer } from '../../../shared/components/Shimmer';
@@ -17,7 +18,8 @@ interface AdminHomePageProps {
 interface Stats {
   teachers: number;
   students: number;
-  announcements: number;
+  openSafetyFlags: number;
+  pendingSelections: number;
 }
 
 function timeAgo(iso: string): string {
@@ -32,10 +34,14 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' });
 }
 
+function currentIntakeYear(): number {
+  return new Date().getFullYear() + 1;
+}
+
 const ease = [0.23, 1, 0.32, 1] as [number, number, number, number];
 
 export default function AdminHomePage({ session, onNavigate }: AdminHomePageProps) {
-  const [stats, setStats] = useState<Stats>({ teachers: 0, students: 0, announcements: 0 });
+  const [stats, setStats] = useState<Stats>({ teachers: 0, students: 0, openSafetyFlags: 0, pendingSelections: 0 });
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,19 +49,37 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
     if (!session.school_id) return;
     (async () => {
       try {
-        const [teachers, announcs] = await Promise.all([
+        const [teachers, announcs, pendingSelections] = await Promise.all([
           fetchSchoolTeachers(session.school_id!),
           fetchAnnouncements(session.school_id!),
+          fetchAdminSelections(session.school_id!, currentIntakeYear()),
         ]);
         const { count: studentCount } = await supabaseAdmin
           .from('students')
           .select('id', { count: 'exact', head: true })
           .eq('school_id', session.school_id);
 
+        const { data: schoolStudents } = await supabaseAdmin
+          .from('students')
+          .select('id')
+          .eq('school_id', session.school_id);
+        const studentIds = (schoolStudents ?? []).map(s => s.id);
+
+        let openSafetyFlags = 0;
+        if (studentIds.length > 0) {
+          const { count } = await supabaseAdmin
+            .from('wellbeing_safety_flags')
+            .select('id', { count: 'exact', head: true })
+            .in('student_id', studentIds)
+            .is('acknowledged_at', null);
+          openSafetyFlags = count ?? 0;
+        }
+
         setStats({
           teachers: teachers.length,
           students: studentCount ?? 0,
-          announcements: announcs.length,
+          openSafetyFlags,
+          pendingSelections: pendingSelections.filter(s => s.status === 'teacher_approved').length,
         });
         setAnnouncements(announcs.slice(0, 5));
       } catch (_) {
@@ -75,47 +99,91 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
   return (
     <div className="student-home min-h-full pb-16 relative">
 
-      {/* ═══ Hero ═══════════════════════════════════════════════ */}
-      <div className="relative overflow-hidden">
-        <div className="relative max-w-6xl mx-auto px-5 sm:px-8 pt-8 sm:pt-11 pb-6 sm:pb-8 w-full">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
-            <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">
-              {session.school_name} · {heroDate}
-            </p>
-            <h1
-              className="text-brand-dark text-[32px] sm:text-[42px] leading-[1.12] mt-2"
-              style={{ fontFamily: 'var(--font-instrument)', fontWeight: 500, letterSpacing: '-0.02em' }}
-            >
-              {greeting}, {session.name}.
-            </h1>
-          </motion.div>
-        </div>
+      {/* ═══ Header ═══════════════════════════════════════════════ */}
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-5">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease }}>
+          <p className="text-[12px] text-[rgba(31,36,33,0.5)] font-medium">
+            {session.school_name} · {heroDate}
+          </p>
+          <h1 className="text-brand-dark text-[30px] sm:text-[36px] leading-tight mt-1" style={{ fontWeight: 600 }}>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 via-sky-600 to-blue-600">
+                {greeting}, {session.name}.
+              </span>
+              <svg aria-hidden="true" viewBox="0 0 320 14" className="absolute left-0 -bottom-1 w-full h-3 text-amber-500/70" preserveAspectRatio="none">
+                <path d="M2 9C60 3 180 2 318 8" stroke="currentColor" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              </svg>
+            </span>
+          </h1>
+        </motion.div>
       </div>
 
       {/* ═══ Body ═══════════════════════════════════════════════ */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-8 relative z-10 space-y-5 sm:space-y-6 pt-2 sm:pt-3">
+      <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-4">
 
-      {/* ── 3 stat cards ───────────────────────────────────────── */}
+      {/* ── Attention-needed banner ─────────────────────────────── */}
+      {!loading && (stats.openSafetyFlags > 0 || stats.pendingSelections > 0) && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease }}
+          className="paper-card rounded p-4 sm:p-5"
+        >
+          <p className="text-[15px] text-brand-dark mb-3" style={{ fontWeight: 600 }}>Needs your attention</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {stats.openSafetyFlags > 0 && (
+              <button
+                onClick={() => onNavigate('students')}
+                className="flex items-center gap-3 p-3 rounded border border-red-100 bg-red-50/60 text-left"
+              >
+                <ShieldAlert className="w-4.5 h-4.5 text-red-500 shrink-0" />
+                <span className="flex-1 min-w-0">
+                  <span className="block text-sm font-semibold text-brand-dark">
+                    {stats.openSafetyFlags} unacknowledged safety flag{stats.openSafetyFlags !== 1 ? 's' : ''}
+                  </span>
+                  <span className="block text-xs text-stone-500">A homeroom teacher needs to acknowledge these in Wellbeing</span>
+                </span>
+                <ArrowRight className="w-4 h-4 text-stone-400 shrink-0" />
+              </button>
+            )}
+            {stats.pendingSelections > 0 && (
+              <button
+                onClick={() => onNavigate('subject-selection')}
+                className="flex items-center gap-3 p-3 rounded border border-brand-border bg-sky-50/60 text-left"
+              >
+                <ListChecks className="w-4.5 h-4.5 shrink-0" style={{ color: 'var(--color-navy)' }} />
+                <span className="flex-1 min-w-0">
+                  <span className="block text-sm font-semibold text-brand-dark">
+                    {stats.pendingSelections} subject selection{stats.pendingSelections !== 1 ? 's' : ''} awaiting your review
+                  </span>
+                  <span className="block text-xs text-stone-500">Teacher-approved, ready for admin sign-off</span>
+                </span>
+                <ArrowRight className="w-4 h-4 text-stone-400 shrink-0" />
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── stat cards ───────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {[
           {
-            label: 'Total Students',
+            label: 'Total students',
             value: loading ? '—' : stats.students,
             sub: 'across all grades',
             delay: 0.04,
           },
           {
-            label: 'Total Teachers',
+            label: 'Total teachers',
             value: loading ? '—' : stats.teachers,
             sub: 'active educators',
             delay: 0.08,
           },
           {
-            label: 'Your School',
-            value: session.school_name,
-            sub: 'administrator view',
+            label: 'Open safety flags',
+            value: loading ? '—' : stats.openSafetyFlags,
+            sub: stats.openSafetyFlags > 0 ? 'awaiting acknowledgement' : 'all clear',
             delay: 0.12,
-            isText: true,
           },
         ].map(card => (
           <motion.div
@@ -124,10 +192,8 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
             transition={{ duration: 0.4, ease, delay: card.delay }}
             className="paper-card rounded p-5"
           >
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-3">{card.label}</p>
-            <p className={`font-black text-brand-dark ${card.isText ? 'text-lg leading-tight' : 'text-4xl'}`}>
-              {card.value}
-            </p>
+            <p className="text-[12px] text-muted-2 mb-3">{card.label}</p>
+            <p className="font-black text-brand-dark text-4xl">{card.value}</p>
             <p className="text-sm text-stone-500 mt-1">{card.sub}</p>
           </motion.div>
         ))}
@@ -142,32 +208,32 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
           transition={{ duration: 0.4, ease, delay: 0.16 }}
           className="paper-card rounded p-5"
         >
-          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500 mb-4">Quick Actions</p>
+          <p className="text-[15px] text-brand-dark mb-4" style={{ fontWeight: 600 }}>Quick actions</p>
           <div className="space-y-2">
             {[
               {
-                title: 'Manage Teachers',
+                title: 'Manage teachers',
                 description: 'Add, edit, or remove teacher accounts',
                 icon: GraduationCap,
                 page: 'teachers',
               },
               {
-                title: 'Post Announcement',
+                title: 'Post announcement',
                 description: 'Broadcast a message to all students',
                 icon: Megaphone,
                 page: 'announcements',
               },
               {
-                title: 'View Students',
+                title: 'View students',
                 description: 'Browse and manage enrolled students',
                 icon: Users,
                 page: 'students',
               },
               {
-                title: 'Settings',
-                description: 'School profile and configuration',
-                icon: Settings,
-                page: 'settings',
+                title: 'Subject selection queue',
+                description: 'Review submissions awaiting sign-off',
+                icon: ListChecks,
+                page: 'subject-selection',
               },
             ].map((action, i) => {
               const Icon = action.icon;
@@ -177,16 +243,14 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                   initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease, delay: 0.16 + i * 0.04 }}
                   onClick={() => onNavigate(action.page)}
-                  className="paper-card w-full flex items-start gap-4 p-4 rounded cursor-pointer text-left group"
+                  className="paper-card w-full flex items-center gap-3 p-4 rounded cursor-pointer text-left group"
                 >
-                  <div className="w-9 h-9 bg-accent text-white rounded flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4" />
-                  </div>
+                  <Icon className="w-4.5 h-4.5 shrink-0" style={{ color: 'var(--color-navy)' }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-black text-brand-dark">{action.title}</p>
+                    <p className="text-sm font-semibold text-brand-dark">{action.title}</p>
                     <p className="text-xs text-stone-500 mt-0.5">{action.description}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors mt-0.5 shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 transition-colors shrink-0" />
                 </motion.button>
               );
             })}
@@ -200,9 +264,9 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
           className="paper-card rounded p-5"
         >
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-stone-500">Recent Announcements</p>
+            <p className="text-[15px] text-brand-dark" style={{ fontWeight: 600 }}>Recent announcements</p>
             <button onClick={() => onNavigate('announcements')}
-              className="text-xs text-stone-500 hover:text-stone-600 font-bold transition-colors flex items-center gap-0.5">
+              className="text-xs font-semibold transition-colors flex items-center gap-0.5" style={{ color: 'var(--color-navy)' }}>
               View all <ChevronRight className="w-3 h-3" />
             </button>
           </div>
@@ -225,9 +289,6 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
                   transition={{ duration: 0.4, ease, delay: i * 0.04 }}
                   className="flex items-start gap-3 py-2 border-b border-brand-border/60 last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center shrink-0 mt-0.5">
-                    <Megaphone className="w-3.5 h-3.5 text-amber-600" />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-brand-dark truncate">{a.title}</p>
                     {a.body && <p className="text-xs text-stone-500 truncate mt-0.5">{a.body}</p>}
@@ -241,9 +302,10 @@ export default function AdminHomePage({ session, onNavigate }: AdminHomePageProp
           {/* Post announcement CTA */}
           <button
             onClick={() => onNavigate('announcements')}
-            className="w-full mt-4 py-2.5 rounded bg-accent text-white text-sm font-black hover:bg-accent-soft transition-colors"
+            className="flex items-center gap-1 mt-4 text-[14px] font-semibold transition-colors"
+            style={{ color: 'var(--color-navy)' }}
           >
-            Post New Announcement
+            Post new announcement <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </motion.div>
       </div>
