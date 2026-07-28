@@ -5,7 +5,6 @@ import { Footer } from '../features/landing/new/Footer';
 import { FadeIn, useSpotlight, SpotlightGlow } from '../features/landing/new/Animations';
 import { BorderBeam } from '../features/downloads/components/BorderBeam';
 import { MagicCard } from '../features/downloads/components/MagicCard';
-import { Meteors } from '../features/downloads/components/Meteors';
 
 type Page = string;
 
@@ -44,7 +43,6 @@ const DownloadHero = () => {
         className="pointer-events-none absolute inset-0"
         style={{ background: 'radial-gradient(70% 60% at 50% 35%, color-mix(in srgb, var(--color-accent) 8%, transparent), transparent 70%)' }}
       />
-      <Meteors count={10} color="#94a3b8" />
       <motion.div
         initial={reduced ? undefined : { opacity: 0, y: 16 }}
         animate={reduced ? undefined : { opacity: 1, y: 0 }}
@@ -131,7 +129,7 @@ const PlatformCard = ({ platform, index }: { platform: Platform; index: number }
         className="card-premium-dark paper-card-dark overflow-hidden rounded-2xl p-6 sm:p-8 flex flex-col h-full"
         gradientColor={available ? '#38bdf8' : '#64748b'}
       >
-        {available && <BorderBeam size={140} duration={7} colorFrom="#38bdf8" colorTo="#2563eb" />}
+        {available && <BorderBeam duration={7} colorFrom="#38bdf8" colorTo="#2563eb" />}
 
         <div className="flex items-start justify-between">
           <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
