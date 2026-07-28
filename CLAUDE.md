@@ -89,6 +89,7 @@ supabase db push
 - **Deployment:** Vercel (on GitHub push, when ready)
 - **Testing:** Playwright (run with `npm test`)
 - **Desktop:** Tauri (Windows only) — see `DESKTOP.md`
+- **Mobile:** Capacitor (Android only, sideloaded APK) — see `MOBILE.md`
 
 ## Key Files
 - `.planning/PROJECT.md` — Full requirements & 9-phase build order
@@ -97,3 +98,4 @@ supabase db push
 - `src/lib/supabase.ts` — Supabase client initialization
 - `src/providers/AuthProvider.tsx` — Auth context & guards
 - `DESKTOP.md` — Windows desktop app (Tauri) setup, local dev, and CI build instructions
+- `MOBILE.md` — Android app (Capacitor) setup, local dev, and CI build instructions

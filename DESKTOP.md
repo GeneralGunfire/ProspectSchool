@@ -63,13 +63,23 @@ even though a newer release exists.
 
 All `window.open(url, '_blank')` calls across the portal (teacher/student
 resources, past papers, memos, calendar attachments) go through
-`src/lib/openExternal.ts` instead. On the web build it's a plain
-`window.open` — unchanged. Inside Tauri it detects `window.isTauri` (Tauri
-2's official runtime flag) and hands off to `@tauri-apps/plugin-shell`'s
-`open()`, which opens the URL in the OS default browser rather than relying
-on WebView2's new-tab behavior. The Rust side is registered in
-`src-tauri/src/lib.rs` (`tauri_plugin_shell::init()`) with permission
-granted via `src-tauri/capabilities/default.json` (`shell:allow-open`).
+`src/lib/openExternal.ts` instead — shared with the Android app, see
+`MOBILE.md`. On the web build it's a plain `window.open` — unchanged.
+Inside Tauri it detects `window.isTauri` (Tauri 2's official runtime flag)
+and hands off to `@tauri-apps/plugin-shell`'s `open()`, which opens the URL
+in the OS default browser rather than relying on WebView2's new-tab
+behavior. The Rust side is registered in `src-tauri/src/lib.rs`
+(`tauri_plugin_shell::init()`) with permission granted via
+`src-tauri/capabilities/default.json` (`shell:allow-open`).
+
+## Shared native-app detection
+
+`src/lib/nativeApp.ts`'s `isNativeApp()` is true for either this Tauri
+desktop build or the Capacitor Android build (see `MOBILE.md`) — used in
+`App.tsx` (skip the marketing landing page, open straight to the portal)
+and `PortalEntry.tsx` (hide the "back to website" nav). Prefer this over
+checking `window.isTauri` directly so desktop- and mobile-specific UI stays
+in sync across both wrappers.
 
 ## Known items still open
 

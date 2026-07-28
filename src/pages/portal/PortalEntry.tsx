@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Shield, GraduationCap, BookOpen, Users, ChevronRight, ArrowLeft, ShieldCheck, Sparkles, Users2, LucideIcon } from 'lucide-react';
+import { isNativeApp } from '../../lib/nativeApp';
 
 type Page = string;
 
@@ -121,7 +122,7 @@ const PortalIntroPanel = () => (
   </div>
 );
 
-const isDesktopApp = typeof window !== 'undefined' && window.isTauri;
+const isNative = isNativeApp();
 
 export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) => void }) {
   return (
@@ -131,10 +132,11 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
       {/* Top nav — same floating glass pill as the landing page navbar, but
           with only the logo and a back button, since Students/Teachers/
           Pricing links and "Portal Login" don't apply on the portal
-          entry page itself. Hidden in the desktop app: there's no marketing
-          site to "go back" to inside a native window, and the desktop app
-          opens straight to this screen (see App.tsx's initial page logic). */}
-      {!isDesktopApp && (
+          entry page itself. Hidden in native app shells (Tauri desktop,
+          Capacitor Android): there's no marketing site to "go back" to
+          inside a wrapped app, and native shells open straight to this
+          screen (see App.tsx's initial page logic). */}
+      {!isNative && (
         <div className="fixed top-4 left-0 right-0 z-50 px-4">
           <nav className="max-w-3xl mx-auto bg-white/40 backdrop-blur-xl backdrop-saturate-150 border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
             <div className="h-13 flex items-center justify-between px-2.5">
@@ -154,7 +156,7 @@ export default function PortalEntry({ onNavigate }: { onNavigate: (page: Page) =
       )}
 
       {/* Content */}
-      <div className={`relative z-10 flex-1 flex items-center justify-center px-4 lg:px-10 pb-10 sm:pb-12 ${isDesktopApp ? 'pt-10 sm:pt-12' : 'pt-24 sm:pt-28'}`}>
+      <div className={`relative z-10 flex-1 flex items-center justify-center px-4 lg:px-10 pb-10 sm:pb-12 ${isNative ? 'pt-10 sm:pt-12' : 'pt-24 sm:pt-28'}`}>
         <div className="w-full max-w-md lg:max-w-5xl flex items-center justify-center lg:justify-between gap-16 xl:gap-24">
           <PortalIntroPanel />
           <motion.div

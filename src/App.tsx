@@ -2,6 +2,7 @@ import { useState, useEffect, useTransition, type ReactNode, lazy, Suspense } fr
 import { motion, AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import { Spinner } from './shared/components/Spinner';
+import { isNativeApp } from './lib/nativeApp';
 
 // ── New landing page (from Stitch/AI Studio export) ──────────────────────────
 const NewLandingPage = lazy(() => import('./features/landing/new/LandingPage'));
@@ -136,10 +137,11 @@ export default function App() {
     // 2. Hash in URL (e.g. user refreshed or followed a shared link)
     const fromHash = pageFromHash(window.location.hash);
     if (fromHash) return fromHash;
-    // 3. Desktop app (Tauri) with no session/hash → skip the marketing
-    // landing page and go straight to account selection, since there's no
-    // "browsing the website" use case inside a native window.
-    if (typeof window !== 'undefined' && window.isTauri) return 'portal';
+    // 3. Native app shell (Tauri desktop or Capacitor Android) with no
+    // session/hash → skip the marketing landing page and go straight to
+    // account selection, since there's no "browsing the website" use case
+    // inside a wrapped native app.
+    if (isNativeApp()) return 'portal';
     // 4. Default (web)
     return 'home';
   });

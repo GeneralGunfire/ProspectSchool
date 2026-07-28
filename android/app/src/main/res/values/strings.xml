@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Prospect</string>
+    <string name="title_activity_main">Prospect</string>
+    <string name="package_name">za.co.prospect.app</string>
+    <string name="custom_url_scheme">za.co.prospect.app</string>
+</resources>
