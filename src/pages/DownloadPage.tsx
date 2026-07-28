@@ -11,14 +11,13 @@ type Page = string;
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
-// Single place to wire up the real installer URL once a release exists —
-// e.g. a GitHub Releases asset URL from the desktop-windows.yml workflow
-// (.github/workflows/desktop-windows.yml uploads prospect-windows-installer).
-// Left blank until a build has actually been published; the Windows card
-// falls back to a disabled "Coming soon" state rather than linking to a
-// URL that would 404.
+// Points at the GitHub Release asset published by
+// .github/workflows/desktop-windows.yml on each `desktop-v*` tag push —
+// update this to the latest release's asset URL after cutting a new tag.
+// (A CI *artifact* URL won't work here — those require a signed-in GitHub
+// session; only Release assets are publicly downloadable.)
 const DOWNLOAD_URLS: { windows?: string } = {
-  windows: undefined,
+  windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/desktop-v0.1.1/Prospect_0.1.0_x64-setup.exe',
 };
 
 // ── Hero — same treatment as the landing page Hero (huge display headline,
