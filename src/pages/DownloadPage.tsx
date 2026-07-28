@@ -11,13 +11,16 @@ type Page = string;
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
-// Points at the GitHub Release asset published by
-// .github/workflows/desktop-windows.yml on each `desktop-v*` tag push —
-// update this to the latest release's asset URL after cutting a new tag.
+// GitHub's /releases/latest/download/<filename> always redirects to the
+// newest published release's matching asset, so this never needs updating
+// on new tag pushes — as long as the built .exe's filename stays constant.
+// The filename is derived from src-tauri/tauri.conf.json's "version" field
+// (currently 0.1.0), NOT the desktop-v* git tag, so if that version number
+// ever changes, this filename must be updated to match (see DESKTOP.md).
 // (A CI *artifact* URL won't work here — those require a signed-in GitHub
 // session; only Release assets are publicly downloadable.)
 const DOWNLOAD_URLS: { windows?: string } = {
-  windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/desktop-v0.1.1/Prospect_0.1.0_x64-setup.exe',
+  windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/latest/download/Prospect_0.1.0_x64-setup.exe',
 };
 
 // ── Hero — same treatment as the landing page Hero (huge display headline,

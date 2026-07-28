@@ -35,27 +35,41 @@ Produces an NSIS installer at `src-tauri/target/release/bundle/nsis/*.exe`.
 
 `.github/workflows/desktop-windows.yml` builds the Windows installer on:
 - pushing a tag matching `desktop-v*` (e.g. `desktop-v0.1.0`)
-- manual trigger (Actions tab → "Desktop (Windows)" → Run workflow)
+- manual trigger (Actions tab → "Desktop (Windows)" → Run workflow — note: this does NOT publish a Release, since there's no tag to attach one to; use a tag push for a real distributable build)
 
 **Required repo secrets** (Settings → Secrets and variables → Actions):
-- `VITE_SITE_URL` — the production site URL (e.g. `https://prospect.co.za`), used so links generated inside the desktop app (like the quiz share link) point at the real site instead of a local Tauri address
+- `VITE_SITE_URL` — the production site URL (`https://prospect-school.vercel.app`), used so links generated inside the desktop app (like the quiz share link) point at the real site instead of a local Tauri address
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 
-Same values as `.env.local` (`VITE_SITE_URL` is blank there by default — fill in the real domain locally too if you want to test the share-link behavior). The built `.exe` is uploaded as a workflow artifact named `prospect-windows-installer`.
+Same values as `.env.local`. On a tag push, the built `.exe` is both uploaded as a workflow artifact (`prospect-windows-installer` — requires a signed-in GitHub session to download, not user-facing) **and** attached to a published GitHub Release matching the tag (publicly downloadable, no login required — this is what the Downloads page links to).
+
+### Cutting a new release
+
+```bash
+git tag desktop-v0.1.2
+git push origin desktop-v0.1.2
+```
+
+The Downloads page (`src/pages/DownloadPage.tsx`) links to
+`.../releases/latest/download/Prospect_0.1.0_x64-setup.exe`, which always
+resolves to the newest release automatically — **except** the filename
+segment is derived from `src-tauri/tauri.conf.json`'s `"version"` field, not
+the git tag. If that version field is ever bumped (e.g. to `0.2.0`), update
+the filename in `DOWNLOAD_URLS.windows` to match, or the link will 404
+even though a newer release exists.
 
 ## External links (past papers, resources, attachments)
 
 All `window.open(url, '_blank')` calls across the portal (teacher/student
 resources, past papers, memos, calendar attachments) go through
 `src/lib/openExternal.ts` instead. On the web build it's a plain
-`window.open` — unchanged. Inside Tauri it detects `window.__TAURI__` at
-runtime and hands off to `@tauri-apps/plugin-shell`'s `open()`, which opens
-the URL in the OS default browser rather than relying on WebView2's
-new-tab behavior. The Rust side is registered in `src-tauri/src/lib.rs`
-(`tauri_plugin_shell::init()`) with permission granted via
-`src-tauri/capabilities/default.json` (`shell:allow-open`). Not yet verified
-against a real build — the logic is in place but untested end-to-end.
+`window.open` — unchanged. Inside Tauri it detects `window.isTauri` (Tauri
+2's official runtime flag) and hands off to `@tauri-apps/plugin-shell`'s
+`open()`, which opens the URL in the OS default browser rather than relying
+on WebView2's new-tab behavior. The Rust side is registered in
+`src-tauri/src/lib.rs` (`tauri_plugin_shell::init()`) with permission
+granted via `src-tauri/capabilities/default.json` (`shell:allow-open`).
 
 ## Known items still open
 
