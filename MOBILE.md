@@ -13,8 +13,8 @@ distribution — same "direct download from our own site" model as desktop.
 
 ## Prerequisites
 
-- Node (already required for the web app)
-- Java 17 (Temurin recommended) — https://adoptium.net
+- Node **22+** (Capacitor 8's CLI requires it — will fail with `[fatal] The Capacitor CLI requires NodeJS >=22.0.0` on older versions)
+- Java **21** (Temurin recommended) — https://adoptium.net (Capacitor 8's Android Gradle plugin targets Java 21 source compatibility; Java 17 fails with `invalid source release: 21`)
 - Android Studio (for local builds/emulator) — https://developer.android.com/studio, or just the command-line tools + `ANDROID_HOME` set if you don't need the IDE
 
 ## Local development
