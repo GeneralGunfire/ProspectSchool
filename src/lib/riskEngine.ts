@@ -51,6 +51,11 @@ export const COURSE_DECLINE_SLOPE      = -3;     // pct-points per assessment
 export const COURSE_VOLATILITY_RATIO   = 0.4;    // range >= 40% of mean = volatile
 export const COURSE_VOLATILITY_FLOOR   = 40;     // AND at least one score below this
 export const COURSE_DEFAULT_BASELINE   = 50;      // used when no prior-term average exists
+export const COURSE_BREADTH_MIN_SUBJECTS = 2;     // >= this many subjects independently
+                                                   // scoring >=1 escalates the course domain
+                                                   // score by +1 (capped at 2) — a student
+                                                   // struggling broadly, not just in their
+                                                   // single worst subject, is a stronger signal.
 
 // Combined tiering
 export const HIGH_RISK_TOTAL_MIN      = 4;   // R >= this...
@@ -275,8 +280,20 @@ export function computeStudentRisk(input: RawStudentInputs, todayStr: string): S
   }
   courseSubjects.sort((a, b) => b.score - a.score || a.avg - b.avg);
   const worstSubject = courseSubjects.length > 0 ? courseSubjects[0] : null;
-  const courseScore = worstSubject?.score ?? 0;
-  const courseReasons = worstSubject?.reasons ?? [];
+  const courseReasons = [...(worstSubject?.reasons ?? [])];
+
+  // Breadth escalator: the worst subject still sets the base score (so a
+  // strong overall average can't hide one subject in real trouble), but a
+  // student flagged in several subjects at once is a stronger signal than
+  // any single subject alone — bump the domain score up (capped at 2).
+  const flaggedSubjects = courseSubjects.filter(cs => cs.score >= 1);
+  const baseScore = worstSubject?.score ?? 0;
+  const breadthEscalates = flaggedSubjects.length >= COURSE_BREADTH_MIN_SUBJECTS && baseScore < 2;
+  const courseScore = breadthEscalates ? (baseScore + 1) as 0 | 1 | 2 : baseScore;
+  if (breadthEscalates) {
+    const names = flaggedSubjects.map(cs => cs.subject).join(', ');
+    courseReasons.push(`Struggling in ${flaggedSubjects.length} subjects at once (${names})`);
+  }
 
   const { total, tier } = combineTier(attendanceScoreWeighted, behaviourScoreWeighted, courseScore);
 

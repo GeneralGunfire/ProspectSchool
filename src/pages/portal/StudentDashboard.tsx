@@ -93,6 +93,7 @@ export default function StudentDashboard({ onNavigate }: StudentDashboardProps) 
     { id: 'library',    label: 'Library',     icon: BookOpen },
     { id: 'resources',  label: 'Resources',   icon: FolderOpen },
     { id: 'pastpapers', label: 'Past Papers', icon: FileText },
+    { id: 'topic-tests', label: 'Topic Tests', icon: ClipboardCheck },
     { id: 'ai-tutor',      label: 'AI Tutor',              icon: Bot },
     { id: 'peer-tutoring', label: 'Peer to Peer Tutoring', icon: Users },
   ];
