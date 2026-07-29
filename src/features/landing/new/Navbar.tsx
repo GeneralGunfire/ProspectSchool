@@ -66,38 +66,15 @@ const NavContent = ({ onNavigate, logoSrc, textClass, linkClass, ctaClass, glowC
 );
 
 export const Navbar = ({ onNavigate }: { onNavigate: (p: string) => void }) => {
+  // Single light-glass pill for both mobile and desktop — the mobile hero
+  // switched from a dark full-bleed video to the same light background
+  // desktop uses, so the dark mobile nav variant this used to have no
+  // longer matches anything beneath it. Uses the same styling as
+  // AuthNavbar (src/pages/auth/shared/AuthShell.tsx) for consistency
+  // with the rest of the site (login pages, portal entry, etc.).
   return (
     <div className="fixed top-4 left-0 right-0 z-50 px-4">
-      {/* Mobile — dark glass, matches the dark video hero. This nav is
-          `position: fixed`, so it stays composited on-screen for the
-          entire scroll — a heavy blur() here gets re-sampled every scroll
-          frame and is a real mobile jank source. Lighter blur radius
-          (8px vs desktop's 20px) keeps the glass look at a fraction of
-          the compositing cost; background opacity bumped up slightly to
-          compensate visually for the reduced blur. */}
-      <nav
-        className="md:hidden max-w-3xl mx-auto rounded-full"
-        style={{
-          background: 'color-mix(in srgb, #0B0F14 82%, transparent)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.10)',
-          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), 0 1px 2px rgba(0,0,0,0.3), 0 16px 40px -16px rgba(0,0,0,0.6)',
-        }}
-      >
-        <NavContent
-          onNavigate={onNavigate}
-          logoSrc="/logo-dark-mode.png"
-          textClass="text-white"
-          linkClass="text-white/60 hover:text-white hover:bg-white/8"
-          ctaClass="bg-linear-to-r from-sky-500 via-sky-600 to-blue-600 text-white hover:brightness-110 shadow-[0_6px_16px_-4px_rgba(37,99,235,0.45)]"
-          glowClass="bg-linear-to-r from-sky-500 to-blue-600"
-        />
-      </nav>
-
-      {/* Desktop — same light-glass pill as AuthNavbar (src/pages/auth/shared/AuthShell.tsx),
-          matches the now-light desktop hero */}
-      <nav className="hidden md:block max-w-3xl mx-auto bg-white border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
+      <nav className="max-w-3xl mx-auto bg-white border border-white/60 shadow-lg shadow-slate-900/8 rounded-full">
         <NavContent
           onNavigate={onNavigate}
           logoSrc="/logo3.png"

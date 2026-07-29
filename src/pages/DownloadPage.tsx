@@ -18,7 +18,11 @@ const EASE = [0.23, 1, 0.32, 1] as const;
 // Windows link 404). Update BOTH values by hand after cutting a new
 // desktop-v*/android-v* tag — see DESKTOP.md / MOBILE.md for the exact
 // filenames (Windows: derived from tauri.conf.json's "version"; Android:
-// Gradle's fixed debug-build output name, app-debug.apk).
+// android/app/build.gradle's custom outputFileName, Prospect-<versionName>-
+// debug.apk — was the Gradle-default app-debug.apk until this was added).
+// The android URL below still points at the OLD app-debug.apk filename
+// from android-v0.1.0 — update after the next android-v* tag rebuilds
+// with the new naming.
 const DOWNLOAD_URLS: { windows?: string; android?: string } = {
   windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/desktop-v0.1.4/Prospect_0.1.0_x64-setup.exe',
   android: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/android-v0.1.0/app-debug.apk',
@@ -154,6 +158,8 @@ const PlatformCard = ({ platform, index }: { platform: Platform; index: number }
         {available ? (
           <a
             href={downloadUrl}
+            download
+            rel="noopener"
             className="mt-6 w-full rounded-xl px-6 py-3 font-black text-[13px] tracking-wide transition-all flex items-center justify-center gap-2 bg-linear-to-r from-sky-500 via-sky-600 to-blue-600 text-white hover:brightness-110 active:scale-[0.97] cursor-pointer"
           >
             <Download className="w-4 h-4" />

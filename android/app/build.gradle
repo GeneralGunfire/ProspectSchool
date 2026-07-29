@@ -22,6 +22,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // Gradle's default output filename is app-debug.apk / app-release.apk —
+    // Android briefly shows this raw filename on the install-prompt screen
+    // before the real app icon/name loads, which read as unpolished/wrong-
+    // branded. Rename the built artifact to match the actual app name.
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "Prospect-${variant.versionName}-${variant.buildType.name}.apk"
+        }
+    }
 }
 
 repositories {
