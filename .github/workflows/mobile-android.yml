@@ -60,6 +60,11 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.VITE_SUPABASE_SERVICE_ROLE_KEY }}
           VITE_GROQ_API_KEY: ${{ secrets.VITE_GROQ_API_KEY }}
+          # Baked into the bundle so the in-app update checker
+          # (src/lib/updateCheck.ts) knows which release it shipped from.
+          # Empty on workflow_dispatch runs (no tag) — update check just
+          # no-ops in that case.
+          ANDROID_RELEASE_TAG: ${{ startsWith(github.ref, 'refs/tags/android-v') && github.ref_name || '' }}
         run: npm run build
 
       - name: Sync Capacitor Android project

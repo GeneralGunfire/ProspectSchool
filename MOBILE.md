@@ -59,10 +59,39 @@ tag (publicly downloadable, no login required).
 
 ### Cutting a new release
 
+Bump `android/app/build.gradle`'s `versionCode` (must strictly increase)
+and `versionName` first, then:
+
 ```bash
-git tag android-v0.1.0
-git push origin android-v0.1.0
+git tag android-v0.1.3
+git push origin android-v0.1.3
 ```
+
+After the build publishes, update `DOWNLOAD_URLS.android` in
+`src/pages/DownloadPage.tsx` to the new release's asset URL (same "no
+`/releases/latest/` shortcut" reasoning as desktop — see that file's
+comment).
+
+## In-app update check
+
+Since a sideloaded APK can't silently auto-update, `src/lib/updateCheck.ts`
+checks GitHub's releases on launch, finds the newest `android-v*` tag, and
+compares it against the tag the running build was cut from — if newer,
+`src/shared/components/AndroidUpdateBanner.tsx` (mounted in `App.tsx`,
+so every role/portal gets it) shows a dismissible bottom banner with an
+"Update" button that opens the new release's APK via `openExternal`.
+No-ops entirely on web and desktop.
+
+The running build's own tag is baked in at build time — the CI workflow
+sets `ANDROID_RELEASE_TAG` to `github.ref_name` (only on a real tag push,
+empty on manual `workflow_dispatch` runs), and `vite.config.ts` exposes it
+to the bundle as `__ANDROID_RELEASE_TAG__`. This is independent of
+Android's own `versionCode`/`versionName` (which still need bumping
+separately per release, for Android's own requirements) — comparing git
+tags directly avoids keeping two version schemes in sync.
+
+Dismissing the banner only hides it for that session, not permanently —
+it resurfaces on the next app launch until the user actually updates.
 
 ## App icon
 
@@ -87,5 +116,4 @@ doesn't reliably open a real browser from inside a WebView.
 
 - **This build is unsigned** in the sense that it's a debug APK, not a Play-Store-style signed release build — Android will show an "install from unknown sources" prompt (expected, same posture as desktop's unsigned SmartScreen warning). A signed release build (with a real keystore) is a future step if this ever needs to feel more "official," not required for sideloading to work.
 - Geolocation (`navigator.geolocation`, used in location-input flows) hasn't been verified inside Capacitor's WebView yet — may need the `@capacitor/geolocation` plugin plus `ACCESS_COARSE_LOCATION`/`ACCESS_FINE_LOCATION` added to `android/app/src/main/AndroidManifest.xml` if permission prompts don't fire correctly with the raw browser API alone. Flagged, not yet fixed.
-- Auto-updates are not wired up (no in-app update-check mechanism) — same status as desktop.
-- Not yet tested on a real device or emulator — this is an unverified scaffold, same caveat the desktop scaffold had before its first real build.
+- In-app update check is now wired up (see above) — desktop still has no equivalent, since Tauri's official updater needs a signing keypair that hasn't been set up yet.

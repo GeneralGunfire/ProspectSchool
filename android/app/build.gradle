@@ -7,8 +7,12 @@ android {
         applicationId "za.co.prospect.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        // Bump both alongside each android-v* release tag — versionName
+        // drives the in-app update check (src/lib/updateCheck.ts compares
+        // this against the latest android-v* GitHub release tag) as well
+        // as the built APK's filename (see outputFileName below).
+        versionCode 3
+        versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

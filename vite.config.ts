@@ -9,6 +9,12 @@ export default defineConfig(({mode}) => {
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      // Baked in by the Android CI build (mobile-android.yml passes the
+      // triggering git tag, e.g. "android-v0.1.2") so the in-app update
+      // checker (src/lib/updateCheck.ts) knows what release it shipped
+      // from without depending on native versionName/versionCode. Empty
+      // string on web/desktop builds — updateCheck.ts no-ops there anyway.
+      __ANDROID_RELEASE_TAG__: JSON.stringify(env.ANDROID_RELEASE_TAG || ''),
     },
     resolve: {
       alias: {

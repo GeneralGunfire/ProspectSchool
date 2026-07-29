@@ -2,6 +2,7 @@ import { useState, useEffect, useTransition, type ReactNode, lazy, Suspense } fr
 import { motion, AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './shared/components/ErrorBoundary';
 import { Spinner } from './shared/components/Spinner';
+import { AndroidUpdateBanner } from './shared/components/AndroidUpdateBanner';
 import { isNativeApp } from './lib/nativeApp';
 
 // ── New landing page (from Stitch/AI Studio export) ──────────────────────────
@@ -238,6 +239,7 @@ export default function App() {
               {renderPage()}
             </AnimatePresence>
           </Suspense>
+          <AndroidUpdateBanner />
         </div>
       )}
     </>
