@@ -9,16 +9,19 @@ type Page = string;
 
 const EASE = [0.23, 1, 0.32, 1] as const;
 
-// GitHub's /releases/latest/download/<filename> always redirects to the
-// newest published release's matching asset, so this never needs updating
-// on new tag pushes — as long as the built .exe's filename stays constant.
-// The filename is derived from src-tauri/tauri.conf.json's "version" field
-// (currently 0.1.0), NOT the desktop-v* git tag, so if that version number
-// ever changes, this filename must be updated to match (see DESKTOP.md).
-// (A CI *artifact* URL won't work here — those require a signed-in GitHub
-// session; only Release assets are publicly downloadable.)
-const DOWNLOAD_URLS: { windows?: string } = {
-  windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/latest/download/Prospect_0.1.0_x64-setup.exe',
+// Pinned to specific release tags, NOT GitHub's /releases/latest/download/
+// shortcut — that endpoint resolves against the single most recent release
+// *repo-wide*, not "latest per platform". Desktop and Android release
+// independently (desktop-v*, android-v* tags), so whichever shipped last
+// silently broke the other platform's "latest" link once both existed
+// (confirmed: an android-v0.1.0 release after desktop-v0.1.4 made the
+// Windows link 404). Update BOTH values by hand after cutting a new
+// desktop-v*/android-v* tag — see DESKTOP.md / MOBILE.md for the exact
+// filenames (Windows: derived from tauri.conf.json's "version"; Android:
+// Gradle's fixed debug-build output name, app-debug.apk).
+const DOWNLOAD_URLS: { windows?: string; android?: string } = {
+  windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/desktop-v0.1.4/Prospect_0.1.0_x64-setup.exe',
+  android: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/android-v0.1.0/app-debug.apk',
 };
 
 // ── Hero — same treatment as the landing page Hero (huge display headline,
@@ -119,7 +122,9 @@ const platforms: Platform[] = [
 
 const PlatformCard = ({ platform, index }: { platform: Platform; index: number }) => {
   const Icon = platform.icon;
-  const downloadUrl = platform.id === 'windows' ? DOWNLOAD_URLS.windows : undefined;
+  const downloadUrl = platform.id === 'windows' ? DOWNLOAD_URLS.windows
+    : platform.id === 'android' ? DOWNLOAD_URLS.android
+    : undefined;
   const available = Boolean(downloadUrl);
 
   return (
@@ -181,7 +186,7 @@ const PlatformCardsSection = () => (
           Available for every device.
         </h2>
         <p className="mt-4 text-slate-400 text-[13.5px] sm:text-[15px] leading-relaxed max-w-md mx-auto font-medium px-2">
-          Windows is ready now — Mac and Android are on the way.
+          Windows and Android are ready now — Mac is on the way.
         </p>
       </FadeIn>
 

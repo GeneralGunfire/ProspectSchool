@@ -19,12 +19,12 @@ const NavContent = ({ onNavigate, logoSrc, textClass, linkClass, ctaClass, glowC
   ctaClass: string;
   glowClass: string;
 }) => (
-  <div className="h-13 flex items-center px-2.5">
-    <div className="w-full flex justify-between items-center">
+  <div className="h-13 flex items-center px-2 sm:px-2.5">
+    <div className="w-full flex justify-between items-center gap-1.5">
       {/* Logo */}
-      <button onClick={() => onNavigate('home')} className="flex items-center gap-2 pl-2.5 cursor-pointer group">
-        <img src={logoSrc} alt="Prospect" className="w-7 h-7 rounded-lg object-cover shrink-0 transition-transform group-hover:scale-105" />
-        <span className={`font-serif-accent text-lg leading-none ${textClass}`}>Prospect</span>
+      <button onClick={() => onNavigate('home')} className="flex items-center gap-1.5 sm:gap-2 pl-1.5 sm:pl-2.5 cursor-pointer group shrink-0">
+        <img src={logoSrc} alt="Prospect" className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg object-cover shrink-0 transition-transform group-hover:scale-105" />
+        <span className={`font-serif-accent text-base sm:text-lg leading-none ${textClass}`}>Prospect</span>
       </button>
 
       {/* Nav links — desktop only */}
@@ -41,12 +41,12 @@ const NavContent = ({ onNavigate, logoSrc, textClass, linkClass, ctaClass, glowC
       </div>
 
       {/* CTAs */}
-      <div className="flex items-center gap-2 mr-1">
+      <div className="flex items-center gap-1 sm:gap-2 mr-0.5 sm:mr-1 shrink-0">
         <div className="relative">
           <div className={`absolute inset-0 rounded-full blur-md opacity-40 -z-10 ${glowClass}`} aria-hidden="true" />
           <button
             onClick={() => onNavigate('download')}
-            className={`rounded-full px-5 py-2 text-[12px] font-bold tracking-wide active:scale-[0.97] transition-all cursor-pointer ${ctaClass}`}
+            className={`rounded-full px-2.5 sm:px-5 py-1.5 sm:py-2 text-[10.5px] sm:text-[12px] font-bold tracking-wide whitespace-nowrap active:scale-[0.97] transition-all cursor-pointer ${ctaClass}`}
           >
             Downloads
           </button>
@@ -55,7 +55,7 @@ const NavContent = ({ onNavigate, logoSrc, textClass, linkClass, ctaClass, glowC
           <div className={`absolute inset-0 rounded-full blur-md opacity-40 -z-10 ${glowClass}`} aria-hidden="true" />
           <button
             onClick={() => onNavigate('portal')}
-            className={`rounded-full px-5 py-2 text-[12px] font-bold tracking-wide active:scale-[0.97] transition-all cursor-pointer ${ctaClass}`}
+            className={`rounded-full px-2.5 sm:px-5 py-1.5 sm:py-2 text-[10.5px] sm:text-[12px] font-bold tracking-wide whitespace-nowrap active:scale-[0.97] transition-all cursor-pointer ${ctaClass}`}
           >
             Portal Login
           </button>
