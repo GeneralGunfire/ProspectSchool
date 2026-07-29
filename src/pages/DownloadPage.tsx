@@ -22,7 +22,7 @@ const EASE = [0.23, 1, 0.32, 1] as const;
 // debug.apk — was the Gradle-default app-debug.apk until this was added).
 const DOWNLOAD_URLS: { windows?: string; android?: string } = {
   windows: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/desktop-v0.1.5/Prospect_0.1.0_x64-setup.exe',
-  android: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/android-v0.1.2/Prospect-1.0-debug.apk',
+  android: 'https://github.com/GeneralGunfire/ProspectSchool/releases/download/android-v0.1.3/Prospect-1.3-debug.apk',
 };
 
 // ── Hero — same treatment as the landing page Hero (huge display headline,
